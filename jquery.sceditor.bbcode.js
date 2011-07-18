@@ -1,4 +1,19 @@
-/* SCEditor BBCocde Plugin */
+/**
+ * @preserve SCEditor BBCode Plugin v1.0
+ * http://www.samclarke.com/2011/07/sceditor/ 
+ *
+ * Copyright (C) 2011, Sam Clarke (samclarke.com)
+ *
+ * SCEditor is dual licensed under the MIT and GPL licenses:
+ *	http://www.opensource.org/licenses/mit-license.php
+ *	http://www.gnu.org/licenses/gpl.html
+ */
+
+// ==ClosureCompiler==
+// @output_file_name jquery.sceditor.min.js
+// @compilation_level SIMPLE_OPTIMIZATIONS
+// ==/ClosureCompiler==
+
 (function($)
 {
 	$.sceditorBBCodePlugin = function(element, options)

@@ -1,7 +1,7 @@
 # SCEditor v1.0
 Copyright (C) 2011, Sam Clarke (http://www.samclarke.com)
 
-http://www.camclarke.com/ <sceditor-page-here>
+For more invormation visit: http://www.samclarke.com/2011/07/sceditor/ 
 
 
 # Useage
