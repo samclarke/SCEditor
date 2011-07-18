@@ -1,2 +1,0 @@
-2011-07-15 Sam Clarke:
-	Initial Version
