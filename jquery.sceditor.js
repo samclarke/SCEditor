@@ -494,15 +494,19 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 						if(chars == key)
 						{
 							range.setStart(range.startContainer, start);
-							//range.deleteContents();
+							range.deleteContents();
 
 							base.wysiwygEditorInsertHtml('<img src="' + url + '" data-sceditor-emoticon="' + key + '" />');
+
+							// For IE9 to work the delete contents must be before inserting
+							// the emoticon. The problem below only happends in Chrome so
+							// for now Chrome users will have to live with it.
 
 							//delete the contents of the range AFTER adding the emotion
 							// to fix problem when creating a new line and typeing the
 							// emoticon code it deletes the new line and puts the emoticon
 							// on the end of the previous line
-							range.deleteContents();
+							//range.deleteContents();
 
 							e.preventDefault();
 							e.stopPropagation();
@@ -577,6 +581,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 						.width(base.$textarea.outerWidth());
 			base.$textarea.after(base.editorContainer);
 
+			// create the editor 
 			base.initToolBar();
 			base.initEditor();
 			base.initKeyPressFuncs();
@@ -587,7 +592,15 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 			$(document).click(base.documentClickHandler);
 
-			base.$textarea.hide();
+			// lead any textarea value into the editor
+			var val = base.$textarea.hide().val();
+
+			// Pass the value though the getTextHandler if it is set so that
+			// BBCode, ect. can be converted
+			if(base.options.getTextHandler)
+				val = base.options.getTextHandler(val);
+
+			base.setWysiwygEditorValue(val);
 		};
 
 		/**
@@ -635,8 +648,19 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 				});
 			}
 
-			// load the initial style sheet and HTML into the iframe
-			base.setWysiwygEditorValue("");
+			base.getWysiwygDoc().open();
+			base.getWysiwygDoc().write(
+				// add doctype?
+				'<html><head><link rel="stylesheet" type="text/css" href="' + base.options.style + '" /></head>' +
+				'<body>' + '' + '</body></html>'
+			);
+			base.getWysiwygDoc().close();
+
+			// set the key press event
+			$(base.getWysiwygDoc()).find("body").keypress(base.handleKeyPress);
+			$(base.getWysiwygDoc()).keypress(base.handleKeyPress);
+			$(base.getWysiwygDoc()).mousedown(base.handleMouseDown);
+			$(base.getWysiwygDoc()).bind("beforedeactivate keypress", base.saveRange);
 		};
 
 		/**
@@ -834,25 +858,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 			// convert any emoticons
 			value = base.replaceEmoticons(value);
 
-			base.getWysiwygDoc().open();
-			base.getWysiwygDoc().write(
-				// add doctype?
-				'<html><head><link rel="stylesheet" type="text/css" href="' + base.options.style + '" /></head>' +
-				'<body>' + value + '</body></html>'
-			);
-			base.getWysiwygDoc().close();
-			
-			// set the key press event
-			$(base.getWysiwygDoc()).find("body").keypress(base.handleKeyPress);
-			$(base.getWysiwygDoc()).keypress(base.handleKeyPress);
-			$(base.getWysiwygDoc()).mousedown(base.handleMouseDown);
-			$(base.getWysiwygDoc()).bind("beforedeactivate keypress", base.saveRange);
-			
-			//base.$wysiwygEditor.load(function() {
-			//	$(base.getWysiwygDoc()).find("body").keypress(base.handleKeyPress);
-			//	$(base.getWysiwygDoc()).keypress(base.handleKeyPress);
-			//	$(base.getWysiwygDoc()).bind("beforedeactivate keypress", base.saveRange);
-			//});
+			base.getWysiwygDoc().body.innerHTML = value;
 		};
 
 		/**
@@ -954,10 +960,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 				{
 					executed = base.getWysiwygDoc().execCommand(command, false, param);
 				}
-				catch (e){console.log(e);}
+				catch (e){alert("Error: " + e );}
 			}
 
-			if(!executed && typeof base.commands[command].errorMessage != "undefined")
+			if(!executed && typeof base.commands[command] != "undefined"
+				&& typeof base.commands[command].errorMessage != "undefined")
 				alert(base.commands[command].errorMessage);
 		};
 
