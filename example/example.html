@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>SCEditor Demo</title>
+
+		<link rel="stylesheet" href="../jquery.sceditor.css" type="text/css" media="all" />
+
+		<script src="jquery-1.5.2.min.js"></script>
+		<script src="../jquery.sceditor.js"></script>
+		<script src="../jquery.sceditor.bbcode.js"></script>
+
+		<style>
+			html {
+				font-family: Arial, Helvetica, sans-serif;
+				font-size: 13px;
+			}
+			form div {
+				padding: .5em;
+			}
+		</style>
+
+		<script>
+			$(document).ready(function() {
+				$("textarea:first").sceditor({
+					style: "../jquery.sceditor.default.css",
+					toolbar: "bold,italic,underline|font,size,color,removeformat|image,link,unlink,emoticon"
+				});
+			});
+			$(document).ready(function() {
+				$("textarea:last").sceditorBBCodePlugin({style: "../jquery.sceditor.default.css"});
+			});
+		</script>
+	</head>
+	<body>
+		<form>
+			<div><textarea style="height:150px;width:200px;"></textarea></div>
+
+			<div>
+				<textarea style="height:200px;width:500px;"></textarea>
+				<p>If you are using IE9+ or any other browser then it should automatically replace
+					:) and other emoticon codes with theit emoticon images.</p>
+			</div>
+
+			<div><input type="submit" value="Post" /></div>
+		</form>
+
+		<p>SCEditor is dual licensed under the <a href="http://www.opensource.org/licenses/mit-license.php">MIT</a>
+		 and <a href="http://www.gnu.org/licenses/gpl.html">GPL</a></p>
+	</body>
+</html>
