@@ -271,7 +271,7 @@
 					if(typeof attrs.height != "undefined")
 						attribs += ' height="' + attrs.width + '"';
 
-					return '<img ' + attribs + ' src="' + attrs.defaultAttr + '" />';
+					return '<img ' + attribs + ' src="' + content + '" />';
 				}
 			},
 			url: {
