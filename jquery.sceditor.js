@@ -1,5 +1,5 @@
 /**
- * @preserve SCEditor v1.0
+ * @preserve SCEditor v1.1
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
  * Copyright (C) 2011, Sam Clarke (samclarke.com)
@@ -70,6 +70,12 @@
 		 * @private
 		 */
 		base.lastRange = null;
+
+		/**
+		 * Stores a cache of preloaded images
+		 * @private
+		 */
+		base.preLoadCache = [];
 
 		/**
 		 * All the commands supported by the editor
@@ -183,8 +189,10 @@
 							var color = (typeof colors[x] != "undefined")?colors[x]:"#" + genColor.r.toString(16) + genColor.g.toString(16) + genColor.b.toString(16);
 
 							line.append(
-								$('<a class="sceditor-color-option" style="background: ' + color + '"></a>')
-									.data('sceditor-color', color)
+								$(document.createElement("a"))
+									.css({background: color})
+									.addClass("sceditor-color-option")
+									.data("sceditor-color", color)
 									.click(function(e)
 									{
 										base.execCommand("forecolor", $(this).data('sceditor-color'));
@@ -579,6 +587,7 @@
 				val = base.options.getTextHandler(val);
 
 			base.setWysiwygEditorValue(val);
+			base.preLoadEmoticons();
 		};
 
 		/**
@@ -590,9 +599,11 @@
 			var editorHeight = base.$textarea.height() - base.$toolbar.outerHeight();
 			var editorWidth = base.$textarea.width();
 
-			base.$textEeditor   = $('<textarea></textarea>').hide()
+			base.$textEeditor   = $('<textarea></textarea>')
+						.hide()
 						.height(editorHeight)
 						.width(editorWidth);
+
 			base.$wysiwygEditor = $(window.location.protocol !== "https:"
 						? "<iframe></iframe>"
 						: '<iframe src="javascript:false"></iframe>')
@@ -600,37 +611,29 @@
 						.height(editorHeight)
 						.width(editorWidth);
 
-			// add the editor to the HTML and save the editors element
+			// add the editor to the HTML and store the editors element
 			base.editorContainer.append(base.$wysiwygEditor).append(base.$textEeditor);
 			base.wysiwygEditor = base.$wysiwygEditor[0];
 
 			// fix the height and width
 			height = base.$wysiwygEditor.height();
-			base.$wysiwygEditor.height(height + ((height - base.$wysiwygEditor.outerHeight(true))/2));
-			height = base.$textEeditor.height();
-			base.$textEeditor.height(height + ((height - base.$textEeditor.outerHeight(true))/2));
-
 			width = base.$wysiwygEditor.width();
+			base.$wysiwygEditor.height(height + ((height - base.$wysiwygEditor.outerHeight(true))/2));
 			base.$wysiwygEditor.width(width + ((width - base.$wysiwygEditor.outerWidth(true))/2));
+
+			height = base.$textEeditor.height();
 			width = base.$textEeditor.width();
+			base.$textEeditor.height(height + ((height - base.$textEeditor.outerHeight(true))/2));
 			base.$textEeditor.width(width + ((width - base.$textEeditor.outerWidth(true))/2));
 
 			// turn on design mode
-			if (base.getWysiwygDoc())
-			{
-				base.getWysiwygDoc().designMode = 'On';
-
-				// in case the iframe hasn't loaded
-				base.$wysiwygEditor.load(function() {
-					base.getWysiwygDoc().designMode = 'On';
-				});
-			}
+			base.getWysiwygDoc().designMode = 'On';
 
 			base.getWysiwygDoc().open();
 			base.getWysiwygDoc().write(
 				// add doctype?
 				'<html><head><link rel="stylesheet" type="text/css" href="' + base.options.style + '" /></head>' +
-				'<body>' + '' + '</body></html>'
+				'<body></body></html>'
 			);
 			base.getWysiwygDoc().close();
 
@@ -679,10 +682,32 @@
 			base.editorContainer.append(base.$toolbar);
 		};
 
-		base.initKeyPressFuncs = function() {
-			$.each(base.commands, function(command, values) {
+		/**
+		 * Creates an array of all the key press functions
+		 * like emoticons, ect.
+		 */
+		base.initKeyPressFuncs = function()
+		{
+			$.each(base.commands, function(command, values)
+			{
 				if(typeof values.keyPress != "undefined")
 					base.keyPressFuncs.push(values.keyPress);
+			});
+		};
+
+		/**
+		 * Preloads the emoticon images
+		 * Idea from: http://engineeredweb.com/blog/09/12/preloading-images-jquery-and-javascript
+		 */
+		base.preLoadEmoticons = function()
+		{
+			var emoticons = $.extend({}, base.options.emoticons.more, base.options.emoticons.dropdown);
+
+			$.each(emoticons, function(key, url)
+			{
+				var emoticon = document.createElement('img');
+	     			emoticon.src = url;
+				base.preLoadCache.push(emoticon);
 			});
 		};
 
@@ -753,7 +778,7 @@
 		/**
 		 * Inserts HTML into WYSIWYG editor. If endHtml is defined and some text is selected the
 		 * selected text will be put inbetween html and endHtml. If endHtml isn't defined and some
-		 * text is selected it will be replaced byt the html.
+		 * text is selected it will be replaced by the HTML
 		 */
 		base.wysiwygEditorInsertHtml = function(html, endHtml)
 		{
@@ -769,6 +794,9 @@
 			base.lastRange = null;
 		};
 
+		/**
+		 * Like wysiwygEditorInsertHtml except it converts any HTML to text
+		 */
 		base.wysiwygEditorInsertText = function(text)
 		{
 			text = text.replace(/&/g, "&amp;");
@@ -946,6 +974,9 @@
 				alert(base.commands[command].errorMessage);
 		};
 
+		/**
+		 * Handles any key press in the WYSIWYG editor
+		 */
 		base.handleKeyPress = function(e)
 		{
 			base.closeDropDown();
