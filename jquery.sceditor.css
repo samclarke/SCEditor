@@ -1,8 +1,12 @@
 /**
  * @preserve SCEditor v1.1
- * http://www.camclarke.com/ <sceditor-page-here>
+ * http://www.samclarke.com/2011/07/sceditor/
  *
  * Copyright (C) 2011, Sam Clarke (samclarke.com)
+ *
+ * SCEditor is dual licensed under the MIT and GPL licenses:
+ *	http://www.opensource.org/licenses/mit-license.php
+ *	http://www.gnu.org/licenses/gpl.html
  *
  * Icons by Mark James (http://www.famfamfam.com/lab/icons/silk/)
  * Licensed under the Creative Commons CC-BY license (http://creativecommons.org/licenses/by/3.0/)
@@ -85,6 +89,8 @@ div.sceditor-dropdown, div.sceditor-dropdown div {
 		*padding: 3px 5px 3px 5px;
 		background: #f7f7f7;
 		border-bottom: 1px solid #aaa;
+
+		-webkit-border-radius: 4px 4px 0 0;
 	}
 
 		div.sceditor-group {
