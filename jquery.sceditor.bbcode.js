@@ -23,7 +23,8 @@
 		base.bbcodes = {
 			b: {
 				styles: {
-					"font-weight": ["bold", "bolder", "700", "800", "900"]
+					// 401 is for FF 3.5
+					"font-weight": ["bold", "bolder", "401", "700", "800", "900"]
 				},
 				format: "[b]{0}[/b]",
 				html: '<strong>{0}</strong>'
