@@ -316,7 +316,7 @@
 
 						content = '';
 						$(element).children("cite:first").remove();
-						$(element).contents().each(function() {
+						$(element).children().each(function() {
 							content += base.elementToBbcode($(this))
 						});
 					}

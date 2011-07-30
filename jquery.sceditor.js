@@ -333,7 +333,7 @@
 			code: {
 				execFunction: function(caller)
 				{
-					base.wysiwygEditorInsertHtml('<code>', '</code>');
+					base.wysiwygEditorInsertHtml('<code>', '<br /></code>');
 				},
 				tooltip: "Code"
 			},
@@ -432,7 +432,7 @@
 			quote: {
 				execFunction: function(caller)
 				{
-					base.wysiwygEditorInsertHtml('<blockquote>', '</blockquote>');
+					base.wysiwygEditorInsertHtml('<blockquote>', '<br /></blockquote>');
 				},
 				tooltip: "Insert a Quote"
 			},
@@ -1064,6 +1064,16 @@
 		base.handleKeyPress = function(e)
 		{
 			base.closeDropDown();
+
+			// Return key. Needed for webkit as it doesn't insert
+			// a br when pressed. It instead starts a new block
+			// element of the previous type which is bad for the
+			// quote and code tags.
+			if(e.which == 13 && $.browser.webkit)
+			{
+				base.wysiwygEditorInsertHtml('<br />');
+				return false;;
+			}
 
 			$.each(base.keyPressFuncs, function(index, func)
 			{

@@ -31,7 +31,6 @@ code {
 	border: 1px solid #aaa;
 	white-space: pre;
 	padding: .25em;
-	min-height: 1.25em;
 }
 code:before, code {
 	display: block;
@@ -50,7 +49,4 @@ blockquote cite {
 	display: block;
 	font-size: 1em;
 	border-bottom: 1px solid #aaa;
-}
-blockquote cite, blockquote {
-	min-height: 1.25em;
 }
