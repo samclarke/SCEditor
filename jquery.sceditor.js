@@ -835,9 +835,9 @@
 
 				range.deleteContents();
 				range.insertNode(htmlNode);
-range = range.cloneRange();
+				range = range.cloneRange();
+
 				// move the cursor to the end of the insertion
-//				range.setStart(range.endContainer, range.endOffset);
 				range.setStartAfter(htmlNode);
 
 				// change current range
@@ -897,6 +897,7 @@ range = range.cloneRange();
 			if(selection === null)
 				return '';
 
+			// IE < 9
 			if (document.selection && document.selection.createRange)      
 			{
 				if(typeof selection.htmlText != 'undefined')
@@ -905,8 +906,17 @@ range = range.cloneRange();
 					return selection.item(0).outerHTML;
 			}
 
+			// IE9+ and all other browsers
 			if (window.getSelection && window.XMLSerializer)
-				return new XMLSerializer().serializeToString(selection.cloneContents());
+			{
+				//return new XMLSerializer().serializeToString(selection.cloneContents());
+				var html = '';
+				$(selection.cloneContents().childNodes).each(function()
+				{
+					html += new XMLSerializer().serializeToString(this);
+				});
+				return html;
+			}
 		};
 
 		/**
