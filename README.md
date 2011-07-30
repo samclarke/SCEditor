@@ -8,7 +8,7 @@ http://www.samclarke.com/2011/07/sceditor/ or contacting me at
 http://www.samclarke.com/contact
 
 
-# Useage
+# Usage
 
 Include the JQuery and SCEditor JavaScript then you can simpley do:
 
