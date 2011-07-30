@@ -1,5 +1,5 @@
 /**
- * @preserve SCEditor v1.1
+ * @preserve SCEditor v1.2
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
  * Copyright (C) 2011, Sam Clarke (samclarke.com)
@@ -246,8 +246,9 @@
 				execFunction: function(caller)
 				{
 					var content = $('<form><div><label for="txt">Paste your text inside the following\
-								 box:</label> <textarea cols="20" rows="7" id="txt">\
-								</textarea></div></form>');
+								 box:</label> <textarea cols="20" rows="7" id="txt"></textarea>\
+								</div></form>')
+						.submit(function() {return false;});
 
 					content.append($('<div><input type="button" value="Insert" /></div>').click(function(e)
 					{
@@ -257,7 +258,7 @@
 						e.preventDefault();
 					}));
 
-					base.createDropDown(caller, "insertimage", content);
+					base.createDropDown(caller, "pastetext", content);
 				},
 				tooltip: "Paste Text"
 			},
@@ -289,7 +290,8 @@
 					var content = $('<form>\
 						<div><label for="rows">Rows:</label><input type="text" id="rows" value="2" /></div>\
 						<div><label for="cols">Cols:</label><input type="text" id="cols" value="2" /></div>\
-						</form>');
+						</form>')
+						.submit(function() {return false;});
 
 					content.append($('<div><input type="button" value="Insert" /></div>').click(function(e)
 					{
@@ -328,10 +330,18 @@
 				execCommand: "inserthorizontalrule",
 				tooltip: "Insert a horizontal rule"
 			},
+			code: {
+				execFunction: function(caller)
+				{
+					base.wysiwygEditorInsertHtml('<code>', '</code>');
+				},
+				tooltip: "Code"
+			},
 			image: {
 				execFunction: function(caller)
 				{
-					var content = $('<form><div><label for="link">URL:</label> <input type="text" id="image" value="http://" /></div></form>');
+					var content = $('<form><div><label for="link">URL:</label> <input type="text" id="image" value="http://" /></div></form>')
+						.submit(function() {return false;});
 
 					content.append($('<div><input type="button" value="Insert" /></div>').click(function(e)
 					{
@@ -352,10 +362,42 @@
 				},
 				tooltip: "Insert an image"
 			},
+			email: {
+				execFunction: function(caller)
+				{
+					var content = $('<form><div><label for="email">E-mail:</label> <input type="text" id="email" value="" /></div></form>')
+						.submit(function() {return false;});
+
+					content.append($('<div><input type="button" value="Insert" /></div>').click(function(e)
+					{
+						var val = $(this).parent("form").find("#email").val();
+
+						if(val != "")
+						{
+							// needed for IE to reset the last range
+							base.focus();
+
+							if(base.getWysiwygSelection().type == "None"
+								|| base.getWysiwygSelection().type == "Caret")
+								base.wysiwygEditorInsertHtml('<a href="' + 'mailto:' + val + '">' + val + '</a>');
+							else
+								base.execCommand("createlink", 'mailto:' + val);
+						}
+
+						base.closeDropDown();
+						base.focus();
+						e.preventDefault();
+					}));
+
+					base.createDropDown(caller, "insertemail", content);
+				},
+				tooltip: "Insert an email"
+			},
 			link: {
 				execFunction: function(caller)
 				{
-					var content = $('<form><div><label for="link">URL:</label> <input type="text" id="link" value="http://" /></div></form>');
+					var content = $('<form><div><label for="link">URL:</label> <input type="text" id="link" value="http://" /></div></form>')
+						.submit(function() {return false;});
 
 					content.append($('<div><input type="button" value="Insert" /></div>').click(function(e)
 					{
@@ -385,6 +427,14 @@
 			unlink: {
 				execCommand: "unlink",
 				tooltip: "Unlink"
+			},
+
+			quote: {
+				execFunction: function(caller)
+				{
+					base.wysiwygEditorInsertHtml('<blockquote>', '</blockquote>');
+				},
+				tooltip: "Insert a Quote"
 			},
 
 			emoticon: {
@@ -483,16 +533,6 @@
 							range.deleteContents();
 
 							base.wysiwygEditorInsertHtml('<img src="' + url + '" data-sceditor-emoticon="' + key + '" />');
-
-							// For IE9 to work the delete contents must be before inserting
-							// the emoticon. The problem below only happends in Chrome so
-							// for now Chrome users will have to live with it.
-
-							//delete the contents of the range AFTER adding the emotion
-							// to fix problem when creating a new line and typeing the
-							// emoticon code it deletes the new line and puts the emoticon
-							// on the end of the previous line
-							//range.deleteContents();
 
 							e.preventDefault();
 							e.stopPropagation();
@@ -784,9 +824,27 @@
 		{
 			base.focus();
 			if(typeof endHtml != "undefined")
-				html = html + base.getWysiwygSelection() + endHtml;
+				html = html + base.getWysiwygSelectedHtml() + endHtml;
 
-			if (base.getWysiwygDoc().selection && base.getWysiwygDoc().selection.createRange)
+			if (base.getWysiwygDoc().getSelection)
+			{
+				var range          = base.getWysiwygSelection();
+				var htmlNode       = base.getWysiwygDoc().createElement('div');
+				htmlNode.innerHTML = html;
+				htmlNode           = htmlNode.children[0];
+
+				range.deleteContents();
+				range.insertNode(htmlNode);
+range = range.cloneRange();
+				// move the cursor to the end of the insertion
+//				range.setStart(range.endContainer, range.endOffset);
+				range.setStartAfter(htmlNode);
+
+				// change current range
+				base.wysiwygEditor.contentWindow.getSelection().removeAllRanges();
+				base.wysiwygEditor.contentWindow.getSelection().addRange(range);
+			}
+			else if (base.getWysiwygDoc().selection && base.getWysiwygDoc().selection.createRange)
 				base.getWysiwygDoc().selection.createRange().pasteHTML(html);
 			else
 				base.execCommand("insertHtml", html);
@@ -802,32 +860,53 @@
 			text = text.replace(/&/g, "&amp;");
 			text = text.replace(/</g, "&lt;");
 			text = text.replace(/>/g, "&gt;");
-			text = text.replace(/\r/g, "");
-			text = text.replace(/\n/g, "<br />");
 			text = text.replace(/ /g, "&nbsp;");
+			text = text.replace(/\r\n|\r/g, "\n");
+			text = text.replace(/\n/g, "<br />");
 			base.wysiwygEditorInsertHtml(text);
 		};
 
 		/**
-		 * Gets the current selection from WYSIWYG editor
+		 * Gets the current selection range from WYSIWYG editor
 		 */
-		base.getWysiwygSelection = function() {
-			if(base.wysiwygEditor.contentWindow)
-			{
-				if (base.wysiwygEditor.contentWindow.getSelection)
-					return base.wysiwygEditor.contentWindow.getSelection();
+		base.getWysiwygSelection = function()
+		{
+			var range;
 
-				if (base.wysiwygEditor.contentWindow.selection)
-					return base.wysiwygEditor.contentWindow.selection;
-			}
+			if(base.wysiwygEditor.contentWindow
+				&& base.wysiwygEditor.contentWindow.getSelection)
+					range = base.wysiwygEditor.contentWindow.getSelection();
+			else if(base.getWysiwygDoc().selection)
+				range = base.getWysiwygDoc().selection;
 
-			if(base.getWysiwygDoc().selection)
-				return base.getWysiwygDoc().selection;
-
-			if(base.getWysiwygDoc().getSelection)
-				return base.getWysiwygDoc().getSelection();
+			if(range.getRangeAt)
+				return range.getRangeAt(0);
+			else if (range.createRange)
+				return range.createRange();
 
 			return null;
+		};
+
+		/**
+		 * Gets the currently selected HTML from WYSIWYG editor
+		 */
+		base.getWysiwygSelectedHtml = function()
+		{
+			var selection = base.getWysiwygSelection();
+
+			if(selection === null)
+				return '';
+
+			if (document.selection && document.selection.createRange)      
+			{
+				if(typeof selection.htmlText != 'undefined')
+					return selection.htmlText;
+				else if(selection.length >= 1)
+					return selection.item(0).outerHTML;
+			}
+
+			if (window.getSelection && window.XMLSerializer)
+				return new XMLSerializer().serializeToString(selection.cloneContents());
 		};
 
 		/**
@@ -944,12 +1023,7 @@
 			if(!$.browser.msie)
 				return;
 
-			var selection = base.getWysiwygSelection();
-
-			if(typeof selection.getRangeAt != 'undefined')
-				base.lastRange = selection.getRangeAt(0);
-			else if (selection.createRange)
-				base.lastRange = selection.createRange();
+			base.lastRange = base.getWysiwygSelection();
 		};
 
 		/**
@@ -981,7 +1055,8 @@
 		{
 			base.closeDropDown();
 
-			$.each(base.keyPressFuncs, function(index, func) {
+			$.each(base.keyPressFuncs, function(index, func)
+			{
 				func(e);
 			});
 		};
@@ -999,7 +1074,8 @@
 		// Toolbar buttons order and groups. Should be comma seperated and have a bar | to seperate groups
 		toolbar:	"bold,italic,underline,strike,subscript,superscript|left,center,right,justify|" +
 				"font,size,color,removeformat|cut,copy,paste,pastetext|bulletlist,orderedlist|" +
-				"undo,redo|table|horizontalrule,image,link,unlink|emoticon,date,time|print,source",
+				"undo,redo|table|code,quote|horizontalrule,image,email,link,unlink|emoticon,date,time|" +
+				"print,source",
 
 		// Stylesheet to include in the WYSIWYG editor. Will style the WYSIWYG elements
 		style: "jquery.sceditor.default.css",

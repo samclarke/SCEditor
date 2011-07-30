@@ -1,7 +1,11 @@
-# SCEditor v1.1
+# SCEditor v1.2
 Copyright (C) 2011, Sam Clarke (http://www.samclarke.com)
 
-For more invormation visit: http://www.samclarke.com/2011/07/sceditor/ 
+For more invormation visit: http://www.samclarke.com/2011/07/sceditor/
+
+If you find any bugs please let me know by either leaving a comment at
+http://www.samclarke.com/2011/07/sceditor/ or contacting me at
+http://www.samclarke.com/contact
 
 
 # Useage
@@ -66,6 +70,8 @@ Height of the editor in px. If set to null the height will be set to that of the
 SCEditor is dual licensed under the MIT and GPL licenses:
 http://www.opensource.org/licenses/mit-license.php
 http://www.gnu.org/licenses/gpl.html
+
+If you use SCEditor a link back would be nice but it's not requird.
 
 
 # Credits

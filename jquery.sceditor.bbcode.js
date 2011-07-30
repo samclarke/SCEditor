@@ -1,5 +1,5 @@
 /**
- * @preserve SCEditor BBCode Plugin v1.1
+ * @preserve SCEditor BBCode Plugin v1.2
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
  * Copyright (C) 2011, Sam Clarke (samclarke.com)
@@ -282,6 +282,9 @@
 					}
 				},
 				format: function(element, content) {
+					if(element.attr('href').substr(0, 7) == 'mailto:')
+						return '[email=' + element.attr('href').substr(7) + ']' + content + '[/email]';
+
 					return '[url=' + encodeURI(element.attr('href')).replace("=", "%3D") + ']' + content + '[/url]';
 				},
 				html: function(element, attrs, content) {
@@ -290,6 +293,49 @@
 
 					return '<a href="' + attrs.defaultAttr + '">' + content + '</a>';
 				}
+			},
+			email: {
+				html: function(element, attrs, content) {
+					if(typeof attrs.defaultAttr == "undefined")
+						attrs.defaultAttr = content;
+
+					return '<a href="mailto:' + attrs.defaultAttr + '">' + content + '</a>';
+				}
+			},
+
+			quote: {
+				tags: {
+					blockquote: null
+				},
+				format: function(element, content) {
+					var attr = '';
+
+					if($(element).children("cite:first").length == 1)
+					{
+						attr = '=' + $(element).children("cite:first").text();
+
+						content = '';
+						$(element).children("cite:first").remove();
+						$(element).contents().each(function() {
+							content += base.elementToBbcode($(this))
+						});
+					}
+
+					return '[quote' + attr + ']' + content + '[/quote]';
+				},
+				html: function(element, attrs, content) {
+					if(typeof attrs.defaultAttr != "undefined")
+						content = content + '<cite class>' + attrs.defaultAttr + '</cite>';
+
+					return '<blockquote>' + content + '</blockquote>';
+				}
+			},
+			code: {
+				tags: {
+					code: null
+				},
+				format: "[code]{0}[/code]",
+				html: '<code>{0}</code>'
 			}
 		};
 
@@ -375,6 +421,9 @@
 			{
 				if(element.get(0).nodeName.toLowerCase() == "a"
 					&& (property == 'color' || property == 'text-decoration'))
+					return;
+				else if(element.get(0).nodeName.toLowerCase() == "code"
+					&& (property == 'font-family'))
 					return;
 
 				elementPropVal = element.css(property);
@@ -495,6 +544,9 @@
 		 */
 		base.elementToBbcode = function(element)
 		{
+			if(typeof element.get(0) === 'undefined')
+				return '';
+
 			if(element.get(0).nodeType === 3)
 				return element.get(0).nodeValue;
 

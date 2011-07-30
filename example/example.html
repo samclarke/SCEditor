@@ -16,6 +16,25 @@
 			form div {
 				padding: .5em;
 			}
+			code:before {
+				position: absolute;
+				content: 'Code:';
+				top: -1.35em;
+				left: 0;
+			}
+			code {
+				margin-top: 1.5em;
+				position: relative;
+				background: #eee;
+				border: 1px solid #aaa;
+				white-space: pre;
+				padding: .25em;
+				min-height: 1.25em;
+			}
+			code:before, code {
+				display: block;
+				text-align: left;
+			}
 		</style>
 
 		<script>
@@ -43,9 +62,21 @@ Give it a try! :)
 
 [ul][li]A simple list[/li][li]list item 2[/li][/ul]
 If you are using IE9+ or any non-IE browser just type [b]:[/b]) and it should be converted into :) as you type.</textarea>
+
 				<p>If you are using IE9+ or any other browser then it should automatically replace
 					:) and other emoticon codes with theit emoticon images.</p>
 			</div>
+
+			<p><code>$(document).ready(function() {
+	$("textarea:first").sceditor({
+		style: "../minified/jquery.sceditor.default.min.css",
+		toolbar: "bold,italic,underline|font,size,color,removeformat|image,link,unlink,emoticon"
+	});
+});</code></p>
+
+			<p><code>$(document).ready(function() {
+	$("textarea:last").sceditorBBCodePlugin({style: "../minified/jquery.sceditor.default.min.css"});
+});</code></p>
 
 			<div><input type="submit" value="Post" /></div>
 		</form>

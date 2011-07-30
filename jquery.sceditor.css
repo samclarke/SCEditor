@@ -1,5 +1,5 @@
 /**
- * @preserve SCEditor v1.1
+ * @preserve SCEditor v1.2
  * http://www.samclarke.com/2011/07/sceditor/
  *
  * Copyright (C) 2011, Sam Clarke (samclarke.com)
@@ -50,8 +50,11 @@ div.sceditor-dropdown, div.sceditor-dropdown div {
 		color: #222;
 		font-size: 13px;
 	}
+		.sceditor-pastetext label { display:block; }
+		.sceditor-pastetext textarea { border: 1px solid #bbb; }
 		div.sceditor-inserttable, div.sceditor-insertimage,
-		div.sceditor-insertlink {
+		div.sceditor-pastetext, div.sceditor-insertlink,
+		div.sceditor-insertemail {
 			padding: 5px;
 		}
 		.sceditor-insertemoticon img {
@@ -153,8 +156,12 @@ div.sceditor-dropdown, div.sceditor-dropdown div {
 
 			.sceditor-button-horizontalrule div { background: url('icons/text_horizontalrule.png'); }
 			.sceditor-button-image div { background: url('icons/image_add.png'); }
+			.sceditor-button-code div { background: url('icons/script_code.png'); }
+			.sceditor-button-email div { background: url('icons/email_add.png'); }
 			.sceditor-button-link div { background: url('icons/link_add.png'); }
 			.sceditor-button-unlink div { background: url('icons/link_break.png'); }
+
+			.sceditor-button-quote div { background: url('icons/comment.png'); }
 
 			.sceditor-button-emoticon div { background: url('icons/emoticon_smile.png'); }
 			.sceditor-button-date div { background: url('icons/date_add.png'); }
