@@ -50,11 +50,21 @@
 		</script>
 	</head>
 	<body>
-		<form>
-			<div><textarea style="height:150px;width:200px;"></textarea></div>
+<?php
+if(isset($_POST['html_field']))
+{
+	$html   = htmlentities($_POST['html_field']);
+	$bbcode = htmlentities($_POST['bbcode_field']);
+	echo "<p>Output of the HTML editor: <code>{$html}</code>
+			Output of the BBCode editor: <code>{$bbcode}</code></p>";
+}
+?>
+
+		<form action="" method="post">
+			<div><textarea name="html_field" style="height:150px;width:200px;"></textarea></div>
 
 			<div>
-				<textarea style="height:200px;width:500px;">[center][size=3][b]BBCode SCEditor[/b][/size][/center]
+				<textarea name="bbcode_field" style="height:200px;width:500px;">[center][size=3][b]BBCode SCEditor[/b][/size][/center]
 
 Give it a try! :)
 

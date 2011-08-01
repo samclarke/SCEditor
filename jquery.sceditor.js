@@ -602,6 +602,11 @@
 			base.$textarea.data("sceditor", base);
 			base.options = $.extend({}, $.sceditor.defaultOptions, options);
 
+			if(base.options.height != null)
+				base.$textarea.height(base.options.height);
+			if(base.options.width != null)
+				base.$textarea.width(base.options.width);
+
 			base.editorContainer = $('<div class="sceditor-container" />')
 						.height(base.$textarea.outerHeight())
 						.width(base.$textarea.outerWidth());
@@ -612,7 +617,7 @@
 			base.initEditor();
 			base.initKeyPressFuncs();
 
-			base.$textarea.parent("form").submit(function() {
+			base.$textarea.parents("form").submit(function() {
 				base.$textarea.val(base.getWysiwygEditorValue());
 			});
 
@@ -973,7 +978,13 @@
 
 			$.each(emoticons, function(key, url) {
 				// escape the key before using it as a regex
-				var reg  = key.replace(/[\$\?\[\]\.\*\(\)]/g, "\\$&").replace("<", "&lt;").replace(">", "&gt;");
+				// and append the regex to only find emoticons outside
+				// of HTML tags
+				var reg  = key.replace(/[\$\?\[\]\.\*\(\)\|]/g, "\\$&")
+						.replace("<", "&lt;")
+						.replace(">", "&gt;")
+						+ "(?=([^\<\>]*?<|[^\<\>]*?$))";
+
 				html = html.replace(new RegExp(reg, 'g'), '<img src="' + url + '" data-sceditor-emoticon="' + key + '" />');
 			});
 
@@ -1065,15 +1076,18 @@
 		{
 			base.closeDropDown();
 
+			// doing the below breaks lists sadly. Users of webkit
+			// will just have to learn to hold shift when pressing
+			// return to get a line break.
 			// Return key. Needed for webkit as it doesn't insert
 			// a br when pressed. It instead starts a new block
 			// element of the previous type which is bad for the
 			// quote and code tags.
-			if(e.which == 13 && $.browser.webkit)
-			{
-				base.wysiwygEditorInsertHtml('<br />');
-				return false;;
-			}
+			//if(e.which == 13 && $.browser.webkit)
+			//{
+			//	base.wysiwygEditorInsertHtml('<br />');
+			//	return false;;
+			//}
 
 			$.each(base.keyPressFuncs, function(index, func)
 			{
