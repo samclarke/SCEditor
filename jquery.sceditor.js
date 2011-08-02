@@ -641,7 +641,7 @@
 		base.initEditor = function()
 		{
 			var height, width;
-			var editorHeight = base.$textarea.height() - base.$toolbar.outerHeight();
+			var editorHeight = base.$textarea.height() - (base.options.toolbarContainer === null?base.$toolbar.outerHeight():0);
 			var editorWidth = base.$textarea.width();
 
 			base.$textEeditor   = $('<textarea></textarea>')
@@ -660,7 +660,7 @@
 			base.editorContainer.append(base.$wysiwygEditor).append(base.$textEeditor);
 			base.wysiwygEditor = base.$wysiwygEditor[0];
 
-			// fix the height and width
+			// fix the height and width of the textarea/iframe
 			height = base.$wysiwygEditor.height();
 			width = base.$wysiwygEditor.width();
 			base.$wysiwygEditor.height(height + ((height - base.$wysiwygEditor.outerHeight(true))/2));
@@ -695,14 +695,14 @@
 		base.initToolBar = function()
 		{
 			base.$toolbar = $('<div class="sceditor-toolbar" />');
-			var groups  = base.options.toolbar.split("|");
+			var groups    = base.options.toolbar.split("|");
 			for(var i=0; i < groups.length; i++)
 			{
 				var group   = $('<div class="sceditor-group" />');
 				var buttons = groups[i].split(",");
 				for(var x=0; x < buttons.length; x++)
 				{
-					// the button must be a command otherwise ignore it
+					// the button must be a valid command otherwise ignore it
 					if(!base.commands.hasOwnProperty(buttons[x]))
 						continue;
 
@@ -724,7 +724,11 @@
 				base.$toolbar.append(group);
 			}
 
-			base.editorContainer.append(base.$toolbar);
+			// append the toolbar to the toolbarContainer option if given
+			if(base.options.toolbarContainer === null)
+				base.editorContainer.append(base.$toolbar);
+			else
+				$(base.options.toolbarContainer).append(base.$toolbar);
 		};
 
 		/**
@@ -1167,7 +1171,9 @@
 		height: null,
 
 		getHtmlHandler: null,
-		getTextHandler: null
+		getTextHandler: null,
+
+		toolbarContainer: null
 	};
 
 	$.fn.sceditor = function(options)

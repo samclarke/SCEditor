@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+
 		<title>SCEditor Demo</title>
 
 		<link rel="stylesheet" href="../minified/jquery.sceditor.min.css" type="text/css" media="all" />
@@ -45,7 +47,9 @@
 				});
 			});
 			$(document).ready(function() {
-				$("textarea:last").sceditorBBCodePlugin({style: "../minified/jquery.sceditor.default.min.css"});
+				$("textarea:last").sceditorBBCodePlugin({
+					style: "../minified/jquery.sceditor.default.min.css"
+				});
 			});
 		</script>
 	</head>
@@ -53,8 +57,8 @@
 <?php
 if(isset($_POST['html_field']))
 {
-	$html   = htmlentities($_POST['html_field']);
-	$bbcode = htmlentities($_POST['bbcode_field']);
+	$html   = htmlentities($_POST['html_field'], ENT_QUOTES, 'UTF-8');
+	$bbcode = htmlentities($_POST['bbcode_field'], ENT_QUOTES, 'UTF-8');
 	echo "<p>Output of the HTML editor: <code>{$html}</code>
 			Output of the BBCode editor: <code>{$bbcode}</code></p>";
 }

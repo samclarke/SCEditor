@@ -123,6 +123,10 @@ div.sceditor-dropdown, div.sceditor-dropdown div {
 			width: 16px;
 			height: 16px;
 		}
+		.sceditor-button div {
+			margin: 0;
+			padding: 0;
+		}
 		.sceditor-button:hover { background: #eee; }
 			.sceditor-button-bold div { background: url('icons/text_bold.png'); }
 			.sceditor-button-italic div { background: url('icons/text_italic.png'); }
