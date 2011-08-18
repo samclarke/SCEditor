@@ -316,7 +316,7 @@
 
 						content = '';
 						$(element).children("cite:first").remove();
-						$(element).children().each(function() {
+						$(element).contents().each(function() {
 							content += base.elementToBbcode($(this))
 						});
 					}
@@ -325,7 +325,7 @@
 				},
 				html: function(element, attrs, content) {
 					if(typeof attrs.defaultAttr != "undefined")
-						content = content + '<cite class>' + attrs.defaultAttr + '</cite>';
+						content = '<cite>' + attrs.defaultAttr + '</cite>' + content;
 
 					return '<blockquote>' + content + '</blockquote>';
 				}
@@ -552,15 +552,18 @@
 
 			var ret = "";
 
-			if(element.contents().length > 0)
+			if(element.is('code'))
+				ret = element.text();
+			else if(element.contents().length > 0)
 				$.each(element.contents(), function()
 				{
 					ret += base.elementToBbcode($(this));
 				});
 
-			ret = base.handleStyles(element, ret);
-			ret = base.handleTags(element, ret);
+			if(!element.is('code'))
+				ret = base.handleStyles(element, ret);
 
+			ret = base.handleTags(element, ret);
 			return ret;
 		}
 

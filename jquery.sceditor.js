@@ -556,7 +556,7 @@
 					if(day < 10)
 						day = "0" + day;
 
-					base.wysiwygEditorInsertHtml( year + '-' + month + '-' + day);
+					base.wysiwygEditorInsertHtml('<span>' + year + '-' + month + '-' + day + '</span>');
 				},
 				tooltip: "Insert current date"
 			},
@@ -574,7 +574,7 @@
 					if(secs < 10)
 						secs = "0" + secs;
 
-					base.wysiwygEditorInsertHtml(hours + ':' + mins + ':' + secs);
+					base.wysiwygEditorInsertHtml('<span>' + hours + ':' + mins + ':' + secs + '</span>');
 				},
 				tooltip: "Insert current time"
 			},
@@ -618,6 +618,9 @@
 			base.initKeyPressFuncs();
 
 			base.$textarea.parents("form").submit(function() {
+				if(base.$textEeditor.is(':visible'))
+					base.toggleTextMode();
+
 				base.$textarea.val(base.getWysiwygEditorValue());
 			});
 
@@ -831,6 +834,11 @@
 		 */
 		base.wysiwygEditorInsertHtml = function(html, endHtml)
 		{
+			// don't apply to code elements
+			if($(base.getWysiwygSelectedContainerNode()).is('code')
+				|| $(base.getWysiwygSelectedContainerNode()).parents('code').length !== 0)
+				return;
+
 			base.focus();
 			if(typeof endHtml != "undefined")
 				html = html + base.getWysiwygSelectedHtml() + endHtml;
@@ -907,7 +915,7 @@
 				return '';
 
 			// IE < 9
-			if (document.selection && document.selection.createRange)      
+			if (document.selection && document.selection.createRange)
 			{
 				if(typeof selection.htmlText != 'undefined')
 					return selection.htmlText;
@@ -926,6 +934,25 @@
 				});
 				return html;
 			}
+		};
+
+		/**
+		 * Gets the first node which contains all the selected elements
+		 */
+		base.getWysiwygSelectedContainerNode = function()
+		{
+			var selection = base.getWysiwygSelection();
+
+			if(selection === null)
+				return null;
+
+			// IE < 9
+			if (document.selection && document.selection.createRange)
+				return selection.parentElement;
+
+			// IE9+ and all other browsers
+			if (window.getSelection && window.XMLSerializer)
+				return selection.commonAncestorContainer;
 		};
 
 		/**
@@ -1056,6 +1083,12 @@
 		 */
 		base.execCommand = function(command, param)
 		{
+			// don't apply any comannds to code elements
+			if($(base.getWysiwygSelectedContainerNode()).is('code')
+				|| $(base.getWysiwygSelectedContainerNode()).parents('code').length !== 0
+				|| $(base.getWysiwygSelectedContainerNode()).find('code').length !== 0)
+				return;
+
 			var executed = false;
 
 			base.focus();
@@ -1079,6 +1112,11 @@
 		base.handleKeyPress = function(e)
 		{
 			base.closeDropDown();
+
+			// don't apply to code elements
+			if($(base.getWysiwygSelectedContainerNode()).is('code')
+				|| $(base.getWysiwygSelectedContainerNode()).parents('code').length !== 0)
+				return;
 
 			// doing the below breaks lists sadly. Users of webkit
 			// will just have to learn to hold shift when pressing
