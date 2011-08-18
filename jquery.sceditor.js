@@ -1014,7 +1014,7 @@
 				var reg  = key.replace(/[\$\?\[\]\.\*\(\)\|]/g, "\\$&")
 						.replace("<", "&lt;")
 						.replace(">", "&gt;")
-						+ "(?=([^\<\>]*?<|[^\<\>]*?$))";
+						+ "(?=([^\<\>]*?<(?!/code)|[^\<\>]*?$))";
 
 				html = html.replace(new RegExp(reg, 'g'), '<img src="' + url + '" data-sceditor-emoticon="' + key + '" />');
 			});
