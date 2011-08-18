@@ -1099,7 +1099,7 @@
 				{
 					executed = base.getWysiwygDoc().execCommand(command, false, param);
 				}
-				catch (e){alert("Error: " + e );}
+				catch (e){}
 			}
 
 			// show error if execution failed and an error message exists
