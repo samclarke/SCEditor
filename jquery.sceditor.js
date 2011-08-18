@@ -1056,6 +1056,7 @@
 		{
 			base.wysiwygEditor.contentWindow.focus();
 
+			// Needed for IE < 9
 			if(base.lastRange != null)
 			{
 				if (window.document.createRange)
@@ -1083,15 +1084,15 @@
 		 */
 		base.execCommand = function(command, param)
 		{
+			var executed = false;
+			base.focus();
+
 			// don't apply any comannds to code elements
 			if($(base.getWysiwygSelectedContainerNode()).is('code')
 				|| $(base.getWysiwygSelectedContainerNode()).parents('code').length !== 0
 				|| $(base.getWysiwygSelectedContainerNode()).find('code').length !== 0)
 				return;
 
-			var executed = false;
-
-			base.focus();
 			if(base.getWysiwygDoc())
 			{
 	    			try
@@ -1101,6 +1102,7 @@
 				catch (e){alert("Error: " + e );}
 			}
 
+			// show error if execution failed and an error message exists
 			if(!executed && typeof base.commands[command] != "undefined"
 				&& typeof base.commands[command].errorMessage != "undefined")
 				alert(base.commands[command].errorMessage);
