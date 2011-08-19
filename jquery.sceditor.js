@@ -834,12 +834,13 @@
 		 */
 		base.wysiwygEditorInsertHtml = function(html, endHtml)
 		{
+			base.focus();
+
 			// don't apply to code elements
 			if($(base.getWysiwygSelectedContainerNode()).is('code')
 				|| $(base.getWysiwygSelectedContainerNode()).parents('code').length !== 0)
 				return;
 
-			base.focus();
 			if(typeof endHtml != "undefined")
 				html = html + base.getWysiwygSelectedHtml() + endHtml;
 
@@ -948,7 +949,7 @@
 
 			// IE < 9
 			if (document.selection && document.selection.createRange)
-				return selection.parentElement;
+				return selection.parentElement();
 
 			// IE9+ and all other browsers
 			if (window.getSelection && window.XMLSerializer)
@@ -1089,8 +1090,8 @@
 
 			// don't apply any comannds to code elements
 			if($(base.getWysiwygSelectedContainerNode()).is('code')
-				|| $(base.getWysiwygSelectedContainerNode()).parents('code').length !== 0
-				|| $(base.getWysiwygSelectedContainerNode()).find('code').length !== 0)
+				|| $(base.getWysiwygSelectedContainerNode()).parents('code').length !== 0)
+//				|| $(base.getWysiwygSelectedContainerNode()).find('code').length !== 0)
 				return;
 
 			if(base.getWysiwygDoc())
