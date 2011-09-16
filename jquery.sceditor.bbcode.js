@@ -251,16 +251,12 @@
 					}
 				},
 				format: function(element, content) {
-					var attribs = "";
-
 					// check if this is an emoticon image
 					if(typeof element.attr('data-sceditor-emoticon') != "undefined")
 						return content;
 
-					if(typeof element.attr('width') != "undefined")
-						attribs += " width=" + element.attr('width');
-					if(typeof element.attr('height') != "undefined")
-						attribs += " height=" + element.attr('height');
+					var attribs =	"=" + $(element).width() +
+							"x" + $(element).height();
 
 					return '[img' + attribs + ']' + element.attr('src') + '[/img]';
 				},
@@ -270,7 +266,15 @@
 					if(typeof attrs.width != "undefined")
 						attribs += ' width="' + attrs.width + '"';
 					if(typeof attrs.height != "undefined")
-						attribs += ' height="' + attrs.width + '"';
+						attribs += ' height="' + attrs.height + '"';
+
+					if(typeof attrs.defaultAttr !== "undefined")
+					{
+						var parts = attrs.defaultAttr.split(/x/i);
+
+						attribs =	' width="' + parts[0] + '"' +
+								' height="' + (parts.length===2?parts[1]:parts[0]) + '"';
+					}
 
 					return '<img ' + attribs + ' src="' + content + '" />';
 				}
@@ -288,7 +292,7 @@
 					return '[url=' + encodeURI(element.attr('href')).replace("=", "%3D") + ']' + content + '[/url]';
 				},
 				html: function(element, attrs, content) {
-					if(typeof attrs.defaultAttr == "undefined")
+					if(typeof attrs.defaultAttr === "undefined")
 						attrs.defaultAttr = content;
 
 					return '<a href="' + attrs.defaultAttr + '">' + content + '</a>';
@@ -296,7 +300,7 @@
 			},
 			email: {
 				html: function(element, attrs, content) {
-					if(typeof attrs.defaultAttr == "undefined")
+					if(typeof attrs.defaultAttr === "undefined")
 						attrs.defaultAttr = content;
 
 					return '<a href="mailto:' + attrs.defaultAttr + '">' + content + '</a>';
@@ -324,7 +328,7 @@
 					return '[quote' + attr + ']' + content + '[/quote]';
 				},
 				html: function(element, attrs, content) {
-					if(typeof attrs.defaultAttr != "undefined")
+					if(typeof attrs.defaultAttr !== "undefined")
 						content = '<cite>' + attrs.defaultAttr + '</cite>' + content;
 
 					return '<blockquote>' + content + '</blockquote>';
@@ -381,9 +385,21 @@
 		base.rgbToHex = function(rgbStr) {
 			var matches;
 
+			function toHex(n)
+			{
+				n = parseInt(n,10);
+
+				if(isNaN(n))
+					return "00";
+
+				n = Math.max(0,Math.min(n,255)).toString(16);
+console.log(n.length);
+				return n.length<2 ? '0'+n : n;
+			}
+
 			// rgb(n,n,n);
 			if(matches = rgbStr.match(/rgb\((\d+),\s*?(\d+),\s*?(\d+)\)/i))
-				return '#' + (matches[1]-0).toString(16) + (matches[2]-0).toString(16) + (matches[3]-0).toString(16);
+				return '#' + toHex(matches[1]) + toHex(matches[2]-0) + toHex(matches[3]-0);
 
 			return rgbStr;
 		};

@@ -340,18 +340,23 @@
 			image: {
 				execFunction: function(caller)
 				{
-					var content = $('<form><div><label for="link">URL:</label> <input type="text" id="image" value="http://" /></div></form>')
+					var content = $('<form><div><label for="link">URL:</label> <input type="text" id="image" value="http://" /></div>\
+							<div><label for="width">Width (optional):</label> <input type="text" id="width" value="" /></div>\
+							<div><label for="height">Height (optional):</label> <input type="text" id="height" value="" /></div></form>')
 						.submit(function() {return false;});
 
 					content.append($('<div><input type="button" value="Insert" /></div>').click(function(e)
 					{
-						var val = $(this).parent("form").find("#image").val();
+						var val   = $(this).parent("form").find("#image").val();
+						var attrs = '';
+
+						if((width = $(this).parent("form").find("#width").val()) != '')
+							attrs += ' width="' + width + '"';
+						if((width = $(this).parent("form").find("#height").val()) != '')
+							attrs += ' height="' + width + '"';
 
 						if(val != "" && val != "http://")
-							base.wysiwygEditorInsertHtml('<img src="' + val + '" />');
-							// IE8 selects the image if use insertimage so using wysiwygEditorInsertHtml
-							// to fix.
-							//base.execCommand("insertimage", val);
+							base.wysiwygEditorInsertHtml('<img' + attrs + ' src="' + val + '" />');
 
 						base.closeDropDown();
 						base.focus();
@@ -1134,10 +1139,15 @@
 			//	return false;;
 			//}
 
-			$.each(base.keyPressFuncs, function(index, func)
-			{
-				func(e);
-			});
+			for(var i=0;i < base.keyPressFuncs.length;++i)
+				base.keyPressFuncs[i](e);
+
+			// keypress needs to be as fast as possible so use
+			// for loop instead of each
+			//$.each(base.keyPressFuncs, function(index, func)
+			//{
+			//	func(e);
+			//});
 		};
 
 		base.handleMouseDown = function(e)
