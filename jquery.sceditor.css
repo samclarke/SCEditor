@@ -1,5 +1,5 @@
 /**
- * @preserve SCEditor v1.2
+ * @preserve SCEditor v1.2.1
  * http://www.samclarke.com/2011/07/sceditor/
  *
  * Copyright (C) 2011, Sam Clarke (samclarke.com)
@@ -51,8 +51,15 @@ div.sceditor-dropdown, div.sceditor-dropdown div {
 		color: #222;
 		font-size: 13px;
 	}
-		.sceditor-pastetext label { display:block; }
-		.sceditor-pastetext textarea { border: 1px solid #bbb; }
+		div.sceditor-dropdown form { margin: 0; }
+		div.sceditor-dropdown label {
+			display:block;
+			font-weight: bold;
+			font-size: .95em;
+			margin: .65em 0 .15em;
+		}
+		div.sceditor-dropdown .button {	margin: .5em 0 0; }
+		.sceditor-pastetext textarea { border: 1px solid #bbb; width: 20em; }
 		div.sceditor-inserttable, div.sceditor-insertimage,
 		div.sceditor-pastetext, div.sceditor-insertlink,
 		div.sceditor-insertemail {
@@ -75,6 +82,8 @@ div.sceditor-dropdown, div.sceditor-dropdown div {
 			padding: 4px 6px;
 			cursor: pointer;
 			font-size: 14px;
+			text-decoration: none;
+			color: #222;
 		}
 		.sceditor-fontsize-option:hover, .sceditor-font-option:hover { background: #eee; }
 		.sceditor-color-column { float: left; }
@@ -83,6 +92,7 @@ div.sceditor-dropdown, div.sceditor-dropdown div {
 				border: 1px solid #fff;
 				height: 10px;
 				width: 10px;
+				overflow: hidden;
 			}
 			.sceditor-color-option:hover { border: 1px solid #333; }
 

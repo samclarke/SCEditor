@@ -1,5 +1,5 @@
 /**
- * @preserve SCEditor v1.2
+ * @preserve SCEditor v1.2.1
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
  * Copyright (C) 2011, Sam Clarke (samclarke.com)
@@ -24,58 +24,58 @@
 		 * The textarea element being replaced
 		 * @private
 		 */
-		base.$textarea = $(el);
-		base.textarea  = el;
+		var $textarea = $(el);
+		var textarea  = el;
 
 		/**
 		 * The div which contains the editor and toolbar
 		 * @private
 		 */
-		base.editorContainer = null;
+		var editorContainer = null;
 
 		/**
 		 * The editors toolbar
 		 * @private
 		 */
-		base.$toolbar = null;
+		var $toolbar = null;
 
 		/**
 		 * The editors iframe which should be in design mode
 		 * @private
 		 */
-		base.$wysiwygEditor = null;
-		base.wysiwygEditor  = null;
+		var $wysiwygEditor = null;
+		var wysiwygEditor  = null;
 
 		/**
 		 * The editors textarea for viewing source
 		 * @private
 		 */
-		base.$textEeditor = null;
+		var $textEeditor = null;
 
 		/**
 		 * The current dropdown
 		 * @private
 		 */
-		base.$dropdown               = null;
-		base.dropdownIgnoreLastClick = false;
+		var $dropdown               = null;
+		var dropdownIgnoreLastClick = false;
 
 		/**
 		 * Array of all the commands key press functions
 		 * @private
 		 */
-		base.keyPressFuncs = [];
+		var keyPressFuncs = [];
 		
 		/**
 		 * Store the last cursor position. Needed for IE because it forgets
 		 * @private
 		 */
-		base.lastRange = null;
+		var lastRange = null;
 
 		/**
 		 * Stores a cache of preloaded images
 		 * @private
 		 */
-		base.preLoadCache = [];
+		var preLoadCache = [];
 
 		/**
 		 * All the commands supported by the editor
@@ -134,18 +134,18 @@
 					for(var i=0; i < fonts.length; i++)
 					{
 						content.append(
-							$('<a class="sceditor-font-option"><font face="' + fonts[i] + '">' + fonts[i] + '</font></a>')
+							$('<a class="sceditor-font-option" href="#"><font face="' + fonts[i] + '">' + fonts[i] + '</font></a>')
 								.data('sceditor-font', fonts[i])
 								.click(function(e)
 								{
 									base.execCommand("fontname", $(this).data('sceditor-font'));
-									base.closeDropDown();
+									closeDropDown();
 									base.focus();
 									e.preventDefault();
 								}));
 					}
 
-					base.createDropDown(caller, "font-picker", content);
+					createDropDown(caller, "font-picker", content);
 				},
 				tooltip: "Font Name"
 			},
@@ -156,18 +156,18 @@
 					for(var i=1; i<= 7; i++)
 					{
 						content.append(
-							$('<a class="sceditor-fontsize-option"><font size="' + i + '">' + i + '</font></a>')
+							$('<a class="sceditor-fontsize-option" href="#"><font size="' + i + '">' + i + '</font></a>')
 								.data('sceditor-fontsize', i)
 								.click(function(e)
 								{
 									base.execCommand("fontsize", $(this).data('sceditor-fontsize'));
-									base.closeDropDown();
+									closeDropDown();
 									base.focus();
 									e.preventDefault();
 								}));
 					}
 
-					base.createDropDown(caller, "fontsize-picker", content);
+					createDropDown(caller, "fontsize-picker", content);
 				},
 				tooltip: "Font Size"
 			},
@@ -178,28 +178,22 @@
 					var content      = $("<span />");
 					var colorColumns = base.options.colors?base.options.colors.split("|"):new Array(21);
 
-					for(var i=0; i < colorColumns.length; i++)
+					// IE is slow at string concation so use an array
+					var html = [];
+					var htmlIndex = 0;
+
+					for(var i=0; i < colorColumns.length; ++i)
 					{
-						var line   = $('<div class="sceditor-color-column" />');
 						var colors = (typeof colorColumns[i] != "undefined")?colorColumns[i].split(","):new Array(21);
 
-						for(var x=0; x < colors.length; x++)
+						html[htmlIndex++] = '<div class="sceditor-color-column">';
+
+						for(var x=0; x < colors.length; ++x)
 						{
 							// use pre defined colour if can otherwise use the generated color
 							var color = (typeof colors[x] != "undefined")?colors[x]:"#" + genColor.r.toString(16) + genColor.g.toString(16) + genColor.b.toString(16);
 
-							line.append(
-								$(document.createElement("a"))
-									.css({background: color})
-									.addClass("sceditor-color-option")
-									.data("sceditor-color", color)
-									.click(function(e)
-									{
-										base.execCommand("forecolor", $(this).data('sceditor-color'));
-										base.closeDropDown();
-										base.focus();
-										e.preventDefault();
-									}));
+							html[htmlIndex++] = '<a href="#" class="sceditor-color-option" style="background-color: '+color+'"></a>';
 
 							// calculate the next generated color
 							if(x%5==0)
@@ -208,7 +202,7 @@
 								genColor = {r: genColor.r, g: genColor.g, b: genColor.b-51};
 						}
 
-						content.append(line);
+						html[htmlIndex++] = '</div>';
 
 						// calculate the next generated color
 						if(i%5==0)
@@ -217,7 +211,17 @@
 							genColor = {r: genColor.r, g: 255, b: 255};
 					}
 
-					base.createDropDown(caller, "color-picker", content);
+					content.append(html.join(''))
+						.find('a')
+						.click(function(e)
+						{
+							base.execCommand("forecolor", $(this).css('background-color'));
+							closeDropDown();
+							base.focus();
+							e.preventDefault();
+						});
+
+					createDropDown(caller, "color-picker", content);
 				},
 				tooltip: "Font Color"
 			},
@@ -250,15 +254,15 @@
 								</div></form>')
 						.submit(function() {return false;});
 
-					content.append($('<div><input type="button" value="Insert" /></div>').click(function(e)
+					content.append($('<div><input type="button" class="button" value="Insert" /></div>').click(function(e)
 					{
-						base.wysiwygEditorInsertText($(this).parent("form").find("#txt").val());
-						base.closeDropDown();
+						wysiwygEditorInsertText($(this).parent("form").find("#txt").val());
+						closeDropDown();
 						base.focus();
 						e.preventDefault();
 					}));
 
-					base.createDropDown(caller, "pastetext", content);
+					createDropDown(caller, "pastetext", content);
 				},
 				tooltip: "Paste Text"
 			},
@@ -293,7 +297,7 @@
 						</form>')
 						.submit(function() {return false;});
 
-					content.append($('<div><input type="button" value="Insert" /></div>').click(function(e)
+					content.append($('<div><input type="button" class="button" value="Insert" /></div>').click(function(e)
 					{
 						var rows = $(this).parent("form").find("#rows").val() - 0;
 						var cols = $(this).parent("form").find("#cols").val() - 0;
@@ -313,14 +317,14 @@
 						}
 						html += '</table>';
 
-						base.wysiwygEditorInsertHtml(html);
+						wysiwygEditorInsertHtml(html);
 
-						base.closeDropDown();
+						closeDropDown();
 						base.focus();
 						e.preventDefault();
 					}));
 
-					base.createDropDown(caller, "inserttable", content);
+					createDropDown(caller, "inserttable", content);
 				},
 				tooltip: "Insert a table"
 			},
@@ -333,7 +337,7 @@
 			code: {
 				execFunction: function(caller)
 				{
-					base.wysiwygEditorInsertHtml('<code>', '<br /></code>');
+					wysiwygEditorInsertHtml('<code>', '<br /></code>');
 				},
 				tooltip: "Code"
 			},
@@ -341,11 +345,11 @@
 				execFunction: function(caller)
 				{
 					var content = $('<form><div><label for="link">URL:</label> <input type="text" id="image" value="http://" /></div>\
-							<div><label for="width">Width (optional):</label> <input type="text" id="width" value="" /></div>\
-							<div><label for="height">Height (optional):</label> <input type="text" id="height" value="" /></div></form>')
+							<div><label for="width">Width (optional):</label> <input type="text" id="width" size="2" /></div>\
+							<div><label for="height">Height (optional):</label> <input type="text" id="height" size="2" /></div></form>')
 						.submit(function() {return false;});
 
-					content.append($('<div><input type="button" value="Insert" /></div>').click(function(e)
+					content.append($('<div><input type="button" class="button" value="Insert" /></div>').click(function(e)
 					{
 						var val   = $(this).parent("form").find("#image").val();
 						var attrs = '';
@@ -356,14 +360,14 @@
 							attrs += ' height="' + width + '"';
 
 						if(val != "" && val != "http://")
-							base.wysiwygEditorInsertHtml('<img' + attrs + ' src="' + val + '" />');
+							wysiwygEditorInsertHtml('<img' + attrs + ' src="' + val + '" />');
 
-						base.closeDropDown();
+						closeDropDown();
 						base.focus();
 						e.preventDefault();
 					}));
 
-					base.createDropDown(caller, "insertimage", content);
+					createDropDown(caller, "insertimage", content);
 				},
 				tooltip: "Insert an image"
 			},
@@ -373,7 +377,7 @@
 					var content = $('<form><div><label for="email">E-mail:</label> <input type="text" id="email" value="" /></div></form>')
 						.submit(function() {return false;});
 
-					content.append($('<div><input type="button" value="Insert" /></div>').click(function(e)
+					content.append($('<div><input type="button" class="button" value="Insert" /></div>').click(function(e)
 					{
 						var val = $(this).parent("form").find("#email").val();
 
@@ -382,19 +386,19 @@
 							// needed for IE to reset the last range
 							base.focus();
 
-							if(base.getWysiwygSelection().type == "None"
-								|| base.getWysiwygSelection().type == "Caret")
-								base.wysiwygEditorInsertHtml('<a href="' + 'mailto:' + val + '">' + val + '</a>');
+							if(getWysiwygSelection().type == "None"
+								|| getWysiwygSelection().type == "Caret")
+								wysiwygEditorInsertHtml('<a href="' + 'mailto:' + val + '">' + val + '</a>');
 							else
 								base.execCommand("createlink", 'mailto:' + val);
 						}
 
-						base.closeDropDown();
+						closeDropDown();
 						base.focus();
 						e.preventDefault();
 					}));
 
-					base.createDropDown(caller, "insertemail", content);
+					createDropDown(caller, "insertemail", content);
 				},
 				tooltip: "Insert an email"
 			},
@@ -404,7 +408,7 @@
 					var content = $('<form><div><label for="link">URL:</label> <input type="text" id="link" value="http://" /></div></form>')
 						.submit(function() {return false;});
 
-					content.append($('<div><input type="button" value="Insert" /></div>').click(function(e)
+					content.append($('<div><input type="button" class="button" value="Insert" /></div>').click(function(e)
 					{
 						var val = $(this).parent("form").find("#link").val();
 
@@ -413,19 +417,19 @@
 							// needed for IE to reset the last range
 							base.focus();
 
-							if(base.getWysiwygSelection().type == "None"
-								|| base.getWysiwygSelection().type == "Caret")
-								base.wysiwygEditorInsertHtml('<a href="' + val + '">' + val + '</a>');
+							if(getWysiwygSelection().type == "None"
+								|| getWysiwygSelection().type == "Caret")
+								wysiwygEditorInsertHtml('<a href="' + val + '">' + val + '</a>');
 							else
 								base.execCommand("createlink", val);
 						}
 
-						base.closeDropDown();
+						closeDropDown();
 						base.focus();
 						e.preventDefault();
 					}));
 
-					base.createDropDown(caller, "insertlink", content);
+					createDropDown(caller, "insertlink", content);
 				},
 				tooltip: "Insert a link"
 			},
@@ -437,7 +441,7 @@
 			quote: {
 				execFunction: function(caller)
 				{
-					base.wysiwygEditorInsertHtml('<blockquote>', '<br /></blockquote>');
+					wysiwygEditorInsertHtml('<blockquote>', '<br /></blockquote>');
 				},
 				tooltip: "Insert a Quote"
 			},
@@ -453,9 +457,9 @@
 							.data('sceditor-emoticon', code)
 							.click(function(e) {
 								$(this).data('sceditor-emoticon');
-								base.wysiwygEditorInsertHtml('<img src="' + $(this).attr("src") + '" data-sceditor-emoticon="' + $(this).data('sceditor-emoticon') + '" />');
+								wysiwygEditorInsertHtml('<img src="' + $(this).attr("src") + '" data-sceditor-emoticon="' + $(this).data('sceditor-emoticon') + '" />');
 
-								base.closeDropDown();
+								closeDropDown();
 								base.focus();
 								e.preventDefault();
 							}));
@@ -482,9 +486,9 @@
 									.data('sceditor-emoticon', code)
 									.click(function(e) {
 										$(this).data('sceditor-emoticon');
-										base.wysiwygEditorInsertHtml('<img src="' + $(this).attr("src") + '" data-sceditor-emoticon="' + $(this).data('sceditor-emoticon') + '" />');
+										wysiwygEditorInsertHtml('<img src="' + $(this).attr("src") + '" data-sceditor-emoticon="' + $(this).data('sceditor-emoticon') + '" />');
 
-										base.closeDropDown();
+										closeDropDown();
 										base.focus();
 										e.preventDefault();
 									}));
@@ -499,21 +503,21 @@
 								if(line.children().length > 0)
 									content.append(line);
 
-								base.createDropDown(caller, "insertemoticon", content);
+								createDropDown(caller, "insertemoticon", content);
 							});
 
 						content.append(more);
 					}
 
-					base.createDropDown(caller, "insertemoticon", content);
+					createDropDown(caller, "insertemoticon", content);
 				},
 				keyPress: function(e)
 				{
 					var range = null;
 
-					if(base.wysiwygEditor.contentWindow
-						&& base.wysiwygEditor.contentWindow.getSelection)
-						range = base.wysiwygEditor.contentWindow.getSelection().getRangeAt(0);
+					if(wysiwygEditor.contentWindow
+						&& wysiwygEditor.contentWindow.getSelection)
+						range = wysiwygEditor.contentWindow.getSelection().getRangeAt(0);
 
 					if(range == null)
 						return;
@@ -537,7 +541,7 @@
 							range.setStart(range.startContainer, start);
 							range.deleteContents();
 
-							base.wysiwygEditorInsertHtml('<img src="' + url + '" data-sceditor-emoticon="' + key + '" />');
+							wysiwygEditorInsertHtml('<img src="' + url + '" data-sceditor-emoticon="' + key + '" />');
 
 							e.preventDefault();
 							e.stopPropagation();
@@ -561,7 +565,7 @@
 					if(day < 10)
 						day = "0" + day;
 
-					base.wysiwygEditorInsertHtml('<span>' + year + '-' + month + '-' + day + '</span>');
+					wysiwygEditorInsertHtml('<span>' + year + '-' + month + '-' + day + '</span>');
 				},
 				tooltip: "Insert current date"
 			},
@@ -579,7 +583,7 @@
 					if(secs < 10)
 						secs = "0" + secs;
 
-					base.wysiwygEditorInsertHtml('<span>' + hours + ':' + mins + ':' + secs + '</span>');
+					wysiwygEditorInsertHtml('<span>' + hours + ':' + mins + ':' + secs + '</span>');
 				},
 				tooltip: "Insert current time"
 			},
@@ -601,38 +605,39 @@
 
 		/**
 		 * Initializer. Creates the editor iframe and textarea
+		 * @private
 		 */
-		base.init = function()
+		var init = function()
 		{
-			base.$textarea.data("sceditor", base);
+			$textarea.data("sceditor", base);
 			base.options = $.extend({}, $.sceditor.defaultOptions, options);
 
 			if(base.options.height != null)
-				base.$textarea.height(base.options.height);
+				$textarea.height(base.options.height);
 			if(base.options.width != null)
-				base.$textarea.width(base.options.width);
+				$textarea.width(base.options.width);
 
-			base.editorContainer = $('<div class="sceditor-container" />')
-						.height(base.$textarea.outerHeight())
-						.width(base.$textarea.outerWidth());
-			base.$textarea.after(base.editorContainer);
+			editorContainer = $('<div class="sceditor-container" />')
+						.height($textarea.outerHeight())
+						.width($textarea.outerWidth());
+			$textarea.after(editorContainer);
 
 			// create the editor 
-			base.initToolBar();
-			base.initEditor();
-			base.initKeyPressFuncs();
+			initToolBar();
+			initEditor();
+			initKeyPressFuncs();
 
-			base.$textarea.parents("form").submit(function() {
-				if(base.$textEeditor.is(':visible'))
+			$textarea.parents("form").submit(function() {
+				if($textEeditor.is(':visible'))
 					base.toggleTextMode();
 
-				base.$textarea.val(base.getWysiwygEditorValue());
+				$textarea.val(base.getWysiwygEditorValue());
 			});
 
-			$(document).click(base.documentClickHandler);
+			$(document).click(documentClickHandler);
 
 			// lead any textarea value into the editor
-			var val = base.$textarea.hide().val();
+			var val = $textarea.hide().val();
 
 			// Pass the value though the getTextHandler if it is set so that
 			// BBCode, ect. can be converted
@@ -640,24 +645,25 @@
 				val = base.options.getTextHandler(val);
 
 			base.setWysiwygEditorValue(val);
-			base.preLoadEmoticons();
+			preLoadEmoticons();
 		};
 
 		/**
 		 * Creates the editor iframe and textarea
+		 * @private
 		 */
-		base.initEditor = function()
+		var initEditor = function()
 		{
 			var height, width;
-			var editorHeight = base.$textarea.height() - (base.options.toolbarContainer === null?base.$toolbar.outerHeight():0);
-			var editorWidth = base.$textarea.width();
+			var editorHeight = $textarea.height() - (base.options.toolbarContainer === null?$toolbar.outerHeight():0);
+			var editorWidth = $textarea.width();
 
-			base.$textEeditor   = $('<textarea></textarea>')
+			$textEeditor   = $('<textarea></textarea>')
 						.hide()
 						.height(editorHeight)
 						.width(editorWidth);
 
-			base.$wysiwygEditor = $(window.location.protocol !== "https:"
+			$wysiwygEditor = $(window.location.protocol !== "https:"
 						? "<iframe></iframe>"
 						: '<iframe src="javascript:false"></iframe>')
 						.attr("frameborder", 0)
@@ -665,44 +671,45 @@
 						.width(editorWidth);
 
 			// add the editor to the HTML and store the editors element
-			base.editorContainer.append(base.$wysiwygEditor).append(base.$textEeditor);
-			base.wysiwygEditor = base.$wysiwygEditor[0];
+			editorContainer.append($wysiwygEditor).append($textEeditor);
+			wysiwygEditor = $wysiwygEditor[0];
 
 			// fix the height and width of the textarea/iframe
-			height = base.$wysiwygEditor.height();
-			width = base.$wysiwygEditor.width();
-			base.$wysiwygEditor.height(height + ((height - base.$wysiwygEditor.outerHeight(true))/2));
-			base.$wysiwygEditor.width(width + ((width - base.$wysiwygEditor.outerWidth(true))/2));
+			height = $wysiwygEditor.height();
+			width = $wysiwygEditor.width();
+			$wysiwygEditor.height(height + ((height - $wysiwygEditor.outerHeight(true))/2));
+			$wysiwygEditor.width(width + ((width - $wysiwygEditor.outerWidth(true))/2));
 
-			height = base.$textEeditor.height();
-			width = base.$textEeditor.width();
-			base.$textEeditor.height(height + ((height - base.$textEeditor.outerHeight(true))/2));
-			base.$textEeditor.width(width + ((width - base.$textEeditor.outerWidth(true))/2));
+			height = $textEeditor.height();
+			width = $textEeditor.width();
+			$textEeditor.height(height + ((height - $textEeditor.outerHeight(true))/2));
+			$textEeditor.width(width + ((width - $textEeditor.outerWidth(true))/2));
 
 			// turn on design mode
-			base.getWysiwygDoc().designMode = 'On';
+			getWysiwygDoc().designMode = 'On';
 
-			base.getWysiwygDoc().open();
-			base.getWysiwygDoc().write(
+			getWysiwygDoc().open();
+			getWysiwygDoc().write(
 				// add doctype?
 				'<html><head><link rel="stylesheet" type="text/css" href="' + base.options.style + '" /></head>' +
 				'<body></body></html>'
 			);
-			base.getWysiwygDoc().close();
+			getWysiwygDoc().close();
 
 			// set the key press event
-			$(base.getWysiwygDoc()).find("body").keypress(base.handleKeyPress);
-			$(base.getWysiwygDoc()).keypress(base.handleKeyPress);
-			$(base.getWysiwygDoc()).mousedown(base.handleMouseDown);
-			$(base.getWysiwygDoc()).bind("beforedeactivate keypress", base.saveRange);
+			$(getWysiwygDoc()).find("body").keypress(handleKeyPress);
+			$(getWysiwygDoc()).keypress(handleKeyPress);
+			$(getWysiwygDoc()).mousedown(handleMouseDown);
+			$(getWysiwygDoc()).bind("beforedeactivate keypress", saveRange);
 		};
 
 		/**
 		 * Creates the toolbar and appends it to the container
+		 * @private
 		 */
-		base.initToolBar = function()
+		var initToolBar = function()
 		{
-			base.$toolbar = $('<div class="sceditor-toolbar" />');
+			$toolbar = $('<div class="sceditor-toolbar" />');
 			var groups    = base.options.toolbar.split("|");
 			for(var i=0; i < groups.length; i++)
 			{
@@ -722,41 +729,43 @@
 					// add the click handler for the button
 					button.data("sceditor-command", buttons[x]);
 					button.click(function(e) {
-						base.handleCommand($(this), base.commands[$(this).data("sceditor-command")]);
+						handleCommand($(this), base.commands[$(this).data("sceditor-command")]);
 						e.preventDefault();
 					});
 
 					group.append(button);
 				}
 
-				base.$toolbar.append(group);
+				$toolbar.append(group);
 			}
 
 			// append the toolbar to the toolbarContainer option if given
 			if(base.options.toolbarContainer === null)
-				base.editorContainer.append(base.$toolbar);
+				editorContainer.append($toolbar);
 			else
-				$(base.options.toolbarContainer).append(base.$toolbar);
+				$(base.options.toolbarContainer).append($toolbar);
 		};
 
 		/**
 		 * Creates an array of all the key press functions
 		 * like emoticons, ect.
+		 * @private
 		 */
-		base.initKeyPressFuncs = function()
+		var initKeyPressFuncs = function()
 		{
 			$.each(base.commands, function(command, values)
 			{
 				if(typeof values.keyPress != "undefined")
-					base.keyPressFuncs.push(values.keyPress);
+					keyPressFuncs.push(values.keyPress);
 			});
 		};
 
 		/**
 		 * Preloads the emoticon images
 		 * Idea from: http://engineeredweb.com/blog/09/12/preloading-images-jquery-and-javascript
+		 * @private
 		 */
-		base.preLoadEmoticons = function()
+		var preLoadEmoticons = function()
 		{
 			var emoticons = $.extend({}, base.options.emoticons.more, base.options.emoticons.dropdown);
 
@@ -764,69 +773,73 @@
 			{
 				var emoticon = document.createElement('img');
 	     			emoticon.src = url;
-				base.preLoadCache.push(emoticon);
+				preLoadCache.push(emoticon);
 			});
 		};
 
 		/**
 		 * Creates a menu item drop down
+		 * @private
 		 */
-		base.createDropDown = function(menuItem, dropDownName, content)
+		var createDropDown = function(menuItem, dropDownName, content)
 		{
-			if(base.$dropdown != null)
-				base.closeDropDown();
+			if($dropdown != null)
+				closeDropDown();
 
 			var menuItemPosition = menuItem.position();
 
-			base.$dropdown = $('<div class="sceditor-dropdown sceditor-' + dropDownName + '" />')
+			$dropdown = $('<div class="sceditor-dropdown sceditor-' + dropDownName + '" />')
 						.css({top: menuItemPosition.top, left: menuItemPosition.left})
 						.append(content);
 
-			base.editorContainer.after(base.$dropdown);
-			base.dropdownIgnoreLastClick = true;
+			editorContainer.after($dropdown);
+			dropdownIgnoreLastClick = true;
 
 			// stop clicks within the dropdown from being handled
-			base.$dropdown.click(function(e) {
+			$dropdown.click(function(e) {
 				e.stopPropagation();
 			});
 		};
 
 		/**
 		 * Handles any document click and closes the dropdown if open
+		 * @private
 		 */
-		base.documentClickHandler = function()
+		var documentClickHandler = function()
 		{
-			if(!base.dropdownIgnoreLastClick)
-				base.closeDropDown();
+			if(!dropdownIgnoreLastClick)
+				closeDropDown();
 
-			base.dropdownIgnoreLastClick = false;
+			dropdownIgnoreLastClick = false;
 		}
 
 		/**
 		 * Closes the current drop down
+		 * @private
 		 */
-		base.closeDropDown = function()
+		var closeDropDown = function()
 		{
-			if(base.$dropdown != null)
+			if($dropdown != null)
 			{
-				base.$dropdown.remove();
-				base.$dropdown = null;
+				$dropdown.remove();
+				$dropdown = null;
 			}
 		}
 
 		/**
 		 * Gets the WYSIWYG editors document
+		 * @private
 		 */
-		base.getWysiwygDoc = function()
+		var getWysiwygDoc = function()
 		{
-			if (base.wysiwygEditor.contentDocument)
-				return base.wysiwygEditor.contentDocument;
+			if (wysiwygEditor.contentDocument)
+				return wysiwygEditor.contentDocument;
 
-			if (base.wysiwygEditor.contentWindow && base.wysiwygEditor.contentWindow.document)
-				return base.wysiwygEditor.contentWindow.document;
+			if (wysiwygEditor.contentWindow && wysiwygEditor.contentWindow.document)
+				return wysiwygEditor.contentWindow.document;
 
-			if (base.wysiwygEditor.document)
-				return base.wysiwygEditor.document;
+			if (wysiwygEditor.document)
+				return wysiwygEditor.document;
 
 			return null;
 		};
@@ -836,23 +849,24 @@
 		 * Inserts HTML into WYSIWYG editor. If endHtml is defined and some text is selected the
 		 * selected text will be put inbetween html and endHtml. If endHtml isn't defined and some
 		 * text is selected it will be replaced by the HTML
+		 * @private
 		 */
-		base.wysiwygEditorInsertHtml = function(html, endHtml)
+		var wysiwygEditorInsertHtml = function(html, endHtml)
 		{
 			base.focus();
 
 			// don't apply to code elements
-			if($(base.getWysiwygSelectedContainerNode()).is('code')
-				|| $(base.getWysiwygSelectedContainerNode()).parents('code').length !== 0)
+			if($(getWysiwygSelectedContainerNode()).is('code')
+				|| $(getWysiwygSelectedContainerNode()).parents('code').length !== 0)
 				return;
 
 			if(typeof endHtml != "undefined")
 				html = html + base.getWysiwygSelectedHtml() + endHtml;
 
-			if (base.getWysiwygDoc().getSelection)
+			if (getWysiwygDoc().getSelection)
 			{
-				var range          = base.getWysiwygSelection();
-				var htmlNode       = base.getWysiwygDoc().createElement('div');
+				var range          = getWysiwygSelection();
+				var htmlNode       = getWysiwygDoc().createElement('div');
 				htmlNode.innerHTML = html;
 				htmlNode           = htmlNode.children[0];
 
@@ -864,21 +878,22 @@
 				range.setStartAfter(htmlNode);
 
 				// change current range
-				base.wysiwygEditor.contentWindow.getSelection().removeAllRanges();
-				base.wysiwygEditor.contentWindow.getSelection().addRange(range);
+				wysiwygEditor.contentWindow.getSelection().removeAllRanges();
+				wysiwygEditor.contentWindow.getSelection().addRange(range);
 			}
-			else if (base.getWysiwygDoc().selection && base.getWysiwygDoc().selection.createRange)
-				base.getWysiwygDoc().selection.createRange().pasteHTML(html);
+			else if (getWysiwygDoc().selection && getWysiwygDoc().selection.createRange)
+				getWysiwygDoc().selection.createRange().pasteHTML(html);
 			else
 				base.execCommand("insertHtml", html);
 
-			base.lastRange = null;
+			lastRange = null;
 		};
 
 		/**
 		 * Like wysiwygEditorInsertHtml except it converts any HTML to text
+		 * @private
 		 */
-		base.wysiwygEditorInsertText = function(text)
+		var wysiwygEditorInsertText = function(text)
 		{
 			text = text.replace(/&/g, "&amp;");
 			text = text.replace(/</g, "&lt;");
@@ -886,21 +901,22 @@
 			text = text.replace(/ /g, "&nbsp;");
 			text = text.replace(/\r\n|\r/g, "\n");
 			text = text.replace(/\n/g, "<br />");
-			base.wysiwygEditorInsertHtml(text);
+			wysiwygEditorInsertHtml(text);
 		};
 
 		/**
 		 * Gets the current selection range from WYSIWYG editor
+		 * @private
 		 */
-		base.getWysiwygSelection = function()
+		var getWysiwygSelection = function()
 		{
 			var range;
 
-			if(base.wysiwygEditor.contentWindow
-				&& base.wysiwygEditor.contentWindow.getSelection)
-					range = base.wysiwygEditor.contentWindow.getSelection();
-			else if(base.getWysiwygDoc().selection)
-				range = base.getWysiwygDoc().selection;
+			if(wysiwygEditor.contentWindow
+				&& wysiwygEditor.contentWindow.getSelection)
+					range = wysiwygEditor.contentWindow.getSelection();
+			else if(getWysiwygDoc().selection)
+				range = getWysiwygDoc().selection;
 
 			if(range.getRangeAt)
 				return range.getRangeAt(0);
@@ -915,7 +931,7 @@
 		 */
 		base.getWysiwygSelectedHtml = function()
 		{
-			var selection = base.getWysiwygSelection();
+			var selection = getWysiwygSelection();
 
 			if(selection === null)
 				return '';
@@ -944,10 +960,11 @@
 
 		/**
 		 * Gets the first node which contains all the selected elements
+		 * @private
 		 */
-		base.getWysiwygSelectedContainerNode = function()
+		var getWysiwygSelectedContainerNode = function()
 		{
-			var selection = base.getWysiwygSelection();
+			var selection = getWysiwygSelection();
 
 			if(selection === null)
 				return null;
@@ -966,10 +983,10 @@
 		 */
 		base.getWysiwygEditorValue = function()
 		{
-			var html = base.$wysiwygEditor.contents().find("body").html();
+			var html = $wysiwygEditor.contents().find("body").html();
 
 			if(base.options.getHtmlHandler)
-				html = base.options.getHtmlHandler(html, base.$wysiwygEditor.contents().find("body"));
+				html = base.options.getHtmlHandler(html, $wysiwygEditor.contents().find("body"));
 
 			return html;
 		};
@@ -979,7 +996,7 @@
 		 */
 		base.getTextareaValue = function()
 		{
-			var val = base.$textEeditor.val();
+			var val = $textEeditor.val();
 
 			if(base.options.getTextHandler)
 				val = base.options.getTextHandler(val);
@@ -993,9 +1010,9 @@
 		base.setWysiwygEditorValue = function(value)
 		{
 			// convert any emoticons
-			value = base.replaceEmoticons(value);
+			value = replaceEmoticons(value);
 
-			base.getWysiwygDoc().body.innerHTML = value;
+			getWysiwygDoc().body.innerHTML = value;
 		};
 
 		/**
@@ -1003,13 +1020,14 @@
 		 */
 		base.setTextareaValue = function(value)
 		{
-			base.$textEeditor.val(value);
+			$textEeditor.val(value);
 		};
 
 		/**
 		 * Replaces any emoticon codes in the passed HTML with their emoticon images
+		 * @private
 		 */
-		base.replaceEmoticons = function(html)
+		var replaceEmoticons = function(html)
 		{
 			var emoticons = $.extend({}, base.options.emoticons.more, base.options.emoticons.dropdown);
 
@@ -1033,20 +1051,21 @@
 		 */
 		base.toggleTextMode = function()
 		{
-			if(base.$textEeditor.is(':visible'))
+			if($textEeditor.is(':visible'))
 				base.setWysiwygEditorValue(base.getTextareaValue());
 			else
 				base.setTextareaValue(base.getWysiwygEditorValue());
 
-			base.lastRange = null;
-			base.$textEeditor.toggle();
-			base.$wysiwygEditor.toggle();
+			lastRange = null;
+			$textEeditor.toggle();
+			$wysiwygEditor.toggle();
 		};
 
 		/**
 		 * Handles the passed command
+		 * @private
 		 */
-		base.handleCommand = function(caller, command)
+		var handleCommand = function(caller, command)
 		{
 			// run the commands execFunction if exists
 			if(command.hasOwnProperty("execFunction"))
@@ -1060,29 +1079,30 @@
 		 */
 		base.focus = function()
 		{
-			base.wysiwygEditor.contentWindow.focus();
+			wysiwygEditor.contentWindow.focus();
 
 			// Needed for IE < 9
-			if(base.lastRange != null)
+			if(lastRange != null)
 			{
 				if (window.document.createRange)
-					window.getSelection().addRange(base.lastRange);
+					window.getSelection().addRange(lastRange);
 				else if (window.document.selection)
-					base.lastRange.select();
+					lastRange.select();
 			}
 		};
 
 		/**
 		 * Saves the current range. Needed for IE because it forgets
 		 * where the cursor was and what was selected
+		 * @private
 		 */
-		base.saveRange = function()
+		saveRange = function()
 		{
 			/* this is only needed for IE */
 			if(!$.browser.msie)
 				return;
 
-			base.lastRange = base.getWysiwygSelection();
+			lastRange = getWysiwygSelection();
 		};
 
 		/**
@@ -1094,16 +1114,16 @@
 			base.focus();
 
 			// don't apply any comannds to code elements
-			if($(base.getWysiwygSelectedContainerNode()).is('code')
-				|| $(base.getWysiwygSelectedContainerNode()).parents('code').length !== 0)
-//				|| $(base.getWysiwygSelectedContainerNode()).find('code').length !== 0)
+			if($(getWysiwygSelectedContainerNode()).is('code')
+				|| $(getWysiwygSelectedContainerNode()).parents('code').length !== 0)
+//				|| $(getWysiwygSelectedContainerNode()).find('code').length !== 0)
 				return;
 
-			if(base.getWysiwygDoc())
+			if(getWysiwygDoc())
 			{
 	    			try
 				{
-					executed = base.getWysiwygDoc().execCommand(command, false, param);
+					executed = getWysiwygDoc().execCommand(command, false, param);
 				}
 				catch (e){}
 			}
@@ -1116,14 +1136,15 @@
 
 		/**
 		 * Handles any key press in the WYSIWYG editor
+		 * @private
 		 */
-		base.handleKeyPress = function(e)
+		var handleKeyPress = function(e)
 		{
-			base.closeDropDown();
+			closeDropDown();
 
 			// don't apply to code elements
-			if($(base.getWysiwygSelectedContainerNode()).is('code')
-				|| $(base.getWysiwygSelectedContainerNode()).parents('code').length !== 0)
+			if($(getWysiwygSelectedContainerNode()).is('code')
+				|| $(getWysiwygSelectedContainerNode()).parents('code').length !== 0)
 				return;
 
 			// doing the below breaks lists sadly. Users of webkit
@@ -1135,28 +1156,32 @@
 			// quote and code tags.
 			//if(e.which == 13 && $.browser.webkit)
 			//{
-			//	base.wysiwygEditorInsertHtml('<br />');
+			//	wysiwygEditorInsertHtml('<br />');
 			//	return false;;
 			//}
 
-			for(var i=0;i < base.keyPressFuncs.length;++i)
-				base.keyPressFuncs[i](e);
+			for(var i=0;i < keyPressFuncs.length;++i)
+				keyPressFuncs[i](e);
 
 			// keypress needs to be as fast as possible so use
 			// for loop instead of each
-			//$.each(base.keyPressFuncs, function(index, func)
+			//$.each(keyPressFuncs, function(index, func)
 			//{
 			//	func(e);
 			//});
 		};
 
-		base.handleMouseDown = function(e)
+		/**
+		 * Handles any mousedown press in the WYSIWYG editor
+		 * @private
+		 */
+		var handleMouseDown = function(e)
 		{
-			base.closeDropDown();
+			closeDropDown();
 		};
 
 		// run the initializer
-		base.init();
+		init();
 	};
 
 	$.sceditor.defaultOptions = {
