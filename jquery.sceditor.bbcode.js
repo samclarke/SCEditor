@@ -1,5 +1,5 @@
 /**
- * @preserve SCEditor BBCode Plugin v1.2.1
+ * SCEditor BBCode Plugin v1.2.2
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
  * Copyright (C) 2011, Sam Clarke (samclarke.com)
@@ -14,11 +14,26 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 // ==/ClosureCompiler==
 
-(function($)
-{
-	$.sceditorBBCodePlugin = function(element, options)
-	{
+/*jshint forin: true, nomen: true, undef: true, white: false  */
+/*global jQuery: true*/
+
+(function($) {
+	'use strict';
+
+	$.sceditorBBCodePlugin = function(element, options) {
 		var base = this;
+
+		/**
+		 * Private methods
+		 * @private
+		 */
+		var	init,
+			rgbToHex,
+			handleStyles,
+			handleTags,
+			formatString,
+			elementToBbcode,
+			stripQuotes;
 
 		base.bbcodes = {
 			b: {
@@ -121,8 +136,7 @@
 						return content;
 
 					// Most browsers return px value but IE returns 1-7
-					if(fontSize.indexOf("px") > -1)
-					{
+					if(fontSize.indexOf("px") > -1) {
 						fontSize = fontSize.replace("px", "") - 0;
 
 						if(fontSize > 12)
@@ -268,12 +282,11 @@
 					if(typeof attrs.height != "undefined")
 						attribs += ' height="' + attrs.height + '"';
 
-					if(typeof attrs.defaultAttr !== "undefined")
-					{
+					if(typeof attrs.defaultAttr !== "undefined") {
 						var parts = attrs.defaultAttr.split(/x/i);
 
-						attribs =	' width="' + parts[0] + '"' +
-								' height="' + (parts.length===2?parts[1]:parts[0]) + '"';
+						attribs = ' width="' + parts[0] + '"' +
+							' height="' + (parts.length === 2 ? parts[1] : parts[0]) + '"';
 					}
 
 					return '<img ' + attribs + ' src="' + content + '" />';
@@ -314,14 +327,13 @@
 				format: function(element, content) {
 					var attr = '';
 
-					if($(element).children("cite:first").length == 1)
-					{
+					if($(element).children("cite:first").length == 1) {
 						attr = '=' + $(element).children("cite:first").text();
 
 						content = '';
 						$(element).children("cite:first").remove();
 						$(element).contents().each(function() {
-							content += elementToBbcode($(this))
+							content += elementToBbcode($(this));
 						});
 					}
 
@@ -340,6 +352,22 @@
 				},
 				format: "[code]{0}[/code]",
 				html: '<code>{0}</code>'
+			},
+
+			youtube: {
+				tags: {
+					iframe: {
+						'data-youtube-id': null
+					}
+				},
+				format: function(element, content) {
+					if(!element.attr('data-youtube-id'))
+						return content;
+
+					return '[youtube]' + element.attr('data-youtube-id') + '[/youtube]';
+				},
+				html: '<iframe width="560" height="315" src="http://www.youtube.com/embed/{0}' +
+					'" data-youtube-id="{0}" frameborder="0" allowfullscreen></iframe>'
 			}
 		};
 
@@ -361,8 +389,7 @@
 		/**
 		 * Initializer
 		 */
-		var init = function()
-		{
+		init = function() {
 			base.options = $.extend({}, $.sceditor.defaultOptions, $.sceditorBBCodePlugin.defaultOptions, options);
 
 			// build the BBCode cache
@@ -374,7 +401,7 @@
 					getTextHandler: base.getTextHandler
 				})
 			));
-		}
+		};
 
 		/**
 		 * Converts CSS rgb value into hex
@@ -382,11 +409,10 @@
 		 * @private
 		 * @return string Hex color
 		 */
-		var rgbToHex = function(rgbStr) {
+		rgbToHex = function(rgbStr) {
 			var matches;
 
-			function toHex(n)
-			{
+			function toHex(n) {
 				n = parseInt(n,10);
 				if(isNaN(n))
 					return "00";
@@ -396,7 +422,7 @@
 			}
 
 			// rgb(n,n,n);
-			if(matches = rgbStr.match(/rgb\((\d+),\s*?(\d+),\s*?(\d+)\)/i))
+			if((matches = rgbStr.match(/rgb\((\d+),\s*?(\d+),\s*?(\d+)\)/i)))
 				return '#' + toHex(matches[1]) + toHex(matches[2]-0) + toHex(matches[3]-0);
 
 			return rgbStr;
@@ -405,39 +431,36 @@
 		/**
 		 * Populates tagsToBbcodes and stylesToBbcodes to enable faster lookups
 		 */
-		base.buildBbcodeCache = function()
-		{
+		base.buildBbcodeCache = function() {
 			$.each(base.bbcodes, function(bbcode, info) {
 				if(typeof base.bbcodes[bbcode].tags != "undefined")
-					$.each(base.bbcodes[bbcode].tags, function(tag, attrs)
-					{
+					$.each(base.bbcodes[bbcode].tags, function(tag, attrs) {
 						tagsToBbcodes[tag] = (tagsToBbcodes[tag] || {});
 						tagsToBbcodes[tag][bbcode] = attrs;
 					});
 
 				if(typeof base.bbcodes[bbcode].styles != "undefined")
-					$.each(base.bbcodes[bbcode].styles, function(style, values)
-					{
+					$.each(base.bbcodes[bbcode].styles, function(style, values) {
 						stylesToBbcodes[style] = (stylesToBbcodes[style] || {});
 						stylesToBbcodes[style][bbcode] = values;
 					});
 			});
-		}
+		};
 
 		/**
 		 * Checks if any bbcode styles match the elements styles
 		 * @private
 		 * @return string Content with any matching bbcode tags wrapped around it.
 		 */
-		var handleStyles = function(element, content)
-		{
-			$.each(stylesToBbcodes, function(property, bbcodes)
-			{
-				if(element.get(0).nodeName.toLowerCase() == "a"
-					&& (property == 'color' || property == 'text-decoration'))
+		handleStyles = function(element, content) {
+			var elementPropVal;
+
+			$.each(stylesToBbcodes, function(property, bbcodes) {
+				if(element.get(0).nodeName.toLowerCase() == "a" &&
+					(property == 'color' || property == 'text-decoration'))
 					return;
-				else if(element.get(0).nodeName.toLowerCase() == "code"
-					&& (property == 'font-family'))
+				else if(element.get(0).nodeName.toLowerCase() == "code" &&
+					(property == 'font-family'))
 					return;
 
 				elementPropVal = element.css(property);
@@ -447,10 +470,8 @@
 				if(element.parent().css(property) == elementPropVal)
 					return;
 
-				$.each(bbcodes, function(bbcode, values)
-				{
-					if(values == null || $.inArray(elementPropVal.toString(), values) > -1)
-					{
+				$.each(bbcodes, function(bbcode, values) {
+					if(values === null || $.inArray(elementPropVal.toString(), values) > -1) {
 						if($.isFunction(base.bbcodes[bbcode].format))
 							content = base.bbcodes[bbcode].format(element, content);
 						else
@@ -460,26 +481,25 @@
 			});
 
 			return content;
-		}
+		};
 
 		/**
 		 * Handles a HTML tag and finds any matching bbcodes
 		 * @private
 		 * @return string Content with any matching bbcode tags wrapped around it.
 		 */
-		var handleTags = function(element, content)
-		{
+		handleTags = function(element, content) {
 			var tag = element.get(0).nodeName.toLowerCase();
 
 			if(typeof tagsToBbcodes[tag] != "undefined")
+			{
 				// loop all bbcodes for this tag
-				$.each(tagsToBbcodes[tag], function(bbcode, bbcodeAttribs)
-				{
+				$.each(tagsToBbcodes[tag], function(bbcode, bbcodeAttribs) {
 					var runBbcode = false;
 
 					// if the bbcode doesn't require any attributes then its
 					// all valid and should be run
-					if(bbcodeAttribs == null)
+					if(bbcodeAttribs === null)
 						runBbcode = true;
 					else
 					{
@@ -487,12 +507,12 @@
 						$.each(bbcodeAttribs, function(attrib, values)
 						{
 							// check if has the bbcodes attrib
-							if(typeof element.attr(attrib) == "undefined")
+							if(typeof element.attr(attrib) === "undefined")
 								return;
 
 							// if the element has the bbcodes attribute and the bbcode attribute
 							// has values check one of the values matches
-							if(values != null && $.inArray(element.attr(attrib), values) < 0)
+							if(values !== null && $.inArray(element.attr(attrib), values) < 0)
 								return;
 
 							// break this loop as we have matched this bbcode
@@ -509,11 +529,13 @@
 					else
 						content = formatString(base.bbcodes[bbcode].format, content);
 				});
+			}
 
 			if(tag == 'br' || tag == 'div' || tag == 'p')
 				content += "\n";
+
 			return content;
-		}
+		};
 
 		/**
 		 * Formats a string in the format
@@ -521,14 +543,12 @@
 		 * @private
 		 * @return string
 		 */
-		var formatString = function()
-		{
+		formatString = function() {
 			var args = arguments;
-			return args[0].replace(/{(\d+)}/g, function(str, p1)
-			{
-				return typeof args[0-p1+1] != 'undefined'
-						? args[0-p1+1]
-						: '{' + p1 + '}';
+			return args[0].replace(/\{(\d+)\}/g, function(str, p1) {
+				return typeof args[0-p1+1] != 'undefined'? 
+						args[0-p1+1] :
+						'{' + p1 + '}';
 			});
 		};
 
@@ -537,8 +557,7 @@
 		 * @private
 		 * @return string
 		 */
-		var stripQuotes = function(str)
-		{
+		stripQuotes = function(str) {
 			return str.replace(/^["']+/, "").replace(/["']+$/, "");
 		};
 
@@ -546,10 +565,9 @@
 		 * Converts HTML to BBCode
 		 * @return string BBCode which has been converted from HTML 
 		 */
-		base.getHtmlHandler = function(html, domBody)
-		{
+		base.getHtmlHandler = function(html, domBody) {
 			return elementToBbcode($(domBody));
-		}
+		};
 
 		/**
 		 * Converts a HTML dom element to BBCode starting from
@@ -557,40 +575,68 @@
 		 * @private
 		 * @return string BBCode
 		 */
-		var elementToBbcode = function(element)
-		{
+		elementToBbcode = function(element) {
+			var ret = '';
+
 			if(typeof element.get(0) === 'undefined')
 				return '';
 
-			if(element.get(0).nodeType === 3)
-				return element.get(0).nodeValue;
-
-			var ret = "";
-
-			if(element.is('code'))
-				ret = element.text();
-			else if(element.contents().length > 0)
-				$.each(element.contents(), function()
-				{
-					ret += elementToBbcode($(this));
-				});
+			if(element.get(0).nodeName.toLowerCase() !== 'iframe')
+			{
+				if(element.get(0).nodeType === 3)
+					return element.get(0).nodeValue;
+				else if(element.is('code'))
+					ret = element.text();
+				else if(element.contents().length > 0)
+					$.each(element.contents(), function() {
+						ret += elementToBbcode($(this));
+					});
+			}
 
 			if(!element.is('code'))
 				ret = handleStyles(element, ret);
 
 			ret = handleTags(element, ret);
 			return ret;
-		}
+		};
 
 		/**
 		 * Converts BBCode to HTML
 		 * @return string HTML
 		 */
-		base.getTextHandler = function(text)
-		{
-			var bbcodeRegex =  /\[([^\[\s=]*?)(?:([^\[]*?))?]((?:[\s\S(?!=\[\\\1)](?!\[\1))*?)\[\/(\1)\]/g;
+		base.getTextHandler = function(text) {
+			var bbcodeRegex =  /\[([^\[\s=]*?)(?:([^\[]*?))?\]((?:[\s\S(?!=\[\\\1)](?!\[\1))*?)\[\/(\1)\]/g;
 			var atribsRegex = /(\S+)=((?:(?:(["'])(?:\\\3|[^\3])*?\3))|(?:[^'"\s]+))/g;
 			var oldText;
+			var replaceBBCodeFunc = function(str, bbcode, attrs, content)
+			{
+				var attrsMap = {};
+
+				if(typeof attrs != "undefined")
+				{
+					var matches;
+					attrs = $.trim(attrs);
+					// if only one attribute then remove the = from the start and strip any quotes
+					if(attrs.charAt(0) == "=" && (attrs.split("=").length - 1) <= 1)
+						attrsMap.defaultAttr = stripQuotes(attrs.substr(1));
+					else
+					{
+						if(attrs.charAt(0) == "=")
+							attrs = "defaultAttr" + attrs;
+
+						while((matches = atribsRegex.exec(attrs)))
+							attrsMap[matches[1].toLowerCase()] = stripQuotes(matches[2]);
+					}
+				}
+
+				if(typeof base.bbcodes[bbcode] == "undefined")
+					return str;
+
+				if(typeof base.bbcodes[bbcode].html === 'function')
+					return base.bbcodes[bbcode].html(bbcode, attrsMap, content);
+				else
+					return formatString(base.bbcodes[bbcode].html, content);
+			};
 
 			text = text.replace(/&/g, "&amp;");
 			text = text.replace(/</g, "&lt;");
@@ -602,43 +648,15 @@
 			while(text != oldText)
 			{
 				oldText = text;
-				text    = text.replace(bbcodeRegex, function(str, bbcode, attrs, content)
-				{
-					var attrsMap = {};
-
-					if(typeof attrs != "undefined")
-					{
-						var matches;
-						attrs = $.trim(attrs);
-						// if only one attribute then remove the = from the start and strip any quotes
-						if(attrs.charAt(0) == "=" && (attrs.split("=").length - 1) <= 1)
-							attrsMap.defaultAttr = stripQuotes(attrs.substr(1));
-						else
-						{
-							if(attrs.charAt(0) == "=")
-								attrs = "defaultAttr" + attrs;
-
-							while((matches = atribsRegex.exec(attrs)))
-								attrsMap[matches[1].toLowerCase()] = stripQuotes(matches[2]);
-						}
-					}
-
-					if(typeof base.bbcodes[bbcode] == "undefined")
-						return str;
-
-					if($.isFunction(base.bbcodes[bbcode].html))
-						return base.bbcodes[bbcode].html(bbcode, attrsMap, content);
-					else
-						return formatString(base.bbcodes[bbcode].html, content);
-				});
+				text    = text.replace(bbcodeRegex, replaceBBCodeFunc);
 			}
 
 			// As hr is the only bbcode not to have a start and end tag it's
 			// just being replace here instead of adding support for it above.
 			text = text.replace(/\[hr\]/gi, "<hr>");
 
-			return text.replace(/  (?=([^\<\>]*?<|[^\<\>]*?$))/g, " &nbsp;");
-		}
+			return text.replace(/ {2}(?=([^<\>]*?<|[^<\>]*?$))/g, " &nbsp;");
+		};
 
 		init();
 	};
@@ -649,10 +667,8 @@
 		defaultFont: 'Verdana, Arial, Helvetica, sans-serif'
 	};
 
-	$.fn.sceditorBBCodePlugin = function(options)
-	{
-		return this.each(function()
-		{
+	$.fn.sceditorBBCodePlugin = function(options) {
+		return this.each(function() {
 			(new $.sceditorBBCodePlugin(this, options));
 		});
 	};

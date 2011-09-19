@@ -1,5 +1,5 @@
 /**
- * @preserve SCEditor v1.2.1
+ * SCEditor v1.2.2
  * http://www.samclarke.com/2011/07/sceditor/
  *
  * Copyright (C) 2011, Sam Clarke (samclarke.com)
@@ -179,6 +179,7 @@ div.sceditor-dropdown, div.sceditor-dropdown div {
 			.sceditor-button-quote div { background: url('icons/comment.png'); }
 
 			.sceditor-button-emoticon div { background: url('icons/emoticon_smile.png'); }
+			.sceditor-button-youtube div { background: url('icons/youtube.png'); }
 			.sceditor-button-date div { background: url('icons/date_add.png'); }
 			.sceditor-button-time div { background: url('icons/time_add.png'); }
 
