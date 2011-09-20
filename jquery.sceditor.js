@@ -520,7 +520,7 @@
 						return;
 
 					if(allEmoticonCache === null)
-						allEmoticonCache = $.extend({}, base.options.emoticons.more, base.options.emoticons.dropdown);
+						allEmoticonCache = $.extend({}, base.options.emoticons.more, base.options.emoticons.dropdown, base.options.emoticons.hidden);
 
 					if(longestEmoticonCode === null) {
 						longestEmoticonCode = 0;
@@ -798,7 +798,7 @@
 		 * @private
 		 */
 		preLoadEmoticons = function () {
-			var emoticons = $.extend({}, base.options.emoticons.more, base.options.emoticons.dropdown);
+			var emoticons = $.extend({}, base.options.emoticons.more, base.options.emoticons.dropdown, base.options.emoticons.hidden);
 
 			$.each(emoticons, function (key, url) {
 				var emoticon = document.createElement('img');
@@ -1048,7 +1048,7 @@
 		 * @private
 		 */
 		replaceEmoticons = function (html) {
-			var emoticons = $.extend({}, base.options.emoticons.more, base.options.emoticons.dropdown);
+			var emoticons = $.extend({}, base.options.emoticons.more, base.options.emoticons.dropdown, base.options.emoticons.hidden);
 
 			$.each(emoticons, function (key, url) {
 				// escape the key before using it as a regex
@@ -1237,7 +1237,9 @@
 						":sleeping:": "emoticons/sleeping.png",
 						":unsure:": "emoticons/unsure.png",
 						":woot:": "emoticons/w00t.png",
-						":wassat:": "emoticons/wassat.png",
+						":wassat:": "emoticons/wassat.png"
+					},
+					hidden: {
 						":whistling:": "emoticons/whistling.png",
 						":love:": "emoticons/wub.png"
 					}
