@@ -51,6 +51,10 @@ Map in the following format:
 		more: {
 			":alien:": "emoticons/alien.png",
 			":blink:": "emoticons/blink.png"
+		},
+		hidden: {
+			":aliasforalien:": "emoticons/alien.png",
+			":aliasforblink:": "emoticons/blink.png"
 		}
 	},
 

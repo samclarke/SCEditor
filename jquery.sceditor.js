@@ -222,7 +222,7 @@
 							// use pre defined colour if can otherwise use the generated color
 							var color = (typeof colors[x] != "undefined")?colors[x]:"#" + genColor.r.toString(16) + genColor.g.toString(16) + genColor.b.toString(16);
 
-							html[htmlIndex++] = '<a href="#" class="sceditor-color-option" style="background-color: '+color+'"></a>';
+							html[htmlIndex++] = '<a href="#" class="sceditor-color-option" style="background-color: '+color+'" data-color="'+color+'"></a>';
 
 							// calculate the next generated color
 							if(x%5===0)
@@ -243,7 +243,7 @@
 					content.append(html.join(''))
 						.find('a')
 						.click(function (e) {
-							base.execCommand("forecolor", $(this).css('background-color'));
+							base.execCommand("forecolor", $(this).attr('data-color'));
 							closeDropDown();
 							base.focus();
 							e.preventDefault();
