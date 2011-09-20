@@ -433,13 +433,13 @@
 		 */
 		base.buildBbcodeCache = function() {
 			$.each(base.bbcodes, function(bbcode, info) {
-				if(typeof base.bbcodes[bbcode].tags != "undefined")
+				if(typeof base.bbcodes[bbcode].tags !== "undefined")
 					$.each(base.bbcodes[bbcode].tags, function(tag, attrs) {
 						tagsToBbcodes[tag] = (tagsToBbcodes[tag] || {});
 						tagsToBbcodes[tag][bbcode] = attrs;
 					});
 
-				if(typeof base.bbcodes[bbcode].styles != "undefined")
+				if(typeof base.bbcodes[bbcode].styles !== "undefined")
 					$.each(base.bbcodes[bbcode].styles, function(style, values) {
 						stylesToBbcodes[style] = (stylesToBbcodes[style] || {});
 						stylesToBbcodes[style][bbcode] = values;
@@ -456,11 +456,11 @@
 			var elementPropVal;
 
 			$.each(stylesToBbcodes, function(property, bbcodes) {
-				if(element.get(0).nodeName.toLowerCase() == "a" &&
-					(property == 'color' || property == 'text-decoration'))
+				if(element.get(0).nodeName.toLowerCase() === "a" &&
+					(property === 'color' || property === 'text-decoration'))
 					return;
-				else if(element.get(0).nodeName.toLowerCase() == "code" &&
-					(property == 'font-family'))
+				else if(element.get(0).nodeName.toLowerCase() === "code" &&
+					(property === 'font-family'))
 					return;
 
 				elementPropVal = element.css(property);
@@ -491,18 +491,14 @@
 		handleTags = function(element, content) {
 			var tag = element.get(0).nodeName.toLowerCase();
 
-			if(typeof tagsToBbcodes[tag] != "undefined")
-			{
+			if(typeof tagsToBbcodes[tag] !== "undefined") {
 				// loop all bbcodes for this tag
 				$.each(tagsToBbcodes[tag], function(bbcode, bbcodeAttribs) {
-					var runBbcode = false;
-
 					// if the bbcode doesn't require any attributes then its
 					// all valid and should be run
-					if(bbcodeAttribs === null)
-						runBbcode = true;
-					else
-					{
+					if(bbcodeAttribs !== null) {
+						var runBbcode = false;
+
 						// loop all the bbcode attribs
 						$.each(bbcodeAttribs, function(attrib, values)
 						{
@@ -519,10 +515,10 @@
 							runBbcode = true;
 							return false;
 						});
-					}
 
-					if(!runBbcode)
-						return;
+						if(!runBbcode)
+							return;
+					}
 
 					if($.isFunction(base.bbcodes[bbcode].format))
 						content = base.bbcodes[bbcode].format(element, content);
@@ -531,7 +527,7 @@
 				});
 			}
 
-			if(tag == 'br' || tag == 'div' || tag == 'p')
+			if(tag === 'br' || tag === 'div' || tag === 'p')
 				content += "\n";
 
 			return content;
@@ -612,7 +608,7 @@
 			{
 				var attrsMap = {};
 
-				if(typeof attrs != "undefined")
+				if(typeof attrs !== "undefined")
 				{
 					var matches;
 					attrs = $.trim(attrs);
@@ -621,7 +617,7 @@
 						attrsMap.defaultAttr = stripQuotes(attrs.substr(1));
 					else
 					{
-						if(attrs.charAt(0) == "=")
+						if(attrs.charAt(0) === "=")
 							attrs = "defaultAttr" + attrs;
 
 						while((matches = atribsRegex.exec(attrs)))
@@ -629,7 +625,7 @@
 					}
 				}
 
-				if(typeof base.bbcodes[bbcode] == "undefined")
+				if(typeof base.bbcodes[bbcode] === "undefined")
 					return str;
 
 				if(typeof base.bbcodes[bbcode].html === 'function')
@@ -645,7 +641,7 @@
 			text = text.replace(/(\[\/?(?:left|center|right|justify)\])\n/g, "$1");
 			text = text.replace(/\n/g, "<br />");
 
-			while(text != oldText)
+			while(text !== oldText)
 			{
 				oldText = text;
 				text    = text.replace(bbcodeRegex, replaceBBCodeFunc);

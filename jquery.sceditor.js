@@ -1,5 +1,5 @@
 /**
- * @preserve SCEditor v1.2.2
+ * @preserve SCEditor v1.2.3
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
  * Copyright (C) 2011, Sam Clarke (samclarke.com)
@@ -108,6 +108,7 @@
 			initEditor,
 			initToolBar,
 			initKeyPressFuncs,
+			initResize,
 			documentClickHandler,
 			preLoadEmoticons,
 			getWysiwygDoc;
@@ -666,6 +667,9 @@
 			initEditor();
 			initKeyPressFuncs();
 
+			if(base.options.resizeEnabled)
+				initResize();
+
 			$textarea.parents("form").submit(base.updateFormTextareaValue);
 			$(document).click(documentClickHandler);
 
@@ -686,19 +690,9 @@
 		 * @private
 		 */
 		initEditor = function () {
-			var height, width;
-			var editorHeight = $textarea.height() - (base.options.toolbarContainer === null?$toolbar.outerHeight():0);
-			var editorWidth = $textarea.width();
-
-			$textEeditor   = $('<textarea></textarea>', {
-				height: editorHeight,
-				width: editorWidth
-			}).hide();
-
+			$textEeditor = $('<textarea></textarea>').hide();
 			$wysiwygEditor = $("<iframe></iframe>", {
-				frameborder: 0,
-				height: editorHeight,
-				width: editorWidth
+				frameborder: 0
 			});
 
 			if(window.location.protocol === "https:")
@@ -708,20 +702,11 @@
 			editorContainer.append($wysiwygEditor).append($textEeditor);
 			wysiwygEditor = $wysiwygEditor[0];
 
-			// fix the height and width of the textarea/iframe
-			height = $wysiwygEditor.height();
-			width = $wysiwygEditor.width();
-			$wysiwygEditor.height(height + ((height - $wysiwygEditor.outerHeight(true))/2));
-			$wysiwygEditor.width(width + ((width - $wysiwygEditor.outerWidth(true))/2));
-
-			height = $textEeditor.height();
-			width = $textEeditor.width();
-			$textEeditor.height(height + ((height - $textEeditor.outerHeight(true))/2));
-			$textEeditor.width(width + ((width - $textEeditor.outerWidth(true))/2));
+			setHeight($textarea.height());
+			setWidth($textarea.width());
 
 			// turn on design mode
 			getWysiwygDoc().designMode = 'On';
-
 			getWysiwygDoc().open();
 			getWysiwygDoc().write(
 				'<html><head><link rel="stylesheet" type="text/css" href="' + base.options.style + '" /></head>' +
@@ -789,6 +774,104 @@
 			$.each(base.commands, function (command, values) {
 				if(typeof values.keyPress != "undefined")
 					keyPressFuncs.push(values.keyPress);
+			});
+		};
+
+		var setWidth = function (width) {
+			editorContainer.width(width);
+
+			// fix the height and width of the textarea/iframe
+			$wysiwygEditor.width(width);
+			$wysiwygEditor.width(width + (width - $wysiwygEditor.outerWidth(true)));
+
+			$textEeditor.width(width);
+			$textEeditor.width(width + (width - $textEeditor.outerWidth(true)));
+		};
+
+		var setHeight = function (height) {
+			editorContainer.height(height);
+
+			height = height - (base.options.toolbarContainer === null?$toolbar.outerHeight():0);
+
+			// fix the height and width of the textarea/iframe
+			$wysiwygEditor.height(height);
+			$wysiwygEditor.height(height + (height - $wysiwygEditor.outerHeight(true)));
+
+			$textEeditor.height(height);
+			$textEeditor.height(height + (height - $textEeditor.outerHeight(true)));
+		};
+
+		/**
+		 * Creates the resizer.
+		 * @private
+		 */
+		initResize = function () {
+			var	$grip  = $('<div class="sceditor-grip" />'),
+				// cover is used to cover the editor iframe so document still gets mouse move events
+				$cover = $('<div class="sceditor-resize-cover" />'),
+				startX = 0,
+				startY = 0,
+				startWidth  = 0,
+				startHeight = 0,
+				origWidth   = editorContainer.width(),
+				origHeight  = editorContainer.height(),
+				dragging    = false,
+				minHeight, maxHeight, minWidth, maxWidth,
+				mouseMoveFunc;
+
+			minHeight = (base.options.resizeMinHeight == null ?
+					origHeight / 2 :
+					base.options.resizeMinHeight);
+
+			maxHeight = (base.options.resizeMaxHeight == null ?
+					origHeight * 2 :
+					base.options.resizeMaxHeight);
+
+			minWidth = (base.options.resizeMinWidth == null ?
+					origWidth / 2 :
+					base.options.resizeMinWidth);
+
+			maxWidth = (base.options.resizeMaxWidth == null ?
+					origWidth * 2 :
+					base.options.resizeMaxWidth);
+
+			mouseMoveFunc = function (e) {
+				var newHeight = startHeight + (e.pageY - startY);
+				var newWidth  = startWidth  + (e.pageX - startX);
+
+				if (newWidth >= minWidth && (minWidth < 0 || newWidth <= maxWidth))
+					setWidth(newWidth);
+
+				if (newHeight >= minHeight && (maxHeight < 0 || newHeight <= maxHeight))
+					setHeight(newHeight);
+
+				e.preventDefault();
+			};
+
+			editorContainer.append($grip);
+			editorContainer.append($cover.hide());
+
+			$grip.mousedown(function (e) {
+				startX       = e.pageX;
+				startY       = e.pageY;
+				startWidth   = editorContainer.width();
+				startHeight  = editorContainer.height();
+				dragging     = true;
+
+				$cover.show();
+				$(document).bind('mousemove', mouseMoveFunc);
+				e.preventDefault();
+			});
+
+			$(document).mouseup(function (e) {
+				if(!dragging)
+					return;
+
+				dragging = false;
+				$cover.hide();
+
+				$(document).unbind('mousemove', mouseMoveFunc);
+				e.preventDefault();
 			});
 		};
 
@@ -984,13 +1067,13 @@
 			if(selection === null)
 				return null;
 
+			// IE9+ and all other browsers
+			if (window.getSelection && typeof selection.commonAncestorContainer !== 'undefined')
+				return selection.commonAncestorContainer;
+
 			// IE < 9
 			if (document.selection && document.selection.createRange)
 				return selection.parentElement();
-
-			// IE9+ and all other browsers
-			if (window.getSelection)
-				return selection.commonAncestorContainer;
 		};
 
 		/**
@@ -1250,6 +1333,18 @@
 
 		// Height of the editor including toolbat. Set to null for automatic height
 		height: null,
+
+		// If to allow the editor to be resized
+		resizeEnabled: true,
+
+		// Min resize to width, set to null for half textarea width or -1 for unlimited
+		resizeMinWidth: null,
+		// Min resize to height, set to null for half textarea height or -1 for unlimited
+		resizeMinHeight: null,
+		// Max resize to height, set to null for double textarea height or -1 for unlimited
+		resizeMaxHeight: null,
+		// Max resize to width, set to null for double textarea width or -1 for unlimited
+		resizeMaxWidth: null,
 
 		getHtmlHandler: null,
 		getTextHandler: null,

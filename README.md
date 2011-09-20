@@ -1,4 +1,4 @@
-# SCEditor v1.2.2
+# SCEditor v1.2.3
 Copyright (C) 2011, Sam Clarke (http://www.samclarke.com)
 
 For more invormation visit: http://www.samclarke.com/2011/07/sceditor/
@@ -60,6 +60,21 @@ Width of the editor in px. If set to null the width will be set to that of the t
 **height** *int*
 Height of the editor in px. If set to null the height will be set to that of the textarea it is replacing.
 
+**resizeEnabled** *bool*
+If to allow the editor to be resized. Defaults to true
+
+**resizeMinWidth** *int*
+Min resize to width in px. Set to null for half textarea width or -1 for unlimited.
+
+**resizeMinHeight** *int*
+Min resize to height in px. Set to null for half textarea height or -1 for unlimited.
+
+**resizeMaxHeight** *int*
+Max resize to height in px. Set to null for double textarea height or -1 for unlimited.
+
+**resizeMaxWidth** *int*
+Max resize to width in px. Set to null for double textarea width or -1 for unlimited.
+
 **getHtmlHandler** *function*
 
 **getTextHandler** *function*
@@ -73,6 +88,11 @@ http://www.gnu.org/licenses/gpl.html
 
 If you use SCEditor a link back would be nice but it's not requird.
 
+
+# Donate
+
+If you would like to make a donation you can via PayPal here:
+https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AVJSF5NEETYYG
 
 # Credits
 

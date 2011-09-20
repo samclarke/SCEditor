@@ -43,7 +43,8 @@
 			$(document).ready(function() {
 				$("textarea:first").sceditor({
 					style: "../minified/jquery.sceditor.default.min.css",
-					toolbar: "bold,italic,underline|font,size,color,removeformat|image,link,unlink,emoticon"
+					toolbar: "bold,italic,underline|font,size,color,removeformat|image,link,unlink,emoticon",
+					resizeEnabled: false
 				});
 			});
 			$(document).ready(function() {

@@ -1,5 +1,5 @@
 /**
- * SCEditor v1.2.2
+ * SCEditor v1.2.3
  * http://www.samclarke.com/2011/07/sceditor/
  *
  * Copyright (C) 2011, Sam Clarke (samclarke.com)
@@ -17,6 +17,7 @@
 	spritemapper.output_css = minified/jquery.sceditor.min.css
 */
 .sceditor-container {
+	position: relative;
 	overflow: hidden;
 	border: 1px solid #aaa;
 
@@ -31,7 +32,7 @@
 div.sceditor-dropdown, div.sceditor-dropdown div {
 	padding: 0;
 	margin: 0;
-	z-index: 300;
+	z-index: 3;
 }
 	.sceditor-container iframe, .sceditor-container textarea {
 		border: 0;
@@ -42,6 +43,29 @@ div.sceditor-dropdown, div.sceditor-dropdown div {
 		padding: 0;
 		margin: 5px;
 		resize: none;
+	}
+	div.sceditor-resize-cover {
+		position: absolute;
+		top: 0;
+		left: 0;
+		background: #000;
+		width: 3000px;
+		height: 6000px;
+		z-index: 2;
+		filter: alpha(opacity=30);
+		opacity: 0.3;
+	}
+	div.sceditor-grip {
+		background: #000;
+		overflow: hidden;
+		width: 10px;
+		height: 10px;
+		cursor: pointer;
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		z-index: 3;
+		background: url('icons/grip.png');
 	}
 	div.sceditor-dropdown {
 		position: absolute;
