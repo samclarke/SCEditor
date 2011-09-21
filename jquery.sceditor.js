@@ -404,8 +404,7 @@
 							// needed for IE to reset the last range
 							base.focus();
 
-							if(getWysiwygSelection().type == "None" ||
-								getWysiwygSelection().type == "Caret")
+							if(base.getWysiwygSelectedHtml() == '')
 								wysiwygEditorInsertHtml('<a href="' + 'mailto:' + val + '">' + val + '</a>');
 							else
 								base.execCommand("createlink", 'mailto:' + val);
@@ -431,9 +430,10 @@
 						if(val !== "" && val !== "http://") {
 							// needed for IE to reset the last range
 							base.focus();
+console.log(val);
+//http://localhost/Classes/SCEditor-punbb/punbb-1.3.5/viewtopic.php?pid=126#p126
 
-							if(getWysiwygSelection().type == "None" ||
-								getWysiwygSelection().type == "Caret")
+							if(base.getWysiwygSelectedHtml() == '')
 								wysiwygEditorInsertHtml('<a href="' + val + '">' + val + '</a>');
 							else
 								base.execCommand("createlink", val);
@@ -983,7 +983,14 @@
 				range = range.cloneRange();
 
 				// move the cursor to the end of the insertion
-				range.setStartAfter(htmlNode);
+				if(htmlNode.parentNode !== range.startContainer || !$.browser.opera)
+					range.setStartAfter(htmlNode);
+				else // this is only needed for opera
+				{
+					return;
+					//range.setStart(htmlNode.parentNode, range.startOffset+1);
+					//range.setEnd(htmlNode.parentNode, range.endOffset+1);
+				}
 
 				// change current range
 				wysiwygEditor.contentWindow.getSelection().removeAllRanges();

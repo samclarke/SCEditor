@@ -302,7 +302,7 @@
 					if(element.attr('href').substr(0, 7) == 'mailto:')
 						return '[email=' + element.attr('href').substr(7) + ']' + content + '[/email]';
 
-					return '[url=' + encodeURI(element.attr('href')).replace("=", "%3D") + ']' + content + '[/url]';
+					return '[url=' + encodeURI(element.attr('href')) + ']' + content + '[/url]';
 				},
 				html: function(element, attrs, content) {
 					if(typeof attrs.defaultAttr === "undefined")
@@ -613,7 +613,7 @@
 					var matches;
 					attrs = $.trim(attrs);
 					// if only one attribute then remove the = from the start and strip any quotes
-					if(attrs.charAt(0) == "=" && (attrs.split("=").length - 1) <= 1)
+					if((attrs.charAt(0) == "=" && (attrs.split("=").length - 1) <= 1) || bbcode === 'url')
 						attrsMap.defaultAttr = stripQuotes(attrs.substr(1));
 					else
 					{
@@ -639,7 +639,7 @@
 			text = text.replace(/>/g, "&gt;");
 			text = text.replace(/\r/g, "");
 			text = text.replace(/(\[\/?(?:left|center|right|justify)\])\n/g, "$1");
-			text = text.replace(/\n/g, "<br />");
+			text = text.replace(/\n/g, "<span><br /></span>");// opera needs a parent element
 
 			while(text !== oldText)
 			{
