@@ -673,7 +673,7 @@
 			$textarea.parents("form").submit(base.updateFormTextareaValue);
 			$(document).click(documentClickHandler);
 
-			// lead any textarea value into the editor
+			// load any textarea value into the editor
 			var val = $textarea.hide().val();
 
 			// Pass the value though the getTextHandler if it is set so that
@@ -702,8 +702,8 @@
 			editorContainer.append($wysiwygEditor).append($textEeditor);
 			wysiwygEditor = $wysiwygEditor[0];
 
-			setHeight($textarea.height());
 			setWidth($textarea.width());
+			setHeight($textarea.height());
 
 			// turn on design mode
 			getWysiwygDoc().designMode = 'On';
@@ -731,8 +731,8 @@
 				e.preventDefault();
 			};
 
-			$toolbar = $('<div class="sceditor-toolbar" />');
-			var groups    = base.options.toolbar.split("|");
+			$toolbar   = $('<div class="sceditor-toolbar" />');
+			var groups = base.options.toolbar.split("|");
 
 			for (var i=0; i < groups.length; i++) {
 				var group   = $('<div class="sceditor-group" />');
@@ -898,7 +898,7 @@
 			if($dropdown !== null)
 				closeDropDown();
 
-			var menuItemPosition = menuItem.position();
+			var menuItemPosition = menuItem.offset();
 
 			$dropdown = $('<div class="sceditor-dropdown sceditor-' + dropDownName + '" />').css({
 				top: menuItemPosition.top,
