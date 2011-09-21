@@ -74,6 +74,7 @@ div.sceditor-dropdown, div.sceditor-dropdown div {
 		background: #fff;
 		color: #222;
 		font-size: 13px;
+		z-index: 6;
 	}
 		div.sceditor-dropdown form { margin: 0; }
 		div.sceditor-dropdown label {

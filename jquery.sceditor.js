@@ -898,11 +898,12 @@
 			if($dropdown !== null)
 				closeDropDown();
 
-			var menuItemPosition = menuItem.offset();
+			var menuItemPosition = menuItem.position();
+			var editorContainerPosition = editorContainer.position();
 
 			$dropdown = $('<div class="sceditor-dropdown sceditor-' + dropDownName + '" />').css({
-				top: menuItemPosition.top,
-				left: menuItemPosition.left
+				top: editorContainerPosition.top + menuItemPosition.top,
+				left: editorContainerPosition.left + menuItemPosition.left
 			}).append(content);
 
 			editorContainer.after($dropdown);
