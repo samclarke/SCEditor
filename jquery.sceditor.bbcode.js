@@ -601,13 +601,13 @@
 		 * @return string HTML
 		 */
 		base.getTextHandler = function(text) {
-			var bbcodeRegex =  /\[([^\[\s=]*?)(?:([^\[]*?))?\]((?:[\s\S(?!=\[\\\1)](?!\[\1))*?)\[\/(\1)\]/g;
+			var bbcodeRegex = /\[([^\[\s=]*?)(?:([^\[]*?))?\]((?:[\s\S(?!=\[\\\1)](?!\[\1))*?)\[\/(\1)\]/g;
 			var atribsRegex = /(\S+)=((?:(?:(["'])(?:\\\3|[^\3])*?\3))|(?:[^'"\s]+))/g;
 			var oldText;
+
 			var replaceBBCodeFunc = function(str, bbcode, attrs, content)
 			{
 				var attrsMap = {};
-
 				if(typeof attrs !== "undefined")
 				{
 					var matches;

@@ -430,8 +430,6 @@
 						if(val !== "" && val !== "http://") {
 							// needed for IE to reset the last range
 							base.focus();
-console.log(val);
-//http://localhost/Classes/SCEditor-punbb/punbb-1.3.5/viewtopic.php?pid=126#p126
 
 							if(base.getWysiwygSelectedHtml() == '')
 								wysiwygEditorInsertHtml('<a href="' + val + '">' + val + '</a>');
@@ -517,7 +515,7 @@ console.log(val);
 					if(wysiwygEditor.contentWindow && wysiwygEditor.contentWindow.getSelection)
 						range = wysiwygEditor.contentWindow.getSelection().getRangeAt(0);
 
-					if(range === null || !range.startContainer)
+					if(range == null || !range.startContainer)
 						return;
 
 					if(allEmoticonCache === null)
@@ -1049,10 +1047,11 @@ console.log(val);
 
 			// IE < 9
 			if (document.selection && document.selection.createRange) {
-				if(typeof selection.htmlText != 'undefined')
+				if(selection.text === '')
+					return '';
+
+				if(typeof selection.htmlText !== 'undefined')
 					return selection.htmlText;
-				else if(selection.length >= 1)
-					return selection.item(0).outerHTML;
 			}
 
 			// IE9+ and all other browsers
