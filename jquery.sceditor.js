@@ -9,6 +9,9 @@
  *	http://www.gnu.org/licenses/gpl.html
  */
 
+//TODO: add inline/block checking of element on the insert HTML so that
+// block elements are not inserted into inline elements
+
 // ==ClosureCompiler==
 // @output_file_name jquery.sceditor.min.js
 // @compilation_level SIMPLE_OPTIMIZATIONS
@@ -118,51 +121,51 @@
 		 */
 		base.commands = {
 			bold: {
-				execCommand: "bold",
+				exec: "bold",
 				tooltip: "Bold"
 			},
 			italic: {
-				execCommand: "italic",
+				exec: "italic",
 				tooltip: "Italic"
 			},
 			underline: {
-				execCommand: "underline",
+				exec: "underline",
 				tooltip: "Underline"
 			},
 			strike: {
-				execCommand: "strikethrough",
+				exec: "strikethrough",
 				tooltip: "Strikethrough"
 			},
 			subscript: {
-				execCommand: "subscript",
+				exec: "subscript",
 				tooltip: "Subscript"
 			},
 			superscript: {
-				execCommand: "superscript",
+				exec: "superscript",
 				tooltip: "Superscript"
 			},
 
 
 			left: {
-				execCommand: "justifyleft",
+				exec: "justifyleft",
 				tooltip: "Align left"
 			},
 			center: {
-				execCommand: "justifycenter",
+				exec: "justifycenter",
 				tooltip: "Center"
 			},
 			right: {
-				execCommand: "justifyright",
+				exec: "justifyright",
 				tooltip: "Align right"
 			},
 			justify: {
-				execCommand: "justifyfull",
+				exec: "justifyfull",
 				tooltip: "Justify"
 			},
 
 
 			font: {
-				execFunction: function (caller) {
+				exec: function (caller) {
 					var fonts   = base.options.fonts.split(",");
 					var content = $("<span />");
 					var clickFunc = function (e) {
@@ -184,7 +187,7 @@
 				tooltip: "Font Name"
 			},
 			size: {
-				execFunction: function (caller) {
+				exec: function (caller) {
 					var content   = $("<span />");
 					var clickFunc = function (e) {
 						base.execCommand("fontsize", $(this).data('sceditor-fontsize'));
@@ -205,7 +208,7 @@
 				tooltip: "Font Size"
 			},
 			color: {
-				execFunction: function (caller) {
+				exec: function (caller) {
 					var genColor     = {r: 255, g: 255, b: 255};
 					var content      = $("<span />");
 					var colorColumns = base.options.colors?base.options.colors.split("|"):new Array(21);
@@ -254,28 +257,28 @@
 				tooltip: "Font Color"
 			},
 			removeformat: {
-				execCommand: "removeformat",
+				exec: "removeformat",
 				tooltip: "Remove Formatting"
 			},
 
 
 			cut: {
-				execCommand: "cut",
+				exec: "cut",
 				tooltip: "Cut",
 				errorMessage: "Your browser dose not allow the cut command. Please use the keyboard shortcut Ctrl/Cmd-X"
 			},
 			copy: {
-				execCommand: "copy",
+				exec: "copy",
 				tooltip: "Copy",
 				errorMessage: "Your browser dose not allow the copy command. Please use the keyboard shortcut Ctrl/Cmd-C"
 			},
 			paste: {
-				execCommand: "paste",
+				exec: "paste",
 				tooltip: "Paste",
 				errorMessage: "Your browser dose not allow the paste command. Please use the keyboard shortcut Ctrl/Cmd-V"
 			},
 			pastetext: {
-				execFunction: function (caller) {
+				exec: function (caller) {
 					var content = $('<form><div><label for="txt">Paste your text inside the following' +
 								 'box:</label> <textarea cols="20" rows="7" id="txt"></textarea>' +
 								'</div></form>')
@@ -295,27 +298,27 @@
 
 
 			bulletlist: {
-				execCommand: "insertunorderedlist",
+				exec: "insertunorderedlist",
 				tooltip: "Bullet list"
 			},
 			orderedlist: {
-				execCommand: "insertorderedlist",
+				exec: "insertorderedlist",
 				tooltip: "Numbered list"
 			},
 
 
 			undo: {
-				execCommand: "undo",
+				exec: "undo",
 				tooltip: "Undo"
 			},
 			redo: {
-				execCommand: "redo",
+				exec: "redo",
 				tooltip: "Redo"
 			},
 
 
 			table: {
-				execFunction: function (caller) {
+				exec: function (caller) {
 					var content = $('<form>' +
 						'<div><label for="rows">Rows:</label><input type="text" id="rows" value="2" /></div>' +
 						'<div><label for="cols">Cols:</label><input type="text" id="cols" value="2" /></div>' +
@@ -353,17 +356,17 @@
 
 
 			horizontalrule: {
-				execCommand: "inserthorizontalrule",
+				exec: "inserthorizontalrule",
 				tooltip: "Insert a horizontal rule"
 			},
 			code: {
-				execFunction: function (caller) {
+				exec: function (caller) {
 					wysiwygEditorInsertHtml('<code>', '<br /></code>');
 				},
 				tooltip: "Code"
 			},
 			image: {
-				execFunction: function (caller) {
+				exec: function (caller) {
 					var content = $('<form><div><label for="link">URL:</label> <input type="text" id="image" value="http://" /></div>' +
 							'<div><label for="width">Width (optional):</label> <input type="text" id="width" size="2" /></div>' +
 							'<div><label for="height">Height (optional):</label> <input type="text" id="height" size="2" /></div></form>')
@@ -393,7 +396,7 @@
 				tooltip: "Insert an image"
 			},
 			email: {
-				execFunction: function (caller) {
+				exec: function (caller) {
 					var content = $('<form><div><label for="email">E-mail:</label> <input type="text" id="email" value="" /></div></form>')
 						.submit(function () {return false;});
 
@@ -420,7 +423,7 @@
 				tooltip: "Insert an email"
 			},
 			link: {
-				execFunction: function (caller) {
+				exec: function (caller) {
 					var content = $('<form><div><label for="link">URL:</label> <input type="text" id="link" value="http://" /></div></form>')
 						.submit(function () {return false;});
 
@@ -447,19 +450,22 @@
 				tooltip: "Insert a link"
 			},
 			unlink: {
-				execCommand: "unlink",
+				exec: "unlink",
 				tooltip: "Unlink"
 			},
 
 			quote: {
-				execFunction: function (caller) {
-					wysiwygEditorInsertHtml('<blockquote>', '<br /></blockquote>');
+				exec: function (caller, html) {
+					if(html)
+						wysiwygEditorInsertHtml('<blockquote>' + html + '</blockquote>');
+					else
+						wysiwygEditorInsertHtml('<blockquote>', '<br /></blockquote>');
 				},
 				tooltip: "Insert a Quote"
 			},
 
 			emoticon: {
-				execFunction: function (caller) {
+				exec: function (caller) {
 					var content = $('<div />');
 					var line    = $('<div />');
 
@@ -566,7 +572,7 @@
 				tooltip: "Insert an emoticon"
 			},
 			youtube: {
-				execFunction: function (caller) {
+				exec: function (caller) {
 					var content = $('<form><div><label for="link">Video URL:</label> <input type="text" id="link" value="http://" /></div></form>')
 						.submit(function () {return false;});
 
@@ -590,7 +596,7 @@
 				tooltip: "Insert a YouTube video"
 			},
 			date: {
-				execFunction: function (caller) {
+				exec: function (caller) {
 					var now   = new Date();
 					var year  = now.getYear();
 					var month = now.getMonth();
@@ -608,7 +614,7 @@
 				tooltip: "Insert current date"
 			},
 			time: {
-				execFunction: function (caller) {
+				exec: function (caller) {
 					var now   = new Date();
 					var hours = now.getHours();
 					var mins  = now.getMinutes();
@@ -628,11 +634,11 @@
 
 
 			print: {
-				execCommand: "print",
+				exec: "print",
 				tooltip: "Print"
 			},
 			source: {
-				execFunction: function (caller) {
+				exec: function (caller) {
 					base.toggleTextMode();
 				},
 				tooltip: "View source"
@@ -1174,11 +1180,13 @@
 		 * @private
 		 */
 		handleCommand = function (caller, command) {
-			// run the commands execFunction if exists
-			if(command.hasOwnProperty("execFunction"))
-				command.execFunction (caller);
+			if(!command.hasOwnProperty("exec"))
+				return;
+
+			if($.isFunction(command.exec))
+				command.exec(caller);
 			else
-				base.execCommand (command.execCommand, command.hasOwnProperty("execParam") ? command.execParam : null);
+				base.execCommand (command.exec, command.hasOwnProperty("execParam") ? command.execParam : null);
 		};
 
 		/**
