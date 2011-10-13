@@ -167,7 +167,7 @@
 			font: {
 				exec: function (caller) {
 					var fonts   = base.options.fonts.split(",");
-					var content = $("<span />");
+					var content = $("<div />");
 					var clickFunc = function (e) {
 						base.execCommand("fontname", $(this).data('sceditor-font'));
 						closeDropDown();
@@ -188,7 +188,7 @@
 			},
 			size: {
 				exec: function (caller) {
-					var content   = $("<span />");
+					var content   = $("<div />");
 					var clickFunc = function (e) {
 						base.execCommand("fontsize", $(this).data('sceditor-fontsize'));
 						closeDropDown();
@@ -210,7 +210,7 @@
 			color: {
 				exec: function (caller) {
 					var genColor     = {r: 255, g: 255, b: 255};
-					var content      = $("<span />");
+					var content      = $("<div />");
 					var colorColumns = base.options.colors?base.options.colors.split("|"):new Array(21);
 						// IE is slow at string concation so use an array
 					var html         = [];
@@ -470,18 +470,20 @@
 					var line    = $('<div />');
 
 					var appendEmoticon = function (code, emoticon) {
-						line.append($('<img />', {
-								src: emoticon,
-								alt: code,
-								click: function (e) {
+						line.append($('<img />')
+								.attr({
+									src: emoticon,
+									alt: code
+								})
+								.click(function (e) {
 									wysiwygEditorInsertHtml('<img src="' + $(this).attr("src") +
 										'" data-sceditor-emoticon="' + $(this).attr('alt') + '" />');
 
 									closeDropDown();
 									base.focus();
 									e.preventDefault();
-								}
-							}));
+								})
+							);
 
 						if(line.children().length > 3) {
 							content.append(line);
@@ -659,11 +661,9 @@
 			if(base.options.width !== null)
 				$textarea.width(base.options.width);
 
-			editorContainer = $('<div />', {
-				"class": "sceditor-container",
-				height: $textarea.outerHeight(),
-				width: $textarea.outerWidth()
-			});
+			editorContainer = $('<div class="sceditor-container" />')
+				.width($textarea.outerWidth())
+				.height($textarea.outerHeight());
 			$textarea.after(editorContainer);
 
 			// create the editor 
@@ -695,9 +695,7 @@
 		 */
 		initEditor = function () {
 			$textEeditor = $('<textarea></textarea>').hide();
-			$wysiwygEditor = $("<iframe></iframe>", {
-				frameborder: 0
-			});
+			$wysiwygEditor = $('<iframe frameborder="0"></iframe>');
 
 			if(window.location.protocol === "https:")
 				$wysiwygEditor.attr("src", "javascript:false");
@@ -747,7 +745,7 @@
 					if(!base.commands.hasOwnProperty(buttons[x]))
 						continue;
 
-					var button = $('<a class="sceditor-button sceditor-button-' + buttons[x] + ' " unselectable="on"><div /></a>');
+					var button = $('<a class="sceditor-button sceditor-button-' + buttons[x] + ' " unselectable="on"><div unselectable="on" /></a>');
 
 					if(base.commands[buttons[x]].hasOwnProperty("tooltip"))
 						button.attr('title', base.commands[buttons[x]].tooltip);
@@ -902,12 +900,12 @@
 			if($dropdown !== null)
 				closeDropDown();
 
-			var menuItemPosition = menuItem.position();
-			var editorContainerPosition = editorContainer.position();
+			//var menuItemPosition = menuItem.position();
+			//var editorContainerPosition = editorContainer.position();
 
 			$dropdown = $('<div class="sceditor-dropdown sceditor-' + dropDownName + '" />').css({
-				top: editorContainerPosition.top + menuItemPosition.top,
-				left: editorContainerPosition.left + menuItemPosition.left
+				top: menuItem.offset().top,
+				left: menuItem.offset().left
 			}).append(content);
 
 			editorContainer.after($dropdown);

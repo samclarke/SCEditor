@@ -20,6 +20,7 @@
 	position: relative;
 	overflow: hidden;
 	border: 1px solid #aaa;
+	background: #fff;
 
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
