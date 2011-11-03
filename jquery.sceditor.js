@@ -114,7 +114,8 @@
 			initResize,
 			documentClickHandler,
 			preLoadEmoticons,
-			getWysiwygDoc;
+			getWysiwygDoc,
+			handleWindowResize;
 
 		/**
 		 * All the commands supported by the editor
@@ -658,8 +659,13 @@
 
 			if(base.options.height !== null)
 				$textarea.height(base.options.height);
+
 			if(base.options.width !== null)
 				$textarea.width(base.options.width);
+
+			if((base.options.height !== null && base.options.height.indexOf("%")) ||
+				(base.options.width !== null && base.options.width.indexOf("%")))
+				$(window).resize(handleWindowResize);
 
 			editorContainer = $('<div class="sceditor-container" />')
 				.width($textarea.outerWidth())
@@ -1277,6 +1283,16 @@
 		 */
 		handleMouseDown = function (e) {
 			closeDropDown();
+		};
+
+		handleWindowResize = function () {
+			if(base.options.height !== null && base.options.height.indexOf("%"))
+				setHeight(editorContainer.parent().height() *
+					(parseFloat(base.options.height) / 100));
+
+			if(base.options.width !== null && base.options.width.indexOf("%"))
+				setWidth(editorContainer.parent().width() *
+					(parseFloat(base.options.width) / 100));
 		};
 
 		// run the initializer
