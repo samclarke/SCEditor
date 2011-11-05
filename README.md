@@ -1,25 +1,29 @@
-# SCEditor v1.2.3
+# SCEditor v1.2.4
 Copyright (C) 2011, Sam Clarke (http://www.samclarke.com)
 
-For more invormation visit: http://www.samclarke.com/2011/07/sceditor/
+For more information visit: http://www.samclarke.com/2011/07/sceditor/
 
-If you find any bugs please let me know by either leaving a comment at
-http://www.samclarke.com/2011/07/sceditor/ or contacting me at
-http://www.samclarke.com/contact
+If you find any bugs please let me know by either reporting them on GitHub,
+leaving a comment at: http://www.samclarke.com/2011/07/sceditor/
+or contacting me via: http://www.samclarke.com/contact or GitHub
 
 
 # Usage
 
-Include the JQuery and SCEditor JavaScript then you can simpley do:
+Include the JQuery and SCEditor JavaScript
+	<link rel="stylesheet" href="minified/jquery.sceditor.min.css" type="text/css" media="all" />
+	<script type="text/javascript" src="minified/jquery.sceditor.min.js"></script>
+	
+Then you can simpley do:
 
 	$(document).ready(function() {
 		$("textarea").sceditor();
 	});
 
-or for BBCode WYSIWYG:
+or for a BBCode WYSIWYG editor do:
 
 	$(document).ready(function() {
-		$("textarea:last").sceditorBBCodePlugin();
+		$("textarea").sceditorBBCodePlugin();
 	});
 
 
@@ -58,11 +62,11 @@ Map in the following format:
 		}
 	},
 
-**width** *int*
-Width of the editor in px. If set to null the width will be set to that of the textarea it is replacing.
+**width** *int|string*
+Width of the editor in px or percentage string. If set to null the width will be set to that of the textarea it is replacing.
 
-**height** *int*
-Height of the editor in px. If set to null the height will be set to that of the textarea it is replacing.
+**height** *int|string*
+Height of the editor in px or percentage string. If set to null the height will be set to that of the textarea it is replacing.
 
 **resizeEnabled** *bool*
 If to allow the editor to be resized. Defaults to true
@@ -83,6 +87,10 @@ Max resize to width in px. Set to null for double textarea width or -1 for unlim
 
 **getTextHandler** *function*
 
+**dateFormat** *string*
+Date format to use, specified with the strings year, month & day e.g. "year-month-day".
+The year, month and day will be replaced with the users current year, month and day.
+
 
 # License
 
@@ -90,13 +98,16 @@ SCEditor is dual licensed under the MIT and GPL licenses:
 http://www.opensource.org/licenses/mit-license.php
 http://www.gnu.org/licenses/gpl.html
 
-If you use SCEditor a link back would be nice but it's not requird.
+If you use SCEditor a link back would be appreciated but is not requird.
 
 
 # Donate
 
 If you would like to make a donation you can via PayPal here:
 https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AVJSF5NEETYYG
+Or via Flattr here:
+http://flattr.com/thing/400345/SCEditor
+
 
 # Credits
 

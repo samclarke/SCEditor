@@ -1,5 +1,5 @@
 /**
- * SCEditor BBCode Plugin v1.2.2
+ * SCEditor BBCode Plugin v1.2.4
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
  * Copyright (C) 2011, Sam Clarke (samclarke.com)
@@ -8,6 +8,8 @@
  *	http://www.opensource.org/licenses/mit-license.php
  *	http://www.gnu.org/licenses/gpl.html
  */
+
+//TODO: make sure block level tags don't end up in inline tags
 
 // ==ClosureCompiler==
 // @output_file_name jquery.sceditor.min.js
@@ -28,348 +30,13 @@
 		 * @private
 		 */
 		var	init,
-			rgbToHex,
 			handleStyles,
 			handleTags,
 			formatString,
 			elementToBbcode,
 			stripQuotes;
 
-		base.bbcodes = {
-			b: {
-				styles: {
-					// 401 is for FF 3.5
-					"font-weight": ["bold", "bolder", "401", "700", "800", "900"]
-				},
-				format: "[b]{0}[/b]",
-				html: '<strong>{0}</strong>'
-			},
-			i: {
-				styles: {
-					"font-style": ["italic", "oblique"]
-				},
-				format: "[i]{0}[/i]",
-				html: '<em>{0}</em>'
-			},
-			u: {
-				styles: {
-					"text-decoration": ["underline"]
-				},
-				format: "[u]{0}[/u]",
-				html: '<u>{0}</u>'
-			},
-			s: {
-				styles: {
-					"text-decoration": ["line-through"]
-				},
-				format: "[s]{0}[/s]",
-				html: '<s>{0}</s>'
-			},
-			sub: {
-				tags: {
-					sub: null
-				},
-				format: "[sub]{0}[/sub]",
-				html: '<sub>{0}</sub>'
-			},
-			sup: {
-				tags: {
-					sup: null
-				},
-				format: "[sup]{0}[/sup]",
-				html: '<sup>{0}</sup>'
-			},
-
-
-			left: {
-				styles: {
-					"text-align": ["left"]
-				},
-				format: "[left]{0}[/left]",
-				html: '<div style="text-align: left">{0}</div>'
-			},
-			center: {
-				styles: {
-					"text-align": ["center"]
-				},
-				format: "[center]{0}[/center]",
-				html: '<div style="text-align: center">{0}</div>'
-			},
-			right: {
-				styles: {
-					"text-align": ["right"]
-				},
-				format: "[right]{0}[/right]",
-				html: '<div style="text-align: right">{0}</div>'
-			},
-			justify: {
-				styles: {
-					"text-align": ["justify"]
-				},
-				format: "[justify]{0}[/justify]",
-				html: '<div style="text-align: justify">{0}</div>'
-			},
-
-			font: {
-				styles: {
-					"font-family": null
-				},
-				format: function(element, content) {
-					if(element.css('font-family') == base.options.defaultFont)
-						return content;
-
-					return '[font=' + stripQuotes(element.css('font-family')) + ']' + content + '[/font]';
-				},
-				html: function(element, attrs, content) {
-					return '<font face="' + attrs.defaultAttr + '">' + content + '</font>';
-				}
-			},
-			size: {
-				styles: {
-					"font-size": null
-				},
-				format: function(element, content) {
-					var fontSize = element.css('fontSize');
-					var size     = 1;
-
-					if(fontSize == base.options.defaultSize)
-						return content;
-
-					// Most browsers return px value but IE returns 1-7
-					if(fontSize.indexOf("px") > -1) {
-						fontSize = fontSize.replace("px", "") - 0;
-
-						if(fontSize > 12)
-							size = 2;
-						if(fontSize > 15)
-							size = 3;
-						if(fontSize > 17)
-							size = 4;
-						if(fontSize > 23)
-							size = 5;
-						if(fontSize > 31)
-							size = 6;
-						if(fontSize > 47)
-							size = 7;
-					}
-					else
-						size = fontSize;
-
-					return '[size=' + size + ']' + content + '[/size]';
-				},
-				html: function(element, attrs, content) {
-					return '<font size="' + attrs.defaultAttr + '">' + content + '</font>';
-				}
-			},
-			color: {
-				styles: {
-					color: null
-				},
-				format: function(element, content) {
-					var color = rgbToHex(element.css('color'));
-
-					if(color == base.options.defaultColor)
-						return content;
-
-					return '[color=' + color + ']' + content + '[/color]';
-				},
-				html: function(element, attrs, content) {
-					return '<font color="' + attrs.defaultAttr + '">' + content + '</font>';
-				}
-			},
-
-			ul: {
-				tags: {
-					ul: null
-				},
-				format: "[ul]{0}[/ul]",
-				html: '<ul>{0}</ul>'
-			},
-			list: {
-				html: '<ul>{0}</ul>'
-			},
-			ol: {
-				tags: {
-					ol: null
-				},
-				format: "[ol]{0}[/ol]",
-				html: '<ol>{0}</ol>'
-			},
-			li: {
-				tags: {
-					li: null
-				},
-				format: "[li]{0}[/li]",
-				html: '<li>{0}</li>'
-			},
-			"*": {
-				html: '<li>{0}</li>'
-			},
-
-
-			table: {
-				tags: {
-					table: null
-				},
-				format: "[table]{0}[/table]",
-				html: '<table>{0}</table>'
-			},
-			tr: {
-				tags: {
-					tr: null
-				},
-				format: "[tr]{0}[/tr]",
-				html: '<tr>{0}</tr>'
-			},
-			th: {
-				tags: {
-					th: null
-				},
-				format: "[th]{0}[/th]",
-				html: '<th>{0}</th>'
-			},
-			td: {
-				tags: {
-					td: null
-				},
-				format: "[td]{0}[/td]",
-				html: '<td>{0}<br class="sceditor-ignore" /></td>'
-			},
-
-
-			emoticon: {
-				tags: {
-					img: {
-						src: null,
-						"data-sceditor-emoticon": null
-					}
-				},
-				format: function(element, content) {
-					return element.attr('data-sceditor-emoticon') + content;
-				},
-				html: '{0}'
-			},
-
-
-			horizontalrule: {
-				tags: {
-					hr: null
-				},
-				format: "[hr]{0}",
-				html: '<hr />'
-			},
-			img: {
-				tags: {
-					img: {
-						src: null
-					}
-				},
-				format: function(element, content) {
-					// check if this is an emoticon image
-					if(typeof element.attr('data-sceditor-emoticon') != "undefined")
-						return content;
-
-					var attribs =	"=" + $(element).width() +
-							"x" + $(element).height();
-
-					return '[img' + attribs + ']' + element.attr('src') + '[/img]';
-				},
-				html: function(element, attrs, content) {
-					var attribs = "";
-
-					if(typeof attrs.width != "undefined")
-						attribs += ' width="' + attrs.width + '"';
-					if(typeof attrs.height != "undefined")
-						attribs += ' height="' + attrs.height + '"';
-
-					if(typeof attrs.defaultAttr !== "undefined") {
-						var parts = attrs.defaultAttr.split(/x/i);
-
-						attribs = ' width="' + parts[0] + '"' +
-							' height="' + (parts.length === 2 ? parts[1] : parts[0]) + '"';
-					}
-
-					return '<img ' + attribs + ' src="' + content + '" />';
-				}
-			},
-			url: {
-				tags: {
-					a: {
-						href: null
-					}
-				},
-				format: function(element, content) {
-					if(element.attr('href').substr(0, 7) == 'mailto:')
-						return '[email=' + element.attr('href').substr(7) + ']' + content + '[/email]';
-
-					return '[url=' + encodeURI(element.attr('href')) + ']' + content + '[/url]';
-				},
-				html: function(element, attrs, content) {
-					if(typeof attrs.defaultAttr === "undefined")
-						attrs.defaultAttr = content;
-
-					return '<a href="' + attrs.defaultAttr + '">' + content + '</a>';
-				}
-			},
-			email: {
-				html: function(element, attrs, content) {
-					if(typeof attrs.defaultAttr === "undefined")
-						attrs.defaultAttr = content;
-
-					return '<a href="mailto:' + attrs.defaultAttr + '">' + content + '</a>';
-				}
-			},
-
-			quote: {
-				tags: {
-					blockquote: null
-				},
-				format: function(element, content) {
-					var attr = '';
-
-					if($(element).children("cite:first").length == 1) {
-						attr = '=' + $(element).children("cite:first").text();
-
-						content = '';
-						$(element).children("cite:first").remove();
-						$(element).contents().each(function() {
-							content += elementToBbcode($(this));
-						});
-					}
-
-					return '[quote' + attr + ']' + content + '[/quote]';
-				},
-				html: function(element, attrs, content) {
-					if(typeof attrs.defaultAttr !== "undefined")
-						content = '<cite>' + attrs.defaultAttr + '</cite>' + content;
-
-					return '<blockquote>' + content + '</blockquote>';
-				}
-			},
-			code: {
-				tags: {
-					code: null
-				},
-				format: "[code]{0}[/code]",
-				html: '<code>{0}</code>'
-			},
-
-			youtube: {
-				tags: {
-					iframe: {
-						'data-youtube-id': null
-					}
-				},
-				format: function(element, content) {
-					if(!element.attr('data-youtube-id'))
-						return content;
-
-					return '[youtube]' + element.attr('data-youtube-id') + '[/youtube]';
-				},
-				html: '<iframe width="560" height="315" src="http://www.youtube.com/embed/{0}' +
-					'" data-youtube-id="{0}" frameborder="0" allowfullscreen></iframe>'
-			}
-		};
+		base.bbcodes = $.sceditorBBCodePlugin.bbcodes;
 
 
 		/**
@@ -402,32 +69,7 @@
 				})
 			));
 		};
-
-		/**
-		 * Converts CSS rgb value into hex
-		 * @TODO: May need to add rgb(n%,n%,n%) and rgb(n,n,n,a) formats
-		 * @private
-		 * @return string Hex color
-		 */
-		rgbToHex = function(rgbStr) {
-			var matches;
-
-			function toHex(n) {
-				n = parseInt(n,10);
-				if(isNaN(n))
-					return "00";
-				n = Math.max(0,Math.min(n,255)).toString(16);
-
-				return n.length<2 ? '0'+n : n;
-			}
-
-			// rgb(n,n,n);
-			if((matches = rgbStr.match(/rgb\((\d+),\s*?(\d+),\s*?(\d+)\)/i)))
-				return '#' + toHex(matches[1]) + toHex(matches[2]-0) + toHex(matches[3]-0);
-
-			return rgbStr;
-		};
-
+		
 		/**
 		 * Populates tagsToBbcodes and stylesToBbcodes to enable faster lookups
 		 */
@@ -473,7 +115,7 @@
 				$.each(bbcodes, function(bbcode, values) {
 					if(values === null || $.inArray(elementPropVal.toString(), values) > -1) {
 						if($.isFunction(base.bbcodes[bbcode].format))
-							content = base.bbcodes[bbcode].format(element, content);
+							content = base.bbcodes[bbcode].format.call(base, element, content);
 						else
 							content = formatString(base.bbcodes[bbcode].format, content);
 					}
@@ -521,7 +163,7 @@
 					}
 
 					if($.isFunction(base.bbcodes[bbcode].format))
-						content = base.bbcodes[bbcode].format(element, content);
+						content = base.bbcodes[bbcode].format.call(base, element, content);
 					else
 						content = formatString(base.bbcodes[bbcode].format, content);
 				});
@@ -559,6 +201,8 @@
 
 		/**
 		 * Converts HTML to BBCode
+		 * @param string	html	Html string, this function ignores this, it works off domBody
+		 * @param HtmlElement	domBody	Editors dom body object to convert
 		 * @return string BBCode which has been converted from HTML 
 		 */
 		base.getHtmlHandler = function(html, domBody) {
@@ -569,6 +213,7 @@
 		 * Converts a HTML dom element to BBCode starting from
 		 * the innermost element and working backwards
 		 * @private
+		 * @param HtmlElement element The element to convert to BBCode
 		 * @return string BBCode
 		 */
 		elementToBbcode = function(element) {
@@ -598,6 +243,8 @@
 
 		/**
 		 * Converts BBCode to HTML
+		 * 
+		 * @param string text
 		 * @return string HTML
 		 */
 		base.getTextHandler = function(text) {
@@ -655,6 +302,406 @@
 		};
 
 		init();
+	};
+	
+	$.sceditorBBCodePlugin.bbcodes = {
+		b: {
+			styles: {
+				// 401 is for FF 3.5
+				"font-weight": ["bold", "bolder", "401", "700", "800", "900"]
+			},
+			format: "[b]{0}[/b]",
+			html: '<strong>{0}</strong>'
+		},
+		i: {
+			styles: {
+				"font-style": ["italic", "oblique"]
+			},
+			format: "[i]{0}[/i]",
+			html: '<em>{0}</em>'
+		},
+		u: {
+			styles: {
+				"text-decoration": ["underline"]
+			},
+			format: "[u]{0}[/u]",
+			html: '<u>{0}</u>'
+		},
+		s: {
+			styles: {
+				"text-decoration": ["line-through"]
+			},
+			format: "[s]{0}[/s]",
+			html: '<s>{0}</s>'
+		},
+		sub: {
+			tags: {
+				sub: null
+			},
+			format: "[sub]{0}[/sub]",
+			html: '<sub>{0}</sub>'
+		},
+		sup: {
+			tags: {
+				sup: null
+			},
+			format: "[sup]{0}[/sup]",
+			html: '<sup>{0}</sup>'
+		},
+
+
+		left: {
+			styles: {
+				"text-align": ["left"]
+			},
+			format: "[left]{0}[/left]",
+			html: '<div style="text-align: left">{0}</div>'
+		},
+		center: {
+			styles: {
+				"text-align": ["center"]
+			},
+			format: "[center]{0}[/center]",
+			html: '<div style="text-align: center">{0}</div>'
+		},
+		right: {
+			styles: {
+				"text-align": ["right"]
+			},
+			format: "[right]{0}[/right]",
+			html: '<div style="text-align: right">{0}</div>'
+		},
+		justify: {
+			styles: {
+				"text-align": ["justify"]
+			},
+			format: "[justify]{0}[/justify]",
+			html: '<div style="text-align: justify">{0}</div>'
+		},
+
+		font: {
+			styles: {
+				"font-family": null
+			},
+			format: function(element, content) {
+				if(element.css('font-family') == this.options.defaultFont)
+					return content;
+
+				return '[font=' + stripQuotes(element.css('font-family')) + ']' + content + '[/font]';
+			},
+			html: function(element, attrs, content) {
+				return '<font face="' + attrs.defaultAttr + '">' + content + '</font>';
+			}
+		},
+		size: {
+			styles: {
+				"font-size": null
+			},
+			format: function(element, content) {
+				var fontSize = element.css('fontSize');
+				var size     = 1;
+
+				if(fontSize == this.options.defaultSize)
+					return content;
+
+				// Most browsers return px value but IE returns 1-7
+				if(fontSize.indexOf("px") > -1) {
+					fontSize = fontSize.replace("px", "") - 0;
+
+					if(fontSize > 12)
+						size = 2;
+					if(fontSize > 15)
+						size = 3;
+					if(fontSize > 17)
+						size = 4;
+					if(fontSize > 23)
+						size = 5;
+					if(fontSize > 31)
+						size = 6;
+					if(fontSize > 47)
+						size = 7;
+				}
+				else
+					size = fontSize;
+
+				return '[size=' + size + ']' + content + '[/size]';
+			},
+			html: function(element, attrs, content) {
+				return '<font size="' + attrs.defaultAttr + '">' + content + '</font>';
+			}
+		},
+		color: {
+			styles: {
+				color: null
+			},
+			format: function(element, content) {
+				/**
+				 * Converts CSS rgb value into hex
+				 * @TODO: May need to add rgb(n%,n%,n%) and rgb(n,n,n,a) formats
+				 * @private
+				 * @return string Hex color
+				 */
+				var rgbToHex = function(rgbStr) {
+					var matches;
+		
+					function toHex(n) {
+						n = parseInt(n,10);
+						if(isNaN(n))
+							return "00";
+						n = Math.max(0,Math.min(n,255)).toString(16);
+		
+						return n.length<2 ? '0'+n : n;
+					}
+		
+					// rgb(n,n,n);
+					if((matches = rgbStr.match(/rgb\((\d+),\s*?(\d+),\s*?(\d+)\)/i)))
+						return '#' + toHex(matches[1]) + toHex(matches[2]-0) + toHex(matches[3]-0);
+		
+					return rgbStr;
+				};
+		
+				var color = rgbToHex(element.css('color'));
+
+				if(color == this.options.defaultColor)
+					return content;
+
+				return '[color=' + color + ']' + content + '[/color]';
+			},
+			html: function(element, attrs, content) {
+				return '<font color="' + attrs.defaultAttr + '">' + content + '</font>';
+			}
+		},
+
+		ul: {
+			tags: {
+				ul: null
+			},
+			format: "[ul]{0}[/ul]",
+			html: '<ul>{0}</ul>'
+		},
+		list: {
+			html: '<ul>{0}</ul>'
+		},
+		ol: {
+			tags: {
+				ol: null
+			},
+			format: "[ol]{0}[/ol]",
+			html: '<ol>{0}</ol>'
+		},
+		li: {
+			tags: {
+				li: null
+			},
+			format: "[li]{0}[/li]",
+			html: '<li>{0}</li>'
+		},
+		"*": {
+			html: '<li>{0}</li>'
+		},
+
+
+		table: {
+			tags: {
+				table: null
+			},
+			format: "[table]{0}[/table]",
+			html: '<table>{0}</table>'
+		},
+		tr: {
+			tags: {
+				tr: null
+			},
+			format: "[tr]{0}[/tr]",
+			html: '<tr>{0}</tr>'
+		},
+		th: {
+			tags: {
+				th: null
+			},
+			format: "[th]{0}[/th]",
+			html: '<th>{0}</th>'
+		},
+		td: {
+			tags: {
+				td: null
+			},
+			format: "[td]{0}[/td]",
+			html: '<td>{0}<br class="sceditor-ignore" /></td>'
+		},
+
+
+		emoticon: {
+			tags: {
+				img: {
+					src: null,
+					"data-sceditor-emoticon": null
+				}
+			},
+			format: function(element, content) {
+				return element.attr('data-sceditor-emoticon') + content;
+			},
+			html: '{0}'
+		},
+
+
+		horizontalrule: {
+			tags: {
+				hr: null
+			},
+			format: "[hr]{0}",
+			html: '<hr />'
+		},
+		img: {
+			tags: {
+				img: {
+					src: null
+				}
+			},
+			format: function(element, content) {
+				// check if this is an emoticon image
+				if(typeof element.attr('data-sceditor-emoticon') != "undefined")
+					return content;
+
+				var attribs =	"=" + $(element).width() +
+						"x" + $(element).height();
+
+				return '[img' + attribs + ']' + element.attr('src') + '[/img]';
+			},
+			html: function(element, attrs, content) {
+				var attribs = "";
+
+				if(typeof attrs.width != "undefined")
+					attribs += ' width="' + attrs.width + '"';
+				if(typeof attrs.height != "undefined")
+					attribs += ' height="' + attrs.height + '"';
+
+				if(typeof attrs.defaultAttr !== "undefined") {
+					var parts = attrs.defaultAttr.split(/x/i);
+
+					attribs = ' width="' + parts[0] + '"' +
+						' height="' + (parts.length === 2 ? parts[1] : parts[0]) + '"';
+				}
+
+				return '<img ' + attribs + ' src="' + content + '" />';
+			}
+		},
+		url: {
+			tags: {
+				a: {
+					href: null
+				}
+			},
+			format: function(element, content) {
+				if(element.attr('href').substr(0, 7) == 'mailto:')
+					return '[email=' + element.attr('href').substr(7) + ']' + content + '[/email]';
+
+				return '[url=' + encodeURI(element.attr('href')) + ']' + content + '[/url]';
+			},
+			html: function(element, attrs, content) {
+				if(typeof attrs.defaultAttr === "undefined")
+					attrs.defaultAttr = content;
+
+				return '<a href="' + attrs.defaultAttr + '">' + content + '</a>';
+			}
+		},
+		email: {
+			html: function(element, attrs, content) {
+				if(typeof attrs.defaultAttr === "undefined")
+					attrs.defaultAttr = content;
+
+				return '<a href="mailto:' + attrs.defaultAttr + '">' + content + '</a>';
+			}
+		},
+
+		quote: {
+			tags: {
+				blockquote: null
+			},
+			format: function(element, content) {
+				var attr = '';
+
+				if($(element).children("cite:first").length == 1) {
+					attr = '=' + $(element).children("cite:first").text();
+
+					content = '';
+					$(element).children("cite:first").remove();
+					$(element).contents().each(function() {
+						content += elementToBbcode($(this));
+					});
+				}
+
+				return '[quote' + attr + ']' + content + '[/quote]';
+			},
+			html: function(element, attrs, content) {
+				if(typeof attrs.defaultAttr !== "undefined")
+					content = '<cite>' + attrs.defaultAttr + '</cite>' + content;
+
+				return '<blockquote>' + content + '</blockquote>';
+			}
+		},
+		code: {
+			tags: {
+				code: null
+			},
+			format: "[code]{0}[/code]",
+			html: '<code>{0}</code>'
+		},
+
+		youtube: {
+			tags: {
+				iframe: {
+					'data-youtube-id': null
+				}
+			},
+			format: function(element, content) {
+				if(!element.attr('data-youtube-id'))
+					return content;
+
+				return '[youtube]' + element.attr('data-youtube-id') + '[/youtube]';
+			},
+			html: '<iframe width="560" height="315" src="http://www.youtube.com/embed/{0}' +
+				'" data-youtube-id="{0}" frameborder="0" allowfullscreen></iframe>'
+		}
+	};
+	
+	/**
+	 * Checks if a command with the specified name exists
+	 * 
+	 * @param string name
+	 * @return bool
+	 */
+	$.sceditorBBCodePlugin.commandExists = function(name) {
+		return typeof $.sceditorBBCodePlugin.bbcodes[name] !== "undefined";
+	};
+	
+	/**
+	 * Adds/updates a BBCode.
+	 * 
+	 * @param string		name		The BBCode name
+	 * @param object		tags		Any html tags this bbcode applies to, i.e. strong for [b]
+	 * @param object		styles		Any style properties this applies to, i.e. font-weight for [b]
+	 * @param string|function	format		Function or string to convert the element into BBCode
+	 * @param string|function	html		String or function to format the BBCode back into HTML.
+	 * @return bool
+	 */
+	$.sceditorBBCodePlugin.setCommand = function(name, tags, styles, format, html) {
+		if(!name || !format || !html)
+			return false;
+		
+		if(!$.sceditorBBCodePlugin.commandExists(name))
+			$.sceditorBBCodePlugin.bbcodes[name] = {};
+
+		$.sceditorBBCodePlugin.bbcodes[name].format = format;
+		$.sceditorBBCodePlugin.bbcodes[name].html = html;
+		
+		if(tags)
+			$.sceditorBBCodePlugin.bbcodes[name].tags = tags;
+		
+		if(styles)
+			$.sceditorBBCodePlugin.bbcodes[name].styles = styles;
+		
+		return true;
 	};
 
 	$.sceditorBBCodePlugin.defaultOptions = {
