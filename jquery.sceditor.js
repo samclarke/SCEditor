@@ -183,6 +183,7 @@
 				'<body></body></html>'
 			);
 			getWysiwygDoc().close();
+			getWysiwygDoc().designMode = 'On';
 
 			// set the key press event
 			$(getWysiwygDoc()).find("body").keypress(handleKeyPress);
