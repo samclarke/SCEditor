@@ -33,8 +33,7 @@
 			handleStyles,
 			handleTags,
 			formatString,
-			elementToBbcode,
-			stripQuotes;
+			elementToBbcode;
 
 		base.bbcodes = $.sceditorBBCodePlugin.bbcodes;
 
@@ -192,10 +191,10 @@
 
 		/**
 		 * Removes any leading or trailing quotes ('")
-		 * @private
+		 *
 		 * @return string
 		 */
-		stripQuotes = function(str) {
+		base.stripQuotes = function(str) {
 			return str.replace(/^["']+/, "").replace(/["']+$/, "");
 		};
 
@@ -261,14 +260,14 @@
 					attrs = $.trim(attrs);
 					// if only one attribute then remove the = from the start and strip any quotes
 					if((attrs.charAt(0) == "=" && (attrs.split("=").length - 1) <= 1) || bbcode === 'url')
-						attrsMap.defaultAttr = stripQuotes(attrs.substr(1));
+						attrsMap.defaultAttr = base.stripQuotes(attrs.substr(1));
 					else
 					{
 						if(attrs.charAt(0) === "=")
 							attrs = "defaultAttr" + attrs;
 
 						while((matches = atribsRegex.exec(attrs)))
-							attrsMap[matches[1].toLowerCase()] = stripQuotes(matches[2]);
+							attrsMap[matches[1].toLowerCase()] = base.stripQuotes(matches[2]);
 					}
 				}
 
@@ -276,7 +275,7 @@
 					return str;
 
 				if(typeof base.bbcodes[bbcode].html === 'function')
-					return base.bbcodes[bbcode].html(bbcode, attrsMap, content);
+					return base.bbcodes[bbcode].html.call(base, bbcode, attrsMap, content);
 				else
 					return formatString(base.bbcodes[bbcode].html, content);
 			};
@@ -387,7 +386,7 @@
 				if(element.css('font-family') == this.options.defaultFont)
 					return content;
 
-				return '[font=' + stripQuotes(element.css('font-family')) + ']' + content + '[/font]';
+				return '[font=' + this.stripQuotes(element.css('font-family')) + ']' + content + '[/font]';
 			},
 			html: function(element, attrs, content) {
 				return '<font face="' + attrs.defaultAttr + '">' + content + '</font>';

@@ -125,8 +125,8 @@
 			if(base.options.width !== null)
 				$textarea.width(base.options.width);
 
-			if((base.options.height !== null && base.options.height.indexOf("%")) ||
-				(base.options.width !== null && base.options.width.indexOf("%")))
+			if((base.options.height !== null && base.options.height.toString().indexOf("%") > -1) ||
+				(base.options.width !== null && base.options.width.toString().indexOf("%") > -1))
 				$(window).resize(handleWindowResize);
 
 			editorContainer = $('<div class="sceditor-container" />')
@@ -387,7 +387,8 @@
 				left: menuItem.offset().left
 			}).append(content);
 
-			editorContainer.after($dropdown);
+			//editorContainer.after($dropdown);
+			$dropdown.appendTo($('body'));
 			dropdownIgnoreLastClick = true;
 
 			// stop clicks within the dropdown from being handled
@@ -797,11 +798,11 @@
 		};
 
 		handleWindowResize = function () {
-			if(base.options.height !== null && base.options.height.indexOf("%"))
+			if(base.options.height !== null && base.options.height.toString().indexOf("%") > -1)
 				setHeight(editorContainer.parent().height() *
 					(parseFloat(base.options.height) / 100));
 
-			if(base.options.width !== null && base.options.width.indexOf("%"))
+			if(base.options.width !== null && base.options.width.toString().indexOf("%") > -1)
 				setWidth(editorContainer.parent().width() *
 					(parseFloat(base.options.width) / 100));
 		};
