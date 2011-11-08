@@ -420,7 +420,7 @@
 			}
 			
 			if(focus === true)
-					base.focus();
+				base.focus();
 		};
 
 		/**
@@ -493,22 +493,7 @@
 				wysiwygEditor.contentWindow.getSelection().addRange(range);
 			}
 			else if (getWysiwygDoc().selection && getWysiwygDoc().selection.createRange)
-			{
 				getWysiwygDoc().selection.createRange().pasteHTML(html);
-				
-				// If the cursor is at the end of the line the above will cause 1 char
-				// to be replaced at the end. The fix for that is to use:
-				// var range = getWysiwygDoc().selection.createRange();
-				// range.collapse(false);
-				// range.pasteHTML(html);
-				// range.select();
-				
-				// That however will stop the selection being replaced. The best idea might
-				// be to add a check to see if the selection is 1 char and is a the end
-				// of the line, if so do second otherwise do first. Not ideal as that then
-				// means the last char cannot be linked, ect. unless more than 1 char is
-				// selected
-			}
 			else
 				base.execCommand("insertHtml", html);
 
@@ -701,6 +686,7 @@
 		 * Fucuses the editors input area
 		 */
 		base.focus = function () {
+			saveRange();
 			wysiwygEditor.contentWindow.focus();
 
 			// Needed for IE < 9
