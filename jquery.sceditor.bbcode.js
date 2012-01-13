@@ -33,7 +33,8 @@
 			handleStyles,
 			handleTags,
 			formatString,
-			elementToBbcode;
+			elementToBbcode,
+			elementToText;
 
 		base.bbcodes = $.sceditorBBCodePlugin.bbcodes;
 
@@ -131,6 +132,9 @@
 		 */
 		handleTags = function(element, content) {
 			var tag = element.get(0).nodeName.toLowerCase();
+			
+			if(element.hasClass("sceditor-ignore"))
+				return content;
 
 			if(typeof tagsToBbcodes[tag] !== "undefined") {
 				// loop all bbcodes for this tag
@@ -226,7 +230,7 @@
 				if(element.get(0).nodeType === 3)
 					return element.get(0).nodeValue;
 				else if(element.is('code'))
-					ret = element.text();
+					ret = elementToText(element); //element.text();
 				else if(element.contents().length > 0)
 					$.each(element.contents(), function() {
 						ret += elementToBbcode($(this));
@@ -237,6 +241,30 @@
 				ret = handleStyles(element, ret);
 
 			ret = handleTags(element, ret);
+			return ret;
+		};
+		
+		/**
+		 * Converts a HTML dom element to text
+		 * @private
+		 * @param HtmlElement element The element to convert to text
+		 * @return string The text content of the element including newline chars
+		 */
+		elementToText = function(element) {
+			var ret = '';
+
+			if(typeof element.get(0) === 'undefined')
+				return '';
+			
+			if(element.get(0).nodeType === 3)
+				return element.get(0).nodeValue;
+			else if(element.is('br'))
+				ret = "\n";
+			else if(element.contents().length > 0)
+				$.each(element.contents(), function() {
+					ret += elementToText($(this));
+				});
+
 			return ret;
 		};
 

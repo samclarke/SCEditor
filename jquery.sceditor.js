@@ -527,6 +527,9 @@
 				range = wysiwygEditor.contentWindow.getSelection();
 			else if(getWysiwygDoc().selection)
 				range = getWysiwygDoc().selection;
+			
+			if(range.getRangeAt && range.rangeCount <= 0)
+				range.addRange(getWysiwygDoc().createRange());
 
 			if(range.getRangeAt)
 				return range.getRangeAt(0);
