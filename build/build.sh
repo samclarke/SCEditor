@@ -1,5 +1,8 @@
 #! /bin/bash
 
+# To use this build file type /build/build.sh in terminal from the root directory.
+# You must have yui-compressor and spritemapper installed for this to work.
+
 # compress CSS
 echo "Creating CSS sprites"
 spritemapper jquery.sceditor.css
