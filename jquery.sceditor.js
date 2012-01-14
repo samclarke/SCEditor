@@ -1,5 +1,5 @@
 /**
- * @preserve SCEditor v1.2.4
+ * @preserve SCEditor v1.2.6
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
  * Copyright (C) 2011, Sam Clarke (samclarke.com)
@@ -13,8 +13,6 @@
 // block elements are not inserted into inline elements
 
 //TODO: add XHTML output support
-
-//TODO: multilingual support
 
 // ==ClosureCompiler==
 // @output_file_name jquery.sceditor.min.js
@@ -80,6 +78,12 @@
 		 * @private
 		 */
 		var lastRange = null;
+		
+		/**
+		 * The editors locale
+		 * @private
+		 */
+		var locale = null;
 
 		/**
 		 * Stores a cache of preloaded images
@@ -104,7 +108,8 @@
 			getWysiwygDoc,
 			handleWindowResize,
 			setHeight,
-			setWidth;
+			setWidth,
+			initLocale;
 
 		/**
 		 * All the commands supported by the editor
@@ -119,9 +124,12 @@
 			$textarea.data("sceditor", base);
 			base.options = $.extend({}, $.sceditor.defaultOptions, options);
 
+			// Load locale
+			if(base.options.locale !== null && base.options.locale !== "en")
+				initLocale();
+			
 			if(base.options.height !== null)
 				$textarea.height(base.options.height);
-
 			if(base.options.width !== null)
 				$textarea.width(base.options.width);
 
@@ -217,7 +225,7 @@
 					var button = $('<a class="sceditor-button sceditor-button-' + buttons[x] + ' " unselectable="on"><div unselectable="on" /></a>');
 
 					if(base.commands[buttons[x]].hasOwnProperty("tooltip"))
-						button.attr('title', base.commands[buttons[x]].tooltip);
+						button.attr('title', base._(base.commands[buttons[x]].tooltip));
 
 					// add the click handler for the button
 					button.data("sceditor-command", buttons[x]);
@@ -528,6 +536,8 @@
 			else if(getWysiwygDoc().selection)
 				range = getWysiwygDoc().selection;
 			
+			// If no ranges are selected, add one. Needed if any HTML
+			// is to be inserted before a range is created
 			if(range.getRangeAt && range.rangeCount <= 0)
 				range.addRange(getWysiwygDoc().createRange());
 
@@ -741,7 +751,7 @@
 			// show error if execution failed and an error message exists
 			if(!executed && typeof base.commands[command] !== "undefined" &&
 				typeof base.commands[command].errorMessage !== "undefined")
-				alert(base.commands[command].errorMessage);
+				alert(base._(base.commands[command].errorMessage));
 		};
 		
 		// var isInline = function(elm) {
@@ -787,6 +797,10 @@
 			base.closeDropDown();
 		};
 
+		/**
+		 * Handles the window resize event. Needed to resize then editor
+		 * when the window size changes in fluid deisgns.
+		 */
 		handleWindowResize = function () {
 			if(base.options.height !== null && base.options.height.toString().indexOf("%") > -1)
 				setHeight(editorContainer.parent().height() *
@@ -796,10 +810,53 @@
 				setWidth(editorContainer.parent().width() *
 					(parseFloat(base.options.width) / 100));
 		};
+		
+		/**
+		 * Translates the string into the locale language.
+		 * 
+		 * Replaces any {0}, {1}, {2}, ect. with the params provided.
+
+		 * @public
+		 * @return string
+		 */
+		base._ = function() {
+			var args = arguments;
+			
+			if(locale !== null && locale[args[0]])
+				args[0] = locale[args[0]];
+			
+			return args[0].replace(/\{(\d+)\}/g, function(str, p1) {
+				return typeof args[p1-0+1] != 'undefined'? 
+						args[p1-0+1] :
+						'{' + p1 + '}';
+			});
+		};
+		
+		/**
+		 * Init the locale variable with the specified locale if possible
+		 * @private
+		 * @return void
+		 */
+		initLocale = function () {
+			if($.sceditor.locale[base.options.locale])
+				locale = $.sceditor.locale[base.options.locale];
+			else
+			{
+				var lang = base.options.locale.split("-");
+				
+				if($.sceditor.locale[lang[0]])
+					locale = $.sceditor.locale[lang[0]];
+			}
+			
+			if(locale !== null && locale.dateFormat)
+				base.options.dateFormat = locale.dateFormat;
+		};
 
 		// run the initializer
 		init();
 	};
+
+	$.sceditor.locale = {};
 
 	$.sceditor.commands = {
 		bold: {
@@ -962,12 +1019,15 @@
 		pastetext: {
 			exec: function (caller) {
 				var editor = this;
-				var content = $('<form><div><label for="txt">Paste your text inside the following' +
-							 'box:</label> <textarea cols="20" rows="7" id="txt"></textarea>' +
-							'</div></form>')
+				var content = $(this._('<form><div><label for="txt">{0}</label> <textarea cols="20" rows="7" id="txt">' +
+						'</textarea></div></form>',
+						this._("Paste your text inside the following box:")
+					))
 					.submit(function () {return false;});
 
-				content.append($('<div><input type="button" class="button" value="Insert" /></div>').click(function (e) {
+				content.append($(this._('<div><input type="button" class="button" value="{0}" /></div>',
+					this._("Insert")
+				)).click(function (e) {
 					editor.wysiwygEditorInsertText($(this).parent("form").find("#txt").val());
 					editor.closeDropDown(true);
 					e.preventDefault();
@@ -1002,13 +1062,18 @@
 		table: {
 			exec: function (caller) {
 				var editor  = this;
-				var content = $('<form>' +
-					'<div><label for="rows">Rows:</label><input type="text" id="rows" value="2" /></div>' +
-					'<div><label for="cols">Cols:</label><input type="text" id="cols" value="2" /></div>' +
-					'</form>')
+				var content = $(this._('<form>' +
+						'<div><label for="rows">{0}</label><input type="text" id="rows" value="2" /></div>' +
+						'<div><label for="cols">{1}</label><input type="text" id="cols" value="2" /></div>' +
+					'</form>',
+						this._("Rows:"),
+						this._("Cols:")
+					))
 					.submit(function () {return false;});
 
-				content.append($('<div><input type="button" class="button" value="Insert" /></div>').click(function (e) {
+				content.append($(this._('<div><input type="button" class="button" value="{0}" /></div>',
+					this._("Insert")
+				)).click(function (e) {
 					var rows = $(this).parent("form").find("#rows").val() - 0;
 					var cols = $(this).parent("form").find("#cols").val() - 0;
 
@@ -1050,12 +1115,18 @@
 		image: {
 			exec: function (caller) {
 				var editor  = this;
-				var content = $('<form><div><label for="link">URL:</label> <input type="text" id="image" value="http://" /></div>' +
-						'<div><label for="width">Width (optional):</label> <input type="text" id="width" size="2" /></div>' +
-						'<div><label for="height">Height (optional):</label> <input type="text" id="height" size="2" /></div></form>')
+				var content = $(this._('<form><div><label for="link">{0}</label> <input type="text" id="image" value="http://" /></div>' +
+						'<div><label for="width">{1}</label> <input type="text" id="width" size="2" /></div>' +
+						'<div><label for="height">{2}</label> <input type="text" id="height" size="2" /></div></form>',
+							this._("URL:"),
+							this._("Width (optional):"),
+							this._("Height (optional):")
+						))
 					.submit(function () {return false;});
 
-				content.append($('<div><input type="button" class="button" value="Insert" /></div>').click(function (e) {
+				content.append($(this._('<div><input type="button" class="button" value="Insert" /></div>',
+						this._("Insert")
+					)).click(function (e) {
 					var $form  = $(this).parent("form");
 					var val   = $form.find("#image").val();
 					var attrs = '';
@@ -1080,7 +1151,9 @@
 		email: {
 			exec: function (caller) {
 				var editor  = this;
-				var content = $('<form><div><label for="email">E-mail:</label> <input type="text" id="email" value="" /></div></form>')
+				var content = $(this._('<form><div><label for="email">{0}</label> <input type="text" id="email" value="" /></div></form>',
+						this._("E-mail:")
+					))
 					.submit(function () {return false;});
 
 				content.append($('<div><input type="button" class="button" value="Insert" /></div>').click(function (e) {
@@ -1107,10 +1180,16 @@
 		link: {
 			exec: function (caller) {
 				var editor  = this;
-				var content = $('<form><div><label for="link">URL:</label> <input type="text" id="link" value="http://" /></div></form>')
+				var content = $(
+					this._('<form><div><label for="link">{0}</label> <input type="text" id="link" value="http://" /></div></form>',
+						this._("URL:")
+					))
 					.submit(function () {return false;});
 
-				content.append($('<div><input type="button" class="button" value="Insert" /></div>').click(function (e) {
+				content.append($(
+					this._('<div><input type="button" class="button" value="{0}" /></div>',
+						this._("Insert")
+					)).click(function (e) {
 					var val = $(this).parent("form").find("#link").val();
 
 					if(val !== "" && val !== "http://") {
@@ -1177,7 +1256,7 @@
 					content.append(line);
 
 				if(typeof editor.options.emoticons.more !== "undefined") {
-					var more = $('<a class="sceditor-more">More</a>').click(function () {
+					var more = $(this._('<a class="sceditor-more">{0}</a>', this._("More"))).click(function () {
 						var emoticons = $.extend({}, editor.options.emoticons.dropdown, editor.options.emoticons.more);
 						content       = $('<div />');
 						line          = $('<div />');
@@ -1259,22 +1338,29 @@
 		youtube: {
 			exec: function (caller) {
 				var editor  = this;
-				var content = $('<form><div><label for="link">Video URL:</label> <input type="text" id="link" value="http://" /></div></form>')
+				var content = $(
+					this._('<form><div><label for="link">{0}</label> <input type="text" id="link" value="http://" /></div></form>',
+						this._("Video URL:")
+					))
 					.submit(function () {return false;});
 
-				content.append($('<div><input type="button" class="button" value="Insert" /></div>').click(function (e) {
-					var val = $(this).parent("form").find("#link").val();
-
-					if(val !== "" && val !== "http://") {
-						// See http://www.abovetopsecret.com/forum/thread270269/pg1
-						val = val.replace(/^[^v]+v.(.{11}).*/,"$1"); 
-						editor.wysiwygEditorInsertHtml('<iframe width="560" height="315" src="http://www.youtube.com/embed/' + val +
-							'" data-youtube-id="' + val + '" frameborder="0" allowfullscreen></iframe>');
-					}
-
-					editor.closeDropDown(true);
-					e.preventDefault();
-				}));
+				content.append(
+					$(this._('<div><input type="button" class="button" value="{0}" /></div>',
+						this._("Insert")
+					))
+					.click(function (e) {
+						var val = $(this).parent("form").find("#link").val();
+	
+						if(val !== "" && val !== "http://") {
+							// See http://www.abovetopsecret.com/forum/thread270269/pg1
+							val = val.replace(/^[^v]+v.(.{11}).*/,"$1"); 
+							editor.wysiwygEditorInsertHtml('<iframe width="560" height="315" src="http://www.youtube.com/embed/' + val +
+								'" data-youtube-id="' + val + '" frameborder="0" allowfullscreen></iframe>');
+						}
+	
+						editor.closeDropDown(true);
+						e.preventDefault();
+					}));
 
 				editor.createDropDown(caller, "insertlink", content);
 			},
@@ -1284,7 +1370,7 @@
 			exec: function (caller) {
 				var now   = new Date();
 				var year  = now.getYear();
-				var month = now.getMonth();
+				var month = now.getMonth()+1;
 				var day   = now.getDate();
 
 				if(year < 2000)
@@ -1384,6 +1470,8 @@
 
 		// Colors should be comma seperated and have a bar | to signal a new column. If null the colors will be auto generated.
 		colors: null,
+		
+		locale: "en",
 
 		emoticons:	{
 					dropdown: {

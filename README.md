@@ -1,4 +1,4 @@
-# SCEditor v1.2.5
+# SCEditor v1.2.6
 Copyright (C) 2011, Sam Clarke (http://www.samclarke.com)
 
 For more information visit: http://www.samclarke.com/2011/07/sceditor/
@@ -32,6 +32,9 @@ or for a BBCode WYSIWYG editor do:
 
 **toolbar** *string*
 Comma seperated list of commans. Groups should be split by a bar (|) charecter
+
+**locale** *string*
+The locale to use, e.g. en-GB, en-US, no-NB, ect. The language file must be included after the main JS but before the editor is used.
 
 **style** *string*
 Stylesheet to style the WYSIWYG document

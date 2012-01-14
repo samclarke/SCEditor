@@ -1,0 +1,48 @@
+Version 1.2.6:
+	Added i18n support
+	Fixed date bug that cuased the month to be out by -1
+	Fixed newlines being removed from [code] tags
+	Fixed newlines being added to tables when switching between source and design mode
+	Fixed error when attempting to insert HTML before anything has been enetered in the editor
+
+Version 1.2.5:
+	Fixed IE select problem.
+	Fixed percent based width/height problem.
+
+Version 1.2.4:
+	Added custom commands support.
+	Added date format option.
+	Added ability for % to be set as with/height.
+	Improved IE support.
+
+Version 1.2.3:
+	Added resize support.
+	Fixed IE 9 bug.
+	Fixed Opera colour picker bug.
+	Added hidden emoticons option.
+
+Version 1.2.2:
+	Improved the code to update the forms textarea value.
+	Improved As You Type emoticon support.
+	General code tidying.
+	Fix typo with image insert.
+	Added YouTube embedding.
+
+Version 1.2.1:
+	Fix BBCode color bug.
+	Improved colour picker speed.
+	Improved styling.
+	Fix IE6 bug where colour picker boxes are slightly bigger.
+	Add optional with/height to image insert.
+
+Version 1.2:
+	Fix typo stopping value getting posted
+	Added code tag.
+	Added Quote tag. 
+	Improved how HTML is inserted.
+
+Version 1.1:
+	Improved colour picker performance
+	Fixed BBCode bold bug with FF 3.5
+	Changed toolbar CSS to use a sprite
+	Fixed rounded corners CSS in Chrome

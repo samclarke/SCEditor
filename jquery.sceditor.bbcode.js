@@ -1,5 +1,5 @@
 /**
- * SCEditor BBCode Plugin v1.2.5
+ * SCEditor BBCode Plugin v1.2.6
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
  * Copyright (C) 2011, Sam Clarke (samclarke.com)
@@ -187,8 +187,8 @@
 		formatString = function() {
 			var args = arguments;
 			return args[0].replace(/\{(\d+)\}/g, function(str, p1) {
-				return typeof args[0-p1+1] != 'undefined'? 
-						args[0-p1+1] :
+				return typeof args[p1-0+1] != 'undefined'? 
+						args[p1-0+1] :
 						'{' + p1 + '}';
 			});
 		};
