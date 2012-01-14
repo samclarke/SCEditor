@@ -1004,17 +1004,17 @@
 		cut: {
 			exec: "cut",
 			tooltip: "Cut",
-			errorMessage: "Your browser dose not allow the cut command. Please use the keyboard shortcut Ctrl/Cmd-X"
+			errorMessage: "Your browser does not allow the cut command. Please use the keyboard shortcut Ctrl/Cmd-X"
 		},
 		copy: {
 			exec: "copy",
 			tooltip: "Copy",
-			errorMessage: "Your browser dose not allow the copy command. Please use the keyboard shortcut Ctrl/Cmd-C"
+			errorMessage: "Your browser does not allow the copy command. Please use the keyboard shortcut Ctrl/Cmd-C"
 		},
 		paste: {
 			exec: "paste",
 			tooltip: "Paste",
-			errorMessage: "Your browser dose not allow the paste command. Please use the keyboard shortcut Ctrl/Cmd-V"
+			errorMessage: "Your browser does not allow the paste command. Please use the keyboard shortcut Ctrl/Cmd-V"
 		},
 		pastetext: {
 			exec: function (caller) {

@@ -1,37 +1,35 @@
-// This file has not been checked yet, it's currently just an auto translation by Google Translate.
-// It should hopefully be checked/updated soon.
 (function ($) {
 	'use strict';
 	
 	$.sceditor.locale["no-NB"] = {
 		"Bold": "Fet",
 		"Italic": "Kursiv",
-		"Underline": "Understreket",
+		"Underline": "Understrek",
 		"Strikethrough": "Gjennomstrek",
 		"Subscript": "Senket",
 		"Superscript": "Hevet",
-		"Align left": "Rett venstre",
-		"Center": "Senter",
-		"Align right": "Rett høyre",
-		"Justify": "Begrunn",
-		"Font Name": "Font navn",
+		"Align left": "Sidestill til venstre",
+		"Center": "Midstill",
+		"Align right": "Sidestill til høyre",
+		"Justify": "Normalt oppstilt",
+		"Font Name": "Skriftype",
 		"Font Size": "Skriftstørrelse",
 		"Font Color": "skriftfarge",
 		"Remove Formatting": "Fjern formatering",
-		"Cut": "Kutt",
-		"Your browser dose not allow the cut command. Please use the keyboard shortcut Ctrl/Cmd-X": "Nettleseren din dose tillater ikke kutt kommandoen. Vennligst bruk hurtigtasten Ctrl / Cmd-X",
+		"Cut": "Klipp",
+		"Your browser does not allow the cut command. Please use the keyboard shortcut Ctrl/Cmd-X": "Nettleseren din kan ikke utføre klippe kommandoen. Vennligst bruk hurtigtasten Ctrl / Cmd-X",
 		"Copy": "Kopier",
-		"Your browser dose not allow the copy command. Please use the keyboard shortcut Ctrl/Cmd-C": "Nettleseren din dose ikke la kopien kommandoen. Vennligst bruk hurtigtasten Ctrl / Cmd-C",
+		"Your browser does not allow the copy command. Please use the keyboard shortcut Ctrl/Cmd-C": "Nettleseren din kan ikke utføre kopier kommandoen. Vennligst bruk hurtigtasten Ctrl / Cmd-C",
 		"Paste": "Lim",
-		"Your browser dose not allow the paste command. Please use the keyboard shortcut Ctrl/Cmd-V": "Nettleseren din dose ikke tillate lime kommandoen. Vennligst bruk hurtigtasten Ctrl / Cmd-V",
+		"Your browser does not allow the paste command. Please use the keyboard shortcut Ctrl/Cmd-V": "Nettleseren din kan ikke utføre lime kommandoen. Vennligst bruk hurtigtasten Ctrl / Cmd-V",
 		"Paste your text inside the following box:": "Lim inn teksten i den følgende boksen:",
 		//"Insert": "",
 		"Paste Text": "Lim inn tekst",
 		"Bullet list": "Bullet liste",
 		"Numbered list": "Nummerert liste",
 		"Undo": "Angre",
-		"Redo": "Redo",
-		"Rows:": "Radar",
+		"Redo": "Gjør på nytt",
+		"Rows:": "Rader",
 		"Cols:": "Kolonner",
 		//"Insert": "",
 		"Insert a table": "Sett inn en tabell",
@@ -57,6 +55,6 @@
 		"Insert current time": "Sett inn gjeldende klokkeslett",
 		"Print": "Skriv ut",
 		"View source": "Vis kildekode",
-		dateFormat: "day-month-year"
+		dateFormat: "day.month.year"
 	}
 })(jQuery);
