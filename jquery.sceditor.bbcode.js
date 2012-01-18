@@ -33,7 +33,6 @@
 			handleStyles,
 			handleTags,
 			formatString,
-			elementToBbcode,
 			elementToText;
 
 		base.bbcodes = $.sceditorBBCodePlugin.bbcodes;
@@ -209,7 +208,7 @@
 		 * @return string BBCode which has been converted from HTML 
 		 */
 		base.getHtmlHandler = function(html, domBody) {
-			return elementToBbcode($(domBody));
+			return base.elementToBbcode($(domBody));
 		};
 
 		/**
@@ -219,7 +218,7 @@
 		 * @param HtmlElement element The element to convert to BBCode
 		 * @return string BBCode
 		 */
-		elementToBbcode = function(element) {
+		base.elementToBbcode = function(element) {
 			var ret = '';
 
 			if(typeof element.get(0) === 'undefined')
@@ -233,7 +232,7 @@
 					ret = elementToText(element); //element.text();
 				else if(element.contents().length > 0)
 					$.each(element.contents(), function() {
-						ret += elementToBbcode($(this));
+						ret += base.elementToBbcode($(this));
 					});
 			}
 
@@ -654,7 +653,7 @@
 					content = '';
 					$(element).children("cite:first").remove();
 					$(element).contents().each(function() {
-						content += elementToBbcode($(this));
+						content += base.elementToBbcode($(this));
 					});
 				}
 
