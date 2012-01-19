@@ -1446,13 +1446,13 @@
 			$.sceditor.commands[name] = {};
 
 		$.sceditor.commands[name].exec = exec;
-		
+
 		if(tooltip)
 			$.sceditor.commands[name].tooltip = tooltip;
-		
+
 		if(keypress)
-			$.sceditor.commands[name].keypress = keypress;
-		
+			$.sceditor.commands[name].keyPress = keypress;
+
 		return true;
 	};
 	
