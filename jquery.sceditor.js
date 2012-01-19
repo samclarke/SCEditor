@@ -318,7 +318,7 @@
 				var newHeight = startHeight + (e.pageY - startY);
 				var newWidth  = startWidth  + (e.pageX - startX);
 
-				if (newWidth >= minWidth && (minWidth < 0 || newWidth <= maxWidth))
+				if (newWidth >= minWidth && (maxWidth < 0 || newWidth <= maxWidth))
 					setWidth(newWidth);
 
 				if (newHeight >= minHeight && (maxHeight < 0 || newHeight <= maxHeight))
