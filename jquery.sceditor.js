@@ -503,7 +503,9 @@
 				wysiwygEditor.contentWindow.getSelection().addRange(range);
 			}
 			else if (getWysiwygDoc().selection && getWysiwygDoc().selection.createRange)
+			{
 				getWysiwygDoc().selection.createRange().pasteHTML(html);
+			}
 			else
 				base.execCommand("insertHtml", html);
 
@@ -701,7 +703,7 @@
 		 * Fucuses the editors input area
 		 */
 		base.focus = function () {
-			saveRange();
+			//saveRange();
 			wysiwygEditor.contentWindow.focus();
 
 			// Needed for IE < 9
