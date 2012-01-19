@@ -645,7 +645,8 @@
 				blockquote: null
 			},
 			format: function(element, content) {
-				var attr = '';
+				var attr = '',
+					that = this;
 
 				if($(element).children("cite:first").length == 1) {
 					attr = '=' + $(element).children("cite:first").text();
@@ -653,7 +654,7 @@
 					content = '';
 					$(element).children("cite:first").remove();
 					$(element).contents().each(function() {
-						content += base.elementToBbcode($(this));
+						content += that.elementToBbcode($(this));
 					});
 				}
 
