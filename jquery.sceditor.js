@@ -410,8 +410,9 @@
 		 * Handles any document click and closes the dropdown if open
 		 * @private
 		 */
-		documentClickHandler = function () {
-			if(!dropdownIgnoreLastClick)
+		documentClickHandler = function (e) {
+			// ignore right clicks
+			if(!dropdownIgnoreLastClick && e.which !== 3)
 				base.closeDropDown();
 
 			dropdownIgnoreLastClick = false;
@@ -1431,10 +1432,10 @@
 	/**
 	 * Adds/updates a command.
 	 * 
-	 * @param string		name		The commands name
+	 * @param string			name		The commands name
 	 * @param string|function	exec		The commands exec function or string for the native execCommand
-	 * @param string		tooltip		The commands tooltip text
-	 * @param function		keypress	Function that gets called every time a key is pressed
+	 * @param string			tooltip		The commands tooltip text
+	 * @param function			keypress	Function that gets called every time a key is pressed
 	 * @return bool
 	 */
 	$.sceditor.setCommand = function(name, exec, tooltip, keypress) {
