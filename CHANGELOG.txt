@@ -1,5 +1,6 @@
 Version 1.2.6:
 	Added i18n support
+	Added support for text mode commands and disabling all non-text mode commands when in text mode
 	Fixed date bug that cuased the month to be out by -1
 	Fixed newlines being removed from [code] tags
 	Fixed newlines being added to tables when switching between source and design mode

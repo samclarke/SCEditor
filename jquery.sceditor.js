@@ -109,7 +109,8 @@
 			handleWindowResize,
 			setHeight,
 			setWidth,
-			initLocale;
+			initLocale,
+			isTextMode;
 
 		/**
 		 * All the commands supported by the editor
@@ -226,6 +227,14 @@
 
 					if(base.commands[buttons[x]].hasOwnProperty("tooltip"))
 						button.attr('title', base._(base.commands[buttons[x]].tooltip));
+						
+					if(base.commands[buttons[x]].exec)
+						button.data('sceditor-wysiwygmode', true);
+					else
+						button.addClass('disabled');
+						
+					if(base.commands[buttons[x]].txtExec)
+						button.data('sceditor-txtmode', true);
 
 					// add the click handler for the button
 					button.data("sceditor-command", buttons[x]);
@@ -643,7 +652,7 @@
 		 * Updates the forms textarea value
 		 */
 		base.updateTextareaValue = function () {
-			if($textEditor.is(':visible'))
+			if(isTextMode())
 				$textarea.val(base.getTextareaValue(false));
 			else
 				$textarea.val(base.getWysiwygEditorValue());
@@ -670,19 +679,36 @@
 
 			return html;
 		};
+		
+		isTextMode = function () {
+			return $textEditor.is(':visible');
+		}
 
 		/**
 		 * Switches between the WYSIWYG and plain text modes
 		 */
 		base.toggleTextMode = function () {
-			if($textEditor.is(':visible'))
+			if(isTextMode())
 				base.setWysiwygEditorValue(base.getTextareaValue());
 			else
 				base.setTextareaValue(base.getWysiwygEditorValue());
+			
+			// enable all the buttons
+			$toolbar.find('.sceditor-button').removeClass('disabled');
 
 			lastRange = null;
 			$textEditor.toggle();
 			$wysiwygEditor.toggle();
+			
+			// diable any buttons that are not allowed for this mode
+			$toolbar.find('.sceditor-button').each(function () {
+				var button = $(this);
+				
+				if(isTextMode() && !button.data('sceditor-txtmode'))
+					button.addClass('disabled');
+				else if (!isTextMode() && !button.data('sceditor-wysiwygmode'))
+					button.addClass('disabled');
+			});
 		};
 
 		/**
@@ -690,6 +716,15 @@
 		 * @private
 		 */
 		handleCommand = function (caller, command) {
+			// check if in text mode and handle text commands
+			if(isTextMode())
+			{
+				if(command.hasOwnProperty("txtExec"))
+					command.txtExec.call(base, caller);
+				
+				return;
+			}
+			
 			if(!command.hasOwnProperty("exec"))
 				return;
 			
@@ -743,7 +778,8 @@
 				$(getWysiwygSelectedContainerNode()).parents('code').length !== 0)
 				return;
 
-			if(getWysiwygDoc()) {
+			if(getWysiwygDoc())
+			{
 				try
 				{
 					executed = getWysiwygDoc().execCommand(command, false, param);
@@ -1110,7 +1146,7 @@
 			tooltip: "Insert a horizontal rule"
 		},
 		code: {
-			exec: function (caller) {
+			exec: function () {
 				this.wysiwygEditorInsertHtml('<code>', '<br /></code>');
 			},
 			tooltip: "Code"
@@ -1339,7 +1375,7 @@
 			tooltip: "Insert an emoticon"
 		},
 		youtube: {
-			exec: function (caller) {
+			exec: function () {
 				var editor  = this;
 				var content = $(
 					this._('<form><div><label for="link">{0}</label> <input type="text" id="link" value="http://" /></div></form>',
@@ -1370,7 +1406,7 @@
 			tooltip: "Insert a YouTube video"
 		},
 		date: {
-			exec: function (caller) {
+			exec: function () {
 				var now   = new Date();
 				var year  = now.getYear();
 				var month = now.getMonth()+1;
@@ -1390,7 +1426,7 @@
 			tooltip: "Insert current date"
 		},
 		time: {
-			exec: function (caller) {
+			exec: function () {
 				var now   = new Date();
 				var hours = now.getHours();
 				var mins  = now.getMinutes();
@@ -1414,7 +1450,10 @@
 			tooltip: "Print"
 		},
 		source: {
-			exec: function (caller) {
+			exec: function () {
+				this.toggleTextMode();
+			},
+			txtExec: function () {
 				this.toggleTextMode();
 			},
 			tooltip: "View source"
