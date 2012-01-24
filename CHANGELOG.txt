@@ -1,3 +1,9 @@
+Version 1.2.7:
+	Added options for emoticons to require spaces around them for compatibility.
+		i.e. If you have the emoticon :/ it will not replace http://. This
+		mode currently has limited As You Tyne emoticon conversion.
+	Fixed problem with YouTube dropdown
+
 Version 1.2.6:
 	Added i18n support
 	Added support for text mode commands and disabling all non-text mode commands when in text mode

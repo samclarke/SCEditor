@@ -1,5 +1,5 @@
 /**
- * @preserve SCEditor v1.2.6
+ * @preserve SCEditor v1.2.7
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
  * Copyright (C) 2011, Sam Clarke (samclarke.com)
@@ -669,20 +669,36 @@
 				// escape the key before using it as a regex
 				// and append the regex to only find emoticons outside
 				// of HTML tags
-				var reg  = key.replace(/[\$\?\[\]\.\*\(\)\|]/g, "\\$&")
-						.replace("<", "&lt;")
-						.replace(">", "&gt;") +
-						"(?=([^\\<\\>]*?<(?!/code)|[^\\<\\>]*?$))";
+				var reg = base.regexEscape(key) + "(?=([^\\<\\>]*?<(?!/code)|[^\\<\\>]*?$))";
+				var group = '';
+				
+				// Make sure the emoticon is surrounded by whitespace or is at the start/end of a string or html tag
+				if(base.options.emoticonsCompat)
+				{
+					reg = "([>|^|\\s]{1})" + reg + "(?=[\\s|$|<]{1})";
+					group = '$1';
+				}
 
-				html = html.replace(new RegExp(reg, 'g'), '<img src="' + url + '" data-sceditor-emoticon="' + key + '" />');
+				html = html.replace(new RegExp(reg, 'gm'), group + '<img src="' + url + '" data-sceditor-emoticon="' + key + '" />');
 			});
 
 			return html;
 		};
 		
+		/**
+		 * Escapes a string so it's safe to use in regex
+		 * @param string str The strong to escape
+		 * @return string
+		 */
+		base.regexEscape = function (str) {
+			return str.replace(/[\$\?\[\]\.\*\(\)\|]/g, "\\$&")
+				.replace("<", "&lt;")
+				.replace(">", "&gt;");
+		};
+		
 		isTextMode = function () {
 			return $textEditor.is(':visible');
-		}
+		};
 
 		/**
 		 * Switches between the WYSIWYG and plain text modes
@@ -1275,8 +1291,16 @@
 								alt: code
 							})
 							.click(function (e) {
-								editor.wysiwygEditorInsertHtml('<img src="' + $(this).attr("src") +
-									'" data-sceditor-emoticon="' + $(this).attr('alt') + '" />');
+								var start, end;
+								
+								if(editor.options.emoticonsCompat)
+								{
+									start = '<span> ';
+									end   = ' </span>';
+								}
+								var space = editor.options.emoticonsCompat ? " " : "";
+								editor.wysiwygEditorInsertHtml(start + '<img src="' + $(this).attr("src") +
+									'" data-sceditor-emoticon="' + $(this).attr('alt') + '" />' + end);
 
 								editor.closeDropDown(true);
 								e.preventDefault();
@@ -1336,19 +1360,40 @@
 						if(key.length > editor.longestEmoticonCode)
 							editor.longestEmoticonCode = key.length;
 					});
+					
+					// if need to check that the emoticon has whitespace around it,
+					// need to add 1 to either end
+					if(editor.options.emoticonsCompat)
+						editor.longestEmoticonCode += 1;
 				}
 
 				// can't just use range.startContainer.textContent as it doesn't have the current
 				// char included. Must add it into the string.
-				var currentString = range.startContainer.textContent.substr(0, range.startOffset) +
-							String.fromCharCode(e.which) +
-							range.startContainer.textContent.substr(range.startOffset, editor.longestEmoticonCode);
+				var buttonChar    = String.fromCharCode(e.which);
+				var buttonIsSpace = editor.options.emoticonsCompat ? /\s/.test(buttonChar) : false;
+				var left          = range.startContainer.textContent.substr(0, range.startOffset);
+				var right         = range.startContainer.textContent.substr(range.startOffset, editor.longestEmoticonCode);
+				var currentString = left + buttonChar + right;
 
 				$.each(editor.allEmoticonCache, function (key, url) {
-					if((start = currentString.indexOf(key)) > -1) {
+					if((start = currentString.indexOf(key, range.startOffset - key.length)) > -1) {
+
+						if(editor.options.emoticonsCompat)
+						{
+							var reg = new RegExp("(\\s{1})" + editor.regexEscape(key) + "(?=\\s{1})", 'gm');
+
+							if(buttonIsSpace && (buttonChar + right).indexOf(key) > -1)
+								return;
+								
+							if(!reg.test(currentString))
+								return;
+						}
+
 						range = range.cloneRange();
 						range.setStart(range.startContainer, start);
-						range.setEnd(range.startContainer, start + (key.length - 1));
+						// if the button is a space, then need to remove the full key, if it's not then
+						// part of the key is the button press which will be stoppped from being entered
+						range.setEnd(range.startContainer, start + key.length - (buttonIsSpace ? 0 : 1));
 						range.deleteContents();
 
 						var htmlNode       = wysiwygEditor.contentDocument.createElement('div');
@@ -1365,9 +1410,13 @@
 						wysiwygEditor.contentWindow.getSelection().removeAllRanges();
 						wysiwygEditor.contentWindow.getSelection().addRange(range);
 
-
-						e.preventDefault();
-						e.stopPropagation();
+						if(!buttonIsSpace)
+						{
+							e.preventDefault();
+							e.stopPropagation();
+						}
+						
+						// found emoticon so exit loop
 						return false;
 					}
 				});
@@ -1375,7 +1424,7 @@
 			tooltip: "Insert an emoticon"
 		},
 		youtube: {
-			exec: function () {
+			exec: function (caller) {
 				var editor  = this;
 				var content = $(
 					this._('<form><div><label for="link">{0}</label> <input type="text" id="link" value="http://" /></div></form>',
@@ -1515,6 +1564,12 @@
 		
 		locale: "en",
 
+		// compatibility mode for if you have emoticons such as :/ This mode requires
+		// emoticons to be surrounded by whitespace or end of line chars. This mode
+		// has limited As You Type emoticon converstion support (end of line chars)
+		// are not accepted as whitespace so only emoticons surrounded by whitespace
+		// will work
+		emoticonsCompat: false,
 		emoticons:	{
 					dropdown: {
 						":)": "emoticons/smile.png",

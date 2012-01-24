@@ -1,4 +1,4 @@
-# SCEditor v1.2.6
+# SCEditor v1.2.7
 Copyright (C) 2011, Sam Clarke (http://www.samclarke.com)
 
 For more information visit: http://www.samclarke.com/2011/07/sceditor/
@@ -44,6 +44,10 @@ Comma seperated list of fonts
 
 **colors** *string*
 Comma seperated list of HEX colours. Use the bar charecter (|) to signify a new colum. If set to null a list of colours will be automatically generated
+
+**emoticonsCompat** *boolean*
+If compatibility is enabled it will require emoticons ro be surrounded by whitespace or EOL characters meaning if you have :/ it will not be replaced
+in http://. This mode currently has limited As You Type emoticon converstion support. Will hopefully be fixed soon.
 
 **emoticons** *map*
 Map in the following format:
