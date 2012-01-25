@@ -3,6 +3,7 @@ Version 1.2.7:
 		i.e. If you have the emoticon :/ it will not replace http://. This
 		mode currently has limited As You Tyne emoticon conversion.
 	Fixed problem with YouTube dropdown
+	Fixed Opera problem with [url]
 
 Version 1.2.6:
 	Added i18n support

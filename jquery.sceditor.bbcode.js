@@ -622,13 +622,13 @@
 				if(element.attr('href').substr(0, 7) == 'mailto:')
 					return '[email=' + element.attr('href').substr(7) + ']' + content + '[/email]';
 
-				return '[url=' + encodeURI(element.attr('href')) + ']' + content + '[/url]';
+				return '[url=' + decodeURI(element.attr('href')) + ']' + content + '[/url]';
 			},
 			html: function(element, attrs, content) {
-				if(typeof attrs.defaultAttr === "undefined")
+				if(typeof attrs.defaultAttr === "undefined" || attrs.defaultAttr.length == 0)
 					attrs.defaultAttr = content;
 
-				return '<a href="' + attrs.defaultAttr + '">' + content + '</a>';
+				return '<a href="' + encodeURI(attrs.defaultAttr) + '">' + content + '</a>';
 			}
 		},
 		email: {
