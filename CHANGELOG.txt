@@ -4,6 +4,7 @@ Version 1.2.7:
 		mode currently has limited As You Tyne emoticon conversion.
 	Fixed problem with YouTube dropdown
 	Fixed Opera problem with [url]
+	Fixed problem with default style causing table to have size tags wrapped around them
 
 Version 1.2.6:
 	Added i18n support

@@ -30,6 +30,7 @@
 		 * @private
 		 */
 		var	init,
+			buildBbcodeCache,
 			handleStyles,
 			handleTags,
 			formatString,
@@ -59,7 +60,7 @@
 			base.options = $.extend({}, $.sceditor.defaultOptions, $.sceditorBBCodePlugin.defaultOptions, options);
 
 			// build the BBCode cache
-			base.buildBbcodeCache();
+			buildBbcodeCache();
 
 			(new $.sceditor(element,
 				$.extend({}, base.options, {
@@ -71,8 +72,9 @@
 		
 		/**
 		 * Populates tagsToBbcodes and stylesToBbcodes to enable faster lookups
+		 * @private
 		 */
-		base.buildBbcodeCache = function() {
+		buildBbcodeCache = function() {
 			$.each(base.bbcodes, function(bbcode, info) {
 				if(typeof base.bbcodes[bbcode].tags !== "undefined")
 					$.each(base.bbcodes[bbcode].tags, function(tag, attrs) {
