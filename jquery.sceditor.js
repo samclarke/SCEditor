@@ -473,15 +473,15 @@
 		 * 				will be placed between html and endHtml. If there is no selected text html and endHtml will
 		 * 				be concated together.
 		 */
-		base.wysiwygEditorInsertHtml = function (html, endHtml) {
+		base.wysiwygEditorInsertHtml = function (html, endHtml, overrideCodeBlocking) {
 			base.focus();
 
 			// don't apply to code elements
-			if($(getWysiwygSelectedContainerNode()).is('code') ||
-				$(getWysiwygSelectedContainerNode()).parents('code').length !== 0)
+			if(!overrideCodeBlocking && ($(getWysiwygSelectedContainerNode()).is('code') ||
+				$(getWysiwygSelectedContainerNode()).parents('code').length !== 0))
 				return;
 
-			if(typeof endHtml !== "undefined")
+			if(typeof endHtml !== "undefined" && endHtml !== null)
 				html = html + base.getWysiwygSelectedHtml() + endHtml;
 
 			if (getWysiwygDoc().getSelection) {
@@ -821,24 +821,23 @@
 		handleKeyPress = function (e) {
 			base.closeDropDown();
 
+			// "Fix" (ok it's a hack) for blocklevel elements being duplicated in some browsers when
+			// enter is pressed instead of inserting a newline
+			if(e.which == 13)// && $.browser.webkit)
+			{
+				if($(getWysiwygSelectedContainerNode()).is('code, blockquote') ||
+					$(getWysiwygSelectedContainerNode()).parents('code, blockquote').length !== 0)
+				{
+					base.wysiwygEditorInsertHtml('<br />', null, true);
+					return false;;
+				}
+			}
+
 			// don't apply to code elements
 			if($(getWysiwygSelectedContainerNode()).is('code') ||
 				$(getWysiwygSelectedContainerNode()).parents('code').length !== 0)
 				return;
-
-			// doing the below breaks lists sadly. Users of webkit
-			// will just have to learn to hold shift when pressing
-			// return to get a line break.
-			// Return key. Needed for webkit as it doesn't insert
-			// a br when pressed. It instead starts a new block
-			// element of the previous type which is bad for the
-			// quote and code tags.
-			//if(e.which == 13 && $.browser.webkit)
-			//{
-			//	wysiwygEditorInsertHtml('<br />');
-			//	return false;;
-			//}
-
+			
 			var i = keyPressFuncs.length;
 			while(i--)
 				keyPressFuncs[i].call(base, e, wysiwygEditor, $textEditor);
