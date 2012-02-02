@@ -675,7 +675,7 @@
 				// Make sure the emoticon is surrounded by whitespace or is at the start/end of a string or html tag
 				if(base.options.emoticonsCompat)
 				{
-					reg = "([>|^|\\s]{1})" + reg + "(?=[\\s|$|<]{1})";
+					reg = "((>|^|\\s){1})" + reg + "(?=(\\s|$|<){1})";
 					group = '$1';
 				}
 
