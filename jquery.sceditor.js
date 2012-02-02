@@ -1132,6 +1132,9 @@
 					var rows = $(this).parent("form").find("#rows").val() - 0;
 					var cols = $(this).parent("form").find("#cols").val() - 0;
 
+					if(rows < 1 || cols < 1)
+						return;
+					
 					var html = '<table>';
 					for (var row=0; row < rows; row++) {
 						html += '<tr>';
@@ -1443,7 +1446,7 @@
 							// See http://www.abovetopsecret.com/forum/thread270269/pg1
 							val = val.replace(/^[^v]+v.(.{11}).*/,"$1"); 
 							editor.wysiwygEditorInsertHtml('<iframe width="560" height="315" src="http://www.youtube.com/embed/' + val +
-								'" data-youtube-id="' + val + '" frameborder="0" allowfullscreen></iframe>');
+								'?wmode=opaque" data-youtube-id="' + val + '" frameborder="0" allowfullscreen></iframe>');
 						}
 	
 						editor.closeDropDown(true);
