@@ -16,7 +16,7 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 // ==/ClosureCompiler==
 
-/*jshint forin: true, nomen: true, undef: true, white: false  */
+/*jshint smarttabs: true */
 /*global jQuery: true*/
 
 (function($) {
@@ -111,7 +111,7 @@
 
 				// if the parent has the same style use that instead of this one
 				// so you dont end up with [i]parent[i]child[/i][/i]
-				if(element.parent().css(property) == elementPropVal)
+				if(element.parent().css(property) === elementPropVal)
 					return;
 
 				$.each(bbcodes, function(bbcode, values) {
@@ -189,7 +189,7 @@
 		formatString = function() {
 			var args = arguments;
 			return args[0].replace(/\{(\d+)\}/g, function(str, p1) {
-				return typeof args[p1-0+1] != 'undefined'? 
+				return typeof args[p1-0+1] !== 'undefined'? 
 						args[p1-0+1] :
 						'{' + p1 + '}';
 			});
@@ -289,7 +289,7 @@
 					var matches;
 					attrs = $.trim(attrs);
 					// if only one attribute then remove the = from the start and strip any quotes
-					if((attrs.charAt(0) == "=" && (attrs.split("=").length - 1) <= 1) || bbcode === 'url')
+					if((attrs.charAt(0) === "=" && (attrs.split("=").length - 1) <= 1) || bbcode === 'url')
 						attrsMap.defaultAttr = base.stripQuotes(attrs.substr(1));
 					else
 					{
@@ -417,7 +417,7 @@
 				"font-family": null
 			},
 			format: function(element, content) {
-				if(element.css('font-family') == this.options.defaultFont)
+				if(element.css('font-family') === this.options.defaultFont)
 					return content;
 
 				return '[font=' + this.stripQuotes(element.css('font-family')) + ']' + content + '[/font]';
@@ -434,7 +434,7 @@
 				var fontSize = element.css('fontSize');
 				var size     = 1;
 
-				if(fontSize == this.options.defaultSize)
+				if(fontSize === this.options.defaultSize)
 					return content;
 
 				// Most browsers return px value but IE returns 1-7
@@ -495,7 +495,7 @@
 		
 				var color = rgbToHex(element.css('color'));
 
-				if(color == this.options.defaultColor)
+				if(color === this.options.defaultColor)
 					return content;
 
 				return '[color=' + color + ']' + content + '[/color]';
@@ -593,7 +593,7 @@
 			},
 			format: function(element, content) {
 				// check if this is an emoticon image
-				if(typeof element.attr('data-sceditor-emoticon') != "undefined")
+				if(typeof element.attr('data-sceditor-emoticon') !== "undefined")
 					return content;
 
 				var attribs =	"=" + $(element).width() +
@@ -604,9 +604,9 @@
 			html: function(element, attrs, content) {
 				var attribs = "";
 
-				if(typeof attrs.width != "undefined")
+				if(typeof attrs.width !== "undefined")
 					attribs += ' width="' + attrs.width + '"';
-				if(typeof attrs.height != "undefined")
+				if(typeof attrs.height !== "undefined")
 					attribs += ' height="' + attrs.height + '"';
 
 				if(typeof attrs.defaultAttr !== "undefined") {
@@ -626,13 +626,13 @@
 				}
 			},
 			format: function(element, content) {
-				if(element.attr('href').substr(0, 7) == 'mailto:')
+				if(element.attr('href').substr(0, 7) === 'mailto:')
 					return '[email=' + element.attr('href').substr(7) + ']' + content + '[/email]';
 
 				return '[url=' + decodeURI(element.attr('href')) + ']' + content + '[/url]';
 			},
 			html: function(element, attrs, content) {
-				if(typeof attrs.defaultAttr === "undefined" || attrs.defaultAttr.length == 0)
+				if(typeof attrs.defaultAttr === "undefined" || attrs.defaultAttr.length === 0)
 					attrs.defaultAttr = content;
 
 				return '<a href="' + encodeURI(attrs.defaultAttr) + '">' + content + '</a>';
@@ -655,7 +655,7 @@
 				var attr = '',
 					that = this;
 
-				if($(element).children("cite:first").length == 1) {
+				if($(element).children("cite:first").length === 1) {
 					attr = '=' + $(element).children("cite:first").text();
 
 					content = '';
