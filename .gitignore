@@ -1,4 +1,4 @@
-build/closure-compiler.jar
+build/compiler.jar
 example/test.php
 example/test.html
 icons/

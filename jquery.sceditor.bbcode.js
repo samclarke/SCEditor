@@ -17,7 +17,6 @@
 // ==/ClosureCompiler==
 
 /*jshint smarttabs: true */
-/*global jQuery: true*/
 
 (function($) {
 	'use strict';
