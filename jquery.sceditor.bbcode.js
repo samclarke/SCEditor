@@ -34,7 +34,8 @@
 			handleStyles,
 			handleTags,
 			formatString,
-			elementToText;
+			elementToText,
+			isInline;
 
 		base.bbcodes = $.sceditorBBCodePlugin.bbcodes;
 
@@ -327,6 +328,10 @@
 			text = text.replace(/\[hr\]/gi, "<hr>");
 
 			return text.replace(/ {2}(?=([^<\>]*?<|[^<\>]*?$))/g, " &nbsp;");
+		};
+		
+		isInline = function(elm) {
+			return $(elm).css("display") !== "block";
 		};
 
 		init();

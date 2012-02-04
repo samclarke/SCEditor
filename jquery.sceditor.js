@@ -11,6 +11,8 @@
 
 //TODO: add inline/block checking of element on the insert HTML so that
 // block elements are not inserted into inline elements
+// Easy to do in all browser other than IE8 and below. For them I'm not sure
+// of the best way.
 
 //TODO: add XHTML output support
 
@@ -1274,8 +1276,21 @@
 
 		quote: {
 			exec: function (caller, html) {
-				html = html || '<br />';
-				this.wysiwygEditorInsertHtml('<blockquote>' + html + '</blockquote>');
+				var before	= '<blockquote>',
+					end		= '</blockquote>';
+				
+				// if there is HTML passed set end to null so any selected
+				// text is replaced
+				if(html)
+				{
+					before = before + html + end;
+					end = null;
+				}
+				// if not add a newline to the end of the inserted quote
+				else
+					end = '<br />' + end;
+				
+				this.wysiwygEditorInsertHtml(before, end);
 			},
 			tooltip: "Insert a Quote"
 		},

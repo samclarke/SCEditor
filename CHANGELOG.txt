@@ -7,7 +7,8 @@ Version 1.2.7:
 	Fixed problem with default style causing table to have size tags wrapped around them
 	Fixed dropdowns being hidden behind YouTube videos
 	Fixed empty tables being inserted if columns and rows are set to 0
-	Changed so that when enter is pressed on code or quotes a new line is always inserted
+	Updated so that when enter is pressed on code or quotes a new line is always inserted
+	Updated quote behaviour to insert selected text into the quote rather than replace it
 
 Version 1.2.6:
 	Added i18n support
