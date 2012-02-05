@@ -9,8 +9,6 @@
  *	http://www.gnu.org/licenses/gpl.html
  */
 
-//TODO: make sure block level tags don't end up in inline tags
-
 // ==ClosureCompiler==
 // @output_file_name jquery.sceditor.min.js
 // @compilation_level SIMPLE_OPTIMIZATIONS
@@ -33,8 +31,7 @@
 			handleStyles,
 			handleTags,
 			formatString,
-			elementToText,
-			isInline;
+			elementToText;
 
 		base.bbcodes = $.sceditorBBCodePlugin.bbcodes;
 
@@ -210,7 +207,7 @@
 		 * @return string BBCode which has been converted from HTML 
 		 */
 		base.getHtmlHandler = function(html, domBody) {
-			return base.elementToBbcode($(domBody));
+			return base.elementToBbcode(domBody);
 		};
 
 		/**
@@ -327,10 +324,6 @@
 			text = text.replace(/\[hr\]/gi, "<hr>");
 
 			return text.replace(/ {2}(?=([^<\>]*?<|[^<\>]*?$))/g, " &nbsp;");
-		};
-		
-		isInline = function(elm) {
-			return $(elm).css("display") !== "block";
 		};
 
 		init();

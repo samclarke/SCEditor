@@ -105,14 +105,14 @@ SCEditor is dual licensed under the MIT and GPL licenses:
 http://www.opensource.org/licenses/mit-license.php
 http://www.gnu.org/licenses/gpl.html
 
-If you use SCEditor a link back would be appreciated but is not requird.
+If you use SCEditor a link back would be appreciated but not requird.
 
 
 # Donate
 
 If you would like to make a donation you can via PayPal here:
 https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AVJSF5NEETYYG
-Or via Flattr here:
+or via Flattr here:
 http://flattr.com/thing/400345/SCEditor
 
 

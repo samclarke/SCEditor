@@ -9,10 +9,7 @@
  *	http://www.gnu.org/licenses/gpl.html
  */
 
-//TODO: add inline/block checking of element on the insert HTML so that
-// block elements are not inserted into inline elements
-// Easy to do in all browser other than IE8 and below. For them I'm not sure
-// of the best way.
+//TODO: add onpaste handler to filter pasted text
 
 //TODO: add XHTML output support
 
@@ -614,10 +611,14 @@
 		 * Gets the WYSIWYG editors HTML which is between the body tags
 		 */
 		base.getWysiwygEditorValue = function (filter) {
-			var html = $wysiwygEditor.contents().find("body").html();
-
+			var $body = $wysiwygEditor.contents().find("body");
+			
+			// fix any invalid nesting
+			$.sceditor.dom.fixNesting($body.get(0));
+			
+			var html = $body.html();
 			if(filter !== false && base.options.getHtmlHandler)
-				html = base.options.getHtmlHandler(html, $wysiwygEditor.contents().find("body"));
+				html = base.options.getHtmlHandler(html, $body);
 
 			return html;
 		};
@@ -810,10 +811,6 @@
 				typeof base.commands[command].errorMessage !== "undefined")
 				alert(base._(base.commands[command].errorMessage));
 		};
-		
-		// var isInline = function(elm) {
-			// return (window.getComputedStyle ? window.getComputedStyle(elm) : elm.currentStyle).display === "inline"; 
-		// };
 
 		/**
 		 * Handles any key press in the WYSIWYG editor
@@ -1523,6 +1520,191 @@
 				this.toggleTextMode();
 			},
 			tooltip: "View source"
+		}
+	};
+	
+	/**
+	 * Dom helper class
+	 */
+	$.sceditor.dom = {
+		/**
+		 * Loop all child nodes of the passed node
+		 * 
+		 * The function should accept 1 parameter being the node.
+		 * If the function returns false the too will be exited.
+		 * 
+		 * @param function func Function that is called for every node, should accept 1 param for the node
+		 * @param bool innermostFirst If the innermost node should be passed to the function before it's parents
+		 */
+		traverse: function(node, func, innermostFirst) {
+			if(node)
+			{
+				node = node.firstChild;
+				
+				while(node != null)
+				{
+					if(!innermostFirst && func(node) === false)
+						return;
+					
+					// traverse all children
+					this.traverse(node, func);
+					
+					if(innermostFirst && func(node) === false)
+						return;
+					
+					// move to next child
+					node = node.nextSibling;
+				}
+			}
+		},
+		
+		/**
+		 * Checks if an element is inline
+		 * 
+		 * @param bool includeInlineBlock If passed inline-block will count as an inline element instead of block
+		 * @return bool
+		 */
+		isInline: function(elm, includeInlineBlock) {
+			var d = (window.getComputedStyle ? window.getComputedStyle(elm) : elm.currentStyle).display;
+			
+			if(includeInlineBlock)
+				return d !== "block"; 
+			
+			return d === "inline"; 
+		},
+		
+		/**
+		 * Gets the next node. If the node has no siblings
+		 * it gets the parents next sibling, and so on untill
+		 * another element is found. If none are found
+		 * it returns null.
+		 * 
+		 * @param HTMLElement node
+		 * @return HTMLElement
+		 */
+		// getNext: function(node) {
+			// if(!node)
+				// return null;
+// 			
+			// var n = node.nextSibling;
+			// if(n)
+				// return n;
+// 			
+			// return getNext(node.parentNode);
+		// },
+		
+		/**
+		 * Fixes block level elements in inline elements.
+		 * 
+		 * @param HTMLElement The node to fix
+		 */
+		fixNesting: function(node) {
+			var base = this;
+			
+			var getLastInlineParent = function(node) {
+				while(base.isInline(node.parentNode))
+					node = node.parentNode;
+				
+				return node;
+			};
+			
+			base.traverse(node, function(node) {
+				// if node is an element, and is blocklevel and the parent isn't block level
+				// then it needs fixing
+				if(node.nodeType === 1 && !base.isInline(node) && base.isInline(node.parentNode))
+				{
+					var parent	= getLastInlineParent(node),
+						rParent	= parent.parentNode,
+						before	= base.extractContents(parent, node),
+						middle	= node;//,
+//						next	= base.getNext(node);
+					
+					rParent.insertBefore(before, parent);
+					rParent.insertBefore(middle, parent);
+					
+					// if(next && jQuery.contains(parent, next))
+					// {
+						// console.log(next);
+						// var after = base.extractContents(node, parent);
+						// rParent.insertBefore(after, parent);
+					// }
+				}
+			});
+		},
+		
+		/**
+		 * Finds the common parent of two nodes
+		 * 
+		 * @param HTMLElement node1
+		 * @param HTMLElement node2
+		 * @return HTMLElement
+		 */
+		findCommonAncestor: function(node1, node2) {
+			// not as fast as making two arrays of parents and comparing
+			// but is a lot smaller and as it's currently only used with
+			// fixing invalid nesting it doesn't need to be very fast
+			return $(node1).parents().has($(node2)).first();
+		},
+		
+		/**
+		 * Extracts all the nodes between the start and end nodes
+		 * 
+		 * @param HTMLElement startNode The node to start extracting at
+		 * @param HTMLElement endNode The node to stop extracting at
+		 * @return DocumentFragment
+		 */
+		extractContents: function(startNode, endNode) {
+			var base			= this,
+				$commonAncestor	= base.findCommonAncestor(startNode, endNode),
+				commonAncestor	= $commonAncestor===null?null:$commonAncestor.get(0),
+				startReached	= false,
+				endReached		= false;
+				// startDepth		= $(startNode).parents($commonAncestor).length,
+				// endDepth		= $(endNode).parents($commonAncestor).length;
+
+			return (function extract(root) {
+				var df = startNode.ownerDocument.createDocumentFragment();
+				
+				base.traverse(root, function(node) {
+					// if end has been reached exit loop
+					if(endReached || (node === endNode && startReached))
+					{
+						endReached = true;
+						return false;
+					}
+
+					if(node === startNode)
+						startReached = true;
+
+					if(startReached)
+					{
+						// if the start has been reached and this elm contains
+						// the end node then clone it
+						if(jQuery.contains(node, endNode) && node.nodeType === 1)
+						{
+							var c = extract(node),
+								n = node.cloneNode(false);
+
+							n.appendChild(c);
+							df.appendChild(n);
+						}
+						// otherwise just move it
+						else
+							df.appendChild(node);
+					}
+					// if this node contains the start node then add it
+					else if(jQuery.contains(node, startNode) && node.nodeType === 1)
+					{
+						var c = extract(node),
+							n = node.cloneNode(false);
+
+						n.appendChild(c);
+						df.appendChild(n);
+					}
+				});
+
+				return df;
+			}(commonAncestor));
 		}
 	};
 	

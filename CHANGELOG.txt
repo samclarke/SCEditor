@@ -9,6 +9,7 @@ Version 1.2.7:
 	Fixed empty tables being inserted if columns and rows are set to 0
 	Updated so that when enter is pressed on code or quotes a new line is always inserted
 	Updated quote behaviour to insert selected text into the quote rather than replace it
+	Updated editor to not allow block level elements inside inline elements
 
 Version 1.2.6:
 	Added i18n support
