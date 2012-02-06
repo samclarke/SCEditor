@@ -50,6 +50,7 @@
 		"Insert current time": "Sett inn gjeldende klokkeslett",
 		"Print": "Skriv ut",
 		"View source": "Vis kildekode",
+		"Description (optional):": "Beskrivelse (valgfritt):",
 		dateFormat: "day.month.year"
 	}
 })(jQuery);

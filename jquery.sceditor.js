@@ -1220,7 +1220,7 @@
 						// needed for IE to reset the last range
 						editor.focus();
 
-						if(editor.getWysiwygSelectedHtml())
+						if(!editor.getWysiwygSelectedHtml())
 							editor.wysiwygEditorInsertHtml('<a href="' + 'mailto:' + val + '">' + val + '</a>');
 						else
 							editor.execCommand("createlink", 'mailto:' + val);
@@ -1238,8 +1238,10 @@
 			exec: function (caller) {
 				var editor  = this;
 				var content = $(
-					this._('<form><div><label for="link">{0}</label> <input type="text" id="link" value="http://" /></div></form>',
-						this._("URL:")
+					this._('<form><div><label for="link">{0}</label> <input type="text" id="link" value="http://" /></div>' +
+							'<div><label for="des">{1}</label> <input type="text" id="des" value="" /></div></form>',
+						this._("URL:"),
+						this._("Description (optional):")
 					))
 					.submit(function () {return false;});
 
@@ -1247,14 +1249,20 @@
 					this._('<div><input type="button" class="button" value="{0}" /></div>',
 						this._("Insert")
 					)).click(function (e) {
-					var val = $(this).parent("form").find("#link").val();
+					var val = $(this).parent("form").find("#link").val(),
+						description = $(this).parent("form").find("#des").val();
 
 					if(val !== "" && val !== "http://") {
 						// needed for IE to reset the last range
 						editor.focus();
 
-						if(editor.getWysiwygSelectedHtml())
-							editor.wysiwygEditorInsertHtml('<a href="' + val + '">' + val + '</a>');
+						if(!editor.getWysiwygSelectedHtml() || description)
+						{
+							if(!description)
+								description = val;
+							
+							editor.wysiwygEditorInsertHtml('<a href="' + val + '">' + description + '</a>');
+						}
 						else
 							editor.execCommand("createlink", val);
 					}
