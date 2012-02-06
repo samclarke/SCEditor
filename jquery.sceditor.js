@@ -18,8 +18,8 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 // ==/ClosureCompiler==
 
-/*jshint forin: true, nomen: true, undef: true, white: false  */
-/*global XMLSerializer: true, jQuery: true*/
+/*jshint smarttabs: true, scripturl: true */
+/*global XMLSerializer: true*/
 
 (function ($) {
 	'use strict';
@@ -381,9 +381,9 @@
 		 * Creates a menu item drop down
 		 * @param HTMLElement	menuItem	The button to align the drop down with
 		 * @param string	dropDownName	Used for styling the dropown, will be a class sceditor-dropDownName
-		 * @param string	content		The HTML content of the dropdown
+		 * @param string	content			The HTML content of the dropdown
 		 * @param bool		ieUnselectable	If to add the unselectable attribute to all the contents elements. Stops
-		 * 					IE from deselecting the text in the editor
+		 *									IE from deselecting the text in the editor
 		 */
 		base.createDropDown = function (menuItem, dropDownName, content, ieUnselectable) {
 			base.closeDropDown();
@@ -393,7 +393,7 @@
 			if(ieUnselectable !== false)
 			{
 				content = $(content);
-				content.find(':not(input,textarea)').filter(function() { return this.nodeType===1 }).attr('unselectable', 'on');
+				content.find(':not(input,textarea)').filter(function() { return this.nodeType===1; }).attr('unselectable', 'on');
 			}
 
 			//var menuItemPosition = menuItem.position();
@@ -469,8 +469,8 @@
 		 * 
 		 * @param string html		The HTML to insert
 		 * @param string endHtml	If specified instead of the inserted HTML replacing the selected text the selected text
-		 * 				will be placed between html and endHtml. If there is no selected text html and endHtml will
-		 * 				be concated together.
+		 *                          will be placed between html and endHtml. If there is no selected text html and endHtml will
+		 *                          be concated together.
 		 */
 		base.wysiwygEditorInsertHtml = function (html, endHtml, overrideCodeBlocking) {
 			base.focus();
@@ -822,13 +822,13 @@
 
 			// "Fix" (ok it's a hack) for blocklevel elements being duplicated in some browsers when
 			// enter is pressed instead of inserting a newline
-			if(e.which == 13)// && $.browser.webkit)
+			if(e.which === 13)
 			{
 				if($(getWysiwygSelectedContainerNode()).is('code, blockquote') ||
 					$(getWysiwygSelectedContainerNode()).parents('code, blockquote').length !== 0)
 				{
 					base.wysiwygEditorInsertHtml('<br />', null, true);
-					return false;;
+					return false;
 				}
 			}
 
@@ -879,7 +879,7 @@
 				args[0] = locale[args[0]];
 			
 			return args[0].replace(/\{(\d+)\}/g, function(str, p1) {
-				return typeof args[p1-0+1] != 'undefined'? 
+				return typeof args[p1-0+1] !== 'undefined'? 
 						args[p1-0+1] :
 						'{' + p1 + '}';
 			});
@@ -1219,7 +1219,7 @@
 						// needed for IE to reset the last range
 						editor.focus();
 
-						if(editor.getWysiwygSelectedHtml() == '')
+						if(editor.getWysiwygSelectedHtml())
 							editor.wysiwygEditorInsertHtml('<a href="' + 'mailto:' + val + '">' + val + '</a>');
 						else
 							editor.execCommand("createlink", 'mailto:' + val);
@@ -1252,7 +1252,7 @@
 						// needed for IE to reset the last range
 						editor.focus();
 
-						if(editor.getWysiwygSelectedHtml() == '')
+						if(editor.getWysiwygSelectedHtml())
 							editor.wysiwygEditorInsertHtml('<a href="' + val + '">' + val + '</a>');
 						else
 							editor.execCommand("createlink", val);
@@ -1582,16 +1582,16 @@
 		 * @param HTMLElement node
 		 * @return HTMLElement
 		 */
-		// getNext: function(node) {
-			// if(!node)
-				// return null;
-// 			
-			// var n = node.nextSibling;
-			// if(n)
-				// return n;
-// 			
-			// return getNext(node.parentNode);
-		// },
+		/*getNext: function(node) {
+			if(!node)
+				return null;
+			
+			var n = node.nextSibling;
+			if(n)
+				return n;
+			
+			return getNext(node.parentNode);
+		},*/
 		
 		/**
 		 * Fixes block level elements in inline elements.
@@ -1659,8 +1659,6 @@
 				commonAncestor	= $commonAncestor===null?null:$commonAncestor.get(0),
 				startReached	= false,
 				endReached		= false;
-				// startDepth		= $(startNode).parents($commonAncestor).length,
-				// endDepth		= $(endNode).parents($commonAncestor).length;
 
 			return (function extract(root) {
 				var df = startNode.ownerDocument.createDocumentFragment();
@@ -1676,14 +1674,15 @@
 					if(node === startNode)
 						startReached = true;
 
+					var c, n;
 					if(startReached)
 					{
 						// if the start has been reached and this elm contains
 						// the end node then clone it
 						if(jQuery.contains(node, endNode) && node.nodeType === 1)
 						{
-							var c = extract(node),
-								n = node.cloneNode(false);
+							c = extract(node);
+							n = node.cloneNode(false);
 
 							n.appendChild(c);
 							df.appendChild(n);
@@ -1695,8 +1694,8 @@
 					// if this node contains the start node then add it
 					else if(jQuery.contains(node, startNode) && node.nodeType === 1)
 					{
-						var c = extract(node),
-							n = node.cloneNode(false);
+						c = extract(node);
+						n = node.cloneNode(false);
 
 						n.appendChild(c);
 						df.appendChild(n);
