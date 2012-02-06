@@ -14,6 +14,8 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 // ==/ClosureCompiler==
 
+// TODO: make sure block level bbcodes are called after inline so they surround inline ones
+
 /*jshint smarttabs: true */
 
 (function($) {
@@ -374,36 +376,6 @@
 			html: '<sup>{0}</sup>'
 		},
 
-
-		left: {
-			styles: {
-				"text-align": ["left"]
-			},
-			format: "[left]{0}[/left]",
-			html: '<div style="text-align: left">{0}</div>'
-		},
-		center: {
-			styles: {
-				"text-align": ["center"]
-			},
-			format: "[center]{0}[/center]",
-			html: '<div style="text-align: center">{0}</div>'
-		},
-		right: {
-			styles: {
-				"text-align": ["right"]
-			},
-			format: "[right]{0}[/right]",
-			html: '<div style="text-align: right">{0}</div>'
-		},
-		justify: {
-			styles: {
-				"text-align": ["justify"]
-			},
-			format: "[justify]{0}[/justify]",
-			html: '<div style="text-align: justify">{0}</div>'
-		},
-
 		font: {
 			styles: {
 				"font-family": null
@@ -672,6 +644,35 @@
 			},
 			format: "[code]{0}[/code]",
 			html: '<code>{0}</code>'
+		},
+		
+		left: {
+			styles: {
+				"text-align": ["left"]
+			},
+			format: "[left]{0}[/left]",
+			html: '<div style="text-align: left">{0}</div>'
+		},
+		center: {
+			styles: {
+				"text-align": ["center"]
+			},
+			format: "[center]{0}[/center]",
+			html: '<div style="text-align: center">{0}</div>'
+		},
+		right: {
+			styles: {
+				"text-align": ["right"]
+			},
+			format: "[right]{0}[/right]",
+			html: '<div style="text-align: right">{0}</div>'
+		},
+		justify: {
+			styles: {
+				"text-align": ["justify"]
+			},
+			format: "[justify]{0}[/justify]",
+			html: '<div style="text-align: justify">{0}</div>'
 		},
 
 		youtube: {

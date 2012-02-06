@@ -1001,13 +1001,13 @@
 		},
 		color: {
 			exec: function (caller) {
-				var editor       = this;
-				var genColor     = {r: 255, g: 255, b: 255};
-				var content      = $("<div />");
-				var colorColumns = this.options.colors?this.options.colors.split("|"):new Array(21);
+				var editor       = this,
+					genColor     = {r: 255, g: 255, b: 255},
+					content      = $("<div />"),
+					colorColumns = this.options.colors?this.options.colors.split("|"):new Array(21),
 					// IE is slow at string concation so use an array
-				var html         = [];
-				var htmlIndex    = 0;
+					html         = [],
+					htmlIndex    = 0;
 
 				for (var i=0; i < colorColumns.length; ++i) {
 					var colors = (typeof colorColumns[i] !== "undefined")?colorColumns[i].split(","):new Array(21);
@@ -1114,11 +1114,10 @@
 
 		table: {
 			exec: function (caller) {
-				var editor  = this;
-				var content = $(this._('<form>' +
-						'<div><label for="rows">{0}</label><input type="text" id="rows" value="2" /></div>' +
-						'<div><label for="cols">{1}</label><input type="text" id="cols" value="2" /></div>' +
-					'</form>',
+				var editor  = this,
+					content = $(this._(
+						'<form><div><label for="rows">{0}</label><input type="text" id="rows" value="2" /></div>' +
+							'<div><label for="cols">{1}</label><input type="text" id="cols" value="2" /></div></form>',
 						this._("Rows:"),
 						this._("Cols:")
 					))
@@ -1127,13 +1126,13 @@
 				content.append($(this._('<div><input type="button" class="button" value="{0}" /></div>',
 					this._("Insert")
 				)).click(function (e) {
-					var rows = $(this).parent("form").find("#rows").val() - 0;
-					var cols = $(this).parent("form").find("#cols").val() - 0;
+					var rows = $(this).parent("form").find("#rows").val() - 0,
+						cols = $(this).parent("form").find("#cols").val() - 0,
+						html = '<table>';
 
 					if(rows < 1 || cols < 1)
 						return;
 					
-					var html = '<table>';
 					for (var row=0; row < rows; row++) {
 						html += '<tr>';
 						for (var col=0; col < cols; col++) {
@@ -1183,17 +1182,18 @@
 				content.append($(this._('<div><input type="button" class="button" value="Insert" /></div>',
 						this._("Insert")
 					)).click(function (e) {
-					var $form  = $(this).parent("form");
-					var val   = $form.find("#image").val();
-					var attrs = '';
-					var width, height;
+					var $form	= $(this).parent("form"),
+						val		= $form.find("#image").val(),
+						attrs	= '',
+						width,
+						height;
 
-					if((width = $form.find("#width").val()) !== "")
+					if((width = $form.find("#width").val()))
 						attrs += ' width="' + width + '"';
-					if((height = $form.find("#height").val()) !== "")
+					if((height = $form.find("#height").val()))
 						attrs += ' height="' + height + '"';
 
-					if(val !== "" && val !== "http://")
+					if(val && val !== "http://")
 						editor.wysiwygEditorInsertHtml('<img' + attrs + ' src="' + val + '" />');
 
 					editor.closeDropDown(true);
@@ -1215,7 +1215,8 @@
 				content.append($('<div><input type="button" class="button" value="Insert" /></div>').click(function (e) {
 					var val = $(this).parent("form").find("#email").val();
 
-					if(val !== "") {
+					if(val)
+					{
 						// needed for IE to reset the last range
 						editor.focus();
 
@@ -1470,10 +1471,10 @@
 		},
 		date: {
 			exec: function () {
-				var now   = new Date();
-				var year  = now.getYear();
-				var month = now.getMonth()+1;
-				var day   = now.getDate();
+				var now   = new Date(),
+					year  = now.getYear(),
+					month = now.getMonth()+1,
+					day   = now.getDate();
 
 				if(year < 2000)
 					year = 1900 + year;
@@ -1490,10 +1491,10 @@
 		},
 		time: {
 			exec: function () {
-				var now   = new Date();
-				var hours = now.getHours();
-				var mins  = now.getMinutes();
-				var secs  = now.getSeconds();
+				var now   = new Date(),
+					hours = now.getHours(),
+					mins  = now.getMinutes(),
+					secs  = now.getSeconds();
 
 				if(hours < 10)
 					hours = "0" + hours;
@@ -1593,6 +1594,18 @@
 			return getNext(node.parentNode);
 		},*/
 		
+		copyCSS: function(from, to) {
+			var attrs = ['font-size',	'color',		'font-family',
+						'font-wieght',	'font-style',	'text-decoration'];
+			
+			var i		= attrs.length,
+				$from	= $(from),
+				$to		= $(to);
+			
+			while(i--)
+				$to.css(attrs[i], $from.css(attrs[i]));
+		},
+		
 		/**
 		 * Fixes block level elements in inline elements.
 		 * 
@@ -1618,6 +1631,8 @@
 						before	= base.extractContents(parent, node),
 						middle	= node;//,
 //						next	= base.getNext(node);
+					
+					base.copyCSS(parent, middle);
 					
 					rParent.insertBefore(before, parent);
 					rParent.insertBefore(middle, parent);
