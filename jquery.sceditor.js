@@ -837,8 +837,8 @@
 			// make sure there is always a newline after code or quote tags
 			var d = getWysiwygDoc();
 			$.sceditor.dom.rTraverse(d.body, function(node) {
-				if((node.nodeType === 3 && node.nodeValue !== "")
-					|| node.nodeName.toLowerCase() === 'br') {
+				if((node.nodeType === 3 && node.nodeValue !== "") ||
+					node.nodeName.toLowerCase() === 'br') {
 					// this is the last text or br node, if its in a code or quote tag
 					// then add a newline after it
 					if($(node).parents('code, blockquote').length > 0)
