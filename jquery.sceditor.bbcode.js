@@ -15,6 +15,7 @@
 // ==/ClosureCompiler==
 
 // TODO: make sure block level bbcodes are called after inline so they surround inline ones
+// TODO: allow bbcodes to limit valid children
 
 /*jshint smarttabs: true */
 
@@ -133,14 +134,15 @@
 		handleTags = function(element, content) {
 			var tag = element.get(0).nodeName.toLowerCase();
 			
+			// ignore tags with sceditor-ignore class
 			if(element.hasClass("sceditor-ignore"))
 				return content;
 
-			if(typeof tagsToBbcodes[tag] !== "undefined") {
+			if(tagsToBbcodes[tag]) {
 				// loop all bbcodes for this tag
 				$.each(tagsToBbcodes[tag], function(bbcode, bbcodeAttribs) {
-					// if the bbcode doesn't require any attributes then its
-					// all valid and should be run
+					// if the bbcode requires any attributes then check this has
+					// all needed
 					if(bbcodeAttribs !== null) {
 						var runBbcode = false;
 
@@ -171,8 +173,9 @@
 						content = formatString(base.bbcodes[bbcode].format, content);
 				});
 			}
-
-			if(tag === 'br' || tag === 'div' || tag === 'p')
+			
+			// add newline after paragraph elements p and div (Chrome uses divs) and br tags
+			if(/^(br|div|p)$/.test(tag))
 				content += "\n";
 
 			return content;
@@ -219,29 +222,36 @@
 		 * @param HtmlElement element The element to convert to BBCode
 		 * @return string BBCode
 		 */
-		base.elementToBbcode = function(element) {
-			var ret = '';
+		base.elementToBbcode = function($element) {
+			return (function toBBCode(node) {
+				var ret = '';
 
-			if(typeof element.get(0) === 'undefined')
-				return '';
-
-			if(element.get(0).nodeName.toLowerCase() !== 'iframe')
-			{
-				if(element.get(0).nodeType === 3)
-					return element.get(0).nodeValue;
-				else if(element.is('code'))
-					ret = elementToText(element); //element.text();
-				else if(element.contents().length > 0)
-					$.each(element.contents(), function() {
-						ret += base.elementToBbcode($(this));
-					});
-			}
-
-			if(!element.is('code'))
-				ret = handleStyles(element, ret);
-
-			ret = handleTags(element, ret);
-			return ret;
+				$.sceditor.dom.traverse(node, function(node) {
+					var $node	= $(node),
+						curTag	= '';
+					
+					// 3 is text element
+					if(node.nodeType !== 3)
+					{
+						if(node.nodeName.toLowerCase() !== 'iframe')
+						{
+							if($node.is('code'))
+								curTag = elementToText($node);
+							else
+								curTag = toBBCode(node);
+						}
+						
+						if(!$node.is('code'))
+							curTag = handleStyles($node, curTag);
+					
+						ret += handleTags($node, curTag);
+					}
+					else
+						ret += node.nodeValue;
+				}, false, true);
+				
+				return ret;
+			}($element.get(0)));
 		};
 		
 		/**
@@ -275,17 +285,19 @@
 		 * @return string HTML
 		 */
 		base.getTextHandler = function(text) {
-			var bbcodeRegex = /\[([^\[\s=]*?)(?:([^\[]*?))?\]((?:[\s\S(?!=\[\\\1)](?!\[\1))*?)\[\/(\1)\]/g;
-			var atribsRegex = /(\S+)=((?:(?:(["'])(?:\\\3|[^\3])*?\3))|(?:[^'"\s]+))/g;
-			var oldText;
+			var bbcodeRegex = /\[([^\[\s=]*?)(?:([^\[]*?))?\]((?:[\s\S(?!=\[\\\1)](?!\[\1))*?)\[\/(\1)\]/g,
+				atribsRegex = /(\S+)=((?:(?:(["'])(?:\\\3|[^\3])*?\3))|(?:[^'"\s]+))/g,
+				oldText;
 
 			var replaceBBCodeFunc = function(str, bbcode, attrs, content)
 			{
-				var attrsMap = {};
-				if(typeof attrs !== "undefined")
+				var attrsMap = {},
+					matches;
+					
+				if(attrs)
 				{
-					var matches;
 					attrs = $.trim(attrs);
+					
 					// if only one attribute then remove the = from the start and strip any quotes
 					if((attrs.charAt(0) === "=" && (attrs.split("=").length - 1) <= 1) || bbcode === 'url')
 						attrsMap.defaultAttr = base.stripQuotes(attrs.substr(1));
@@ -299,21 +311,21 @@
 					}
 				}
 
-				if(typeof base.bbcodes[bbcode] === "undefined")
+				if(!base.bbcodes[bbcode])
 					return str;
 
-				if(typeof base.bbcodes[bbcode].html === 'function')
+				if($.isFunction(base.bbcodes[bbcode].html))
 					return base.bbcodes[bbcode].html.call(base, bbcode, attrsMap, content);
 				else
 					return formatString(base.bbcodes[bbcode].html, content);
 			};
 
-			text = text.replace(/&/g, "&amp;");
-			text = text.replace(/</g, "&lt;");
-			text = text.replace(/>/g, "&gt;");
-			text = text.replace(/\r/g, "");
-			text = text.replace(/(\[\/?(?:left|center|right|justify)\])\n/g, "$1");
-			text = text.replace(/\n/g, "<span><br /></span>");// opera needs a parent element
+			text = text.replace(/&/g, "&amp;")
+						.replace(/</g, "&lt;")
+						.replace(/>/g, "&gt;")
+						.replace(/\r/g, "")
+						.replace(/(\[\/?(?:left|center|right|justify)\])\n/g, "$1")
+						.replace(/\n/g, "<span><br /></span>");// opera needs a parent element
 
 			while(text !== oldText)
 			{
@@ -434,7 +446,6 @@
 			format: function(element, content) {
 				/**
 				 * Converts CSS rgb value into hex
-				 * @TODO: May need to add rgb(n%,n%,n%) and rgb(n,n,n,a) formats
 				 * @private
 				 * @return string Hex color
 				 */
@@ -473,6 +484,8 @@
 			tags: {
 				ul: null
 			},
+			validChildren: ['li'],
+			isBlock: true,
 			format: "[ul]{0}[/ul]",
 			html: '<ul>{0}</ul>'
 		},
@@ -483,6 +496,8 @@
 			tags: {
 				ol: null
 			},
+			validChildren: ['li'],
+			isBlock: true,
 			format: "[ol]{0}[/ol]",
 			html: '<ol>{0}</ol>'
 		},
@@ -502,6 +517,7 @@
 			tags: {
 				table: null
 			},
+			validChildren: ['tr', 'th'],
 			format: "[table]{0}[/table]",
 			html: '<table>{0}</table>'
 		},
@@ -509,6 +525,7 @@
 			tags: {
 				tr: null
 			},
+			validChildren: ['td'],
 			format: "[tr]{0}[/tr]",
 			html: '<tr>{0}</tr>'
 		},
@@ -516,6 +533,7 @@
 			tags: {
 				th: null
 			},
+			validChildren: ['td'],
 			format: "[th]{0}[/th]",
 			html: '<th>{0}</th>'
 		},
@@ -615,6 +633,7 @@
 			tags: {
 				blockquote: null
 			},
+			isBlock: true,
 			format: function(element, content) {
 				var attr = '',
 					that = this;
@@ -642,6 +661,8 @@
 			tags: {
 				code: null
 			},
+			validChildren: [],
+			isBlock: true,
 			format: "[code]{0}[/code]",
 			html: '<code>{0}</code>'
 		},
@@ -651,35 +672,36 @@
 				"text-align": ["left"]
 			},
 			format: "[left]{0}[/left]",
-			html: '<div style="text-align: left">{0}</div>'
+			html: '<div align="left">{0}</div>'
 		},
 		center: {
 			styles: {
 				"text-align": ["center"]
 			},
 			format: "[center]{0}[/center]",
-			html: '<div style="text-align: center">{0}</div>'
+			html: '<div align="center">{0}</div>'
 		},
 		right: {
 			styles: {
 				"text-align": ["right"]
 			},
 			format: "[right]{0}[/right]",
-			html: '<div style="text-align: right">{0}</div>'
+			html: '<div align="right">{0}</div>'
 		},
 		justify: {
 			styles: {
 				"text-align": ["justify"]
 			},
 			format: "[justify]{0}[/justify]",
-			html: '<div style="text-align: justify">{0}</div>'
+			html: '<div align="justify">{0}</div>'
 		},
 
 		youtube: {
 			tags: {
 				iframe: {
 					'data-youtube-id': null
-				}
+				},
+				validChildren: []
 			},
 			format: function(element, content) {
 				if(!element.attr('data-youtube-id'))

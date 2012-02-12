@@ -819,22 +819,37 @@
 		 */
 		handleKeyPress = function (e) {
 			base.closeDropDown();
+			
+			var selectedContainer = getWysiwygSelectedContainerNode(),
+				$selectedContainer = $(selectedContainer);
 
 			// "Fix" (ok it's a hack) for blocklevel elements being duplicated in some browsers when
 			// enter is pressed instead of inserting a newline
 			if(e.which === 13)
 			{
-				if($(getWysiwygSelectedContainerNode()).is('code, blockquote') ||
-					$(getWysiwygSelectedContainerNode()).parents('code, blockquote').length !== 0)
+				if($selectedContainer.is('code, blockquote') || $selectedContainer.parents('code, blockquote').length !== 0)
 				{
 					base.wysiwygEditorInsertHtml('<br />', null, true);
 					return false;
 				}
 			}
 
+			// make sure there is always a newline after code or quote tags
+			var d = getWysiwygDoc();
+			$.sceditor.dom.rTraverse(d.body, function(node) {
+				if((node.nodeType === 3 && node.nodeValue !== "")
+					|| node.nodeName.toLowerCase() === 'br') {
+					// this is the last text or br node, if its in a code or quote tag
+					// then add a newline after it
+					if($(node).parents('code, blockquote').length > 0)
+						$(d.body).append(d.createElement('br'));
+
+					return false;
+				}
+			}, true);
+
 			// don't apply to code elements
-			if($(getWysiwygSelectedContainerNode()).is('code') ||
-				$(getWysiwygSelectedContainerNode()).parents('code').length !== 0)
+			if($selectedContainer.is('code') || $selectedContainer.parents('code').length !== 0)
 				return;
 			
 			var i = keyPressFuncs.length;
@@ -1540,31 +1555,39 @@
 		 * Loop all child nodes of the passed node
 		 * 
 		 * The function should accept 1 parameter being the node.
-		 * If the function returns false the too will be exited.
+		 * If the function returns false the loop will be exited.
 		 * 
-		 * @param function func Function that is called for every node, should accept 1 param for the node
-		 * @param bool innermostFirst If the innermost node should be passed to the function before it's parents
+		 * @param HTMLElement	node
+		 * @param function		func			Function that is called for every node, should accept 1 param for the node
+		 * @param bool			innermostFirst	If the innermost node should be passed to the function before it's parents
+		 * @param bool			siblingsOnly	If to only traverse the nodes siblings
+		 * @param bool			reverse			If to traverse the nodes in reverse
 		 */
-		traverse: function(node, func, innermostFirst) {
+		traverse: function(node, func, innermostFirst, siblingsOnly, reverse) {
 			if(node)
 			{
-				node = node.firstChild;
+				node = reverse ? node.lastChild : node.firstChild;
 				
 				while(node != null)
 				{
 					if(!innermostFirst && func(node) === false)
-						return;
+						return false;
 					
 					// traverse all children
-					this.traverse(node, func);
+					if(!siblingsOnly && this.traverse(node, func, innermostFirst, siblingsOnly, reverse) === false)
+						return false;
 					
 					if(innermostFirst && func(node) === false)
-						return;
+						return false;
 					
 					// move to next child
-					node = node.nextSibling;
+					node = reverse ? node.previousSibling : node.nextSibling;
 				}
 			}
+		},
+		
+		rTraverse: function(node, func, innermostFirst, siblingsOnly) {
+			this.traverse(node, func, innermostFirst, siblingsOnly, true);
 		},
 		
 		/**
@@ -1637,20 +1660,14 @@
 					var parent	= getLastInlineParent(node),
 						rParent	= parent.parentNode,
 						before	= base.extractContents(parent, node),
-						middle	= node;//,
-//						next	= base.getNext(node);
+						middle	= node;
 					
-					base.copyCSS(parent, middle);
+					// copy current styling so when moved out of the parent
+					// it still has the same styling
+					base.copyCSS(middle, middle);
 					
 					rParent.insertBefore(before, parent);
 					rParent.insertBefore(middle, parent);
-					
-					// if(next && jQuery.contains(parent, next))
-					// {
-						// console.log(next);
-						// var after = base.extractContents(node, parent);
-						// rParent.insertBefore(after, parent);
-					// }
 				}
 			});
 		},
