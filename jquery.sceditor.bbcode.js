@@ -14,9 +14,6 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 // ==/ClosureCompiler==
 
-// TODO: make sure block level bbcodes are called after inline so they surround inline ones
-// TODO: allow bbcodes to limit valid children
-
 /*jshint smarttabs: true */
 
 (function($) {
@@ -33,8 +30,7 @@
 			buildBbcodeCache,
 			handleStyles,
 			handleTags,
-			formatString,
-			elementToText;
+			formatString;
 
 		base.bbcodes = $.sceditorBBCodePlugin.bbcodes;
 
@@ -51,6 +47,16 @@
 		 * @private
 		 */
 		var stylesToBbcodes = {};
+		
+		var validChildren = {
+			ul: ['li'],
+			ol: ['li'],
+			table: ['tr', 'th'],
+			tr: ['td'],
+			th: ['td'],
+			code: [],
+			youtube: []
+		};
 
 
 		/**
@@ -72,33 +78,45 @@
 		
 		/**
 		 * Populates tagsToBbcodes and stylesToBbcodes to enable faster lookups
+		 * 
 		 * @private
 		 */
 		buildBbcodeCache = function() {
 			$.each(base.bbcodes, function(bbcode, info) {
 				if(typeof base.bbcodes[bbcode].tags !== "undefined")
-					$.each(base.bbcodes[bbcode].tags, function(tag, attrs) {
+					$.each(base.bbcodes[bbcode].tags, function(tag, values) {
+						var isBlock = !!base.bbcodes[bbcode].isBlock;
 						tagsToBbcodes[tag] = (tagsToBbcodes[tag] || {});
-						tagsToBbcodes[tag][bbcode] = attrs;
+						tagsToBbcodes[tag][isBlock] = (tagsToBbcodes[tag][isBlock] || {});
+						tagsToBbcodes[tag][isBlock][bbcode] = values;
 					});
 
 				if(typeof base.bbcodes[bbcode].styles !== "undefined")
 					$.each(base.bbcodes[bbcode].styles, function(style, values) {
-						stylesToBbcodes[style] = (stylesToBbcodes[style] || {});
-						stylesToBbcodes[style][bbcode] = values;
+						var isBlock = !!base.bbcodes[bbcode].isBlock;
+						stylesToBbcodes[isBlock] = (stylesToBbcodes[isBlock] || {});
+						stylesToBbcodes[isBlock][style] = (stylesToBbcodes[isBlock][style] || {});
+						stylesToBbcodes[isBlock][style][bbcode] = values;
 					});
 			});
 		};
 
 		/**
 		 * Checks if any bbcode styles match the elements styles
+		 * 
 		 * @private
 		 * @return string Content with any matching bbcode tags wrapped around it.
 		 */
-		handleStyles = function(element, content) {
+		handleStyles = function(element, content, blockLevel) {
 			var elementPropVal;
 
-			$.each(stylesToBbcodes, function(property, bbcodes) {
+			// convert blockLevel to boolean
+			blockLevel = !!blockLevel;
+			
+			if(!stylesToBbcodes[blockLevel])
+				return content;
+			
+			$.each(stylesToBbcodes[blockLevel], function(property, bbcodes) {
 				if(element.get(0).nodeName.toLowerCase() === "a" &&
 					(property === 'color' || property === 'text-decoration'))
 					return;
@@ -114,6 +132,7 @@
 					return;
 
 				$.each(bbcodes, function(bbcode, values) {
+
 					if(values === null || $.inArray(elementPropVal.toString(), values) > -1) {
 						if($.isFunction(base.bbcodes[bbcode].format))
 							content = base.bbcodes[bbcode].format.call(base, element, content);
@@ -128,19 +147,22 @@
 
 		/**
 		 * Handles a HTML tag and finds any matching bbcodes
+		 * 
 		 * @private
-		 * @return string Content with any matching bbcode tags wrapped around it.
+		 * @param	jQuery element	element		The element to convert
+		 * @param	string			content		The Tags text content
+		 * @param	bool			blockLevel	If to convert block level tags
+		 * @return	string	Content with any matching bbcode tags wrapped around it.
 		 */
-		handleTags = function(element, content) {
+		handleTags = function(element, content, blockLevel) {
 			var tag = element.get(0).nodeName.toLowerCase();
 			
-			// ignore tags with sceditor-ignore class
-			if(element.hasClass("sceditor-ignore"))
-				return content;
+			// convert blockLevel to boolean
+			blockLevel = !!blockLevel;
 
-			if(tagsToBbcodes[tag]) {
+			if(tagsToBbcodes[tag] && tagsToBbcodes[tag][blockLevel]) {
 				// loop all bbcodes for this tag
-				$.each(tagsToBbcodes[tag], function(bbcode, bbcodeAttribs) {
+				$.each(tagsToBbcodes[tag][blockLevel], function(bbcode, bbcodeAttribs) {
 					// if the bbcode requires any attributes then check this has
 					// all needed
 					if(bbcodeAttribs !== null) {
@@ -175,7 +197,7 @@
 			}
 			
 			// add newline after paragraph elements p and div (Chrome uses divs) and br tags
-			if(/^(br|div|p)$/.test(tag))
+			if(!blockLevel && /^(br|div|p)$/.test(tag))
 				content += "\n";
 
 			return content;
@@ -218,33 +240,62 @@
 		/**
 		 * Converts a HTML dom element to BBCode starting from
 		 * the innermost element and working backwards
+		 * 
 		 * @private
-		 * @param HtmlElement element The element to convert to BBCode
+		 * @param HtmlElement	element		The element to convert to BBCode
+		 * @param array			vChildren	Valid child tags allowed
 		 * @return string BBCode
 		 */
 		base.elementToBbcode = function($element) {
-			return (function toBBCode(node) {
+			return (function toBBCode(node, vChildren) {
 				var ret = '';
 
 				$.sceditor.dom.traverse(node, function(node) {
-					var $node	= $(node),
-						curTag	= '';
+					var	$node			= $(node),
+						curTag			= '',
+						tag				= node.nodeName.toLowerCase(),
+						vChild			= validChildren[tag],
+						isValidChild	= true;
+					
+					if(typeof vChildren === 'object')
+					{
+						isValidChild = $.inArray(tag, vChildren) > -1;
+
+						// if this tag is one of the parents allowed children
+						// then set this tags allowed children to whatever it allows,
+						// otherwise set to what the parent allows
+						if(!isValidChild)
+							vChild = vChildren;
+					}
 					
 					// 3 is text element
 					if(node.nodeType !== 3)
 					{
-						if(node.nodeName.toLowerCase() !== 'iframe')
-						{
-							if($node.is('code'))
-								curTag = elementToText($node);
-							else
-								curTag = toBBCode(node);
-						}
+						// skip ignored elments
+						if($node.hasClass("sceditor-ignore"))
+							return;
+
+						// don't loop inside iframes
+						if(tag !== 'iframe')
+							curTag = toBBCode(node, vChild);
 						
-						if(!$node.is('code'))
-							curTag = handleStyles($node, curTag);
-					
-						ret += handleTags($node, curTag);
+						if(isValidChild)
+						{
+							// code tags should skip most styles
+							if(!$node.is('code'))
+							{
+								// handle inline bbcodes
+								curTag = handleStyles($node, curTag);
+								curTag = handleTags($node, curTag);
+								
+								// handle blocklevel bbcodes
+								curTag = handleStyles($node, curTag, true);
+							}
+							
+							ret += handleTags($node, curTag, true);
+						}
+						else
+							ret += curTag;
 					}
 					else
 						ret += node.nodeValue;
@@ -252,30 +303,6 @@
 				
 				return ret;
 			}($element.get(0)));
-		};
-		
-		/**
-		 * Converts a HTML dom element to text
-		 * @private
-		 * @param HtmlElement element The element to convert to text
-		 * @return string The text content of the element including newline chars
-		 */
-		elementToText = function(element) {
-			var ret = '';
-
-			if(typeof element.get(0) === 'undefined')
-				return '';
-			
-			if(element.get(0).nodeType === 3)
-				return element.get(0).nodeValue;
-			else if(element.is('br'))
-				ret = "\n";
-			else if(element.contents().length > 0)
-				$.each(element.contents(), function() {
-					ret += elementToText($(this));
-				});
-
-			return ret;
 		};
 
 		/**
@@ -484,7 +511,6 @@
 			tags: {
 				ul: null
 			},
-			validChildren: ['li'],
 			isBlock: true,
 			format: "[ul]{0}[/ul]",
 			html: '<ul>{0}</ul>'
@@ -496,7 +522,6 @@
 			tags: {
 				ol: null
 			},
-			validChildren: ['li'],
 			isBlock: true,
 			format: "[ol]{0}[/ol]",
 			html: '<ol>{0}</ol>'
@@ -517,7 +542,6 @@
 			tags: {
 				table: null
 			},
-			validChildren: ['tr', 'th'],
 			format: "[table]{0}[/table]",
 			html: '<table>{0}</table>'
 		},
@@ -525,7 +549,6 @@
 			tags: {
 				tr: null
 			},
-			validChildren: ['td'],
 			format: "[tr]{0}[/tr]",
 			html: '<tr>{0}</tr>'
 		},
@@ -533,7 +556,6 @@
 			tags: {
 				th: null
 			},
-			validChildren: ['td'],
 			format: "[th]{0}[/th]",
 			html: '<th>{0}</th>'
 		},
@@ -661,7 +683,6 @@
 			tags: {
 				code: null
 			},
-			validChildren: [],
 			isBlock: true,
 			format: "[code]{0}[/code]",
 			html: '<code>{0}</code>'
@@ -669,29 +690,33 @@
 		
 		left: {
 			styles: {
-				"text-align": ["left"]
+				"text-align": ["left", "-webkit-left"]
 			},
+			isBlock: true,
 			format: "[left]{0}[/left]",
 			html: '<div align="left">{0}</div>'
 		},
 		center: {
 			styles: {
-				"text-align": ["center"]
+				"text-align": ["center", "-webkit-center"]
 			},
+			isBlock: true,
 			format: "[center]{0}[/center]",
 			html: '<div align="center">{0}</div>'
 		},
 		right: {
 			styles: {
-				"text-align": ["right"]
+				"text-align": ["right", "-webkit-right"]
 			},
+			isBlock: true,
 			format: "[right]{0}[/right]",
 			html: '<div align="right">{0}</div>'
 		},
 		justify: {
 			styles: {
-				"text-align": ["justify"]
+				"text-align": ["justify", "-webkit-justify"]
 			},
+			isBlock: true,
 			format: "[justify]{0}[/justify]",
 			html: '<div align="justify">{0}</div>'
 		},
@@ -700,8 +725,7 @@
 			tags: {
 				iframe: {
 					'data-youtube-id': null
-				},
-				validChildren: []
+				}
 			},
 			format: function(element, content) {
 				if(!element.attr('data-youtube-id'))

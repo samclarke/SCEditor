@@ -1016,13 +1016,13 @@
 		},
 		color: {
 			exec: function (caller) {
-				var editor       = this,
-					genColor     = {r: 255, g: 255, b: 255},
-					content      = $("<div />"),
-					colorColumns = this.options.colors?this.options.colors.split("|"):new Array(21),
+				var	editor			= this,
+					genColor		= {r: 255, g: 255, b: 255},
+					content			= $("<div />"),
+					colorColumns	= this.options.colors?this.options.colors.split("|"):new Array(21),
 					// IE is slow at string concation so use an array
-					html         = [],
-					htmlIndex    = 0;
+					html			= [],
+					htmlIndex		= 0;
 
 				for (var i=0; i < colorColumns.length; ++i) {
 					var colors = (typeof colorColumns[i] !== "undefined")?colorColumns[i].split(","):new Array(21);
