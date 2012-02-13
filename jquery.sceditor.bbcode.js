@@ -108,7 +108,8 @@
 		 * @return string Content with any matching bbcode tags wrapped around it.
 		 */
 		handleStyles = function(element, content, blockLevel) {
-			var elementPropVal;
+			var	elementPropVal,
+				tag = element.get(0).nodeName.toLowerCase();
 
 			// convert blockLevel to boolean
 			blockLevel = !!blockLevel;
@@ -117,11 +118,9 @@
 				return content;
 			
 			$.each(stylesToBbcodes[blockLevel], function(property, bbcodes) {
-				if(element.get(0).nodeName.toLowerCase() === "a" &&
-					(property === 'color' || property === 'text-decoration'))
+				if(tag === "a" && (property === 'color' || property === 'text-decoration'))
 					return;
-				else if(element.get(0).nodeName.toLowerCase() === "code" &&
-					(property === 'font-family'))
+				else if(tag === "code" && (property === 'font-family'))
 					return;
 
 				elementPropVal = element.css(property);
@@ -132,7 +131,6 @@
 					return;
 
 				$.each(bbcodes, function(bbcode, values) {
-
 					if(values === null || $.inArray(elementPropVal.toString(), values) > -1) {
 						if($.isFunction(base.bbcodes[bbcode].format))
 							content = base.bbcodes[bbcode].format.call(base, element, content);
@@ -690,7 +688,7 @@
 		
 		left: {
 			styles: {
-				"text-align": ["left", "-webkit-left"]
+				"text-align": ["left", "-webkit-left", "-moz-left"]
 			},
 			isBlock: true,
 			format: "[left]{0}[/left]",
@@ -698,7 +696,7 @@
 		},
 		center: {
 			styles: {
-				"text-align": ["center", "-webkit-center"]
+				"text-align": ["center", "-webkit-center", "-moz-center"]
 			},
 			isBlock: true,
 			format: "[center]{0}[/center]",
@@ -706,7 +704,7 @@
 		},
 		right: {
 			styles: {
-				"text-align": ["right", "-webkit-right"]
+				"text-align": ["right", "-webkit-right", "-moz-right"]
 			},
 			isBlock: true,
 			format: "[right]{0}[/right]",
@@ -714,7 +712,7 @@
 		},
 		justify: {
 			styles: {
-				"text-align": ["justify", "-webkit-justify"]
+				"text-align": ["justify", "-webkit-justify", "-moz-justify"]
 			},
 			isBlock: true,
 			format: "[justify]{0}[/justify]",
