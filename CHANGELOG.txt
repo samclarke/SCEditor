@@ -13,6 +13,7 @@ Version 1.2.7:
 	Fixed problem with Opera not allowing text to be aligned after switching from WYSIWYG to source modes and back again
 	Updated so there is always a newline at the end of the editor if a quote or code is inserted. Allows to get out of them.
 	Updated to allow only certian bbcode tags within tags
+	Fix bug with IE selection
 
 Version 1.2.6:
 	Added i18n support

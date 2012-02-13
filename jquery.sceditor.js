@@ -766,6 +766,11 @@
 					window.getSelection().addRange(lastRange);
 				else if (window.document.selection)
 					lastRange.select();
+				
+				// remove the stored range after being set.
+				// If the editor loses focus it should be
+				// saved again.
+				lastRange = null;
 			}
 		};
 
