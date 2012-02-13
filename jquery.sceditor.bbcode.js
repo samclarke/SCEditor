@@ -688,7 +688,7 @@
 		
 		left: {
 			styles: {
-				"text-align": ["left", "-webkit-left", "-moz-left"]
+				"text-align": ["left", "-webkit-left", "-moz-left", "-khtml-left"]
 			},
 			isBlock: true,
 			format: "[left]{0}[/left]",
@@ -696,7 +696,7 @@
 		},
 		center: {
 			styles: {
-				"text-align": ["center", "-webkit-center", "-moz-center"]
+				"text-align": ["center", "-webkit-center", "-moz-center", "-khtml-center"]
 			},
 			isBlock: true,
 			format: "[center]{0}[/center]",
@@ -704,7 +704,7 @@
 		},
 		right: {
 			styles: {
-				"text-align": ["right", "-webkit-right", "-moz-right"]
+				"text-align": ["right", "-webkit-right", "-moz-right", "-khtml-right"]
 			},
 			isBlock: true,
 			format: "[right]{0}[/right]",
@@ -712,7 +712,7 @@
 		},
 		justify: {
 			styles: {
-				"text-align": ["justify", "-webkit-justify", "-moz-justify"]
+				"text-align": ["justify", "-webkit-justify", "-moz-justify", "-khtml-justify"]
 			},
 			isBlock: true,
 			format: "[justify]{0}[/justify]",
