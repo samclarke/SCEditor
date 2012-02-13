@@ -871,6 +871,7 @@
 		 */
 		handleMouseDown = function (e) {
 			base.closeDropDown();
+			lastRange = null;
 		};
 
 		/**
