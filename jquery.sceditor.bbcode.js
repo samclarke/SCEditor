@@ -197,7 +197,7 @@
 			}
 			
 			// add newline after paragraph elements p and div (Chrome uses divs) and br tags
-			if(!blockLevel && /^(br|div|p)$/.test(tag))
+			if(blockLevel && /^(br|div|p)$/.test(tag))
 				content += "\n";
 
 			return content;
