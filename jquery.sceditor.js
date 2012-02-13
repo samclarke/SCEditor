@@ -198,6 +198,9 @@
 			$(getWysiwygDoc()).keypress(handleKeyPress);
 			$(getWysiwygDoc()).mousedown(handleMouseDown);
 			$(getWysiwygDoc()).bind("beforedeactivate keypress", saveRange);
+			$(getWysiwygDoc()).focus(function() {
+				lastRange = null;
+			});
 		};
 
 		/**
