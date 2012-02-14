@@ -170,6 +170,9 @@
 		 * @private
 		 */
 		initEditor = function () {
+			var	contentEditable = $('<div contenteditable="true">')[0].contentEditable,
+				contentEditableSupported = typeof contentEditable !== 'undefined' && contentEditable !== 'inherit';
+
 			$textEditor = $('<textarea></textarea>').hide();
 			$wysiwygEditor = $('<iframe frameborder="0"></iframe>');
 
@@ -183,15 +186,20 @@
 			setWidth($textarea.width());
 			setHeight($textarea.height());
 
-			// turn on design mode
-			getWysiwygDoc().designMode = 'On';
+			// turn on design mode if contenteditable not supported
+			if(!contentEditableSupported)
+				getWysiwygDoc().designMode = 'On';
+			
 			getWysiwygDoc().open();
 			getWysiwygDoc().write(
 				'<html><head><link rel="stylesheet" type="text/css" href="' + base.options.style + '" /></head>' +
-				'<body></body></html>'
+				'<body contenteditable="true"></body></html>'
 			);
 			getWysiwygDoc().close();
-			getWysiwygDoc().designMode = 'On';
+			
+			// turn on design mode if contenteditable not supported
+			if(!contentEditableSupported)
+				getWysiwygDoc().designMode = 'On';
 
 			// set the key press event
 			$(getWysiwygDoc()).find("body").keypress(handleKeyPress);

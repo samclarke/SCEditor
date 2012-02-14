@@ -1,4 +1,7 @@
 Version 1.2.7:
+	Updated to use contentEditable if supported. This fixes some selection issues in IE9
+
+Version 1.2.7:
 	Added options for emoticons to require spaces around them for compatibility.
 		i.e. If you have the emoticon :/ it will not replace http://. This
 		mode currently has limited As You Tyne emoticon conversion.
