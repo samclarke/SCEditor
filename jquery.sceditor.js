@@ -133,6 +133,8 @@
 			if(base.options.width !== null)
 				$textarea.width(base.options.width);
 
+			// if either width or height are % based, add the resize handler to update the editor
+			// when the window is resized
 			if((base.options.height !== null && base.options.height.toString().indexOf("%") > -1) ||
 				(base.options.width !== null && base.options.width.toString().indexOf("%") > -1))
 				$(window).resize(handleWindowResize);
@@ -944,50 +946,69 @@
 	$.sceditor.locale = {};
 
 	$.sceditor.commands = {
+		// START_COMMAND: Bold
 		bold: {
 			exec: "bold",
 			tooltip: "Bold"
 		},
+		// END_COMMAND
+		// START_COMMAND: Italic
 		italic: {
 			exec: "italic",
 			tooltip: "Italic"
 		},
+		// END_COMMAND
+		// START_COMMAND: Underline
 		underline: {
 			exec: "underline",
 			tooltip: "Underline"
 		},
+		// END_COMMAND
+		// START_COMMAND: Strikethrough
 		strike: {
 			exec: "strikethrough",
 			tooltip: "Strikethrough"
 		},
+		// END_COMMAND
+		// START_COMMAND: Subscript
 		subscript: {
 			exec: "subscript",
 			tooltip: "Subscript"
 		},
+		// END_COMMAND
+		// START_COMMAND: Superscript
 		superscript: {
 			exec: "superscript",
 			tooltip: "Superscript"
 		},
+		// END_COMMAND
 
-
+		// START_COMMAND: Left
 		left: {
 			exec: "justifyleft",
 			tooltip: "Align left"
 		},
+		// END_COMMAND
+		// START_COMMAND: Centre
 		center: {
 			exec: "justifycenter",
 			tooltip: "Center"
 		},
+		// END_COMMAND
+		// START_COMMAND: Right
 		right: {
 			exec: "justifyright",
 			tooltip: "Align right"
 		},
+		// END_COMMAND
+		// START_COMMAND: Justify
 		justify: {
 			exec: "justifyfull",
 			tooltip: "Justify"
 		},
+		// END_COMMAND
 
-
+		// START_COMMAND: Font
 		font: {
 			exec: function (caller) {
 				var editor  = this;
@@ -1010,6 +1031,8 @@
 			},
 			tooltip: "Font Name"
 		},
+		// END_COMMAND
+		// START_COMMAND: Size
 		size: {
 			exec: function (caller) {
 				var editor    = this;
@@ -1031,6 +1054,8 @@
 			},
 			tooltip: "Font Size"
 		},
+		// END_COMMAND
+		// START_COMMAND: Colour
 		color: {
 			exec: function (caller) {
 				var	editor			= this,
@@ -1080,27 +1105,36 @@
 			},
 			tooltip: "Font Color"
 		},
+		// END_COMMAND
+		// START_COMMAND: Remove Format
 		removeformat: {
 			exec: "removeformat",
 			tooltip: "Remove Formatting"
 		},
+		// END_COMMAND
 
-
+		// START_COMMAND: Cut
 		cut: {
 			exec: "cut",
 			tooltip: "Cut",
 			errorMessage: "Your browser does not allow the cut command. Please use the keyboard shortcut Ctrl/Cmd-X"
 		},
+		// END_COMMAND
+		// START_COMMAND: Copy
 		copy: {
 			exec: "copy",
 			tooltip: "Copy",
 			errorMessage: "Your browser does not allow the copy command. Please use the keyboard shortcut Ctrl/Cmd-C"
 		},
+		// END_COMMAND
+		// START_COMMAND: Paste
 		paste: {
 			exec: "paste",
 			tooltip: "Paste",
 			errorMessage: "Your browser does not allow the paste command. Please use the keyboard shortcut Ctrl/Cmd-V"
 		},
+		// END_COMMAND
+		// START_COMMAND: Paste Text
 		pastetext: {
 			exec: function (caller) {
 				var editor = this;
@@ -1122,28 +1156,34 @@
 			},
 			tooltip: "Paste Text"
 		},
-
-
+		// END_COMMAND
+		// START_COMMAND: Bullet List
 		bulletlist: {
 			exec: "insertunorderedlist",
 			tooltip: "Bullet list"
 		},
+		// END_COMMAND
+		// START_COMMAND: Ordered List
 		orderedlist: {
 			exec: "insertorderedlist",
 			tooltip: "Numbered list"
 		},
+		// END_COMMAND
 
-
+		// START_COMMAND: Undo
 		undo: {
 			exec: "undo",
 			tooltip: "Undo"
 		},
+		// END_COMMAND
+		// START_COMMAND: Redo
 		redo: {
 			exec: "redo",
 			tooltip: "Redo"
 		},
+		// END_COMMAND
 
-
+		// START_COMMAND: Table
 		table: {
 			exec: function (caller) {
 				var editor  = this,
@@ -1187,7 +1227,7 @@
 			},
 			tooltip: "Insert a table"
 		},
-
+		// END_COMMAND
 
 		horizontalrule: {
 			exec: "inserthorizontalrule",
@@ -1424,11 +1464,11 @@
 
 				// can't just use range.startContainer.textContent as it doesn't have the current
 				// char included. Must add it into the string.
-				var buttonChar    = String.fromCharCode(e.which);
-				var buttonIsSpace = editor.options.emoticonsCompat ? /\s/.test(buttonChar) : false;
-				var left          = range.startContainer.textContent.substr(0, range.startOffset);
-				var right         = range.startContainer.textContent.substr(range.startOffset, editor.longestEmoticonCode);
-				var currentString = left + buttonChar + right;
+				var	buttonChar    = String.fromCharCode(e.which),
+					buttonIsSpace = editor.options.emoticonsCompat ? /\s/.test(buttonChar) : false,
+					left          = range.startContainer.textContent.substr(0, range.startOffset),
+					right         = range.startContainer.textContent.substr(range.startOffset, editor.longestEmoticonCode),
+					currentString = left + buttonChar + right;
 
 				$.each(editor.allEmoticonCache, function (key, url) {
 					if((start = currentString.indexOf(key, range.startOffset - key.length)) > -1) {

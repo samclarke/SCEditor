@@ -48,6 +48,11 @@
 		 */
 		var stylesToBbcodes = {};
 		
+		/**
+		 * Allowed children of specific HTML tags. Empty array if no
+		 * children other than text nodes are allowed
+		 * @private
+		 */
 		var validChildren = {
 			ul: ['li'],
 			ol: ['li'],
@@ -350,7 +355,7 @@
 						.replace(/>/g, "&gt;")
 						.replace(/\r/g, "")
 						.replace(/(\[\/?(?:left|center|right|justify)\])\n/g, "$1")
-						.replace(/\n/g, "<span><br /></span>");// opera needs a parent element
+						.replace(/\n/g, "<br />");
 
 			while(text !== oldText)
 			{
@@ -362,6 +367,8 @@
 			// just being replace here instead of adding support for it above.
 			text = text.replace(/\[hr\]/gi, "<hr>");
 
+			// replace multi-spaces which are not inside tags with a non-breaking space
+			// to preserve them. Otherwise they will just be converted to 1!
 			return text.replace(/ {2}(?=([^<\>]*?<|[^<\>]*?$))/g, " &nbsp;");
 		};
 
@@ -432,8 +439,8 @@
 				"font-size": null
 			},
 			format: function(element, content) {
-				var fontSize = element.css('fontSize');
-				var size     = 1;
+				var	fontSize = element.css('fontSize'),
+					size     = 1;
 
 				if(fontSize === this.options.defaultSize)
 					return content;
@@ -598,21 +605,22 @@
 				if(typeof element.attr('data-sceditor-emoticon') !== "undefined")
 					return content;
 
-				var attribs =	"=" + $(element).width() +
-						"x" + $(element).height();
+				var attribs = "=" + $(element).width() + "x" + $(element).height();
 
 				return '[img' + attribs + ']' + element.attr('src') + '[/img]';
 			},
 			html: function(element, attrs, content) {
-				var attribs = "";
+				var attribs = "", parts;
 
+				// handle [img width=340 height=240]url[/img]
 				if(typeof attrs.width !== "undefined")
 					attribs += ' width="' + attrs.width + '"';
 				if(typeof attrs.height !== "undefined")
 					attribs += ' height="' + attrs.height + '"';
 
+				// handle [img=340x240]url[/img]
 				if(typeof attrs.defaultAttr !== "undefined") {
-					var parts = attrs.defaultAttr.split(/x/i);
+					parts = attrs.defaultAttr.split(/x/i);
 
 					attribs = ' width="' + parts[0] + '"' +
 						' height="' + (parts.length === 2 ? parts[1] : parts[0]) + '"';
@@ -628,6 +636,7 @@
 				}
 			},
 			format: function(element, content) {
+				// make sure this link is not an e-mail, if it is return e-mail BBCode
 				if(element.attr('href').substr(0, 7) === 'mailto:')
 					return '[email=' + element.attr('href').substr(7) + ']' + content + '[/email]';
 
@@ -731,7 +740,7 @@
 
 				return '[youtube]' + element.attr('data-youtube-id') + '[/youtube]';
 			},
-			html: '<iframe width="560" height="315" src="http://www.youtube.com/embed/{0}' +
+			html: '<iframe width="560" height="315" src="http://www.youtube.com/embed/{0}?wmode=opaque' +
 				'" data-youtube-id="{0}" frameborder="0" allowfullscreen></iframe>'
 		}
 	};
