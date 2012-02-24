@@ -1,5 +1,5 @@
 /**
- * SCEditor BBCode Plugin v1.2.7
+ * SCEditor BBCode Plugin v1.2.8
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
  * Copyright (C) 2011, Sam Clarke (samclarke.com)

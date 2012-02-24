@@ -1,5 +1,5 @@
 /**
- * SCEditor v1.2.7
+ * SCEditor v1.2.8
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
  * Copyright (C) 2011, Sam Clarke (samclarke.com)
@@ -1229,16 +1229,23 @@
 		},
 		// END_COMMAND
 
+		// START_COMMAND: Horizontal Rule
 		horizontalrule: {
 			exec: "inserthorizontalrule",
 			tooltip: "Insert a horizontal rule"
 		},
+		// END_COMMAND
+
+		// START_COMMAND: Code
 		code: {
 			exec: function () {
 				this.wysiwygEditorInsertHtml('<code>', '<br /></code>');
 			},
 			tooltip: "Code"
 		},
+		// END_COMMAND
+
+		// START_COMMAND: Image
 		image: {
 			exec: function (caller) {
 				var editor  = this;
@@ -1276,6 +1283,9 @@
 			},
 			tooltip: "Insert an image"
 		},
+		// END_COMMAND
+
+		// START_COMMAND: E-mail
 		email: {
 			exec: function (caller) {
 				var editor  = this;
@@ -1306,6 +1316,9 @@
 			},
 			tooltip: "Insert an email"
 		},
+		// END_COMMAND
+
+		// START_COMMAND: Link
 		link: {
 			exec: function (caller) {
 				var editor  = this;
@@ -1347,11 +1360,17 @@
 			},
 			tooltip: "Insert a link"
 		},
+		// END_COMMAND
+
+		// START_COMMAND: Unlink
 		unlink: {
 			exec: "unlink",
 			tooltip: "Unlink"
 		},
+		// END_COMMAND
 
+
+		// START_COMMAND: Quote
 		quote: {
 			exec: function (caller, html) {
 				var before	= '<blockquote>',
@@ -1372,7 +1391,9 @@
 			},
 			tooltip: "Insert a Quote"
 		},
+		// END_COMMAND
 
+		// START_COMMAND: Emoticons
 		emoticon: {
 			exec: function (caller) {
 				var editor  = this;
@@ -1518,6 +1539,9 @@
 			},
 			tooltip: "Insert an emoticon"
 		},
+		// END_COMMAND
+
+		// START_COMMAND: YouTube
 		youtube: {
 			exec: function (caller) {
 				var editor  = this;
@@ -1549,6 +1573,9 @@
 			},
 			tooltip: "Insert a YouTube video"
 		},
+		// END_COMMAND
+
+		// START_COMMAND: Date
 		date: {
 			exec: function () {
 				var now   = new Date(),
@@ -1569,6 +1596,9 @@
 			},
 			tooltip: "Insert current date"
 		},
+		// END_COMMAND
+
+		// START_COMMAND: Time
 		time: {
 			exec: function () {
 				var now   = new Date(),
@@ -1587,12 +1617,17 @@
 			},
 			tooltip: "Insert current time"
 		},
+		// END_COMMAND
 
 
+		// START_COMMAND: Print
 		print: {
 			exec: "print",
 			tooltip: "Print"
 		},
+		// END_COMMAND
+
+		// START_COMMAND: Source
 		source: {
 			exec: function () {
 				this.toggleTextMode();
@@ -1602,6 +1637,7 @@
 			},
 			tooltip: "View source"
 		}
+		// END_COMMAND
 	};
 	
 	/**
