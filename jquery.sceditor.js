@@ -103,6 +103,7 @@
 			initKeyPressFuncs,
 			initResize,
 			documentClickHandler,
+			formSubmitHandler,
 			preLoadEmoticons,
 			getWysiwygDoc,
 			handleWindowResize,
@@ -153,18 +154,9 @@
 				initResize();
 
 			$(document).click(documentClickHandler);
-			
 			$textarea.parents("form")
 				.attr('novalidate','novalidate')
-				.submit(function(e) {
-					base.updateTextareaValue();
-					$(this).removeAttr('novalidate');
-					
-					if(this.checkValidity && !this.checkValidity())
-						e.preventDefault();
-					
-					$(this).attr('novalidate','novalidate');
-				});
+				.submit(formSubmitHandler);
 
 			// load any textarea value into the editor
 			var val = $textarea.hide().val();
@@ -175,7 +167,8 @@
 				val = base.options.getTextHandler(val);
 
 			base.setWysiwygEditorValue(val);
-			preLoadEmoticons();
+			if(base.options.toolbar.indexOf('emoticon') != -1)
+				preLoadEmoticons();
 		};
 
 		/**
@@ -385,6 +378,32 @@
 				$(document).unbind('mousemove', mouseMoveFunc);
 				e.preventDefault();
 			});
+		};
+		
+		formSubmitHandler = function(e) {
+			base.updateTextareaValue();
+			
+			$(this).removeAttr('novalidate');
+			
+			if(this.checkValidity && !this.checkValidity())
+				e.preventDefault();
+			
+			$(this).attr('novalidate','novalidate');
+		};
+		
+		/**
+		 * Destroys the editor, removing all elements and
+		 * event handlers.
+		 */
+		base.destory = function () {
+			$(document).unbind('click', documentClickHandler);
+			$textarea.removeAttr('novalidate').unbind('submit', formSubmitHandler);
+			$(window).unbind('resize', handleWindowResize);
+			
+			editorContainer.remove();
+			editorContainer = null;
+			
+			$textarea.removeData("sceditor").show();
 		};
 
 		/**
