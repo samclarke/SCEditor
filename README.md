@@ -1,5 +1,5 @@
 # SCEditor v1.2.8
-Copyright (C) 2011, Sam Clarke (http://www.samclarke.com)
+Copyright (C) 2011-2012, [Sam Clarke](http://www.samclarke.com).
 
 For more information visit: http://www.samclarke.com/2011/07/sceditor/
 
@@ -14,7 +14,7 @@ Include the JQuery and SCEditor JavaScript
 	<link rel="stylesheet" href="minified/jquery.sceditor.min.css" type="text/css" media="all" />
 	<script type="text/javascript" src="minified/jquery.sceditor.min.js"></script>
 	
-Then you can simpley do:
+Then to change all textareas to WYSIWYG editors, simpley do:
 
 	$(document).ready(function() {
 		$("textarea").sceditor();
@@ -105,15 +105,14 @@ SCEditor is dual licensed under the MIT and GPL licenses:
 http://www.opensource.org/licenses/mit-license.php
 http://www.gnu.org/licenses/gpl.html
 
-If you use SCEditor a link back would be appreciated but not requird.
+If you use SCEditor a link back or a donation would be appreciated, but not required.
 
 
 # Donate
 
-If you would like to make a donation you can via PayPal here:
-https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AVJSF5NEETYYG
-or via Flattr here:
-http://flattr.com/thing/400345/SCEditor
+If you would like to make a donation you can via
+[PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AVJSF5NEETYYG)
+or via [Flattr](http://flattr.com/thing/400345/SCEditor)
 
 
 # Credits
@@ -124,4 +123,4 @@ Andy Fedosjeenko, aka Nightwolf -> bobo@animevanguard.com
 
 **Icons by:**
 Mark James (http://www.famfamfam.com/lab/icons/silk/)
-Licensed under the Creative Commons CC-BY license (http://creativecommons.org/licenses/by/3.0/)
+Licensed under the [Creative Commons CC-BY license](http://creativecommons.org/licenses/by/3.0/).

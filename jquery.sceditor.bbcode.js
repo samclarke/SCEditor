@@ -254,10 +254,10 @@
 				var ret = '';
 
 				$.sceditor.dom.traverse(node, function(node) {
-					var	$node			= $(node),
-						curTag			= '',
-						tag				= node.nodeName.toLowerCase(),
-						vChild			= validChildren[tag],
+					var	$node		= $(node),
+						curTag		= '',
+						tag		= node.nodeName.toLowerCase(),
+						vChild		= validChildren[tag],
 						isValidChild	= true;
 					
 					if(typeof vChildren === 'object')
@@ -376,6 +376,7 @@
 	};
 	
 	$.sceditorBBCodePlugin.bbcodes = {
+		// START_COMMAND: Bold
 		b: {
 			styles: {
 				// 401 is for FF 3.5
@@ -384,6 +385,9 @@
 			format: "[b]{0}[/b]",
 			html: '<strong>{0}</strong>'
 		},
+		// END_COMMAND
+
+		// START_COMMAND: Italic
 		i: {
 			styles: {
 				"font-style": ["italic", "oblique"]
@@ -391,6 +395,9 @@
 			format: "[i]{0}[/i]",
 			html: '<em>{0}</em>'
 		},
+		// END_COMMAND
+
+		// START_COMMAND: Underline
 		u: {
 			styles: {
 				"text-decoration": ["underline"]
@@ -398,6 +405,9 @@
 			format: "[u]{0}[/u]",
 			html: '<u>{0}</u>'
 		},
+		// END_COMMAND
+
+		// START_COMMAND: Strikethrough
 		s: {
 			styles: {
 				"text-decoration": ["line-through"]
@@ -405,6 +415,9 @@
 			format: "[s]{0}[/s]",
 			html: '<s>{0}</s>'
 		},
+		// END_COMMAND
+
+		// START_COMMAND: Subscript
 		sub: {
 			tags: {
 				sub: null
@@ -412,6 +425,9 @@
 			format: "[sub]{0}[/sub]",
 			html: '<sub>{0}</sub>'
 		},
+		// END_COMMAND
+
+		// START_COMMAND: Superscript
 		sup: {
 			tags: {
 				sup: null
@@ -419,7 +435,9 @@
 			format: "[sup]{0}[/sup]",
 			html: '<sup>{0}</sup>'
 		},
+		// END_COMMAND
 
+		// START_COMMAND: Font
 		font: {
 			styles: {
 				"font-family": null
@@ -434,6 +452,9 @@
 				return '<font face="' + attrs.defaultAttr + '">' + content + '</font>';
 			}
 		},
+		// END_COMMAND
+
+		// START_COMMAND: Size
 		size: {
 			styles: {
 				"font-size": null
@@ -471,6 +492,9 @@
 				return '<font size="' + attrs.defaultAttr + '">' + content + '</font>';
 			}
 		},
+		// END_COMMAND
+
+		// START_COMMAND: Color
 		color: {
 			styles: {
 				color: null
@@ -511,7 +535,9 @@
 				return '<font color="' + attrs.defaultAttr + '">' + content + '</font>';
 			}
 		},
+		// END_COMMAND
 
+		// START_COMMAND: Lists
 		ul: {
 			tags: {
 				ul: null
@@ -541,8 +567,9 @@
 		"*": {
 			html: '<li>{0}</li>'
 		},
+		// END_COMMAND
 
-
+		// START_COMMAND: Table
 		table: {
 			tags: {
 				table: null
@@ -571,8 +598,9 @@
 			format: "[td]{0}[/td]",
 			html: '<td>{0}<br class="sceditor-ignore" /></td>'
 		},
+		// END_COMMAND
 
-
+		// START_COMMAND: Emoticons
 		emoticon: {
 			tags: {
 				img: {
@@ -585,8 +613,9 @@
 			},
 			html: '{0}'
 		},
+		// END_COMMAND
 
-
+		// START_COMMAND: Horizontal Rule
 		horizontalrule: {
 			tags: {
 				hr: null
@@ -594,6 +623,9 @@
 			format: "[hr]{0}",
 			html: '<hr />'
 		},
+		// END_COMMAND
+
+		// START_COMMAND: Image
 		img: {
 			tags: {
 				img: {
@@ -629,6 +661,9 @@
 				return '<img ' + attribs + ' src="' + content + '" />';
 			}
 		},
+		// END_COMMAND
+
+		// START_COMMAND: URL
 		url: {
 			tags: {
 				a: {
@@ -649,6 +684,9 @@
 				return '<a href="' + encodeURI(attrs.defaultAttr) + '">' + content + '</a>';
 			}
 		},
+		// END_COMMAND
+
+		// START_COMMAND: E-mail
 		email: {
 			html: function(element, attrs, content) {
 				if(typeof attrs.defaultAttr === "undefined")
@@ -657,24 +695,23 @@
 				return '<a href="mailto:' + attrs.defaultAttr + '">' + content + '</a>';
 			}
 		},
+		// END_COMMAND
 
+		// START_COMMAND: Quote
 		quote: {
 			tags: {
 				blockquote: null
 			},
 			isBlock: true,
 			format: function(element, content) {
-				var attr = '',
-					that = this;
+				var	attr = '';
 
 				if($(element).children("cite:first").length === 1) {
 					attr = '=' + $(element).children("cite:first").text();
 
 					content = '';
 					$(element).children("cite:first").remove();
-					$(element).contents().each(function() {
-						content += that.elementToBbcode($(this));
-					});
+					content = this.elementToBbcode($(element));
 				}
 
 				return '[quote' + attr + ']' + content + '[/quote]';
@@ -686,6 +723,9 @@
 				return '<blockquote>' + content + '</blockquote>';
 			}
 		},
+		// END_COMMAND
+
+		// START_COMMAND: Code
 		code: {
 			tags: {
 				code: null
@@ -694,7 +734,10 @@
 			format: "[code]{0}[/code]",
 			html: '<code>{0}</code>'
 		},
-		
+		// END_COMMAND
+
+
+		// START_COMMAND: Left
 		left: {
 			styles: {
 				"text-align": ["left", "-webkit-left", "-moz-left", "-khtml-left"]
@@ -703,6 +746,9 @@
 			format: "[left]{0}[/left]",
 			html: '<div align="left">{0}</div>'
 		},
+		// END_COMMAND
+
+		// START_COMMAND: Centre
 		center: {
 			styles: {
 				"text-align": ["center", "-webkit-center", "-moz-center", "-khtml-center"]
@@ -711,6 +757,9 @@
 			format: "[center]{0}[/center]",
 			html: '<div align="center">{0}</div>'
 		},
+		// END_COMMAND
+
+		// START_COMMAND: Right
 		right: {
 			styles: {
 				"text-align": ["right", "-webkit-right", "-moz-right", "-khtml-right"]
@@ -719,6 +768,9 @@
 			format: "[right]{0}[/right]",
 			html: '<div align="right">{0}</div>'
 		},
+		// END_COMMAND
+
+		// START_COMMAND: Justify
 		justify: {
 			styles: {
 				"text-align": ["justify", "-webkit-justify", "-moz-justify", "-khtml-justify"]
@@ -727,7 +779,9 @@
 			format: "[justify]{0}[/justify]",
 			html: '<div align="justify">{0}</div>'
 		},
+		// END_COMMAND
 
+		// START_COMMAND: YouTube
 		youtube: {
 			tags: {
 				iframe: {
@@ -742,7 +796,13 @@
 			},
 			html: '<iframe width="560" height="315" src="http://www.youtube.com/embed/{0}?wmode=opaque' +
 				'" data-youtube-id="{0}" frameborder="0" allowfullscreen></iframe>'
-		}
+		},
+		// END_COMMAND
+		
+		// this is here so that commands above can be removed
+		// without having to remove the , after the last one.
+		// Needed for IE.
+		ignore: {}
 	};
 	
 	/**

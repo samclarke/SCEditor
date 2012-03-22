@@ -194,7 +194,8 @@
 			
 			getWysiwygDoc().open();
 			getWysiwygDoc().write(
-				'<html><head><link rel="stylesheet" type="text/css" href="' + base.options.style + '" /></head>' +
+				'<html><head><link rel="stylesheet" type="text/css" href="' + base.options.style + '" />' +
+				'<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /></head>' +
 				'<body contenteditable="true"></body></html>'
 			);
 			getWysiwygDoc().close();
@@ -1636,8 +1637,13 @@
 				this.toggleTextMode();
 			},
 			tooltip: "View source"
-		}
+		},
 		// END_COMMAND
+		
+		// this is here so that commands above can be removed
+		// without having to remove the , after the last one.
+		// Needed for IE.
+		ignore: {}
 	};
 	
 	/**
