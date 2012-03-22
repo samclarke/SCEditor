@@ -152,8 +152,19 @@
 			if(base.options.resizeEnabled)
 				initResize();
 
-			$textarea.parents("form").submit(base.updateTextareaValue);
 			$(document).click(documentClickHandler);
+			
+			$textarea.parents("form")
+				.attr('novalidate','novalidate')
+				.submit(function(e) {
+					base.updateTextareaValue();
+					$(this).removeAttr('novalidate');
+					
+					if(this.checkValidity && !this.checkValidity())
+						e.preventDefault();
+					
+					$(this).attr('novalidate','novalidate');
+				});
 
 			// load any textarea value into the editor
 			var val = $textarea.hide().val();

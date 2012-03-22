@@ -1,10 +1,9 @@
-TODO: Make compatible with HTML5 form required attribute.
-
 Version 1.2.8:
 	Updated to use contentEditable if supported. This fixes some selection issues in IE9
 	Fixed problem with YouTube videos hiding after switching between WYSIWYG and source modes
 	Added new build page
 	Fixed bug causing quotes with author attributes to lose their content
+	Fixed HTML5 form required attribute compatiblity
 
 Version 1.2.7:
 	Added options for emoticons to require spaces around them for compatibility.
