@@ -9,6 +9,7 @@ Version 1.2.8:
 	Added destroy function to enable removing the editor
 	Updated editor to only pre-load emoticons when they are in the toolbar.
 		Idea from kaen25's[https://github.com/kaen25/] fork.
+	Added Dutch translation kindly submitted by Samuel
 
 Version 1.2.7:
 	Added options for emoticons to require spaces around them for compatibility.
