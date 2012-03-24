@@ -1,7 +1,7 @@
 (function ($) {
 	'use strict';
 	
-	$.sceditor.locale["no-NB"] = {
+	$.sceditor.locale["nb"] = {
 		"Bold": "Fet",
 		"Italic": "Kursiv",
 		"Underline": "Understrek",
@@ -53,4 +53,6 @@
 		"Description (optional):": "Beskrivelse (valgfritt):",
 		dateFormat: "day.month.year"
 	}
+	
+	$.sceditor.locale["no"] = $.sceditor.locale["nb"];
 })(jQuery);

@@ -1,7 +1,7 @@
 (function ($) {
 	'use strict';
 	
-	$.sceditor.locale["ru-RU"] = {
+	$.sceditor.locale["ru"] = {
 		"Bold": "Жирный",
 		"Italic": "Курсив",
 		"Underline": "Подчёркнутый",

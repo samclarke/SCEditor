@@ -1,7 +1,7 @@
 (function ($) {
 	'use strict';
 	
-	$.sceditor.locale["nl-NL"] = {
+	$.sceditor.locale["nl"] = {
 		"Bold": "Vet",
 		"Italic": "Schuingedrukt",
 		"Underline": "Onderstreept",
