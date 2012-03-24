@@ -10,6 +10,8 @@ Version 1.2.8:
 	Updated editor to only pre-load emoticons when they are in the toolbar.
 		Idea from kaen25's[https://github.com/kaen25/] fork.
 	Added Dutch translation kindly submitted by Samuel
+	Added German translation kindly submitted by Tina
+	Changed I18n to default to just the ISO 639-1 and only include the dialect when needed
 
 Version 1.2.7:
 	Added options for emoticons to require spaces around them for compatibility.
