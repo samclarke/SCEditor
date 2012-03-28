@@ -229,18 +229,22 @@
 			};
 
 			$toolbar   = $('<div class="sceditor-toolbar" />');
-			var groups = base.options.toolbar.split("|");
+			var	groups = base.options.toolbar.split("|"),
+				group, buttons, accessibilityName, button, i;
 
-			for (var i=0; i < groups.length; i++) {
-				var group   = $('<div class="sceditor-group" />');
-				var buttons = groups[i].split(",");
+			for (i=0; i < groups.length; i++) {
+				group   = $('<div class="sceditor-group" />');
+				buttons = groups[i].split(",");
 
 				for (var x=0; x < buttons.length; x++) {
 					// the button must be a valid command otherwise ignore it
 					if(!base.commands.hasOwnProperty(buttons[x]))
 						continue;
 
-					var button = $('<a class="sceditor-button sceditor-button-' + buttons[x] + ' " unselectable="on"><div unselectable="on" /></a>');
+					accessibilityName = base.commands[buttons[x]].tooltip ? base._(base.commands[buttons[x]].tooltip) : buttons[x];
+					
+					button = $('<a class="sceditor-button sceditor-button-' + buttons[x]
+						+ ' " unselectable="on"><div unselectable="on">' + accessibilityName + '</div></a>');
 
 					if(base.commands[buttons[x]].hasOwnProperty("tooltip"))
 						button.attr('title', base._(base.commands[buttons[x]].tooltip));

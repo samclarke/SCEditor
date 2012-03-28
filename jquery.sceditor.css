@@ -174,6 +174,7 @@ div.sceditor-dropdown, div.sceditor-dropdown div {
 		.sceditor-button div {
 			margin: 0;
 			padding: 0;
+			text-indent: -9999px;
 		}
 		.sceditor-button:hover { background: #eee; }
 			.sceditor-button-bold div { background: url('icons/text_bold.png'); }

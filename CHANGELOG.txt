@@ -3,6 +3,7 @@ TODO: Fix accessibility
 TODO: Fix header releated BBCode bug
 
 Version 1.2.9:
+	Started on improving accessibility
 
 Version 1.2.8:
 	Updated to use contentEditable if supported. This fixes some selection issues in IE9
