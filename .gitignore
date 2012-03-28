@@ -3,7 +3,7 @@ example/test.php
 example/test.html
 .project
 jquery.sceditor.xhtml.js
-icons/
+icons/*
 !icons/grip.png
 !icons/text_bold.png
 !icons/text_italic.png
