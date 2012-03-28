@@ -1,4 +1,4 @@
-# SCEditor v1.2.8
+# SCEditor v1.2.9
 Copyright (C) 2011-2012, [Sam Clarke](http://www.samclarke.com).
 
 For more information visit: http://www.samclarke.com/2011/07/sceditor/
@@ -34,7 +34,7 @@ or for a BBCode WYSIWYG editor do:
 Comma seperated list of commans. Groups should be split by a bar (|) charecter
 
 **locale** *string*
-The locale to use, e.g. en-GB, en-US, no-NB, ect. The language file must be included after the main JS but before the editor is used.
+The locale to use, e.g. en-GB, en-US, no, nl, ect. The language file must be included after the main JS but before the editor is initilised.
 
 **style** *string*
 Stylesheet to style the WYSIWYG document
@@ -101,9 +101,7 @@ The year, month and day will be replaced with the users current year, month and 
 
 # License
 
-SCEditor is dual licensed under the MIT and GPL licenses:
-http://www.opensource.org/licenses/mit-license.php
-http://www.gnu.org/licenses/gpl.html
+SCEditor is dual licensed under the [MIT](http://www.opensource.org/licenses/mit-license.php) and [GPL](http://www.gnu.org/licenses/gpl.html) licenses.
 
 If you use SCEditor a link back or a donation would be appreciated, but not required.
 

@@ -1,4 +1,8 @@
 TODO: Tidy up jquery.sceditor.js
+TODO: Fix accessibility
+TODO: Fix header releated BBCode bug
+
+Version 1.2.9:
 
 Version 1.2.8:
 	Updated to use contentEditable if supported. This fixes some selection issues in IE9
