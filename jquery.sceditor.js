@@ -1407,7 +1407,7 @@
 
 		// START_COMMAND: Quote
 		quote: {
-			exec: function (caller, html) {
+			exec: function (caller, html, author) {
 				var	before	= '<blockquote>',
 					end	= '</blockquote>';
 
@@ -1415,7 +1415,9 @@
 				// text is replaced
 				if(html)
 				{
-					before = before + html + end + '<br />';
+					author = (author ? '<cite>' + author + '</cite>' : '');
+					
+					before = before + author + html + end + '<br />';
 					end = null;
 				}
 				// if not add a newline to the end of the inserted quote

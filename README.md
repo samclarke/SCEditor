@@ -36,6 +36,9 @@ Comma seperated list of commans. Groups should be split by a bar (|) charecter
 **locale** *string*
 The locale to use, e.g. en-GB, en-US, no, nl, ect. The language file must be included after the main JS but before the editor is initilised.
 
+**charset** *string*
+The charset to use. Defaults to utf-8.
+
 **style** *string*
 Stylesheet to style the WYSIWYG document
 
