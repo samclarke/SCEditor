@@ -198,9 +198,10 @@
 			
 			getWysiwygDoc().open();
 			getWysiwygDoc().write(
-				'<html><head><link rel="stylesheet" type="text/css" href="' + base.options.style + '" />' +
-				'<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /></head>' +
-				'<body contenteditable="true"></body></html>'
+				'<html><head><meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />' +
+				'<meta http-equiv="Content-Type" content="text/html;charset=' + base.options.charset + '" />' +
+				'<link rel="stylesheet" type="text/css" href="' + base.options.style + '" />' +
+				'</head><body contenteditable="true"></body></html>'
 			);
 			getWysiwygDoc().close();
 			
@@ -864,7 +865,7 @@
 				typeof base.commands[command].errorMessage !== "undefined")
 				alert(base._(base.commands[command].errorMessage));
 		};
-
+		
 		/**
 		 * Handles any key press in the WYSIWYG editor
 		 * 
@@ -873,7 +874,7 @@
 		handleKeyPress = function (e) {
 			base.closeDropDown();
 			
-			var selectedContainer = getWysiwygSelectedContainerNode(),
+			var	selectedContainer = getWysiwygSelectedContainerNode(),
 				$selectedContainer = $(selectedContainer);
 
 			// "Fix" (ok it's a hack) for blocklevel elements being duplicated in some browsers when
@@ -1046,14 +1047,14 @@
 		// START_COMMAND: Font
 		font: {
 			exec: function (caller) {
-				var editor  = this;
-				var fonts   = editor.options.fonts.split(",");
-				var content = $("<div />");
-				var clickFunc = function (e) {
-					editor.execCommand("fontname", $(this).data('sceditor-font'));
-					editor.closeDropDown(true);
-					e.preventDefault();
-				};
+				var	editor  = this,
+					fonts   = editor.options.fonts.split(","),
+					content = $("<div />")
+					clickFunc = function (e) {
+						editor.execCommand("fontname", $(this).data('sceditor-font'));
+						editor.closeDropDown(true);
+						e.preventDefault();
+					};
 
 				for (var i=0; i < fonts.length; i++) {
 					content.append(
@@ -1070,9 +1071,9 @@
 		// START_COMMAND: Size
 		size: {
 			exec: function (caller) {
-				var editor    = this;
-				var content   = $("<div />");
-				var clickFunc = function (e) {
+				var	editor    = this,
+					content   = $("<div />"),
+					clickFunc = function (e) {
 					editor.execCommand("fontsize", $(this).data('sceditor-fontsize'));
 					editor.closeDropDown(true);
 					e.preventDefault();
@@ -1172,8 +1173,8 @@
 		// START_COMMAND: Paste Text
 		pastetext: {
 			exec: function (caller) {
-				var editor = this;
-				var content = $(this._('<form><div><label for="txt">{0}</label> <textarea cols="20" rows="7" id="txt">' +
+				var	editor = this
+					content = $(this._('<form><div><label for="txt">{0}</label> <textarea cols="20" rows="7" id="txt">' +
 						'</textarea></div></form>',
 						this._("Paste your text inside the following box:")
 					))
@@ -1221,7 +1222,7 @@
 		// START_COMMAND: Table
 		table: {
 			exec: function (caller) {
-				var editor  = this,
+				var	editor  = this,
 					content = $(this._(
 						'<form><div><label for="rows">{0}</label><input type="text" id="rows" value="2" /></div>' +
 							'<div><label for="cols">{1}</label><input type="text" id="cols" value="2" /></div></form>',
@@ -1283,8 +1284,8 @@
 		// START_COMMAND: Image
 		image: {
 			exec: function (caller) {
-				var editor  = this;
-				var content = $(this._('<form><div><label for="link">{0}</label> <input type="text" id="image" value="http://" /></div>' +
+				var	editor  = this,
+					content = $(this._('<form><div><label for="link">{0}</label> <input type="text" id="image" value="http://" /></div>' +
 						'<div><label for="width">{1}</label> <input type="text" id="width" size="2" /></div>' +
 						'<div><label for="height">{2}</label> <input type="text" id="height" size="2" /></div></form>',
 							this._("URL:"),
@@ -1323,8 +1324,8 @@
 		// START_COMMAND: E-mail
 		email: {
 			exec: function (caller) {
-				var editor  = this;
-				var content = $(this._('<form><div><label for="email">{0}</label> <input type="text" id="email" value="" /></div></form>',
+				var	editor  = this,
+					content = $(this._('<form><div><label for="email">{0}</label> <input type="text" id="email" value="" /></div></form>',
 						this._("E-mail:")
 					))
 					.submit(function () {return false;});
@@ -1356,9 +1357,8 @@
 		// START_COMMAND: Link
 		link: {
 			exec: function (caller) {
-				var editor  = this;
-				var content = $(
-					this._('<form><div><label for="link">{0}</label> <input type="text" id="link" value="http://" /></div>' +
+				var	editor  = this,
+					content = $(this._('<form><div><label for="link">{0}</label> <input type="text" id="link" value="http://" /></div>' +
 							'<div><label for="des">{1}</label> <input type="text" id="des" value="" /></div></form>',
 						this._("URL:"),
 						this._("Description (optional):")
@@ -1408,14 +1408,14 @@
 		// START_COMMAND: Quote
 		quote: {
 			exec: function (caller, html) {
-				var before	= '<blockquote>',
-					end		= '</blockquote>';
-				
+				var	before	= '<blockquote>',
+					end	= '</blockquote>';
+
 				// if there is HTML passed set end to null so any selected
 				// text is replaced
 				if(html)
 				{
-					before = before + html + end;
+					before = before + html + end + '<br />';
 					end = null;
 				}
 				// if not add a newline to the end of the inserted quote
@@ -1431,9 +1431,9 @@
 		// START_COMMAND: Emoticons
 		emoticon: {
 			exec: function (caller) {
-				var editor  = this;
-				var content = $('<div />');
-				var line    = $('<div />');
+				var	editor  = this,
+					content = $('<div />'),
+					line    = $('<div />');
 
 				var appendEmoticon = function (code, emoticon) {
 					line.append($('<img />')
@@ -1471,9 +1471,9 @@
 
 				if(typeof editor.options.emoticons.more !== "undefined") {
 					var more = $(this._('<a class="sceditor-more">{0}</a>', this._("More"))).click(function () {
-						var emoticons = $.extend({}, editor.options.emoticons.dropdown, editor.options.emoticons.more);
-						content       = $('<div />');
-						line          = $('<div />');
+						var	emoticons	= $.extend({}, editor.options.emoticons.dropdown, editor.options.emoticons.more);
+							content		= $('<div />');
+							line		= $('<div />');
 
 						$.each(emoticons, appendEmoticon);
 
@@ -1613,7 +1613,7 @@
 		// START_COMMAND: Date
 		date: {
 			exec: function () {
-				var now   = new Date(),
+				var	now   = new Date(),
 					year  = now.getYear(),
 					month = now.getMonth()+1,
 					day   = now.getDate();
@@ -1636,7 +1636,7 @@
 		// START_COMMAND: Time
 		time: {
 			exec: function () {
-				var now   = new Date(),
+				var	now   = new Date(),
 					hours = now.getHours(),
 					mins  = now.getMinutes(),
 					secs  = now.getSeconds();
@@ -1759,12 +1759,12 @@
 		},*/
 		
 		copyCSS: function(from, to) {
-			var attrs = ['font-size',	'color',		'font-family',
-						'font-wieght',	'font-style',	'text-decoration'];
+			var attrs = [	'font-size',	'color',	'font-family',
+					'font-wieght',	'font-style',	'text-decoration'];
 			
-			var i		= attrs.length,
+			var	i	= attrs.length,
 				$from	= $(from),
-				$to		= $(to);
+				$to	= $(to);
 			
 			while(i--)
 				$to.css(attrs[i], $from.css(attrs[i]));
@@ -1827,7 +1827,7 @@
 		 * @return DocumentFragment
 		 */
 		extractContents: function(startNode, endNode) {
-			var base			= this,
+			var	base			= this,
 				$commonAncestor	= base.findCommonAncestor(startNode, endNode),
 				commonAncestor	= $commonAncestor===null?null:$commonAncestor.get(0),
 				startReached	= false,
@@ -1934,6 +1934,8 @@
 		colors: null,
 		
 		locale: "en",
+		
+		charset: "utf-8",
 
 		// compatibility mode for if you have emoticons such as :/ This mode requires
 		// emoticons to be surrounded by whitespace or end of line chars. This mode

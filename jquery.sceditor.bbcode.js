@@ -199,7 +199,7 @@
 				});
 			}
 			
-			// add newline after paragraph elements p and div (Chrome uses divs) and br tags
+			// add newline after paragraph elements p and div (WebKit uses divs) and br tags
 			if(blockLevel && /^(br|div|p)$/.test(tag))
 				content += "\n";
 
