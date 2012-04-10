@@ -1209,19 +1209,6 @@
 		},
 		// END_COMMAND
 
-		// START_COMMAND: Undo
-		undo: {
-			exec: "undo",
-			tooltip: "Undo"
-		},
-		// END_COMMAND
-		// START_COMMAND: Redo
-		redo: {
-			exec: "redo",
-			tooltip: "Redo"
-		},
-		// END_COMMAND
-
 		// START_COMMAND: Table
 		table: {
 			exec: function (caller) {
@@ -1927,7 +1914,7 @@
 		// Toolbar buttons order and groups. Should be comma seperated and have a bar | to seperate groups
 		toolbar:	"bold,italic,underline,strike,subscript,superscript|left,center,right,justify|" +
 				"font,size,color,removeformat|cut,copy,paste,pastetext|bulletlist,orderedlist|" +
-				"undo,redo|table|code,quote|horizontalrule,image,email,link,unlink|emoticon,youtube,date,time|" +
+				"table|code,quote|horizontalrule,image,email,link,unlink|emoticon,youtube,date,time|" +
 				"print,source",
 
 		// Stylesheet to include in the WYSIWYG editor. Will style the WYSIWYG elements
