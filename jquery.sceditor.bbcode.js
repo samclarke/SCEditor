@@ -202,9 +202,13 @@
 			// add newline after paragraph elements p and div (WebKit uses divs) and br tags
 			// if(blockLevel && /^(br|div|p)$/.test(tag))
 				// content += "\n";
-				
+			
 			if(blockLevel && /^(br|div|p)$/.test(tag))
-				content = "\n" + content;
+			{
+				// if it's a <p><br /></p> the paragraph will put the newline so skip the br
+				if(!("br" === tag && element[0].parentNode.childNodes.length === 1))
+					content = "\n" + content;
+			}
 
 			return content;
 		};
