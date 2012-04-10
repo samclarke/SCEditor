@@ -721,8 +721,8 @@
 				// escape the key before using it as a regex
 				// and append the regex to only find emoticons outside
 				// of HTML tags
-				var reg = base.regexEscape(key) + "(?=([^\\<\\>]*?<(?!/code)|[^\\<\\>]*?$))";
-				var group = '';
+				var	reg = base.regexEscape(key) + "(?=([^\\<\\>]*?<(?!/code)|[^\\<\\>]*?$))",
+					group = '';
 				
 				// Make sure the emoticon is surrounded by whitespace or is at the start/end of a string or html tag
 				if(base.options.emoticonsCompat)
@@ -731,7 +731,10 @@
 					group = '$1';
 				}
 
-				html = html.replace(new RegExp(reg, 'gm'), group + '<img src="' + url + '" data-sceditor-emoticon="' + key + '" />');
+				html = html.replace(
+					new RegExp(reg, 'gm'),
+					group + '<img src="' + url + '" data-sceditor-emoticon="' + key + '" alt="' + key + '" />'
+				);
 			});
 
 			return html;
@@ -1433,25 +1436,26 @@
 		// START_COMMAND: Emoticons
 		emoticon: {
 			exec: function (caller) {
-				var	editor  = this,
+				var	appendEmoticon,
+					editor  = this,
 					content = $('<div />'),
 					line    = $('<div />');
 
-				var appendEmoticon = function (code, emoticon) {
+				appendEmoticon = function (code, emoticon) {
 					line.append($('<img />')
 							.attr({
 								src: emoticon,
 								alt: code
 							})
 							.click(function (e) {
-								var start, end;
+								var	start, end;
 								
 								if(editor.options.emoticonsCompat)
 								{
 									start = '<span> ';
 									end   = ' </span>';
 								}
-								var space = editor.options.emoticonsCompat ? " " : "";
+								
 								editor.wysiwygEditorInsertHtml(start + '<img src="' + $(this).attr("src") +
 									'" data-sceditor-emoticon="' + $(this).attr('alt') + '" />' + end);
 
@@ -1550,7 +1554,7 @@
 						range.deleteContents();
 
 						var htmlNode       = wysiwygEditor.contentDocument.createElement('div');
-						htmlNode.innerHTML = '<img src="' + url + '" data-sceditor-emoticon="' + key + '" />';
+						htmlNode.innerHTML = '<img src="' + url + '" data-sceditor-emoticon="' + key + '" alt="' + key + '" />';
 						htmlNode           = htmlNode.children[0];
 
 						range.insertNode(htmlNode);

@@ -9,6 +9,7 @@ Version 1.2.9:
 	Fix Webkit based bug causing newlines not to be added sometimes
 		- Thanks to Robin for reporting and extra help providing information
 	Added Swedish translation kindly submitted by Robin
+	Added French translation kindly submitted by Nicolas
 
 Version 1.2.8:
 	Updated to use contentEditable if supported. This fixes some selection issues in IE9
