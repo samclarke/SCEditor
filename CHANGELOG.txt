@@ -7,6 +7,7 @@ Version 1.2.9:
 	Added charset option
 	Updated quote command to support authors
 	Fix Webkit based bug causing newlines not to be added sometimes
+		- Thanks to Robin for reporting and extra help providing information
 	Added Swedish translation kindly submitted by Robin
 
 Version 1.2.8:
