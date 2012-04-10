@@ -175,7 +175,7 @@
 						$.each(bbcodeAttribs, function(attrib, values)
 						{
 							// check if has the bbcodes attrib
-							if(typeof element.attr(attrib) === "undefined")
+							if(element.attr(attrib) == null)
 								return;
 
 							// if the element has the bbcodes attribute and the bbcode attribute
@@ -200,8 +200,11 @@
 			}
 			
 			// add newline after paragraph elements p and div (WebKit uses divs) and br tags
+			// if(blockLevel && /^(br|div|p)$/.test(tag))
+				// content += "\n";
+				
 			if(blockLevel && /^(br|div|p)$/.test(tag))
-				content += "\n";
+				content = "\n" + content;
 
 			return content;
 		};
@@ -215,7 +218,7 @@
 		formatString = function() {
 			var args = arguments;
 			return args[0].replace(/\{(\d+)\}/g, function(str, p1) {
-				return typeof args[p1-0+1] !== 'undefined'? 
+				return typeof args[p1-0+1] !== "undefined"? 
 						args[p1-0+1] :
 						'{' + p1 + '}';
 			});
@@ -237,7 +240,7 @@
 		 * @return string BBCode which has been converted from HTML 
 		 */
 		base.getHtmlHandler = function(html, domBody) {
-			return base.elementToBbcode(domBody);
+			return $.trim(base.elementToBbcode(domBody));
 		};
 
 		/**
@@ -315,13 +318,13 @@
 		 * @return string HTML
 		 */
 		base.getTextHandler = function(text) {
-			var bbcodeRegex = /\[([^\[\s=]*?)(?:([^\[]*?))?\]((?:[\s\S(?!=\[\\\1)](?!\[\1))*?)\[\/(\1)\]/g,
-				atribsRegex = /(\S+)=((?:(?:(["'])(?:\\\3|[^\3])*?\3))|(?:[^'"\s]+))/g,
-				oldText;
+			var	oldText, replaceBBCodeFunc,
+				bbcodeRegex = /\[([^\[\s=]*?)(?:([^\[]*?))?\]((?:[\s\S(?!=\[\\\1)](?!\[\1))*?)\[\/(\1)\]/g,
+				atribsRegex = /(\S+)=((?:(?:(["'])(?:\\\3|[^\3])*?\3))|(?:[^'"\s]+))/g;
 
-			var replaceBBCodeFunc = function(str, bbcode, attrs, content)
+			replaceBBCodeFunc = function(str, bbcode, attrs, content)
 			{
-				var attrsMap = {},
+				var	attrsMap = {},
 					matches;
 					
 				if(attrs)
@@ -621,7 +624,7 @@
 				hr: null
 			},
 			format: "[hr]{0}",
-			html: '<hr />'
+			html: "<hr />"
 		},
 		// END_COMMAND
 

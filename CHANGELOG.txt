@@ -6,6 +6,7 @@ Version 1.2.9:
 	Started on improving accessibility
 	Added charset option
 	Updated quote command to support authors
+	Fix Webkit based bug causing newlines not to be added sometimes
 
 Version 1.2.8:
 	Updated to use contentEditable if supported. This fixes some selection issues in IE9
