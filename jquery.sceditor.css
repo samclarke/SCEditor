@@ -202,9 +202,6 @@ div.sceditor-dropdown, div.sceditor-dropdown div {
 			.sceditor-button-bulletlist div { background: url('icons/text_list_bullets.png'); }
 			.sceditor-button-orderedlist div { background: url('icons/text_list_numbers.png'); }
 
-			.sceditor-button-redo div { background: url('icons/arrow_redo.png'); }
-			.sceditor-button-undo div { background: url('icons/arrow_undo.png'); }
-
 			.sceditor-button-table div { background: url('icons/table_add.png'); }
 
 			.sceditor-button-horizontalrule div { background: url('icons/text_horizontalrule.png'); }
