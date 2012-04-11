@@ -35,6 +35,7 @@ A comma separated list of commands. To seperate into groups, use the bar charact
 
 **locale** *string*
 The locale to use, e.g. en-GB, en-US, no-NB, ect. The language file for the specified locale must be included before the editor is used and after the editors main JS file. E.g.
+
 	<script src="../minified/jquery.sceditor.min.js"></script>
 	<script src="../languages/nl.js"></script>
 	
