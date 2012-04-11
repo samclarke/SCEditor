@@ -18,7 +18,7 @@
 		"Font Name": "Nom de la Police",
 		"Font Size": "Taille de la Police",
 		"Font Color": "Couleur de la Police",
-		"Remove Formatting": "Enlever le Formattage",
+		"Remove Formatting": "Enlever le Formatage",
 		"Cut": "Couper",
 		"Your browser does not allow the cut command. Please use the keyboard shortcut Ctrl/Cmd-X": "Votre navigateur n'autorise pas la commande 'Couper'. Merci d'utiliser les raccourcis clavier Ctrl / Cmd-X",
 		"Copy": "Copier",
