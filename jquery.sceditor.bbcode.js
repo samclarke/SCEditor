@@ -30,7 +30,8 @@
 			buildBbcodeCache,
 			handleStyles,
 			handleTags,
-			formatString;
+			formatString,
+			getStyle;
 
 		base.bbcodes = $.sceditorBBCodePlugin.bbcodes;
 
@@ -68,7 +69,7 @@
 		 * Initializer
 		 */
 		init = function() {
-			base.options = $.extend({}, $.sceditor.defaultOptions, $.sceditorBBCodePlugin.defaultOptions, options);
+			base.options = $.extend({}, $.sceditor.defaultOptions, options);
 
 			// build the BBCode cache
 			buildBbcodeCache();
@@ -105,6 +106,25 @@
 					});
 			});
 		};
+		
+		getStyle = function(element, property) {
+			var	name = $.camelCase(property),
+				$elm;
+
+			// add special exception for align
+			if("text-align" === property)
+			{
+				$elm = $(element);
+				
+				if($elm.parent().css(property) !== $elm.css(property))
+					return $elm.css(property);
+			}
+			
+			if(element.style)
+				return element.style[name];
+			
+			return null;
+		};
 
 		/**
 		 * Checks if any bbcode styles match the elements styles
@@ -114,7 +134,7 @@
 		 */
 		handleStyles = function(element, content, blockLevel) {
 			var	elementPropVal,
-				tag = element.get(0).nodeName.toLowerCase();
+				tag = element[0].nodeName.toLowerCase();
 
 			// convert blockLevel to boolean
 			blockLevel = !!blockLevel;
@@ -123,16 +143,16 @@
 				return content;
 			
 			$.each(stylesToBbcodes[blockLevel], function(property, bbcodes) {
-				if(tag === "a" && (property === 'color' || property === 'text-decoration'))
-					return;
-				else if(tag === "code" && (property === 'font-family'))
-					return;
 
-				elementPropVal = element.css(property);
+//				elementPropVal = element.css(property);
+				
+				elementPropVal = getStyle(element[0], property)
+				if(elementPropVal == null || elementPropVal == "")
+					return;
 
 				// if the parent has the same style use that instead of this one
 				// so you dont end up with [i]parent[i]child[/i][/i]
-				if(element.parent().css(property) === elementPropVal)
+				if(getStyle(element.parent()[0], property) === elementPropVal)
 					return;
 
 				$.each(bbcodes, function(bbcode, values) {
@@ -200,15 +220,33 @@
 			}
 			
 			// add newline after paragraph elements p and div (WebKit uses divs) and br tags
-			// if(blockLevel && /^(br|div|p)$/.test(tag))
-				// content += "\n";
-			
 			if(blockLevel && /^(br|div|p)$/.test(tag))
 			{
+				var parentChildren = element[0].parentNode.childNodes;
+				
 				// if it's a <p><br /></p> the paragraph will put the newline so skip the br
-				if(!("br" === tag && element[0].parentNode.childNodes.length === 1))
+				if(!("br" === tag && parentChildren.length === 1)
+					&& !("br" === tag && parentChildren[parentChildren.length-1] === element[0]))
+				{
+					content += "\n";
+				}
+
+				// needed for browsers that enter textnode then when return is pressed put the rest in a div, i.e.:
+				// text<div>line 2</div>
+				if("br" !== tag && !$.sceditor.dom.isInline(element.parent()[0]) && element[0].previousSibling
+					&& element[0].previousSibling.nodeType === 3)
+				{
 					content = "\n" + content;
+				}
 			}
+
+			
+			// if(blockLevel && /^(br|div|p)$/.test(tag))
+			// {
+				// // if it's a <p><br /></p> the paragraph will put the newline so skip the br
+				// if(!("br" === tag && element[0].parentNode.childNodes.length === 1))
+					// content = "\n" + content;
+			// }
 
 			return content;
 		};
@@ -358,11 +396,11 @@
 			};
 
 			text = text.replace(/&/g, "&amp;")
-						.replace(/</g, "&lt;")
-						.replace(/>/g, "&gt;")
-						.replace(/\r/g, "")
-						.replace(/(\[\/?(?:left|center|right|justify)\])\n/g, "$1")
-						.replace(/\n/g, "<br />");
+					.replace(/</g, "&lt;")
+					.replace(/>/g, "&gt;")
+					.replace(/\r/g, "")
+					.replace(/(\[\/?(?:left|center|right|justify)\])\n/g, "$1")
+					.replace(/\n/g, "<br />");
 
 			while(text !== oldText)
 			{
@@ -385,6 +423,10 @@
 	$.sceditorBBCodePlugin.bbcodes = {
 		// START_COMMAND: Bold
 		b: {
+			tags: {
+				b: null,
+				strong: null
+			},
 			styles: {
 				// 401 is for FF 3.5
 				"font-weight": ["bold", "bolder", "401", "700", "800", "900"]
@@ -396,6 +438,10 @@
 
 		// START_COMMAND: Italic
 		i: {
+			tags: {
+				i: null,
+				em: null
+			},
 			styles: {
 				"font-style": ["italic", "oblique"]
 			},
@@ -406,6 +452,9 @@
 
 		// START_COMMAND: Underline
 		u: {
+			tags: {
+				u: null
+			},
 			styles: {
 				"text-decoration": ["underline"]
 			},
@@ -416,6 +465,10 @@
 
 		// START_COMMAND: Strikethrough
 		s: {
+			tags: {
+				s: null,
+				strike: null
+			},
 			styles: {
 				"text-decoration": ["line-through"]
 			},
@@ -446,12 +499,17 @@
 
 		// START_COMMAND: Font
 		font: {
+			tags: {
+				font: {
+					face: null
+				}
+			},
 			styles: {
 				"font-family": null
 			},
 			format: function(element, content) {
-				if(element.css('font-family') === this.options.defaultFont)
-					return content;
+				if(element[0].nodeName.toLowerCase() === "font" && element.attr('face'))
+					return '[font=' + this.stripQuotes(element.attr('face')) + ']' + content + '[/font]';
 
 				return '[font=' + this.stripQuotes(element.css('font-family')) + ']' + content + '[/font]';
 			},
@@ -463,6 +521,11 @@
 
 		// START_COMMAND: Size
 		size: {
+			tags: {
+				font: {
+					size: null
+				}
+			},
 			styles: {
 				"font-size": null
 			},
@@ -470,11 +533,12 @@
 				var	fontSize = element.css('fontSize'),
 					size     = 1;
 
-				if(fontSize === this.options.defaultSize)
-					return content;
+				if(element[0].nodeName.toLowerCase() === "font" && element.attr('size'))
+					fontSize = element.attr('size');
 
 				// Most browsers return px value but IE returns 1-7
 				if(fontSize.indexOf("px") > -1) {
+					// convert size to an int
 					fontSize = fontSize.replace("px", "") - 0;
 
 					if(fontSize > 12)
@@ -503,6 +567,11 @@
 
 		// START_COMMAND: Color
 		color: {
+			tags: {
+				font: {
+					color: null
+				}
+			},
 			styles: {
 				color: null
 			},
@@ -533,8 +602,8 @@
 		
 				var color = rgbToHex(element.css('color'));
 
-				if(color === this.options.defaultColor)
-					return content;
+				if(element[0].nodeName.toLowerCase() === "font" && element.attr('color'))
+					color = element.attr('color');
 
 				return '[color=' + color + ']' + content + '[/color]';
 			},
@@ -849,12 +918,6 @@
 			$.sceditorBBCodePlugin.bbcodes[name].styles = styles;
 		
 		return true;
-	};
-
-	$.sceditorBBCodePlugin.defaultOptions = {
-		defaultSize: 13,
-		defaultColor: '#111111',
-		defaultFont: 'Verdana, Arial, Helvetica, sans-serif'
 	};
 
 	$.fn.sceditorBBCodePlugin = function(options) {

@@ -1052,7 +1052,7 @@
 			exec: function (caller) {
 				var	editor  = this,
 					fonts   = editor.options.fonts.split(","),
-					content = $("<div />")
+					content = $("<div />"),
 					clickFunc = function (e) {
 						editor.execCommand("fontname", $(this).data('sceditor-font'));
 						editor.closeDropDown(true);
@@ -1411,7 +1411,7 @@
 					end = null;
 				}
 				// if not add a newline to the end of the inserted quote
-				else
+				else if(this.getWysiwygSelectedHtml() == "")
 					end = '<br />' + end;
 				
 				this.wysiwygEditorInsertHtml(before, end);

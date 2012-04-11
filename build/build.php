@@ -248,10 +248,10 @@ if(isset($_GET['build']))
 	// Create the ZIP files name based on the sha
 	$zip_file = sys_get_temp_dir() . DIRECTORY_SEPARATOR . "sceditor.{$sha}.zip";
 	
-	// create the ZIP fioles if it doesn't exist. It should exist
+	// create the ZIP file if it doesn't exist. It should exist
 	// if the same commands have been built before, and the server
 	// has not cleared the tmp files (Should help reduce server load).
-//if(!file_exists($zip_file))
+	if(!file_exists($zip_file))
 		$editor->create_zip($zip_file, $editor_cmds, $_GET['editor-bbcode'], $editor_bbcodess);
 	
 	exit;
