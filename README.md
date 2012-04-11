@@ -31,7 +31,7 @@ or for a BBCode WYSIWYG editor do:
 # Options
 
 **toolbar** *string*
-Comma seperated list of commans. Groups should be split by a bar (|) charecter
+Comma separated list of commands. Groups should be split by a bar (|) character
 
 **locale** *string*
 The locale to use, e.g. en-GB, en-US, no, nl, ect. The language file must be included after the main JS but before the editor is initilised.
@@ -43,14 +43,14 @@ The charset to use. Defaults to utf-8.
 Stylesheet to style the WYSIWYG document
 
 **fonts** *string*
-Comma seperated list of fonts
+Comma separated list of fonts
 
 **colors** *string*
-Comma seperated list of HEX colours. Use the bar charecter (|) to signify a new colum. If set to null a list of colours will be automatically generated
+Comma separated list of HEX colours. Use the bar character (|) to signify a new column. If set to null a list of colours will be automatically generated
 
 **emoticonsCompat** *boolean*
-If compatibility is enabled it will require emoticons ro be surrounded by whitespace or EOL characters meaning if you have :/ it will not be replaced
-in http://. This mode currently has limited As You Type emoticon converstion support. Will hopefully be fixed soon.
+If compatibility is enabled it will require emoticons to be surrounded by whitespace or EOL characters meaning if you have :/ it will not be replaced
+in http://. This mode currently has limited As You Type emoticon conversion support.
 
 **emoticons** *map*
 Map in the following format:
@@ -94,8 +94,10 @@ Max resize to height in px. Set to null for double textarea height or -1 for unl
 Max resize to width in px. Set to null for double textarea width or -1 for unlimited.
 
 **getHtmlHandler** *function*
+This is called to filter the HTML before being shown in View Source or set as the textareas value. The function should take two arguments, the first being a string containnig the HTML the second being the DOM body node.
 
 **getTextHandler** *function*
+This function will be called when switching from View Source mode back to WYSIWYG mode, or when loading the value from the textarea. The function should 1 argument, a string containing the content from the textarea.
 
 **dateFormat** *string*
 Date format to use, specified with the strings year, month & day e.g. "year-month-day".
