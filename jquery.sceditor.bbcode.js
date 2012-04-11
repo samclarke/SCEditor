@@ -14,7 +14,7 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 // ==/ClosureCompiler==
 
-/*jshint smarttabs: true */
+/*jshint smarttabs: true, jquery: true */
 
 (function($) {
 	'use strict';
@@ -142,12 +142,9 @@
 			if(!stylesToBbcodes[blockLevel])
 				return content;
 			
-			$.each(stylesToBbcodes[blockLevel], function(property, bbcodes) {
-
-//				elementPropVal = element.css(property);
-				
-				elementPropVal = getStyle(element[0], property)
-				if(elementPropVal == null || elementPropVal == "")
+			$.each(stylesToBbcodes[blockLevel], function(property, bbcodes) {				
+				elementPropVal = getStyle(element[0], property);
+				if(elementPropVal == null || elementPropVal === "")
 					return;
 
 				// if the parent has the same style use that instead of this one
@@ -225,28 +222,18 @@
 				var parentChildren = element[0].parentNode.childNodes;
 				
 				// if it's a <p><br /></p> the paragraph will put the newline so skip the br
-				if(!("br" === tag && parentChildren.length === 1)
-					&& !("br" === tag && parentChildren[parentChildren.length-1] === element[0]))
-				{
+				if(!("br" === tag && parentChildren.length === 1) &&
+					!("br" === tag && parentChildren[parentChildren.length-1] === element[0])) {
 					content += "\n";
 				}
 
 				// needed for browsers that enter textnode then when return is pressed put the rest in a div, i.e.:
 				// text<div>line 2</div>
-				if("br" !== tag && !$.sceditor.dom.isInline(element.parent()[0]) && element[0].previousSibling
-					&& element[0].previousSibling.nodeType === 3)
-				{
+				if("br" !== tag && !$.sceditor.dom.isInline(element.parent()[0]) && element[0].previousSibling &&
+					element[0].previousSibling.nodeType === 3) {
 					content = "\n" + content;
 				}
 			}
-
-			
-			// if(blockLevel && /^(br|div|p)$/.test(tag))
-			// {
-				// // if it's a <p><br /></p> the paragraph will put the newline so skip the br
-				// if(!("br" === tag && element[0].parentNode.childNodes.length === 1))
-					// content = "\n" + content;
-			// }
 
 			return content;
 		};

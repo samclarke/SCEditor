@@ -18,7 +18,7 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 // ==/ClosureCompiler==
 
-/*jshint smarttabs: true, scripturl: true */
+/*jshint smarttabs: true, scripturl: true, rowser:true, devel:true, jquery:true  */
 /*global XMLSerializer: true*/
 
 (function ($) {
@@ -167,7 +167,7 @@
 				val = base.options.getTextHandler(val);
 
 			base.setWysiwygEditorValue(val);
-			if(base.options.toolbar.indexOf('emoticon') != -1)
+			if(base.options.toolbar.indexOf('emoticon') !== -1)
 				preLoadEmoticons();
 		};
 
@@ -244,8 +244,8 @@
 
 					accessibilityName = base.commands[buttons[x]].tooltip ? base._(base.commands[buttons[x]].tooltip) : buttons[x];
 					
-					button = $('<a class="sceditor-button sceditor-button-' + buttons[x]
-						+ ' " unselectable="on"><div unselectable="on">' + accessibilityName + '</div></a>');
+					button = $('<a class="sceditor-button sceditor-button-' + buttons[x] +
+						' " unselectable="on"><div unselectable="on">' + accessibilityName + '</div></a>');
 
 					if(base.commands[buttons[x]].hasOwnProperty("tooltip"))
 						button.attr('title', base._(base.commands[buttons[x]].tooltip));
@@ -346,8 +346,8 @@
 					base.options.resizeMaxWidth);
 
 			mouseMoveFunc = function (e) {
-				var newHeight = startHeight + (e.pageY - startY);
-				var newWidth  = startWidth  + (e.pageX - startX);
+				var	newHeight = startHeight + (e.pageY - startY),
+					newWidth  = startWidth  + (e.pageX - startX);
 
 				if (newWidth >= minWidth && (maxWidth < 0 || newWidth <= maxWidth))
 					setWidth(newWidth);
@@ -417,11 +417,12 @@
 		 * @private
 		 */
 		preLoadEmoticons = function () {
-			var emoticons = $.extend({}, base.options.emoticons.more, base.options.emoticons.dropdown, base.options.emoticons.hidden);
+			var	emoticons = $.extend({}, base.options.emoticons.more, base.options.emoticons.dropdown, base.options.emoticons.hidden),
+				emoticon;
 
 			$.each(emoticons, function (key, url) {
-				var emoticon = document.createElement('img');
-				emoticon.src = url;
+				emoticon	= document.createElement('img');
+				emoticon.src	= url;
 				preLoadCache.push(emoticon);
 			});
 		};
@@ -439,8 +440,7 @@
 			
 			// IE needs unselectable attr to stop it from unselecting the text in the editor.
 			// The editor can cope if IE does unselect the text it's just not nice.
-			if(ieUnselectable !== false)
-			{
+			if(ieUnselectable !== false) {
 				content = $(content);
 				content.find(':not(input,textarea)').filter(function() { return this.nodeType===1; }).attr('unselectable', 'on');
 			}
@@ -548,8 +548,8 @@
 				// move the cursor to the end of the insertion
 				if(htmlNode.parentNode !== range.startContainer || !$.browser.opera)
 					range.setStartAfter(htmlNode);
-				else // this is only needed for opera
-				{
+				// this is only needed for opera
+				else {
 					return;
 					//range.setStart(htmlNode.parentNode, range.startOffset+1);
 					//range.setEnd(htmlNode.parentNode, range.endOffset+1);
@@ -559,8 +559,7 @@
 				wysiwygEditor.contentWindow.getSelection().removeAllRanges();
 				wysiwygEditor.contentWindow.getSelection().addRange(range);
 			}
-			else if (getWysiwygDoc().selection && getWysiwygDoc().selection.createRange)
-			{
+			else if (getWysiwygDoc().selection && getWysiwygDoc().selection.createRange) {
 				getWysiwygDoc().selection.createRange().pasteHTML(html);
 			}
 			else
@@ -660,12 +659,13 @@
 		 * Gets the WYSIWYG editors HTML which is between the body tags
 		 */
 		base.getWysiwygEditorValue = function (filter) {
-			var $body = $wysiwygEditor.contents().find("body");
+			var	$body = $wysiwygEditor.contents().find("body"),
+				html;
 			
 			// fix any invalid nesting
 			$.sceditor.dom.fixNesting($body.get(0));
+			html = $body.html();
 			
-			var html = $body.html();
 			if(filter !== false && base.options.getHtmlHandler)
 				html = base.options.getHtmlHandler(html, $body);
 
@@ -1176,7 +1176,7 @@
 		// START_COMMAND: Paste Text
 		pastetext: {
 			exec: function (caller) {
-				var	editor = this
+				var	editor = this,
 					content = $(this._('<form><div><label for="txt">{0}</label> <textarea cols="20" rows="7" id="txt">' +
 						'</textarea></div></form>',
 						this._("Paste your text inside the following box:")
@@ -1411,7 +1411,7 @@
 					end = null;
 				}
 				// if not add a newline to the end of the inserted quote
-				else if(this.getWysiwygSelectedHtml() == "")
+				else if(this.getWysiwygSelectedHtml() === "")
 					end = '<br />' + end;
 				
 				this.wysiwygEditorInsertHtml(before, end);
