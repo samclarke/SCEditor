@@ -1765,21 +1765,20 @@
 		 * @param HTMLElement The node to fix
 		 */
 		fixNesting: function(node) {
-			var base = this;
-			
-			var getLastInlineParent = function(node) {
-				while(base.isInline(node.parentNode))
-					node = node.parentNode;
-				
-				return node;
-			};
+			var	base = this,
+				getLastInlineParent = function(node) {
+					while(base.isInline(node.parentNode))
+						node = node.parentNode;
+					
+					return node;
+				};
 			
 			base.traverse(node, function(node) {
 				// if node is an element, and is blocklevel and the parent isn't block level
 				// then it needs fixing
 				if(node.nodeType === 1 && !base.isInline(node) && base.isInline(node.parentNode))
 				{
-					var parent	= getLastInlineParent(node),
+					var	parent	= getLastInlineParent(node),
 						rParent	= parent.parentNode,
 						before	= base.extractContents(parent, node),
 						middle	= node;
@@ -1809,6 +1808,27 @@
 		},
 		
 		/**
+		 * Removes unused whitespace from the root and it's children
+		 * 
+		 * @param HTMLElement root
+		 * @return void
+		 */
+		removeWhiteSpace: function(root) {
+			// 00A0 is non-breaking space which should not be striped
+			var regex = /^[^\S|\u00A0]+|[^\S|\u00A0]+$/g;
+			
+			this.traverse(root, function(node) {
+				if(node.nodeType === 3)
+				{
+					if(!/\S|\u00A0/.test(node.nodeValue))
+						node.nodeValue = " ";
+					else if(regex.test(node.nodeValue))
+						node.nodeValue = node.nodeValue.replace(regex, " ");
+				}
+			});
+		},
+		
+		/**
 		 * Extracts all the nodes between the start and end nodes
 		 * 
 		 * @param HTMLElement startNode The node to start extracting at
@@ -1816,11 +1836,11 @@
 		 * @return DocumentFragment
 		 */
 		extractContents: function(startNode, endNode) {
-			var	base			= this,
+			var	base		= this,
 				$commonAncestor	= base.findCommonAncestor(startNode, endNode),
 				commonAncestor	= $commonAncestor===null?null:$commonAncestor.get(0),
 				startReached	= false,
-				endReached		= false;
+				endReached	= false;
 
 			return (function extract(root) {
 				var df = startNode.ownerDocument.createDocumentFragment();
