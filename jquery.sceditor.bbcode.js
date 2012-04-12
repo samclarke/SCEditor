@@ -387,6 +387,7 @@
 					.replace(/>/g, "&gt;")
 					.replace(/\r/g, "")
 					.replace(/(\[\/?(?:left|center|right|justify)\])\n/g, "$1")
+					.replace(/([^\n\[\]]+)\n/g, "<div>$1</div>")
 					.replace(/\n/g, "<br />");
 
 			while(text !== oldText)

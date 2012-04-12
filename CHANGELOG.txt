@@ -14,6 +14,7 @@ Version 1.2.9:
 		- This happens with other editors and also on plain HTML text inputs. Thanks to Robin for finding and reporting.
 	Fixed header (h1, h2, h3, ect.) releated BBCode bug
 	Removed Undo/Redo images from the sprite
+	Small tweak to BBCode parser to improve IE UX
 
 Version 1.2.8:
 	Updated to use contentEditable if supported. This fixes some selection issues in IE9
