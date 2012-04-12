@@ -227,8 +227,8 @@ $editor = new SCEditor();
 
 if(isset($_GET['build']))
 {
-	$editor_cmds     = isset($_GET['editor-command']) ? array_flip($_GET['editor-command']) : array();
-	$editor_bbcodess = isset($_GET['editor-bbcodes']) ? array_flip($_GET['editor-bbcodes']) : array();
+	$editor_cmds     = isset($_GET['ec']) ? array_flip($_GET['ec']) : array();
+	$editor_bbcodess = isset($_GET['eb']) ? array_flip($_GET['eb']) : array();
 	$_GET['editor-bbcode'] = (isset($_GET['editor-bbcode']) && $_GET['editor-bbcode']) ? true : false;
 	
 	$removed     = array_diff_key($editor->get_editor_commands(), $editor_cmds);
@@ -254,6 +254,15 @@ if(isset($_GET['build']))
 	if(!file_exists($zip_file))
 		$editor->create_zip($zip_file, $editor_cmds, $_GET['editor-bbcode'], $editor_bbcodess);
 	
+	$zip_file = realpath($zip_file);
+	
+	// tmp diectory will need to be allowed by mod_sendfile
+	// with "XSendFilePath /tmp"
+	header("X-Sendfile: $zip_file");
+	header("Content-type: application/zip");
+	header('Content-Disposition: attachment; filename="' . pathinfo($zip_file, PATHINFO_FILENAME) . '"');
+	header('Content-Length:' . filesize($zip_file));
+	header('Accept-Ranges: bytes');
 	exit;
 }
 ?>
@@ -267,11 +276,27 @@ if(isset($_GET['build']))
 		<script src="../example/jquery-1.7.1.min.js"></script>
 		<script>
 		$(function() {
+			var updateBookmark = function() {
+				$("#bookmark").val(
+					window.location.href.split('?')[0] + 
+					"?build=1&" + $('form').serialize()
+						.replace(/%5B/g, '[')
+						.replace(/%5D/g, ']')
+				);
+			};
+			updateBookmark();
+			
+			$("#bookmark").click(function() {
+				$(this).select();
+			});
+			
 			$('input[name=editor-bbcode]').click(function() {
 				if($(this).is(':checked'))
 					$(this).parent().next('fieldset').removeAttr('disabled');
 				else
 					$(this).parent().next('fieldset').attr('disabled', 'disabled');
+					
+				updateBookmark();
 			});
 			
 			$('.toggle').click(function(e) {
@@ -283,18 +308,25 @@ if(isset($_GET['build']))
 				});
 				
 				e.preventDefault();
+				updateBookmark();
 			});
 			
 			$('.select-all').click(function(e) {
 				$(this).parent().parent().find(':checkbox').attr('checked', 'checked');
 				
 				e.preventDefault();
+				updateBookmark();
 			});
 			
 			$('.select-none').click(function(e) {
 				$(this).parent().parent().find(':checkbox').removeAttr('checked');
 				
 				e.preventDefault();
+				updateBookmark();
+			});
+			
+			$('input[type=checkbox]').click(function(e) {
+				updateBookmark();
 			});
 		});
 		</script>
@@ -330,19 +362,23 @@ if(isset($_GET['build']))
 			a:hover {
 				text-decoration: none;
 			}
+			#bookmark {
+				width: 99%;
+				font-size: 1.1em;
+			}
 		</style>
 	</head>
 	<body>
 		<h1>SCEditor Build</h1>
 		
-		<p>Select the commands and BBCodes required and click build.</p>
+		<p>Select any commands and BBCodes required and then click build.</p>
 		<form method="GET">
 			<fieldset>
 				<legend>Editor Commands</legend>
 				
 				<?php
 				foreach($editor->get_editor_commands() as $index => $command)
-					echo "<label class='cmd'><input type='checkbox' name='editor-command[]' value='{$index}' checked /> {$command}</label>", PHP_EOL;
+					echo "<label class='cmd'><input type='checkbox' name='ec[]' value='{$index}' checked /> {$command}</label>", PHP_EOL;
 				?>
 				
 				<div>
@@ -358,7 +394,7 @@ if(isset($_GET['build']))
 				
 				<?php
 				foreach($editor->get_bbcodes() as $index => $bbcode)
-					echo "<label class='cmd'><input type='checkbox' name='editor-bbcodes[]' value='{$index}' checked /> {$bbcode}</label>", PHP_EOL;
+					echo "<label class='cmd'><input type='checkbox' name='eb[]' value='{$index}' checked /> {$bbcode}</label>", PHP_EOL;
 				?>
 				
 				<div>
@@ -368,8 +404,11 @@ if(isset($_GET['build']))
 				</div>
 			</fieldset>
 			
-			<input type="submit" name="build" value="Build" />
+			<div><input type="submit" name="build" value="Build" /></div>
 		</form>
+		
+		<p>Bookmark:</p>
+		<div><input type="text" readonly="readonly" name="bookmark" id="bookmark" /></div>
 		
 		<p>SCEditor is dual licensed under the <a href="http://www.opensource.org/licenses/mit-license.php">MIT</a>
 		 and <a href="http://www.gnu.org/licenses/gpl.html">GPL</a> licenses. Copyright &copy; 2011 - 2012

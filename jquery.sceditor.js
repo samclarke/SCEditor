@@ -9,10 +9,6 @@
  *	http://www.gnu.org/licenses/gpl.html
  */
 
-//TODO: add onpaste handler to filter pasted text
-
-//TODO: add XHTML output support
-
 // ==ClosureCompiler==
 // @output_file_name jquery.sceditor.min.js
 // @compilation_level SIMPLE_OPTIMIZATIONS
