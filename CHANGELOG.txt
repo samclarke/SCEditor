@@ -2,6 +2,10 @@ TODO:
 	Tidy up jquery.sceditor.js code - Will break compatibility as functions need renaming, ect.
 	Maybe add an onpaste handler to filter pasted text (would be good for BBCode)
 	Add XHTML output support
+	Better theme support and switching
+
+Version 1.3.0:
+
 
 Version 1.2.9:
 	Started on improving accessibility
