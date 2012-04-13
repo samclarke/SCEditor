@@ -1719,8 +1719,11 @@
 		 * @return bool
 		 */
 		isInline: function(elm, includeInlineBlock) {
-			var d = (window.getComputedStyle ? window.getComputedStyle(elm) : elm.currentStyle).display;
+			if(elm == null || elm.nodeType !== 1)
+				return true;
 			
+			var d = (window.getComputedStyle ? window.getComputedStyle(elm) : elm.currentStyle).display;
+
 			if(includeInlineBlock)
 				return d !== "block"; 
 			
@@ -1748,15 +1751,7 @@
 		},*/
 		
 		copyCSS: function(from, to) {
-			var attrs = [	'font-size',	'color',	'font-family',
-					'font-wieght',	'font-style',	'text-decoration'];
-			
-			var	i	= attrs.length,
-				$from	= $(from),
-				$to	= $(to);
-			
-			while(i--)
-				$to.css(attrs[i], $from.css(attrs[i]));
+			to.style.cssText = from.style.cssText;
 		},
 		
 		/**

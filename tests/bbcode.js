@@ -1,45 +1,80 @@
-module("BBCode Parser");
+module("BBCode Parser", {
+	setup: function() {
+		var textarea = $("#qunit-fixture textarea:first").sceditorBBCodePlugin();
+		this.sb = textarea.data("sceditorbbcode");
+	}
+});
 
 test("White space removal", function() {
 	expect(2);
 	
-	var textarea = $("#qunit-fixture textarea:first").sceditorBBCodePlugin();
-	var sceditorbbcode = textarea.data("sceditorbbcode");
-
 	var code = document.createElement("div");
 	var space = document.createElement("div");
 	code.innerHTML = "&nbsp; &nbsp; &nbsp;\n<code>Some            White \n      \n     space</code>";
 	space.innerHTML = "     <div>   lots   </div>   \n of   junk   \n\n\n\n\n         \n  j";
-	
-	
-	var codeBBocde = sceditorbbcode.getHtmlHandler("", $(code));
-	var spaceBBocde = sceditorbbcode.getHtmlHandler("", $(space));
-	var codeResult = sceditorbbcode.getTextHandler(codeBBocde);
-	var spaceResult = sceditorbbcode.getTextHandler(spaceBBocde);
-	
 
-	equal(codeResult, "<code><div>Some &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;White </div><div> &nbsp; &nbsp; &nbsp;</div> &nbsp; &nbsp; space</code>", "Leave non-breaking & code spaces");
-	equal(spaceResult, "<div>lots </div> of junk j", "White Space Removal");
+	equal(
+		this.sb.getTextHandler(this.sb.getHtmlHandler("", $(code))),
+		"<code><div>Some &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;White </div><div> &nbsp; &nbsp; &nbsp;</div> &nbsp; &nbsp; space</code>",
+		"Leave non-breaking & code spaces"
+	);
+	equal(
+		this.sb.getTextHandler(this.sb.getHtmlHandler("", $(space))),
+		"<div>lots </div> of junk j",
+		"White Space Removal"
+	);
 });
 
 test("Invalid nesting", function() {
 	expect(2);
 	
-	var textarea = $("#qunit-fixture textarea:first").sceditorBBCodePlugin();
-	var sceditorbbcode = textarea.data("sceditorbbcode");
-
 	var test1 = document.createElement("div");
 	var test2 = document.createElement("div");
 	test1.innerHTML = "<b><i>test</b>test2</i>";
-	test2.innerHTML = "<span style='color: #000'>this<code>is</code>a test</span>";
+	test2.innerHTML = "<span style='color: #000'>this<blockquote>is</blockquote>a test</span>";
 	
+	// Opera fails if test2 dom is not rendered
+	$("#qunit-fixture").append(test2);
 	
-	var test1BBocde = sceditorbbcode.getHtmlHandler("", $(test1));
-	var test2BBocde = sceditorbbcode.getHtmlHandler("", $(test2));
-	var test1Result = sceditorbbcode.getTextHandler(test1BBocde);
-	var test2Result = sceditorbbcode.getTextHandler(test2BBocde);
+	$.sceditor.dom.fixNesting(test2);
+	
+	equal(
+		this.sb.getHtmlHandler("", $(test1)),
+		"[b][i]test[/i][/b][i]test2[/i]",
+		"Invalid tag nesting"
+	);
+	equal(
+		this.sb.getHtmlHandler("", $(test2)),
+		"[color=#000000]this[/color][quote]is[/quote][color=#000000]a test[/color]",
+		"Invalid block level nesting"
+	);
+});
 
 
-	equal(test1Result, "<strong><em>test</em></strong><em>test2</em>", "Leave non-breaking & code spaces");
-	equal(test2Result, "<font color=\"#000000\">this<code>is</code>a test</font>", "White Space Removal");
+module("BBCodes", {
+	setup: function() {
+		var textarea = $("#qunit-fixture textarea:first").sceditorBBCodePlugin();
+		this.sb = textarea.data("sceditorbbcode");
+	}
+});
+
+test("Font colour", function() {
+	expect(3);
+	
+	var test1 = document.createElement("div");
+	var test2 = document.createElement("div");
+	var test3 = document.createElement("div");
+	test1.innerHTML = "<span style='color: #000000'>test</span>";
+	test2.innerHTML = "<span style='color: #000'>test</span>";
+	test3.innerHTML = "<span style='color: rgb(0,0,0)'>test</span>";
+	
+	equal(this.sb.getHtmlHandler("", $(test1)),
+		"[color=#000000]test[/color]",
+		"Normal");
+	equal(this.sb.getHtmlHandler("", $(test2)),
+		"[color=#000000]test[/color]",
+		"Short hand");
+	equal(this.sb.getHtmlHandler("", $(test3)),
+		"[color=#000000]test[/color]",
+		"RGB");
 });
