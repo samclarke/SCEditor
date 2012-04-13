@@ -566,3 +566,287 @@ test("YouTube", function() {
 		"Div CSS text-align"
 	);
 });
+
+
+
+module("BBCode to HTML", {
+	setup: function() {
+		var textarea = $("#qunit-fixture textarea:first").sceditorBBCodePlugin();
+		this.sb = textarea.data("sceditorbbcode");
+	}
+});
+
+test("Bold", function() {
+	expect(1);
+	
+	equal(
+		this.sb.getTextHandler("[b]test[/b]"),
+		"<strong>test</strong>"
+	);
+});
+
+test("Italic", function() {
+	expect(1);
+	
+	equal(
+		this.sb.getTextHandler("[i]test[/i]"),
+		"<em>test</em>"
+	);
+});
+
+test("Underline", function() {
+	expect(1);
+	
+	equal(
+		this.sb.getTextHandler("[u]test[/u]"),
+		"<u>test</u>"
+	);
+});
+
+test("Strikethrough", function() {
+	expect(1);
+	
+	equal(
+		this.sb.getTextHandler("[s]test[/s]"),
+		"<s>test</s>"
+	);
+});
+
+test("Subscript", function() {
+	expect(1);
+	
+	equal(
+		this.sb.getTextHandler("[sub]test[/sub]"),
+		"<sub>test</sub>"
+	);
+});
+
+test("Superscript", function() {
+	expect(1);
+	
+	equal(
+		this.sb.getTextHandler("[sup]test[/sup]"),
+		"<sup>test</sup>"
+	);
+});
+
+test("Font face", function() {
+	expect(3);
+	
+	equal(
+		this.sb.getTextHandler("[font=Arial]test[/font]"),
+		"<font face=\"Arial\">test</font>",
+		"Normal"
+	);
+	
+	equal(
+		this.sb.getTextHandler("[font=Arial Black]test[/font]"),
+		"<font face=\"Arial Black\">test</font>",
+		"Space"
+	);
+	
+	equal(
+		this.sb.getTextHandler("[font='Arial Black']test[/font]"),
+		"<font face=\"Arial Black\">test</font>",
+		"Quotes"
+	);
+});
+
+test("Size", function() {
+	expect(1);
+	
+	equal(
+		this.sb.getTextHandler("[size=4]test[/size]"),
+		"<font size=\"4\">test</font>",
+		"Normal"
+	);
+});
+
+test("Font colour", function() {
+	expect(2);
+	
+	equal(
+		this.sb.getTextHandler("[color=#000]test[/color]"),
+		"<font color=\"#000\">test</font>",
+		"Normal"
+	);
+	
+	equal(
+		this.sb.getTextHandler("[color=Black]test[/color]"),
+		"<font color=\"Black\">test</font>",
+		"Named"
+	);
+});
+
+test("List", function() {
+	expect(2);
+	
+	equal(
+		this.sb.getTextHandler("[ul][li]test[/li][/ul]"),
+		"<ul><li>test</li></ul>",
+		"UL"
+	);
+	
+	equal(
+		this.sb.getTextHandler("[ol][li]test[/li][/ol]"),
+		"<ol><li>test</li></ol>",
+		"OL"
+	);
+});
+
+test("Table", function() {
+	expect(1);
+
+	equal(
+		this.sb.getTextHandler("[table][tr][th]test[/th][/tr][tr][td]data1[/td][/tr][/table]"),
+		"<table><tr><th>test</th></tr><tr><td>data1<br class=\"sceditor-ignore\" /></td></tr></table>",
+		"Normal"
+	);
+});
+
+test("Horizontal rule", function() {
+	expect(1);
+
+	equal(
+		this.sb.getTextHandler("[hr]"),
+		"<hr>",
+		"Normal"
+	);
+});
+
+test("Image", function() {
+	expect(4);
+
+	equal(
+		this.sb.getTextHandler("[img=10x10]http://test.com/test.png[/img]"),
+		"<img  width=\"10\" height=\"10\" src=\"http://test.com/test.png\" />",
+		"Normal"
+	);
+	
+	equal(
+		this.sb.getTextHandler("[img width=10]http://test.com/test.png[/img]"),
+		"<img  width=\"10\" src=\"http://test.com/test.png\" />",
+		"Width only"
+	);
+	
+	equal(
+		this.sb.getTextHandler("[img height=10]http://test.com/test.png[/img]"),
+		"<img  height=\"10\" src=\"http://test.com/test.png\" />",
+		"Height only"
+	);
+	
+	equal(
+		this.sb.getTextHandler("[img]http://test.com/test.png[/img]"),
+		"<img  src=\"http://test.com/test.png\" />",
+		"No size"
+	);
+});
+
+test("URL", function() {
+	expect(2);
+
+
+	equal(
+		this.sb.getTextHandler("[url=http://test.com/]Test[/url]"),
+		"<a href=\"http://test.com/\">Test</a>",
+		"Normal"
+	);
+	
+	equal(
+		this.sb.getTextHandler("[url]http://test.com/[/url]"),
+		"<a href=\"http://test.com/\">http://test.com/</a>",
+		"Only URL"
+	);
+});
+
+test("Email", function() {
+	expect(2);
+
+	equal(
+		this.sb.getTextHandler("[email=test@test.com]test[/email]"),
+		"<a href=\"mailto:test@test.com\">test</a>",
+		"Normal"
+	);
+	
+	equal(
+		this.sb.getTextHandler("[email]test@test.com[/email]"),
+		"<a href=\"mailto:test@test.com\">test@test.com</a>",
+		"Only e-mail"
+	);
+});
+
+test("Quote", function() {
+	expect(2);
+
+	equal(
+		this.sb.getTextHandler("[quote]Testing 1.2.3....[/quote]"),
+		"<blockquote>Testing 1.2.3....</blockquote>",
+		"Normal"
+	);
+	
+	equal(
+		this.sb.getTextHandler("[quote=admin]Testing 1.2.3....[/quote]"),
+		"<blockquote><cite>admin</cite>Testing 1.2.3....</blockquote>",
+		"With author"
+	);
+});
+
+test("Code", function() {
+	expect(1);
+
+	equal(
+		this.sb.getTextHandler("[code]Testing 1.2.3....[/code]"),
+		"<code>Testing 1.2.3....</code>",
+		"Normal"
+	);
+});
+
+test("Left", function() {
+	expect(1);
+	
+	equal(
+		this.sb.getTextHandler("[left]Testing 1.2.3....[/left]"),
+		"<div align=\"left\">Testing 1.2.3....</div>",
+		"Normal"
+	);
+});
+
+test("Right", function() {
+	expect(1);
+	
+	equal(
+		this.sb.getTextHandler("[right]Testing 1.2.3....[/right]"),
+		"<div align=\"right\">Testing 1.2.3....</div>",
+		"Normal"
+	);
+});
+
+test("Centre", function() {
+	expect(1);
+	
+	equal(
+		this.sb.getTextHandler("[center]Testing 1.2.3....[/center]"),
+		"<div align=\"center\">Testing 1.2.3....</div>",
+		"Normal"
+	);
+});
+
+test("Justify", function() {
+	expect(1);
+	
+	equal(
+		this.sb.getTextHandler("[justify]Testing 1.2.3....[/justify]"),
+		"<div align=\"justify\">Testing 1.2.3....</div>",
+		"Normal"
+	);
+});
+
+test("YouTube", function() {
+	expect(1);
+
+	equal(
+		this.sb.getTextHandler("[youtube]xyz[/youtube]"),
+		"<iframe width=\"560\" height=\"315\" src=\"http://www.youtube.com/embed/xyz?wmode=opaque\" data-youtube-id=\"xyz\" frameborder=\"0\" allowfullscreen></iframe>",
+		"Normal"
+	);
+});
