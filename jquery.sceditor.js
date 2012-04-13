@@ -519,7 +519,7 @@
 		 */
 		base.wysiwygEditorInsertHtml = function (html, endHtml, overrideCodeBlocking) {
 			base.focus();
-
+			
 			// don't apply to code elements
 			if(!overrideCodeBlocking && ($(getWysiwygSelectedContainerNode()).is('code') ||
 				$(getWysiwygSelectedContainerNode()).parents('code').length !== 0))
@@ -557,6 +557,9 @@
 			}
 			else if (getWysiwygDoc().selection && getWysiwygDoc().selection.createRange) {
 				getWysiwygDoc().selection.createRange().pasteHTML(html);
+				
+				saveRange();
+				base.focus();
 			}
 			else
 				base.execCommand("insertHtml", html);
@@ -588,7 +591,7 @@
 
 			if(wysiwygEditor.contentWindow && wysiwygEditor.contentWindow.getSelection)
 				range = wysiwygEditor.contentWindow.getSelection();
-			else if(getWysiwygDoc().selection)
+			else if(document.selection)
 				range = getWysiwygDoc().selection;
 			
 			// If no ranges are selected, add one. Needed if any HTML
@@ -805,7 +808,6 @@
 		 * Fucuses the editors input area
 		 */
 		base.focus = function () {
-			//saveRange();
 			wysiwygEditor.contentWindow.focus();
 
 			// Needed for IE < 9
@@ -882,6 +884,7 @@
 			{
 				if($selectedContainer.is('code, blockquote') || $selectedContainer.parents('code, blockquote').length !== 0)
 				{
+					lastRange = null;
 					base.wysiwygEditorInsertHtml('<br />', null, true);
 					return false;
 				}
@@ -1431,7 +1434,7 @@
 								alt: code
 							})
 							.click(function (e) {
-								var	start, end;
+								var	start = '', end = '';
 								
 								if(editor.options.emoticonsCompat)
 								{
@@ -1811,13 +1814,13 @@
 		removeWhiteSpace: function(root) {
 			// 00A0 is non-breaking space which should not be striped
 			var regex = /[^\S|\u00A0]+/g;
-			
+
 			this.traverse(root, function(node) {
-				if(node.nodeType === 3)
+				if(node.nodeType === 3 && $(node).parents('code, pre').length === 0)
 				{
 					if(!/\S|\u00A0/.test(node.nodeValue))
 						node.nodeValue = " ";
-					else if(regex.test(node.nodeValue) && $(node).parents('code').length === 0)
+					else if(regex.test(node.nodeValue))
 						node.nodeValue = node.nodeValue.replace(regex, " ");
 				}
 			});

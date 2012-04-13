@@ -57,9 +57,8 @@
 		var validChildren = {
 			ul: ['li'],
 			ol: ['li'],
-			table: ['tr', 'th'],
-			tr: ['td'],
-			th: ['td'],
+			table: ['tr'],
+			tr: ['td', 'th'],
 			code: ['br', 'p', 'div'],
 			youtube: []
 		};
@@ -118,7 +117,8 @@
 			{
 				$elm = $(element);
 				
-				if($elm.parent().css(property) !== $elm.css(property))
+				if($elm.parent().css(property) !== $elm.css(property) &&
+					$elm.css('display') === "block" && !$elm.is('hr') && !$elm.is('th'))
 					return $elm.css(property);
 			}
 			
@@ -525,9 +525,6 @@
 				var	fontSize = element.css('fontSize'),
 					size     = 1;
 
-				if(element[0].nodeName.toLowerCase() === "font" && element.attr('size'))
-					fontSize = element.attr('size');
-
 				// Most browsers return px value but IE returns 1-7
 				if(fontSize.indexOf("px") > -1) {
 					// convert size to an int
@@ -574,7 +571,7 @@
 				 * @return string Hex color
 				 */
 				var rgbToHex = function(rgbStr) {
-					var matches;
+					var m;
 		
 					function toHex(n) {
 						n = parseInt(n,10);
@@ -586,16 +583,22 @@
 					}
 		
 					// rgb(n,n,n);
-					if((matches = rgbStr.match(/rgb\((\d+),\s*?(\d+),\s*?(\d+)\)/i)))
-						return '#' + toHex(matches[1]) + toHex(matches[2]-0) + toHex(matches[3]-0);
+					if((m = rgbStr.match(/rgb\((\d+),\s*?(\d+),\s*?(\d+)\)/i)))
+						return '#' + toHex(m[1]) + toHex(m[2]-0) + toHex(m[3]-0);
 		
+					// expand shorthand
+					if((m = rgbStr.match(/#([0-f])([0-f])([0-f])\s*?$/i)))
+						return '#' + m[1] + m[1] + m[2] + m[2] + m[3] + m[3];
+					
 					return rgbStr;
 				};
 		
-				var color = rgbToHex(element.css('color'));
+				var color = element.css('color');
 
 				if(element[0].nodeName.toLowerCase() === "font" && element.attr('color'))
 					color = element.attr('color');
+				
+				color = rgbToHex(color);
 
 				return '[color=' + color + ']' + content + '[/color]';
 			},
@@ -656,6 +659,7 @@
 			tags: {
 				th: null
 			},
+			isBlock: true,
 			format: "[th]{0}[/th]",
 			html: '<th>{0}</th>'
 		},
@@ -663,6 +667,7 @@
 			tags: {
 				td: null
 			},
+			isBlock: true,
 			format: "[td]{0}[/td]",
 			html: '<td>{0}<br class="sceditor-ignore" /></td>'
 		},
