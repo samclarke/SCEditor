@@ -60,7 +60,7 @@
 			table: ['tr', 'th'],
 			tr: ['td'],
 			th: ['td'],
-			code: [],
+			code: ['br', 'p', 'div'],
 			youtube: []
 		};
 
@@ -69,6 +69,8 @@
 		 * Initializer
 		 */
 		init = function() {
+			$.data(element, "sceditorbbcode", base);
+			
 			base.options = $.extend({}, $.sceditor.defaultOptions, options);
 
 			// build the BBCode cache

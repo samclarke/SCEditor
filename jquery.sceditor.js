@@ -1815,14 +1815,14 @@
 		 */
 		removeWhiteSpace: function(root) {
 			// 00A0 is non-breaking space which should not be striped
-			var regex = /^[^\S|\u00A0]+|[^\S|\u00A0]+$/g;
+			var regex = /[^\S|\u00A0]+/g;
 			
 			this.traverse(root, function(node) {
 				if(node.nodeType === 3)
 				{
 					if(!/\S|\u00A0/.test(node.nodeValue))
 						node.nodeValue = " ";
-					else if(regex.test(node.nodeValue))
+					else if(regex.test(node.nodeValue) && $(node).parents('code').length === 0)
 						node.nodeValue = node.nodeValue.replace(regex, " ");
 				}
 			});

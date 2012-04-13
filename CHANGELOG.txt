@@ -2,7 +2,6 @@ TODO:
 	Tidy up jquery.sceditor.js code - Will break compatibility as functions need renaming, ect.
 	Maybe add an onpaste handler to filter pasted text (would be good for BBCode)
 	Add XHTML output support
-	Add tests - The WYSIWYG can't easily be tested as it requires user input, but most other things can be.
 
 Version 1.2.9:
 	Started on improving accessibility
@@ -20,6 +19,9 @@ Version 1.2.9:
 	Removed Undo/Redo images from the sprite
 	Small tweak to BBCode parser to improve IE UX
 	Make BBCode parser strip unsused whitespace to improve copying HTML from websites
+	Fix newline problem with [code] tag
+	Started adding unit tests to what can be tested
+		- WYSIWYG will still need manual testing as faking user input is ugly or just not possible
 
 Version 1.2.8:
 	Updated to use contentEditable if supported. This fixes some selection issues in IE9
