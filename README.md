@@ -8,7 +8,7 @@ leaving a comment at: http://www.samclarke.com/2011/07/sceditor/
 or contacting me via: http://www.samclarke.com/contact or GitHub
 
 
-# Usage
+## Usage
 
 Include the JQuery and SCEditor JavaScript
 	<link rel="stylesheet" href="minified/jquery.sceditor.min.css" type="text/css" media="all" />
@@ -28,7 +28,7 @@ or for a BBCode WYSIWYG editor do:
 
 
 
-# Options
+## Options
 
 **toolbar** *string*
 A comma separated list of commands. To separate into groups, use the bar character (|) instead of a comma. E.g. "bold,italic,underline|source"
@@ -111,21 +111,21 @@ Date format to use, specified with the strings year, month & day e.g. "year-mont
 The year, month and day strings will be replaced with the users current year, month and day.
 
 
-# License
+## License
 
 SCEditor is dual licensed under the [MIT](http://www.opensource.org/licenses/mit-license.php) and [GPL](http://www.gnu.org/licenses/gpl.html) licenses.
 
 If you use SCEditor a link back or a donation would be appreciated, but not required.
 
 
-# Contribute
+## Contribute
 
 Any contributions and/or pull requests would be very welcome.
 
 If you would like to contribute here are just a few way you can help:
 
 * **Use it**
-The easiest way to contribute is to simply use SCEditor and if you encounter any bugs or problems, report them.
+The easiest way to contribute is to simply use SCEditor and if you encounter any bugs or problems, [https://github.com/samclarke/SCEditor/issues/new](report them).
 * **Translate it**
 Translating SCEditor would be a big help. If you do want to translate SCEditor, the "no.js" translation is a good translation to work from.
 * **Create a theme**
@@ -143,14 +143,14 @@ class like rangy to help reduce problems. The only reason this wasn't done from 
 
 
 
-# Donate
+## Donate
 
 If you would like to make a donation you can via
 [PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AVJSF5NEETYYG)
 or via [Flattr](http://flattr.com/thing/400345/SCEditor)
 
 
-# Credits
+## Credits
 
 **Nomicons: The Full Monty Emoticons by:**
 Oscar Gruno, aka Nominell v. 2.0 -> oscargruno@mac.com
