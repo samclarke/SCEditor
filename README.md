@@ -14,7 +14,7 @@ Include the JQuery and SCEditor JavaScript
 	<link rel="stylesheet" href="minified/jquery.sceditor.min.css" type="text/css" media="all" />
 	<script type="text/javascript" src="minified/jquery.sceditor.min.js"></script>
 	
-Then to change all textareas to WYSIWYG editors, simpley do:
+Then to change all textareas to WYSIWYG editors, simply do:
 
 	$(document).ready(function() {
 		$("textarea").sceditor();
@@ -31,7 +31,7 @@ or for a BBCode WYSIWYG editor do:
 # Options
 
 **toolbar** *string*
-A comma separated list of commands. To seperate into groups, use the bar character (|) instead of a comma. E.g. "bold,italic,underline|source"
+A comma separated list of commands. To separate into groups, use the bar character (|) instead of a comma. E.g. "bold,italic,underline|source"
 
 **locale** *string*
 The locale to use, e.g. en-GB, en-US, no-NB, ect. The language file for the specified locale must be included before the editor is used and after the editors main JS file. E.g.
@@ -116,6 +116,31 @@ The year, month and day strings will be replaced with the users current year, mo
 SCEditor is dual licensed under the [MIT](http://www.opensource.org/licenses/mit-license.php) and [GPL](http://www.gnu.org/licenses/gpl.html) licenses.
 
 If you use SCEditor a link back or a donation would be appreciated, but not required.
+
+
+# Contribute
+
+Any contributions and/or pull requests would be very welcome.
+
+If you would like to contribute here are just a few way you can help:
+
+* **Use it**
+The easiest way to contribute is to simply use SCEditor and if you encounter any bugs or problems, report them.
+* **Translate it**
+Translating SCEditor would be a big help. If you do want to translate SCEditor, the "no.js" translation is a good translation to work from.
+* **Create a theme**
+I'm not really a designer so new themes would be very much appreciated!
+* **Send comments**
+If you think SCEditor is good/bad or have any suggestions on what could be improved I would love to hear them. Knowing what people like/dislike helps improve the editor.
+* **Donate**
+Donations are always welcome! They encourage me to spend more time and do more updates on the editor.
+* **Fix bugs and improve the editor**
+This is probably the hardest thing to do. DesignMode/ContentEditable are not the nicest of things to work with
+and while I have tried to comment the code as much as possible, some of it, especially the range related code like
+inserting HTML, is very fragile.
+At some point I plan to either switch to using rangy (although that would double the size) or create a small
+class like rangy to help reduce problems. The only reason this wasn't done from the start was size.
+
 
 
 # Donate
