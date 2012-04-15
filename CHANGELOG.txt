@@ -9,12 +9,15 @@ TODO:
 	Maybe use rangy to improve buggy ranges and simplify code,
 		or make a smaller implmenation (rangy is 42kb which
 		is about the size of the whole editor)
+	Change buttons to have translatable command name as their content, so themes don't
+		have to use icons
+	Image upload support (or demo of how to add it as it's likely to be changed for different uses)
 
 Version 1.3.0:
 	Add package.json file
 	Add Contribute to README
 	Add GitHub pages page
-
+	
 
 Version 1.2.9:
 	Started on improving accessibility
