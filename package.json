@@ -1,0 +1,46 @@
+{
+    "name": "jquery.sceditor",
+    "version": "1.3.0",
+    "title": "SCEditor",
+    "author": {
+        "name": "Sam Clarke",
+        "url": "http://www.samclarke.com/"
+    },
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "MIT.txt"
+        },
+        {
+            "type": "GPLv3",
+            "url": "GPL.txt"
+        }
+    ],
+    "dependencies": {
+        "jquery": "*"
+    },
+    "description": "SCEditor is designed to be a lightweight HTML and BBCode WYSIWUG editor.",
+    "keywords": [
+        "wysiwyg",
+        "bbcode",
+        "html",
+        "editor"
+    ],
+    "homepage": "https://github.com/samclarke/SCEditor",
+    "maintainers": [
+        {
+            "name": "Sam Clarke",
+            "url": "http://www.samclarke.com/"
+        }
+    ],
+    "files": [
+        "emoticons/",
+        "icons/",
+        "languages/",
+        "minified/",
+        "jquery.sceditor.bbcode.js",
+        "jquery.sceditor.css",
+        "jquery.sceditor.default.js",
+        "jquery.sceditor.js"
+    ]
+}

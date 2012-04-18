@@ -1,5 +1,5 @@
 /**
- * SCEditor BBCode Plugin v1.2.9
+ * SCEditor BBCode Plugin v1.3.0
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
  * Copyright (C) 2011, Sam Clarke (samclarke.com)
@@ -31,7 +31,8 @@
 			handleStyles,
 			handleTags,
 			formatString,
-			getStyle;
+			getStyle,
+			wrapInDivs;
 
 		base.bbcodes = $.sceditorBBCodePlugin.bbcodes;
 
@@ -391,7 +392,8 @@
 					.replace(/>/g, "&gt;")
 					.replace(/\r/g, "")
 					.replace(/(\[\/?(?:left|center|right|justify)\])\n/g, "$1")
-					.replace(/([^\n\[\]]+)\n/g, "<div>$1</div>")
+					// .replace(/([^\n]+)[\n|$]/g, "<div>$1</div>")
+					// .replace(/\n/g, "<div></div>")
 					.replace(/\n/g, "<br />");
 
 			while(text !== oldText)
@@ -403,10 +405,70 @@
 			// As hr is the only bbcode not to have a start and end tag it's
 			// just being replace here instead of adding support for it above.
 			text = text.replace(/\[hr\]/gi, "<hr>");
-
+			
 			// replace multi-spaces which are not inside tags with a non-breaking space
 			// to preserve them. Otherwise they will just be converted to 1!
-			return text.replace(/ {2}(?=([^<\>]*?<|[^<\>]*?$))/g, " &nbsp;");
+			text = text.replace(/ {2}(?=([^<\>]*?<|[^<\>]*?$))/g, " &nbsp;");
+			
+			return wrapInDivs(text);
+		};
+		
+		/**
+		 * Wraps divs around inline HTML. Needed for IE
+		 * 
+		 * @param string html
+		 * @return string HTML
+		 */
+		wrapInDivs = function(html)
+		{
+			var	d		= document,
+				inlineFrag	= d.createDocumentFragment(),
+				outputDiv	= d.createElement('div'),
+				tmpDiv		= d.createElement('div'),
+				inlineInserted	= false,
+				div, node, next, nodeName;
+			
+			$(tmpDiv).hide().appendTo(d.body);
+			tmpDiv.innerHTML = html;
+			
+			node = tmpDiv.firstChild;
+			while(node)
+			{
+				next = node.nextSibling;
+				nodeName = node.nodeName.toLowerCase();
+
+				if((node.nodeType === 1 && !$.sceditor.dom.isInline(node)) || nodeName === "br")
+				{
+					if(inlineFrag.childNodes.length > 0)
+					{
+						div = d.createElement('div');
+						div.appendChild(inlineFrag);
+						
+						outputDiv.appendChild(div);
+						inlineFrag = d.createDocumentFragment();
+						
+						inlineInserted = true;
+					}
+					
+					if(!inlineInserted || nodeName !== "br")
+						outputDiv.appendChild(node);
+						
+					inlineInserted = false;
+				}
+				else
+					inlineFrag.appendChild(node);
+					
+				node = next;
+			}
+			
+			if(inlineFrag.childNodes.length > 0)
+			{
+				div = d.createElement('div');
+				div.appendChild(inlineFrag);
+				outputDiv.appendChild(div);
+			}
+			
+			return outputDiv.innerHTML;
 		};
 
 		init();

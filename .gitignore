@@ -3,6 +3,7 @@ example/test.php
 example/test.html
 .project
 jquery.sceditor.xhtml.js
+_site/*
 icons/*
 !icons/grip.png
 !icons/text_bold.png
