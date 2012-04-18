@@ -580,8 +580,8 @@ test("Bold", function() {
 	expect(1);
 	
 	equal(
-		this.sb.getTextHandler("[b]test[/b]"),
-		"<strong>test</strong>"
+		this.sb.getTextHandler("[b]test[/b]").toLowerCase(),
+		"<div><strong>test</strong></div>"
 	);
 });
 
@@ -589,8 +589,8 @@ test("Italic", function() {
 	expect(1);
 	
 	equal(
-		this.sb.getTextHandler("[i]test[/i]"),
-		"<em>test</em>"
+		this.sb.getTextHandler("[i]test[/i]").toLowerCase(),
+		"<div><em>test</em></div>"
 	);
 });
 
@@ -598,8 +598,8 @@ test("Underline", function() {
 	expect(1);
 	
 	equal(
-		this.sb.getTextHandler("[u]test[/u]"),
-		"<u>test</u>"
+		this.sb.getTextHandler("[u]test[/u]").toLowerCase(),
+		"<div><u>test</u></div>"
 	);
 });
 
@@ -607,8 +607,8 @@ test("Strikethrough", function() {
 	expect(1);
 	
 	equal(
-		this.sb.getTextHandler("[s]test[/s]"),
-		"<s>test</s>"
+		this.sb.getTextHandler("[s]test[/s]").toLowerCase(),
+		"<div><s>test</s></div>"
 	);
 });
 
@@ -616,8 +616,8 @@ test("Subscript", function() {
 	expect(1);
 	
 	equal(
-		this.sb.getTextHandler("[sub]test[/sub]"),
-		"<sub>test</sub>"
+		this.sb.getTextHandler("[sub]test[/sub]").toLowerCase(),
+		"<div><sub>test</sub></div>"
 	);
 });
 
@@ -625,8 +625,8 @@ test("Superscript", function() {
 	expect(1);
 	
 	equal(
-		this.sb.getTextHandler("[sup]test[/sup]"),
-		"<sup>test</sup>"
+		this.sb.getTextHandler("[sup]test[/sup]").toLowerCase(),
+		"<div><sup>test</sup></div>"
 	);
 });
 
@@ -634,20 +634,20 @@ test("Font face", function() {
 	expect(3);
 	
 	equal(
-		this.sb.getTextHandler("[font=Arial]test[/font]"),
-		"<font face=\"Arial\">test</font>",
+		this.sb.getTextHandler("[font=arial]test[/font]"),
+		html2dom("<div><font face=\"arial\">test</font></div>").innerHTML,
 		"Normal"
 	);
 	
 	equal(
-		this.sb.getTextHandler("[font=Arial Black]test[/font]"),
-		"<font face=\"Arial Black\">test</font>",
+		this.sb.getTextHandler("[font=arial black]test[/font]"),
+		html2dom("<div><font face=\"arial black\">test</font></div>").innerHTML,
 		"Space"
 	);
 	
 	equal(
-		this.sb.getTextHandler("[font='Arial Black']test[/font]"),
-		"<font face=\"Arial Black\">test</font>",
+		this.sb.getTextHandler("[font='arial black']test[/font]"),
+		html2dom("<div><font face=\"arial black\">test</font></div>").innerHTML,
 		"Quotes"
 	);
 });
@@ -657,7 +657,7 @@ test("Size", function() {
 	
 	equal(
 		this.sb.getTextHandler("[size=4]test[/size]"),
-		"<font size=\"4\">test</font>",
+		html2dom("<div><font size=\"4\">test</font></div>").innerHTML,
 		"Normal"
 	);
 });
@@ -667,13 +667,13 @@ test("Font colour", function() {
 	
 	equal(
 		this.sb.getTextHandler("[color=#000]test[/color]"),
-		"<font color=\"#000\">test</font>",
+		html2dom("<div><font color=\"#000\">test</font></div>").innerHTML,
 		"Normal"
 	);
 	
 	equal(
-		this.sb.getTextHandler("[color=Black]test[/color]"),
-		"<font color=\"Black\">test</font>",
+		this.sb.getTextHandler("[color=black]test[/color]"),
+		html2dom("<div><font color=\"black\">test</font></div>").innerHTML,
 		"Named"
 	);
 });
@@ -683,13 +683,13 @@ test("List", function() {
 	
 	equal(
 		this.sb.getTextHandler("[ul][li]test[/li][/ul]"),
-		"<ul><li>test</li></ul>",
+		html2dom("<ul><li>test</li></ul>").innerHTML,
 		"UL"
 	);
 	
 	equal(
 		this.sb.getTextHandler("[ol][li]test[/li][/ol]"),
-		"<ol><li>test</li></ol>",
+		html2dom("<ol><li>test</li></ol>").innerHTML,
 		"OL"
 	);
 });
@@ -699,7 +699,7 @@ test("Table", function() {
 
 	equal(
 		this.sb.getTextHandler("[table][tr][th]test[/th][/tr][tr][td]data1[/td][/tr][/table]"),
-		"<table><tr><th>test</th></tr><tr><td>data1<br class=\"sceditor-ignore\" /></td></tr></table>",
+		html2dom("<table><tr><th>test</th></tr><tr><td>data1<br class=\"sceditor-ignore\"></td></tr></table>").innerHTML,
 		"Normal"
 	);
 });
@@ -708,7 +708,7 @@ test("Horizontal rule", function() {
 	expect(1);
 
 	equal(
-		this.sb.getTextHandler("[hr]"),
+		this.sb.getTextHandler("[hr]").toLowerCase(),
 		"<hr>",
 		"Normal"
 	);
@@ -719,25 +719,25 @@ test("Image", function() {
 
 	equal(
 		this.sb.getTextHandler("[img=10x10]http://test.com/test.png[/img]"),
-		"<img  width=\"10\" height=\"10\" src=\"http://test.com/test.png\" />",
+		html2dom("<div><img width=\"10\" height=\"10\" src=\"http://test.com/test.png\"></div>").innerHTML,
 		"Normal"
 	);
 	
 	equal(
 		this.sb.getTextHandler("[img width=10]http://test.com/test.png[/img]"),
-		"<img  width=\"10\" src=\"http://test.com/test.png\" />",
+		html2dom("<div><img width=\"10\" src=\"http://test.com/test.png\"></div>").innerHTML,
 		"Width only"
 	);
 	
 	equal(
 		this.sb.getTextHandler("[img height=10]http://test.com/test.png[/img]"),
-		"<img  height=\"10\" src=\"http://test.com/test.png\" />",
+		html2dom("<div><img height=\"10\" src=\"http://test.com/test.png\"></div>").innerHTML,
 		"Height only"
 	);
 	
 	equal(
-		this.sb.getTextHandler("[img]http://test.com/test.png[/img]"),
-		"<img  src=\"http://test.com/test.png\" />",
+		this.sb.getTextHandler("[img]http://test.com/test.png[/img]").toLowerCase(),
+		"<div><img src=\"http://test.com/test.png\"></div>",
 		"No size"
 	);
 });
@@ -747,14 +747,14 @@ test("URL", function() {
 
 
 	equal(
-		this.sb.getTextHandler("[url=http://test.com/]Test[/url]"),
-		"<a href=\"http://test.com/\">Test</a>",
+		this.sb.getTextHandler("[url=http://test.com/]Test[/url]").toLowerCase(),
+			"<div><a href=\"http://test.com/\">test</a></div>",
 		"Normal"
 	);
 	
 	equal(
-		this.sb.getTextHandler("[url]http://test.com/[/url]"),
-		"<a href=\"http://test.com/\">http://test.com/</a>",
+		this.sb.getTextHandler("[url]http://test.com/[/url]").toLowerCase(),
+		"<div><a href=\"http://test.com/\">http://test.com/</a></div>",
 		"Only URL"
 	);
 });
@@ -763,14 +763,14 @@ test("Email", function() {
 	expect(2);
 
 	equal(
-		this.sb.getTextHandler("[email=test@test.com]test[/email]"),
-		"<a href=\"mailto:test@test.com\">test</a>",
+		this.sb.getTextHandler("[email=test@test.com]test[/email]").toLowerCase(),
+		"<div><a href=\"mailto:test@test.com\">test</a></div>",
 		"Normal"
 	);
 	
 	equal(
-		this.sb.getTextHandler("[email]test@test.com[/email]"),
-		"<a href=\"mailto:test@test.com\">test@test.com</a>",
+		this.sb.getTextHandler("[email]test@test.com[/email]").toLowerCase(),
+		"<div><a href=\"mailto:test@test.com\">test@test.com</a></div>",
 		"Only e-mail"
 	);
 });
@@ -779,14 +779,14 @@ test("Quote", function() {
 	expect(2);
 
 	equal(
-		this.sb.getTextHandler("[quote]Testing 1.2.3....[/quote]"),
-		"<blockquote>Testing 1.2.3....</blockquote>",
+		this.sb.getTextHandler("[quote]Testing 1.2.3....[/quote]").toLowerCase(),
+		"<blockquote>testing 1.2.3....</blockquote>",
 		"Normal"
 	);
 	
 	equal(
-		this.sb.getTextHandler("[quote=admin]Testing 1.2.3....[/quote]"),
-		"<blockquote><cite>admin</cite>Testing 1.2.3....</blockquote>",
+		this.sb.getTextHandler("[quote=admin]Testing 1.2.3....[/quote]").toLowerCase(),
+		"<blockquote><cite>admin</cite>testing 1.2.3....</blockquote>",
 		"With author"
 	);
 });
@@ -795,8 +795,8 @@ test("Code", function() {
 	expect(1);
 
 	equal(
-		this.sb.getTextHandler("[code]Testing 1.2.3....[/code]"),
-		"<code>Testing 1.2.3....</code>",
+		this.sb.getTextHandler("[code]Testing 1.2.3....[/code]").toLowerCase(),
+		"<div><code>testing 1.2.3....</code></div>",
 		"Normal"
 	);
 });
@@ -806,7 +806,7 @@ test("Left", function() {
 	
 	equal(
 		this.sb.getTextHandler("[left]Testing 1.2.3....[/left]"),
-		"<div align=\"left\">Testing 1.2.3....</div>",
+		html2dom("<div align=\"left\">Testing 1.2.3....</div>").innerHTML,
 		"Normal"
 	);
 });
@@ -816,7 +816,7 @@ test("Right", function() {
 	
 	equal(
 		this.sb.getTextHandler("[right]Testing 1.2.3....[/right]"),
-		"<div align=\"right\">Testing 1.2.3....</div>",
+		html2dom("<div align=\"right\">Testing 1.2.3....</div>").innerHTML,
 		"Normal"
 	);
 });
@@ -826,7 +826,7 @@ test("Centre", function() {
 	
 	equal(
 		this.sb.getTextHandler("[center]Testing 1.2.3....[/center]"),
-		"<div align=\"center\">Testing 1.2.3....</div>",
+		html2dom("<div align=\"center\">Testing 1.2.3....</div>").innerHTML,
 		"Normal"
 	);
 });
@@ -836,7 +836,7 @@ test("Justify", function() {
 	
 	equal(
 		this.sb.getTextHandler("[justify]Testing 1.2.3....[/justify]"),
-		"<div align=\"justify\">Testing 1.2.3....</div>",
+		html2dom("<div align=\"justify\">Testing 1.2.3....</div>").innerHTML,
 		"Normal"
 	);
 });
@@ -846,7 +846,7 @@ test("YouTube", function() {
 
 	equal(
 		this.sb.getTextHandler("[youtube]xyz[/youtube]"),
-		"<iframe width=\"560\" height=\"315\" src=\"http://www.youtube.com/embed/xyz?wmode=opaque\" data-youtube-id=\"xyz\" frameborder=\"0\" allowfullscreen></iframe>",
+		html2dom("<div><iframe width=\"560\" height=\"315\" src=\"http://www.youtube.com/embed/xyz?wmode=opaque\" data-youtube-id=\"xyz\" frameborder=\"0\" allowfullscreen></iframe></div>").innerHTML,
 		"Normal"
 	);
 });
