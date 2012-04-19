@@ -154,6 +154,16 @@
 				.attr('novalidate','novalidate')
 				.submit(formSubmitHandler);
 
+			// prefix emoticon root to emoticon urls
+			if(base.options.emoticonsRoot && base.options.emoticons)
+			{
+				$.each(base.options.emoticons, function (idx, emoticons) {
+					$.each(emoticons, function (key, url) {
+						base.options.emoticons[idx][key] = base.options.emoticonsRoot + url;
+					});
+				});
+			}
+			
 			// load any textarea value into the editor
 			var val = $textarea.hide().val();
 
@@ -163,6 +173,7 @@
 				val = base.options.getTextHandler(val);
 
 			base.setWysiwygEditorValue(val);
+			
 			if(base.options.toolbar.indexOf('emoticon') !== -1)
 				preLoadEmoticons();
 		};
@@ -1950,6 +1961,7 @@
 		// are not accepted as whitespace so only emoticons surrounded by whitespace
 		// will work
 		emoticonsCompat: false,
+		emoticonsRoot: '',
 		emoticons:	{
 					dropdown: {
 						":)": "emoticons/smile.png",
