@@ -1,5 +1,5 @@
 /**
- * SCEditor v1.3.1
+ * SCEditor v1.3.0
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
  * Copyright (C) 2011, Sam Clarke (samclarke.com)
@@ -154,16 +154,6 @@
 				.attr('novalidate','novalidate')
 				.submit(formSubmitHandler);
 
-			// prefix emoticon root to emoticon urls
-			if(base.options.emoticonsRoot && base.options.emoticons)
-			{
-				$.each(base.options.emoticons, function (idx, emoticons) {
-					$.each(emoticons, function (key, url) {
-						base.options.emoticons[idx][key] = base.options.emoticonsRoot + url;
-					});
-				});
-			}
-			
 			// load any textarea value into the editor
 			var val = $textarea.hide().val();
 
@@ -173,7 +163,6 @@
 				val = base.options.getTextHandler(val);
 
 			base.setWysiwygEditorValue(val);
-			
 			if(base.options.toolbar.indexOf('emoticon') !== -1)
 				preLoadEmoticons();
 		};
@@ -205,7 +194,7 @@
 			
 			getWysiwygDoc().open();
 			getWysiwygDoc().write(
-				'<html><head><meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />' +
+				'<html><head><!--[if gte IE 9]><style>* {min-height: auto !important}</style><![endif]-->' +
 				'<meta http-equiv="Content-Type" content="text/html;charset=' + base.options.charset + '" />' +
 				'<link rel="stylesheet" type="text/css" href="' + base.options.style + '" />' +
 				'</head><body contenteditable="true"></body></html>'
@@ -220,7 +209,7 @@
 			$(getWysiwygDoc()).find("body").keypress(handleKeyPress);
 			$(getWysiwygDoc()).keypress(handleKeyPress);
 			$(getWysiwygDoc()).mousedown(handleMouseDown);
-			$(getWysiwygDoc()).bind("beforedeactivate keypress", saveRange);
+			$(getWysiwygDoc()).bind("beforedeactivate keyup", saveRange);
 			$(getWysiwygDoc()).focus(function() {
 				lastRange = null;
 			});
@@ -820,7 +809,7 @@
 		 */
 		base.focus = function () {
 			wysiwygEditor.contentWindow.focus();
-
+			
 			// Needed for IE < 9
 			if(lastRange !== null) {
 				if (window.document.createRange)
@@ -1961,7 +1950,6 @@
 		// are not accepted as whitespace so only emoticons surrounded by whitespace
 		// will work
 		emoticonsCompat: false,
-		emoticonsRoot: '',
 		emoticons:	{
 					dropdown: {
 						":)": "emoticons/smile.png",

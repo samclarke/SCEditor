@@ -10,12 +10,13 @@ TODO:
 		is about the size of the whole editor)
 	Change buttons to have translatable command name as their content, so themes don't
 		have to use icons
-	Image upload support (or demo of how to add it as it's likely to be changed for different uses)
 	Add indent/unindent commands for both the editor and BBCode parser
 
 Version 1.3.1:
 	Add emoticonsRoot option. Allows adding a root URL to be prepended to all emoticons.
 		- Thanks to @primehalo for the idea
+	Fix IE9 bug showing resize handles
+	Fix IE ranges sometimes causing the last typed charecter to be unselected
 	
 Version 1.3.0:
 	Add package.json file
