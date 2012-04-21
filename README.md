@@ -1,4 +1,4 @@
-# SCEditor v1.3.0
+# SCEditor v1.3.1
 Copyright (C) 2011-2012, [Sam Clarke](http://www.samclarke.com).
 
 For more information visit: http://www.samclarke.com/2011/07/sceditor/
@@ -56,6 +56,10 @@ Comma separated list of HEX colours. Use the bar character (|) to signify a new 
 **emoticonsCompat** *boolean*
 If compatibility is enabled it will require emoticons to be surrounded by whitespace or EOL characters meaning if you have :/ it will not be replaced
 in http://. This mode currently has limited As You Type emoticon conversion support.
+
+**emoticonsRoot** *string*
+If specified, this string will be prepended to all emoticon URLs. The default emoticons are in the "emoticons" directory so specifying the root as
+"http://example.com/" would "http://example.com/produce emoticons/smile.png"
 
 **emoticons** *map*
 Map in the following format:

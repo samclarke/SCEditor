@@ -194,7 +194,7 @@
 			
 			getWysiwygDoc().open();
 			getWysiwygDoc().write(
-				'<html><head><meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />' +
+				'<html><head><!--[if gte IE 9]><style>* {min-height: auto !important}</style><![endif]-->' +
 				'<meta http-equiv="Content-Type" content="text/html;charset=' + base.options.charset + '" />' +
 				'<link rel="stylesheet" type="text/css" href="' + base.options.style + '" />' +
 				'</head><body contenteditable="true"></body></html>'
@@ -209,7 +209,7 @@
 			$(getWysiwygDoc()).find("body").keypress(handleKeyPress);
 			$(getWysiwygDoc()).keypress(handleKeyPress);
 			$(getWysiwygDoc()).mousedown(handleMouseDown);
-			$(getWysiwygDoc()).bind("beforedeactivate keypress", saveRange);
+			$(getWysiwygDoc()).bind("beforedeactivate keyup", saveRange);
 			$(getWysiwygDoc()).focus(function() {
 				lastRange = null;
 			});
@@ -809,7 +809,7 @@
 		 */
 		base.focus = function () {
 			wysiwygEditor.contentWindow.focus();
-
+			
 			// Needed for IE < 9
 			if(lastRange !== null) {
 				if (window.document.createRange)

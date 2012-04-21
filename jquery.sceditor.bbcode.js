@@ -425,7 +425,6 @@
 				inlineFrag	= d.createDocumentFragment(),
 				outputDiv	= d.createElement('div'),
 				tmpDiv		= d.createElement('div'),
-				inlineInserted	= false,
 				div, node, next, nodeName;
 			
 			$(tmpDiv).hide().appendTo(d.body);
@@ -439,21 +438,17 @@
 
 				if((node.nodeType === 1 && !$.sceditor.dom.isInline(node)) || nodeName === "br")
 				{
-					if(inlineFrag.childNodes.length > 0)
+					if(inlineFrag.childNodes.length > 0 || nodeName === "br")
 					{
 						div = d.createElement('div');
 						div.appendChild(inlineFrag);
 						
 						outputDiv.appendChild(div);
 						inlineFrag = d.createDocumentFragment();
-						
-						inlineInserted = true;
 					}
 					
-					if(!inlineInserted || nodeName !== "br")
+					if(nodeName !== "br")
 						outputDiv.appendChild(node);
-						
-					inlineInserted = false;
 				}
 				else
 					inlineFrag.appendChild(node);
