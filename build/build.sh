@@ -22,5 +22,9 @@ yui-compressor --type css -o minified/jquery.sceditor.default.min.css jquery.sce
 # compres JS
 echo "Minimising JavaScript"
 
-java -jar build/compiler.jar --js=jquery.sceditor.js --js=jquery.sceditor.bbcode.js --js_output_file=minified/jquery.sceditor.min.js
+cat jquery.sceditor.js jquery.sceditor.bbcode.js > minified/jquery.sceditor.min.js
+
+uglifyjs -nc --overwrite minified/jquery.sceditor.min.js
+
+#java -jar build/compiler.jar --js=jquery.sceditor.js --js=jquery.sceditor.bbcode.js --js_output_file=minified/jquery.sceditor.min.js
 
