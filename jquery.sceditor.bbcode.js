@@ -345,9 +345,15 @@
 						else
 							ret += curTag;
 					}
-					else if(!node.previousSibling || node.previousSibling.nodeType !== 3)
-						ret += node.wholeText.replace(/ +/g, " ");
-					
+					else if(node.wholeText && (!node.previousSibling || node.previousSibling.nodeType !== 3))
+					{
+						if($(node).parents('code').length === 0)
+							ret += node.wholeText.replace(/ +/g, " ");
+						else
+							ret += node.wholeText;
+					}
+					else if(!node.wholeText)
+						ret += node.nodeValue;
 				}, false, true);
 				
 				return ret;
@@ -930,6 +936,7 @@
 
 		// START_COMMAND: YouTube
 		youtube: {
+			allowsEmpty: true,
 			tags: {
 				iframe: {
 					'data-youtube-id': null
