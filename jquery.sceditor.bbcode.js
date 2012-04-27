@@ -1,5 +1,5 @@
 /**
- * SCEditor BBCode Plugin v1.3.0
+ * SCEditor BBCode Plugin v1.3.2
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
  * Copyright (C) 2011, Sam Clarke (samclarke.com)
@@ -14,7 +14,7 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 // ==/ClosureCompiler==
 
-/*jshint smarttabs: true, jquery: true */
+/*jshint smarttabs: true, jquery: true, eqnull:true, curly: false */
 
 (function($) {
 	'use strict';
@@ -145,7 +145,7 @@
 			if(!stylesToBbcodes[blockLevel])
 				return content;
 			
-			$.each(stylesToBbcodes[blockLevel], function(property, bbcodes) {				
+			$.each(stylesToBbcodes[blockLevel], function(property, bbcodes) {
 				elementPropVal = getStyle(element[0], property);
 				if(elementPropVal == null || elementPropVal === "")
 					return;
@@ -156,6 +156,10 @@
 					return;
 
 				$.each(bbcodes, function(bbcode, values) {
+					if((element[0].childNodes.length === 0 || element[0].childNodes[0].nodeName.toLowerCase() === "br") &&
+						!base.bbcodes[bbcode].allowsEmpty)
+						return;
+					
 					if(values === null || $.inArray(elementPropVal.toString(), values) > -1) {
 						if($.isFunction(base.bbcodes[bbcode].format))
 							content = base.bbcodes[bbcode].format.call(base, element, content);
@@ -178,7 +182,7 @@
 		 * @return	string	Content with any matching bbcode tags wrapped around it.
 		 */
 		handleTags = function(element, content, blockLevel) {
-			var tag = element.get(0).nodeName.toLowerCase();
+			var tag = element[0].nodeName.toLowerCase();
 			
 			// convert blockLevel to boolean
 			blockLevel = !!blockLevel;
@@ -186,6 +190,10 @@
 			if(tagsToBbcodes[tag] && tagsToBbcodes[tag][blockLevel]) {
 				// loop all bbcodes for this tag
 				$.each(tagsToBbcodes[tag][blockLevel], function(bbcode, bbcodeAttribs) {
+					if((element[0].childNodes.length === 0 || element[0].childNodes[0].nodeName.toLowerCase() === "br") &&
+						!base.bbcodes[bbcode].allowsEmpty)
+						return;
+					
 					// if the bbcode requires any attributes then check this has
 					// all needed
 					if(bbcodeAttribs !== null) {
@@ -337,7 +345,14 @@
 						else
 							ret += curTag;
 					}
-					else
+					else if(node.wholeText && (!node.previousSibling || node.previousSibling.nodeType !== 3))
+					{
+						if($(node).parents('code').length === 0)
+							ret += node.wholeText.replace(/ +/g, " ");
+						else
+							ret += node.wholeText;
+					}
+					else if(!node.wholeText)
 						ret += node.nodeValue;
 				}, false, true);
 				
@@ -392,8 +407,6 @@
 					.replace(/>/g, "&gt;")
 					.replace(/\r/g, "")
 					.replace(/(\[\/?(?:left|center|right|justify)\])\n/g, "$1")
-					// .replace(/([^\n]+)[\n|$]/g, "<div>$1</div>")
-					// .replace(/\n/g, "<div></div>")
 					.replace(/\n/g, "<br />");
 
 			while(text !== oldText)
@@ -442,6 +455,12 @@
 					{
 						div = d.createElement('div');
 						div.appendChild(inlineFrag);
+						
+						// Putting BR in a div in IE9 causes it to do a double line break,
+						// as much as I hate browser UA sniffing, to do feature detection would
+						// be more code than it's worth for this specific bug.
+						if(nodeName === "br" && (!$.sceditor.ie || $.sceditor.ie < 9))
+							div.appendChild(d.createElement('br'));
 						
 						outputDiv.appendChild(div);
 						inlineFrag = d.createDocumentFragment();
@@ -732,6 +751,7 @@
 
 		// START_COMMAND: Emoticons
 		emoticon: {
+			allowsEmpty: true,
 			tags: {
 				img: {
 					src: null,
@@ -747,6 +767,7 @@
 
 		// START_COMMAND: Horizontal Rule
 		horizontalrule: {
+			allowsEmpty: true,
 			tags: {
 				hr: null
 			},
@@ -757,6 +778,7 @@
 
 		// START_COMMAND: Image
 		img: {
+			allowsEmpty: true,
 			tags: {
 				img: {
 					src: null
@@ -795,6 +817,7 @@
 
 		// START_COMMAND: URL
 		url: {
+			allowsEmpty: true,
 			tags: {
 				a: {
 					href: null
@@ -913,6 +936,7 @@
 
 		// START_COMMAND: YouTube
 		youtube: {
+			allowsEmpty: true,
 			tags: {
 				iframe: {
 					'data-youtube-id': null
@@ -948,14 +972,15 @@
 	/**
 	 * Adds/updates a BBCode.
 	 * 
-	 * @param string		name		The BBCode name
-	 * @param object		tags		Any html tags this bbcode applies to, i.e. strong for [b]
-	 * @param object		styles		Any style properties this applies to, i.e. font-weight for [b]
-	 * @param string|function	format		Function or string to convert the element into BBCode
-	 * @param string|function	html		String or function to format the BBCode back into HTML.
-	 * @return bool
+	 * @param String		name		The BBCode name
+	 * @param Object		tags		Any html tags this bbcode applies to, i.e. strong for [b]
+	 * @param Object		styles		Any style properties this applies to, i.e. font-weight for [b]
+	 * @param String|Function	format		Function or string to convert the element into BBCode
+	 * @param String|Function	html		String or function to format the BBCode back into HTML.
+	 * @param BOOL			allowsEmpty	If this BBCodes is allowed to be empty, e.g. [b][/b]
+	 * @return Bool
 	 */
-	$.sceditorBBCodePlugin.setCommand = function(name, tags, styles, format, html) {
+	$.sceditorBBCodePlugin.setCommand = function(name, tags, styles, format, html, allowsEmpty) {
 		if(!name || !format || !html)
 			return false;
 		
@@ -970,6 +995,9 @@
 		
 		if(styles)
 			$.sceditorBBCodePlugin.bbcodes[name].styles = styles;
+			
+		if(allowsEmpty)
+			$.sceditorBBCodePlugin.bbcodes[name].allowsEmpty = allowsEmpty;
 		
 		return true;
 	};

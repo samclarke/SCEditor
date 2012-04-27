@@ -1,5 +1,5 @@
 /**
- * SCEditor v1.3.0
+ * SCEditor v1.3.2
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
  * Copyright (C) 2011, Sam Clarke (samclarke.com)
@@ -14,7 +14,7 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 // ==/ClosureCompiler==
 
-/*jshint smarttabs: true, scripturl: true, rowser:true, devel:true, jquery:true  */
+/*jshint smarttabs: true, scripturl: true, jquery: true, devel:true, eqnull:true, curly: false */
 /*global XMLSerializer: true*/
 
 (function ($) {
@@ -85,14 +85,15 @@
 		 * @private
 		 */
 		var preLoadCache = [];
+		
+		var rangeHelper = null;
 
 		var	init,
-			getWysiwygSelectedContainerNode,
-			getWysiwygSelection,
 			replaceEmoticons,
 			handleCommand,
 			saveRange,
 			handleKeyPress,
+			handleKeyUp,
 			handleMouseDown,
 			initEditor,
 			initToolBar,
@@ -173,7 +174,8 @@
 		 */
 		initEditor = function () {
 			var	contentEditable = $('<div contenteditable="true">')[0].contentEditable,
-				contentEditableSupported = typeof contentEditable !== 'undefined' && contentEditable !== 'inherit';
+				contentEditableSupported = typeof contentEditable !== 'undefined' && contentEditable !== 'inherit',
+				$doc;
 
 			$textEditor = $('<textarea></textarea>').hide();
 			$wysiwygEditor = $('<iframe frameborder="0"></iframe>');
@@ -205,14 +207,19 @@
 			if(!contentEditableSupported)
 				getWysiwygDoc().designMode = 'On';
 
+			$doc = $(getWysiwygDoc());
 			// set the key press event
-			$(getWysiwygDoc()).find("body").keypress(handleKeyPress);
-			$(getWysiwygDoc()).keypress(handleKeyPress);
-			$(getWysiwygDoc()).mousedown(handleMouseDown);
-			$(getWysiwygDoc()).bind("beforedeactivate keyup", saveRange);
-			$(getWysiwygDoc()).focus(function() {
+			$doc.find("body").keypress(handleKeyPress);
+			$doc.find("body").keyup(handleKeyUp);
+			$doc.keypress(handleKeyPress);
+			$doc.keyup(handleKeyUp);
+			$doc.mousedown(handleMouseDown);
+			$doc.bind("beforedeactivate keyup", saveRange);
+			$doc.focus(function() {
 				lastRange = null;
 			});
+			
+			rangeHelper = new $.sceditor.rangeHelper(wysiwygEditor.contentWindow);
 		};
 
 		/**
@@ -312,18 +319,17 @@
 		 * @private
 		 */
 		initResize = function () {
-			var	$grip  = $('<div class="sceditor-grip" />'),
+			var	$grip		= $('<div class="sceditor-grip" />'),
 				// cover is used to cover the editor iframe so document still gets mouse move events
-				$cover = $('<div class="sceditor-resize-cover" />'),
-				startX = 0,
-				startY = 0,
-				startWidth  = 0,
-				startHeight = 0,
-				origWidth   = editorContainer.width(),
-				origHeight  = editorContainer.height(),
-				dragging    = false,
-				minHeight, maxHeight, minWidth, maxWidth,
-				mouseMoveFunc;
+				$cover		= $('<div class="sceditor-resize-cover" />'),
+				startX		= 0,
+				startY		= 0,
+				startWidth	= 0,
+				startHeight	= 0,
+				origWidth	= editorContainer.width(),
+				origHeight	= editorContainer.height(),
+				dragging	= false,
+				minHeight, maxHeight, minWidth, maxWidth, mouseMoveFunc;
 
 			minHeight = (base.options.resizeMinHeight == null ?
 					origHeight / 2 :
@@ -358,11 +364,11 @@
 			editorContainer.append($cover.hide());
 
 			$grip.mousedown(function (e) {
-				startX       = e.pageX;
-				startY       = e.pageY;
-				startWidth   = editorContainer.width();
-				startHeight  = editorContainer.height();
-				dragging     = true;
+				startX		= e.pageX;
+				startY		= e.pageY;
+				startWidth	= editorContainer.width();
+				startHeight	= editorContainer.height();
+				dragging	= true;
 
 				$cover.show();
 				$(document).bind('mousemove', mouseMoveFunc);
@@ -521,50 +527,11 @@
 			base.focus();
 			
 			// don't apply to code elements
-			if(!overrideCodeBlocking && ($(getWysiwygSelectedContainerNode()).is('code') ||
-				$(getWysiwygSelectedContainerNode()).parents('code').length !== 0))
+			if(!overrideCodeBlocking && ($(rangeHelper.parentNode()).is('code') ||
+				$(rangeHelper.parentNode()).parents('code').length !== 0))
 				return;
-
-			if(typeof endHtml !== "undefined" && endHtml !== null)
-				html = html + base.getWysiwygSelectedHtml() + endHtml;
-
-			if (getWysiwygDoc().getSelection) {
-				var range          = getWysiwygSelection();
-				var htmlNode       = getWysiwygDoc().createElement('div');
-				htmlNode.innerHTML = html;
-				
-				// A better way of inserting the HTML would be to use documentFragments 
-				// however you then need to find the last inserted node to setStartAfter
-				htmlNode           = htmlNode.children[0];
-
-				range.deleteContents();
-				range.insertNode(htmlNode);
-				range = range.cloneRange();
-
-				// move the cursor to the end of the insertion
-				if(htmlNode.parentNode !== range.startContainer || !$.browser.opera)
-					range.setStartAfter(htmlNode);
-				// this is only needed for opera
-				else {
-					return;
-					//range.setStart(htmlNode.parentNode, range.startOffset+1);
-					//range.setEnd(htmlNode.parentNode, range.endOffset+1);
-				}
-
-				// change current range
-				wysiwygEditor.contentWindow.getSelection().removeAllRanges();
-				wysiwygEditor.contentWindow.getSelection().addRange(range);
-			}
-			else if (getWysiwygDoc().selection && getWysiwygDoc().selection.createRange) {
-				getWysiwygDoc().selection.createRange().pasteHTML(html);
-				
-				saveRange();
-				base.focus();
-			}
-			else
-				base.execCommand("insertHtml", html);
-
-			lastRange = null;
+			
+			rangeHelper.insertHTML(html, endHtml);
 		};
 
 		/**
@@ -579,79 +546,14 @@
 					.replace(/\r\n|\r/g, "\n")
 					.replace(/\n/g, "<br />");
 			
-			base.wysiwygEditorInsertHtml('<span>' + text + '</span>');
+			base.wysiwygEditorInsertHtml(text);
 		};
-
+		
 		/**
-		 * Gets the current selection range from WYSIWYG editor
-		 * @private
+		 * Gets the current rangeHelper instance
 		 */
-		getWysiwygSelection = function () {
-			var range;
-
-			if(wysiwygEditor.contentWindow && wysiwygEditor.contentWindow.getSelection)
-				range = wysiwygEditor.contentWindow.getSelection();
-			else if(document.selection)
-				range = getWysiwygDoc().selection;
-			
-			// If no ranges are selected, add one. Needed if any HTML
-			// is to be inserted before a range is created
-			if(range.getRangeAt && range.rangeCount <= 0)
-				range.addRange(getWysiwygDoc().createRange());
-
-			if(range.getRangeAt)
-				return range.getRangeAt(0);
-			else if (range.createRange)
-				return range.createRange();
-
-			return null;
-		};
-
-		/**
-		 * Gets the currently selected HTML from WYSIWYG editor
-		 */
-		base.getWysiwygSelectedHtml = function () {
-			var selection = getWysiwygSelection();
-
-			if(selection === null)
-				return '';
-
-			// IE < 9
-			if (document.selection && document.selection.createRange) {
-				if(selection.text === '')
-					return '';
-
-				if(typeof selection.htmlText !== 'undefined')
-					return selection.htmlText;
-			}
-
-			// IE9+ and all other browsers
-			if (window.XMLSerializer) {
-				var html = '';
-				$(selection.cloneContents().childNodes).each(function () {
-					html += new XMLSerializer().serializeToString(this);
-				});
-				return html;
-			}
-		};
-
-		/**
-		 * Gets the first node which contains all the selected elements
-		 * @private
-		 */
-		getWysiwygSelectedContainerNode = function () {
-			var selection = getWysiwygSelection();
-
-			if(selection === null)
-				return null;
-
-			// IE9+ and all other browsers
-			if (window.getSelection && typeof selection.commonAncestorContainer !== 'undefined')
-				return selection.commonAncestorContainer;
-
-			// IE < 9
-			if (document.selection && document.selection.createRange)
-				return selection.parentElement();
+		base.getRangeHelper = function () {
+			return rangeHelper;
 		};
 
 		/**
@@ -720,13 +622,13 @@
 				// escape the key before using it as a regex
 				// and append the regex to only find emoticons outside
 				// of HTML tags
-				var	reg = base.regexEscape(key) + "(?=([^\\<\\>]*?<(?!/code)|[^\\<\\>]*?$))",
+				var	reg = $.sceditor.regexEscape(key) + "(?=([^\\<\\>]*?<(?!/code)|[^\\<\\>]*?$))",
 					group = '';
 				
 				// Make sure the emoticon is surrounded by whitespace or is at the start/end of a string or html tag
 				if(base.options.emoticonsCompat)
 				{
-					reg = "((>|^|\\s){1})" + reg + "(?=(\\s|$|<){1})";
+					reg = "((>|^|\\s|\xA0|\u2002|\u2003|\u2009|&nbsp;))" + reg + "(?=(\\s|$|<|\xA0|\u2002|\u2003|\u2009|&nbsp;))";
 					group = '$1';
 				}
 
@@ -737,17 +639,6 @@
 			});
 
 			return html;
-		};
-		
-		/**
-		 * Escapes a string so it's safe to use in regex
-		 * @param string str The strong to escape
-		 * @return string
-		 */
-		base.regexEscape = function (str) {
-			return str.replace(/[\$\?\[\]\.\*\(\)\|]/g, "\\$&")
-				.replace("<", "&lt;")
-				.replace(">", "&gt;");
 		};
 		
 		isTextMode = function () {
@@ -812,10 +703,7 @@
 			
 			// Needed for IE < 9
 			if(lastRange !== null) {
-				if (window.document.createRange)
-					window.getSelection().addRange(lastRange);
-				else if (window.document.selection)
-					lastRange.select();
+				rangeHelper.selectRange(lastRange);
 				
 				// remove the stored range after being set.
 				// If the editor loses focus it should be
@@ -834,7 +722,7 @@
 			if(!$.browser.msie)
 				return;
 
-			lastRange = getWysiwygSelection();
+			lastRange = rangeHelper.selectedRange();
 		};
 
 		/**
@@ -848,8 +736,8 @@
 			base.focus();
 
 			// don't apply any comannds to code elements
-			if($(getWysiwygSelectedContainerNode()).is('code') ||
-				$(getWysiwygSelectedContainerNode()).parents('code').length !== 0)
+			if($(rangeHelper.parentNode()).is('code') ||
+				$(rangeHelper.parentNode()).parents('code').length !== 0)
 				return;
 
 			if(getWysiwygDoc())
@@ -875,7 +763,7 @@
 		handleKeyPress = function (e) {
 			base.closeDropDown();
 			
-			var	selectedContainer = getWysiwygSelectedContainerNode(),
+			var	selectedContainer = rangeHelper.parentNode(),
 				$selectedContainer = $(selectedContainer);
 
 			// "Fix" (ok it's a hack) for blocklevel elements being duplicated in some browsers when
@@ -911,6 +799,9 @@
 			var i = keyPressFuncs.length;
 			while(i--)
 				keyPressFuncs[i].call(base, e, wysiwygEditor, $textEditor);
+		};
+		
+		handleKeyUp = function (e) {
 		};
 
 		/**
@@ -979,6 +870,50 @@
 
 		// run the initializer
 		init();
+	};
+	
+	// ----------------------------------------------------------
+	// A short snippet for detecting versions of IE in JavaScript
+	// without resorting to user-agent sniffing
+	// ----------------------------------------------------------
+	// If you're not in IE (or IE version is less than 5) then:
+	// ie === undefined
+	// If you're in IE (>=5) then you can determine which version:
+	// ie === 7; // IE7
+	// Thus, to detect IE:
+	// if (ie) {}
+	// And to detect the version:
+	// ie === 6 // IE6
+	// ie > 7 // IE8, IE9 ...
+	// ie < 9 // Anything less than IE9
+	// ----------------------------------------------------------
+	// UPDATE: Now using Live NodeList idea from @jdalton
+	// Source: https://gist.github.com/527683
+	$.sceditor.ie = (function(){
+
+		var	undef,
+			v	= 3,
+			div	= document.createElement('div'),
+			all	= div.getElementsByTagName('i');
+	
+		while (
+			div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
+			all[0]
+		);
+		
+		return v > 4 ? v : undef;
+	
+	}());
+	
+	/**
+	 * Escapes a string so it's safe to use in regex
+	 * @param string str The strong to escape
+	 * @return string
+	 */
+	$.sceditor.regexEscape = function (str) {
+		return str.replace(/[\$\?\[\]\.\*\(\)\|]/g, "\\$&")
+			.replace("<", "&lt;")
+			.replace(">", "&gt;");
 	};
 
 	$.sceditor.locale = {};
@@ -1327,7 +1262,7 @@
 						// needed for IE to reset the last range
 						editor.focus();
 
-						if(!editor.getWysiwygSelectedHtml())
+						if(!editor.getRangeHelper().selectedHtml())
 							editor.wysiwygEditorInsertHtml('<a href="' + 'mailto:' + val + '">' + val + '</a>');
 						else
 							editor.execCommand("createlink", 'mailto:' + val);
@@ -1365,7 +1300,7 @@
 						// needed for IE to reset the last range
 						editor.focus();
 
-						if(!editor.getWysiwygSelectedHtml() || description)
+						if(!editor.getRangeHelper().selectedHtml() || description)
 						{
 							if(!description)
 								description = val;
@@ -1410,7 +1345,7 @@
 					end = null;
 				}
 				// if not add a newline to the end of the inserted quote
-				else if(this.getWysiwygSelectedHtml() === "")
+				else if(this.getRangeHelper().selectedHtml() === "")
 					end = '<br />' + end;
 				
 				this.wysiwygEditorInsertHtml(before, end);
@@ -1482,87 +1417,37 @@
 			},
 			keyPress: function (e, wysiwygEditor)
 			{
-				var	range  = null,
-					start  = -1,
-					editor = this;
-
-				if(wysiwygEditor.contentWindow && wysiwygEditor.contentWindow.getSelection)
-					range = wysiwygEditor.contentWindow.getSelection().getRangeAt(0);
-
-				if(range == null || !range.startContainer)
-					return;
-
-				// store all the emoticons in an object to speed up AYT emoticon converstion
-				if(!editor.allEmoticonCache)
-					editor.allEmoticonCache = $.extend({}, editor.options.emoticons.more, editor.options.emoticons.dropdown, editor.options.emoticons.hidden);
-
-				// store the length of the longest emoticon key
-				if(!editor.longestEmoticonCode) {
-					editor.longestEmoticonCode = 0;
-					$.each(editor.allEmoticonCache, function (key, url) {
-						if(key.length > editor.longestEmoticonCode)
-							editor.longestEmoticonCode = key.length;
-					});
+				var	editor = this,
+					pos = 0,
+					curChar = String.fromCharCode(e.which);
 					
-					// if need to check that the emoticon has whitespace around it,
-					// need to add 1 to either end
-					if(editor.options.emoticonsCompat)
-						editor.longestEmoticonCode += 1;
+				if(!editor.EmoticonsCache) {
+					editor.EmoticonsCache = [];
+					
+					$.each($.extend({}, editor.options.emoticons.more, editor.options.emoticons.dropdown, editor.options.emoticons.hidden), function(key, url) {
+						editor.EmoticonsCache[pos++] = [
+							key,
+							'<img src="' + url + '" data-sceditor-emoticon="' + key + '" alt="' + key + '" />'
+						];
+					});
+
+					editor.EmoticonsCache.sort(function(a, b){
+						return a[0].length - b[0].length;
+					});
 				}
-
-				// can't just use range.startContainer.textContent as it doesn't have the current
-				// char included. Must add it into the string.
-				var	buttonChar    = String.fromCharCode(e.which),
-					buttonIsSpace = editor.options.emoticonsCompat ? /\s/.test(buttonChar) : false,
-					left          = range.startContainer.textContent.substr(0, range.startOffset),
-					right         = range.startContainer.textContent.substr(range.startOffset, editor.longestEmoticonCode),
-					currentString = left + buttonChar + right;
-
-				$.each(editor.allEmoticonCache, function (key, url) {
-					if((start = currentString.indexOf(key, range.startOffset - key.length)) > -1) {
-
-						if(editor.options.emoticonsCompat)
-						{
-							var reg = new RegExp("(\\s{1})" + editor.regexEscape(key) + "(?=\\s{1})", 'gm');
-
-							if(buttonIsSpace && (buttonChar + right).indexOf(key) > -1)
-								return;
-								
-							if(!reg.test(currentString))
-								return;
-						}
-
-						range = range.cloneRange();
-						range.setStart(range.startContainer, start);
-						// if the button is a space, then need to remove the full key, if it's not then
-						// part of the key is the button press which will be stoppped from being entered
-						range.setEnd(range.startContainer, start + key.length - (buttonIsSpace ? 0 : 1));
-						range.deleteContents();
-
-						var htmlNode       = wysiwygEditor.contentDocument.createElement('div');
-						htmlNode.innerHTML = '<img src="' + url + '" data-sceditor-emoticon="' + key + '" alt="' + key + '" />';
-						htmlNode           = htmlNode.children[0];
-
-						range.insertNode(htmlNode);
-						range = range.cloneRange();
-
-						// move the cursor to the end of the insertion
-						range.setStartAfter(htmlNode);
-
-						// change current range
-						wysiwygEditor.contentWindow.getSelection().removeAllRanges();
-						wysiwygEditor.contentWindow.getSelection().addRange(range);
-
-						if(!buttonIsSpace)
-						{
-							e.preventDefault();
-							e.stopPropagation();
-						}
-						
-						// found emoticon so exit loop
-						return false;
-					}
-				});
+				
+				if(!editor.longestEmoticonCode)
+					editor.longestEmoticonCode = editor.EmoticonsCache[editor.EmoticonsCache.length - 1][0].length;
+				
+				if(editor.getRangeHelper().raplaceKeyword(editor.EmoticonsCache, true, true, editor.longestEmoticonCode, editor.options.emoticonsCompat, curChar))
+				{
+					if(/^\s$/.test(curChar) && editor.options.emoticonsCompat)
+						return true;
+					
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+				}
 			},
 			tooltip: "Insert an emoticon"
 		},
@@ -1673,7 +1558,423 @@
 	};
 	
 	/**
-	 * Dom helper class
+	 * Range helper class
+	 */
+	$.sceditor.rangeHelper = function(window, document) {
+		var	win, doc,
+			isW3C		= true,
+			startMarker	= "sceditor-start-marker",
+			endMarker	= "sceditor-end-marker",
+			base		= this,
+			init, _createMarker, _getOuterText, _selectOuterText;
+	
+		/**
+		 * @constructor
+		 * @param Window window
+		 * @param Document document
+		 * @private
+		 */
+		init = function (window, document) {
+			doc	= document || window.contentDocument || window.document;
+			win	= window;
+			isW3C	= window.getSelection;
+		}(window, document);
+	
+		/**
+		 * Inserts HTML.
+		 *
+		 * If endHTML is specified the selected contents will be put between
+		 * html and endHTML.
+		 * @param string html
+		 * @param string endHTML
+		 */
+		base.insertHTML = function(html, endHTML) {
+			var node, endNode, div;
+	
+			if(endHTML)
+				html += base.selectedHtml() + endHTML;
+			
+			if(isW3C)
+			{
+				div		= doc.createElement('div');
+				node		= doc.createDocumentFragment();
+				div.innerHTML	= html;
+	
+				while(div.firstChild)
+					node.appendChild(div.firstChild);
+	
+				base.insertNode(node);
+			}
+			else
+				base.selectedRange().pasteHTML(html);
+		};
+	
+		/**
+		 * Inserts a DOM node.
+		 *
+		 * If endNode is specified the selected contents will be put between
+		 * node and endNode.
+		 * @param Node node
+		 * @param Node endNode
+		 */
+		base.insertNode = function(node, endNode) {
+			if(isW3C)
+			{
+				var	toInsert	= doc.createDocumentFragment(),
+					range		= base.selectedRange(),
+					selection, selectAfter;
+	
+				toInsert.appendChild(node);
+	
+				if(endNode)
+				{
+					toInsert.appendChild(range.extractContents());
+					toInsert.appendChild(endNode);
+				}
+	
+				selectAfter = toInsert.lastChild;
+				range.deleteContents();
+				range.insertNode(toInsert);
+	
+				selection = doc.createRange();
+				selection.setStartAfter(selectAfter);
+				base.selectRange(selection);
+			}
+			else
+				base.insertHTML(node.outerHTML, endNode?endNode.outerHTML:null);
+		};
+	
+		/**
+		 * Clones the selected Range
+		 * @return Range|TextRange
+		 */
+		base.cloneSelected = function() {
+			if(!isW3C)
+				return base.selectedRange().duplicate();
+	
+			return base.selectedRange().cloneRange();
+		};
+	
+		/**
+		 * Gets the selected Range
+		 * @return Range|TextRange
+		 */
+		base.selectedRange = function() {
+			var sel;
+	
+			if(win.getSelection)
+				sel = win.getSelection();
+			else
+				sel = doc.selection;
+	
+			if(sel.getRangeAt && sel.rangeCount <= 0)
+				sel.addRange(doc.createRange());
+	
+			if(!isW3C)
+				return sel.createRange();
+	
+			return sel.getRangeAt(0);
+		};
+	
+		/**
+		 * Gets the selected HTML
+		 * @return string
+		 */
+		base.selectedHtml = function() {
+			var range = base.selectedRange();
+	
+			if(!range)
+				return '';
+	
+			// IE9+ and all other browsers
+			if (window.XMLSerializer)
+				return new XMLSerializer().serializeToString(range.cloneContents());
+	
+			// IE < 9
+			if(!isW3C)
+			{
+				if(range.text === '')
+					return '';
+	
+				if(range.htmlText)
+					return range.htmlText;
+			}
+	
+			return '';
+		};
+		
+		base.parentNode = function() {
+			var range = base.selectedRange();
+			
+			if(isW3C)
+				return range.commonAncestorContainer;
+			else
+				return range.parentElement();
+		};
+	
+		/**
+		 * Inserts a node at either the start or end of the current selection
+		 * @param Bool start
+		 * @param Node node
+		 */
+		base.insertNodeAt = function(start, node) {
+			var range = base.cloneSelected();
+	
+			range.collapse(start);
+	
+			if(range.insertNode)
+				range.insertNode(node);
+			else
+				range.pasteHTML(node.outerHTML);
+		};
+	
+		/**
+		 * Creates a marker node
+		 * @param String id
+		 * @return Node
+		 */
+		_createMarker = function(id) {
+			base.removeMarker(id);
+	
+			var marker = doc.createElement("span");
+			marker.id = id;
+			marker.style.lineHeight	= "0";
+			marker.style.display	= "none";
+			marker.className	= "sceditor-selection";
+	
+			return marker;
+		};
+	
+		/**
+		 * Inserts start/end markers for the current selection
+		 */
+		base.insertMarkers = function() {
+			base.insertNodeAt(true, _createMarker(startMarker));
+			base.insertNodeAt(false, _createMarker(endMarker));
+		};
+	
+		/**
+		 * Gets the marker with the specified ID
+		 * @param String id
+		 * @return Node
+		 */
+		base.getMarker = function(id) {
+			return doc.getElementById(id);
+		};
+	
+		/**
+		 * Removes the marker with the specified ID
+		 * @param String id
+		 */
+		base.removeMarker = function(id) {
+			var marker = base.getMarker(id);
+	
+			if(marker)
+				marker.parentNode.removeChild(marker);
+		};
+	
+		/**
+		 * Removes the start/end markers
+		 */
+		base.removeMarkers = function() {
+			base.removeMarker(startMarker);
+			base.removeMarker(endMarker);
+		};
+	
+		/**
+		 * Saves the current range location
+		 */
+		base.saveRange = function() {
+			base.insertMarkers();
+		};
+	
+		/**
+		 * Selected the specified range
+		 * @param Range|TextRange range
+		 */
+		base.selectRange = function(range) {
+			if(!isW3C)
+				range.select();
+			else
+			{
+				win.getSelection().removeAllRanges();
+				win.getSelection().addRange(range);
+			}
+		};
+	
+		/**
+		 * Restores the last saved range if possible
+		 */
+		base.restoreRange = function() {
+			var	range	= base.selectedRange(),
+				start	= base.getMarker(startMarker),
+				end	= base.getMarker(endMarker);
+	
+			if(!start || !end)
+				return false;
+	
+			if(!isW3C)
+			{
+				var marker = doc.body.createTextRange();
+	
+				marker.moveToElementText(start);
+				range.setEndPoint('StartToStart', marker);
+				range.moveStart('character', 0);
+	
+				marker.moveToElementText(end);
+				range.setEndPoint('EndToStart', marker);
+				range.moveEnd('character', 0);
+	
+				base.selectRange(range.select());
+			}
+			else
+			{
+				range = doc.createRange();
+				range.setStartBefore(start);
+				range.setEndAfter(end);
+	
+				base.selectRange(range);
+			}
+	
+			base.removeMarkers();
+		};
+	
+		/**
+		 * Selects the text left and right of the current selection
+		 * @param int left
+		 * @param int right
+		 * @private
+		 */
+		_selectOuterText = function(left, right) {
+			var range = base.cloneSelected();
+
+			range.collapse(false);
+			if(!isW3C)
+			{
+				range.moveStart('character', 0-left);
+				range.moveEnd('character', right);
+			}
+			else
+			{
+				range.setStart(range.startContainer, range.startOffset-left);
+				range.setEnd(range.endContainer, range.endOffset+right);
+				//range.deleteContents();
+			}
+	
+			base.selectRange(range);
+		};
+	
+		/**
+		 * Gets the text left or right of the current selection
+		 * @param bool before
+		 * @param int length
+		 * @private
+		 */
+		_getOuterText = function(before, length) {
+			var	ret	= "",
+				range	= base.cloneSelected(),
+				node;
+	
+			range.collapse(false);
+			if(before)
+			{
+				if(!isW3C)
+				{
+					range.moveStart('character', 0-length);
+					ret = range.text;
+				}
+				else
+				{
+					ret = range.startContainer.textContent.substr(0, range.startOffset);
+					ret = ret.substr(Math.max(0, ret.length - length));
+				}
+			}
+			else
+			{
+				if(!isW3C)
+				{
+					range.moveEnd('character', length);
+					ret = range.text;
+				}
+				else
+					ret = range.startContainer.textContent.substr(range.startOffset, length);
+			}
+
+			return ret;
+		};
+	
+		/**
+		 * Replaces keys with values based on the current range
+		 * @param Array rep
+		 * @param Bool includePrev If to include text before or just text after
+		 * @param Bool repSorted If the keys array is pre sorted
+		 * @param Int longestKey Length of the longest key
+		 * @param Bool requireWhiteSpace If the key must be surrounded by whitespace
+		 */
+		base.raplaceKeyword = function(rep, includeAfter, repSorted, longestKey, requireWhiteSpace, curChar) {
+			if(!repSorted)
+				rep.sort(function(a, b){
+					return a.length - b.length;
+				});
+
+			var	maxKeyLen = longestKey || rep[rep.length-1][0].length,
+				before, after, str, i, start, left, pat, lookStart;
+
+			before = after = str = "";
+
+			if(requireWhiteSpace)
+			{
+				// forcing spaces around doesn't work with textRanges as they will select text
+				// on the other side of an image causing space-img-key to be returned as
+				// space-key which would be valid when it's not.
+				if(!isW3C)
+					return false;
+				
+				++maxKeyLen;
+			}
+
+			before = _getOuterText(true, maxKeyLen);
+	
+			if(includeAfter)
+				after	= _getOuterText(false, maxKeyLen);
+			
+			str	= before + (curChar!=null?curChar:"") + after;
+			i	= rep.length;
+			while(i--)
+			{
+				//pat = new RegExp("(?:^|\\s)" + $.sceditor.regexEscape(rep[i][0]) + "(?=\\s|$)");
+				pat = new RegExp("(?:[\\s\xA0\u2002\u2003\u2009])" + $.sceditor.regexEscape(rep[i][0]) + "(?=[\\s\xA0\u2002\u2003\u2009])");
+				lookStart = before.length - 1 - rep[i][0].length;
+				
+				if(requireWhiteSpace)
+					--lookStart;
+					
+				lookStart = Math.max(0, lookStart);
+
+				if((!requireWhiteSpace && (start = str.indexOf(rep[i][0], lookStart)) > -1) ||
+					(requireWhiteSpace && (start = str.substr(lookStart).search(pat)) > -1)) 
+				{
+					if(requireWhiteSpace)
+						start += lookStart + 1;
+					
+					// make sure the substr is between before and after not entierly in one
+					// or the other
+					if(start > before.length || start+rep[i][0].length + (requireWhiteSpace?1:0) < before.length)
+						continue;
+
+					left = before.length - start;
+					_selectOuterText(left, rep[i][0].length-left-(curChar!=null&&/^\S/.test(curChar)?1:0));
+					base.insertHTML(rep[i][1]);
+					return true;
+				}
+			}
+			
+			return false;
+		};
+	};
+
+	/**
+	 * Static DOM helper class
 	 */
 	$.sceditor.dom = {
 		/**

@@ -1,4 +1,4 @@
-# SCEditor v1.3.1
+# SCEditor v1.3.2
 Copyright (C) 2011-2012, [Sam Clarke](http://www.samclarke.com).
 
 For more information visit: http://www.samclarke.com/2011/07/sceditor/
