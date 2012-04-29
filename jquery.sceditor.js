@@ -1,8 +1,8 @@
 /**
- * SCEditor v1.3.2
+ * SCEditor v1.3.3
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
- * Copyright (C) 2011, Sam Clarke (samclarke.com)
+ * Copyright (C) 2011-2012, Sam Clarke (samclarke.com)
  *
  * SCEditor is dual licensed under the MIT and GPL licenses:
  *	http://www.opensource.org/licenses/mit-license.php
