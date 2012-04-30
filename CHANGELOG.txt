@@ -10,7 +10,7 @@ TODO:
 	Disable AYT emotions if not in toolbar
 
 Version 1.3.3:
-	
+	Added dropDownCss option, thanks to @esion
 
 Version 1.3.2:
 	Created rangeHelper class to improve code quality
