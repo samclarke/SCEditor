@@ -448,7 +448,6 @@
 		 *									IE from deselecting the text in the editor
 		 */
 		base.createDropDown = function (menuItem, dropDownName, content, ieUnselectable) {
-
 			base.closeDropDown();
 			
 			// IE needs unselectable attr to stop it from unselecting the text in the editor.
@@ -467,8 +466,6 @@
 			}
 
             $.extend(o_css,base.options.dropDownCss);
-
-            console.log(o_css);
 
 			$dropdown = $('<div class="sceditor-dropdown sceditor-' + dropDownName + '" />').css(o_css).append(content);
 
