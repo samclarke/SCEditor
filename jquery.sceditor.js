@@ -456,16 +456,13 @@
 				content = $(content);
 				content.find(':not(input,textarea)').filter(function() { return this.nodeType===1; }).attr('unselectable', 'on');
 			}
-
-			//var menuItemPosition = menuItem.position();
-			//var editorContainerPosition = editorContainer.position();
-
-            var o_css = {
+			
+			var o_css = {
 				top: menuItem.offset().top,
 				left: menuItem.offset().left
 			}
 
-            $.extend(o_css,base.options.dropDownCss);
+			$.extend(o_css, base.options.dropDownCss);
 
 			$dropdown = $('<div class="sceditor-dropdown sceditor-' + dropDownName + '" />').css(o_css).append(content);
 
@@ -2334,10 +2331,8 @@
 
 		toolbarContainer: null,
 
-        //add css to dropdown menu (eg. z-index)
-        dropDownCss: {
-            "z-index" : "auto"
-        }
+	        //add css to dropdown menu (eg. z-index)
+	        dropDownCss: { }
 	};
 
 	$.fn.sceditor = function (options) {
