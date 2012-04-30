@@ -448,6 +448,7 @@
 		 *									IE from deselecting the text in the editor
 		 */
 		base.createDropDown = function (menuItem, dropDownName, content, ieUnselectable) {
+
 			base.closeDropDown();
 			
 			// IE needs unselectable attr to stop it from unselecting the text in the editor.
@@ -460,10 +461,16 @@
 			//var menuItemPosition = menuItem.position();
 			//var editorContainerPosition = editorContainer.position();
 
-			$dropdown = $('<div class="sceditor-dropdown sceditor-' + dropDownName + '" />').css({
+            var o_css = {
 				top: menuItem.offset().top,
 				left: menuItem.offset().left
-			}).append(content);
+			}
+
+            $.extend(o_css,base.options.dropDownCss);
+
+            console.log(o_css);
+
+			$dropdown = $('<div class="sceditor-dropdown sceditor-' + dropDownName + '" />').css(o_css).append(content);
 
 			//editorContainer.after($dropdown);
 			$dropdown.appendTo($('body'));
@@ -2328,7 +2335,12 @@
 		// date format. year, month and day will be replaced with the users current year, month and day.
 		dateFormat: "year-month-day",
 
-		toolbarContainer: null
+		toolbarContainer: null,
+
+        //add css to dropdown menu (eg. z-index)
+        dropDownCss: {
+            "z-index" : "auto"
+        }
 	};
 
 	$.fn.sceditor = function (options) {
