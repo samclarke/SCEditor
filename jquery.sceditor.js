@@ -54,6 +54,7 @@
 		 * @private
 		 */
 		var $textEditor = null;
+		var textEditor  = null;
 
 		/**
 		 * The current dropdown
@@ -112,7 +113,7 @@
 		/**
 		 * All the commands supported by the editor
 		 */
-		base.commands = $.sceditor.commands;
+		base.commands = $.extend({}, (options.commands || $.sceditor.commands));
 
 		/**
 		 * Initializer. Creates the editor iframe and textarea
@@ -195,7 +196,8 @@
 
 			// add the editor to the HTML and store the editors element
 			editorContainer.append($wysiwygEditor).append($textEditor);
-			wysiwygEditor = $wysiwygEditor[0];
+			wysiwygEditor	= $wysiwygEditor[0];
+			textEditor	= $textEditor[0];
 
 			setWidth($textarea.width());
 			setHeight($textarea.height());
@@ -561,6 +563,51 @@
 		};
 		
 		/**
+		 * Like wysiwygEditorInsertHtml but works on the
+		 * text editor instead
+		 * 
+		 * @param {String} text
+		 * @param {String} endText
+		 */
+		base.textEditorInsertText = function (text, endText) {
+			var range, start, end, txtLen;
+			
+			textEditor.focus();
+			
+			if(textEditor.selectionStart != null)
+			{
+				start = textEditor.selectionStart;
+				end = textEditor.selectionEnd;
+				txtLen = text.length;
+				
+				if(endText)
+					text += textEditor.value.substring(start, end) + endText;
+				
+				textEditor.value = textEditor.value.substring(0, start) + text + textEditor.value.substring(end, textEditor.value.length);
+				
+				if(endText)
+					textEditor.selectionStart = (start + text.length) - endText.length;
+				else
+					textEditor.selectionStart = start + text.length;
+				
+				textEditor.selectionEnd = textEditor.selectionStart;
+			}
+			else if(document.selection.createRange)
+			{
+				range = document.selection.createRange();
+				
+				if(endText)
+					text += range.text + endText;
+				
+				range.text = text;
+			}
+			else
+				textEditor.value += text + endText;
+			
+			textEditor.focus();
+		};
+		
+		/**
 		 * Gets the current rangeHelper instance
 		 */
 		base.getRangeHelper = function () {
@@ -691,8 +738,13 @@
 			// check if in text mode and handle text commands
 			if(isTextMode())
 			{
-				if(command.hasOwnProperty("txtExec"))
-					command.txtExec.call(base, caller);
+				if(command.txtExec)
+				{
+					if($.isArray(command.txtExec))
+						base.textEditorInsertText.apply(base, command.txtExec);
+					else
+						command.txtExec.call(base, caller);
+				}
 				
 				return;
 			}
@@ -1022,10 +1074,10 @@
 				var	editor    = this,
 					content   = $("<div />"),
 					clickFunc = function (e) {
-					editor.execCommand("fontsize", $(this).data('sceditor-fontsize'));
-					editor.closeDropDown(true);
-					e.preventDefault();
-				};
+						editor.execCommand("fontsize", $(this).data('sceditor-fontsize'));
+						editor.closeDropDown(true);
+						e.preventDefault();
+					};
 
 				for (var i=1; i<= 7; i++) {
 					content.append(
@@ -1588,7 +1640,7 @@
 		init = function (window, document) {
 			doc	= document || window.contentDocument || window.document;
 			win	= window;
-			isW3C	= window.getSelection;
+			isW3C	= !!window.getSelection;
 		}(window, document);
 	
 		/**
@@ -2202,8 +2254,8 @@
 	/**
 	 * Checks if a command with the specified name exists
 	 * 
-	 * @param string name
-	 * @return bool
+	 * @param {String} name
+	 * @return Bool
 	 */
 	$.sceditor.commandExists = function(name) {
 		return typeof $.sceditor.commands[name] !== "undefined";
@@ -2212,16 +2264,20 @@
 	/**
 	 * Adds/updates a command.
 	 * 
-	 * @param string			name		The commands name
-	 * @param string|function	exec		The commands exec function or string for the native execCommand
-	 * @param string			tooltip		The commands tooltip text
-	 * @param function			keypress	Function that gets called every time a key is pressed
-	 * @return bool
+	 * Only name and exec are required. Exec is only required if
+	 * the command dose not already exist.
+	 *  
+	 * @param {String}		name		The commands name
+	 * @param {String|Function}	exec		The commands exec function or string for the native execCommand
+	 * @param {String}		tooltip		The commands tooltip text
+	 * @param {Function}		keypress	Function that gets called every time a key is pressed
+	 * @param {Function|Array}	txtExec		Called when the command is executed in source mode or array containing prepend and optional append
+	 * @return Bool
 	 */
-	$.sceditor.setCommand = function(name, exec, tooltip, keypress) {
-		if(!name || !exec)
+	$.sceditor.setCommand = function(name, exec, tooltip, keypress, txtExec) {
+		if(!name || !($.sceditor.commandExists(name) || exec))
 			return false;
-		
+
 		if(!$.sceditor.commandExists(name))
 			$.sceditor.commands[name] = {};
 
@@ -2232,6 +2288,9 @@
 
 		if(keypress)
 			$.sceditor.commands[name].keyPress = keypress;
+		
+		if(txtExec)
+			$.sceditor.commands[name].txtExec = txtExec;
 
 		return true;
 	};

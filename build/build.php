@@ -194,7 +194,7 @@ class SCEditor
 	}
 
 	/**
-	 * Compresses JS with Google's Closure Compiler
+	 * Compresses JS with uglifyjs
 	 */
 	protected function compress_js($js)
 	{
@@ -204,7 +204,7 @@ class SCEditor
 			2 => array("file", "/tmp/error-output.txt", "a")
 		);
 	
-		$process = proc_open("/usr/bin/java -jar ./compiler.jar",
+		$process = proc_open("uglifyjs -nc",
 			$descriptors,
 			$pipes);
 

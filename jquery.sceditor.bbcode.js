@@ -32,7 +32,8 @@
 			handleTags,
 			formatString,
 			getStyle,
-			wrapInDivs;
+			wrapInDivs,
+			mergeTextModeCommands;
 
 		base.bbcodes = $.sceditorBBCodePlugin.bbcodes;
 
@@ -79,9 +80,69 @@
 			(new $.sceditor(element,
 				$.extend({}, base.options, {
 					getHtmlHandler: base.getHtmlHandler,
-					getTextHandler: base.getTextHandler
+					getTextHandler: base.getTextHandler,
+					commands: mergeTextModeCommands()
 				})
 			));
+		};
+		
+		mergeTextModeCommands = function() {
+			// TODO: use selection as display text if is one.
+			// TODO: add translations of the prompts
+			var merge = {
+				bold: { txtExec: ["[b]", "[/b]"] },
+				italic: { txtExec: ["[i]", "[/i]"] },
+				underline: { txtExec: ["[u]", "[/u]"] },
+				strike: { txtExec: ["[s]", "[/s]"] },
+				subscript: { txtExec: ["[sub]", "[/sub]"] },
+				superscript: { txtExec: ["[sup]", "[/sup]"] },
+				left: { txtExec: ["[left]", "[/left]"] },
+				center: { txtExec: ["[center]", "[/center]"] },
+				right: { txtExec: ["[right]", "[/right]"] },
+				justify: { txtExec: ["[justify]", "[/justify]"] },
+				//font: { txtExec: ["[u]", "[/u]"] },
+				//size: { txtExec: ["[u]", "[/u]"] },
+				//color: { txtExec: ["[u]", "[/u]"] },
+				//bulletlist: { txtExec: ["[u]", "[/u]"] },
+				//orderedlist: { txtExec: ["[u]", "[/u]"] },
+				//table: { txtExec: ["[u]", "[/u]"] },
+				horizontalrule: { txtExec: ["[hr]"] },
+				code: { txtExec: ["[code]", "[/code]"] },
+				image: { txtExec: function() {
+					var url = prompt(this._("Enter the images URL:"));
+					
+					if(url)
+						this.textEditorInsertText("[img]" + url + "[/img]");
+				} },
+				email: { txtExec: function() {
+					var	email	= prompt(this._("Enter the e-mail address:"), "@"),
+						text	= prompt(this._("Enter the displayed text:"), email) || email;
+					
+					if(email)
+						this.textEditorInsertText("[email=" + email + "]" + text + "[/email]");
+				} },
+				link: { txtExec: function() {
+					var	url	= prompt(this._("Enter the links URL:"), "http://"),
+						text	= prompt(this._("Enter the displayed text:"), url) || url;
+					
+					if(url)
+						this.textEditorInsertText("[url=" + url + "]" + text + "[/url]");
+				} },
+				quote: { txtExec: ["[quote]", "[/quote]"] },
+				youtube: { txtExec: function() {
+					var url = prompt(this._("Enter the YouTube video URL or ID:"));
+					
+					if(url)
+					{
+						if(url.indexOf("://") > -1)
+							url = url.replace(/^[^v]+v.(.{11}).*/,"$1");
+						
+						this.textEditorInsertText("[youtube]" + url + "[/youtube]");
+					}
+				} }
+			};
+
+			return $.extend(true, {}, merge, $.sceditor.commands);
 		};
 		
 		/**

@@ -11,6 +11,8 @@ TODO:
 
 Version 1.3.3:
 	Added dropDownCss option, thanks to @esion
+	Add txtExec option to setCommand function
+	Updated BBCode plugin to support some BBCodes in source mode
 
 Version 1.3.2:
 	Created rangeHelper class to improve code quality
