@@ -93,6 +93,8 @@
 			replaceEmoticons,
 			handleCommand,
 			saveRange,
+			handlePasteEvt,
+			handlePasteData,
 			handleKeyPress,
 			handleKeyUp,
 			handleMouseDown,
@@ -152,7 +154,8 @@
 				initResize();
 
 			$(document).click(documentClickHandler);
-			$textarea.parents("form")
+
+			(textarea.form ? $(textarea.form) : $textarea.parents("form"))
 				.attr('novalidate','novalidate')
 				.submit(formSubmitHandler);
 			
@@ -186,7 +189,7 @@
 		initEditor = function () {
 			var	contentEditable = $('<div contenteditable="true">')[0].contentEditable,
 				contentEditableSupported = typeof contentEditable !== 'undefined' && contentEditable !== 'inherit',
-				$doc;
+				$doc, $body;
 
 			$textEditor = $('<textarea></textarea>').hide();
 			$wysiwygEditor = $('<iframe frameborder="0"></iframe>');
@@ -220,9 +223,10 @@
 				getWysiwygDoc().designMode = 'On';
 
 			$doc = $(getWysiwygDoc());
+			$body = $doc.find("body");
 			// set the key press event
-			$doc.find("body").keypress(handleKeyPress);
-			$doc.find("body").keyup(handleKeyUp);
+			$body.keypress(handleKeyPress);
+			$body.keyup(handleKeyUp);
 			$doc.keypress(handleKeyPress);
 			$doc.keyup(handleKeyUp);
 			$doc.mousedown(handleMouseDown);
@@ -231,6 +235,9 @@
 				lastRange = null;
 			});
 			
+			if(base.options.enablePasteFiltering)
+				$body.bind("paste", handlePasteEvt);
+
 			rangeHelper = new $.sceditor.rangeHelper(wysiwygEditor.contentWindow);
 		};
 
@@ -489,6 +496,100 @@
 
 			dropdownIgnoreLastClick = false;
 		};
+		
+		handlePasteEvt = function(e) {
+			var	elm		= getWysiwygDoc().body,
+				checkCount	= 0,
+				pastearea	= elm.ownerDocument.createElement('div'),
+				prePasteContent	= elm.ownerDocument.createDocumentFragment();
+
+			rangeHelper.saveRange();
+			document.body.appendChild(pastearea);
+
+			if (e && e.clipboardData && e.clipboardData.getData)
+			{
+				var html, handled=true;
+		
+				if ((html = e.clipboardData.getData('text/html')) || (html = e.clipboardData.getData('text/plain')))
+					pastearea.innerHTML = html;
+				else
+					handled = false;
+		
+				if(handled)
+				{
+					handlePasteData(elm, pastearea);
+		
+					if (e.preventDefault)
+					{
+						e.stopPropagation();
+						e.preventDefault();
+					}
+		
+					return false;
+				}
+			}
+			
+			while(elm.firstChild)
+				prePasteContent.appendChild(elm.firstChild);
+			
+			function handlePaste(elm, pastearea) {
+				if (elm.childNodes.length > 0)
+				{
+					while(elm.firstChild)
+						pastearea.appendChild(elm.firstChild);
+					
+					while(prePasteContent.firstChild)
+						elm.appendChild(prePasteContent.firstChild);
+					
+					handlePasteData(elm, pastearea);
+				}
+				else
+				{
+					// Allow max 25 checks before giving up.
+					// Needed inscase empty input is posted or
+					// something gose wrong.
+					if(checkCount > 25)
+					{
+						while(prePasteContent.firstChild)
+							elm.appendChild(prePasteContent.firstChild);
+						
+						return;
+					}
+
+					++checkCount;
+					setTimeout(function () {
+						handlePaste(elm, pastearea);
+					}, 20);
+				}
+			};
+			handlePaste(elm, pastearea);
+			
+			base.focus();
+			
+			return true;
+		};
+		
+		/**
+		 * @param {Element} elm
+		 * @param {Element} pastearea
+		 */
+		handlePasteData = function(elm, pastearea) {
+			// fix any invalid nesting
+			$.sceditor.dom.fixNesting(pastearea);
+			
+			var pasteddata = pastearea.innerHTML;
+			
+			if(base.options.getHtmlHandler)
+				pasteddata = base.options.getHtmlHandler(pasteddata, $(pastearea));
+
+			pastearea.parentNode.removeChild(pastearea);
+
+			if(base.options.getTextHandler)
+				pasteddata = base.options.getTextHandler(pasteddata, true);
+
+			rangeHelper.restoreRange();
+			rangeHelper.insertHTML(pasteddata);
+		};
 
 		/**
 		 * Closes the current drop down
@@ -674,6 +775,9 @@
 		 * @private
 		 */
 		replaceEmoticons = function (html) {
+			if(base.options.toolbar.indexOf('emoticon') === -1)
+				return html;
+			
 			var emoticons = $.extend({}, base.options.emoticons.more, base.options.emoticons.dropdown, base.options.emoticons.hidden);
 
 			$.each(emoticons, function (key, url) {
@@ -1480,6 +1584,10 @@
 			},
 			keyPress: function (e, wysiwygEditor)
 			{
+				// make sure emoticons command is in the toolbar before running
+				if(this.options.toolbar.indexOf('emoticon') === -1)
+					return;
+				
 				var	editor = this,
 					pos = 0,
 					curChar = String.fromCharCode(e.which);
@@ -1623,7 +1731,7 @@
 	/**
 	 * Range helper class
 	 */
-	$.sceditor.rangeHelper = function(window, document) {
+	$.sceditor.rangeHelper = function(w, d) {
 		var	win, doc,
 			isW3C		= true,
 			startMarker	= "sceditor-start-marker",
@@ -1641,7 +1749,7 @@
 			doc	= document || window.contentDocument || window.document;
 			win	= window;
 			isW3C	= !!window.getSelection;
-		}(window, document);
+		}(w, d);
 	
 		/**
 		 * Inserts HTML.
@@ -1756,10 +1864,7 @@
 			// IE < 9
 			if(!isW3C)
 			{
-				if(range.text === '')
-					return '';
-	
-				if(range.htmlText)
+				if(range.text !== '' && range.htmlText)
 					return range.htmlText;
 			}
 	
@@ -1878,17 +1983,18 @@
 	
 			if(!isW3C)
 			{
+				range = doc.body.createTextRange();
 				var marker = doc.body.createTextRange();
-	
+
 				marker.moveToElementText(start);
 				range.setEndPoint('StartToStart', marker);
 				range.moveStart('character', 0);
-	
+
 				marker.moveToElementText(end);
 				range.setEndPoint('EndToStart', marker);
 				range.moveEnd('character', 0);
 	
-				base.selectRange(range.select());
+				base.selectRange(range);
 			}
 			else
 			{
@@ -2389,6 +2495,8 @@
 		dateFormat: "year-month-day",
 
 		toolbarContainer: null,
+		
+		enablePasteFiltering: false,
 
 	        //add css to dropdown menu (eg. z-index)
 	        dropDownCss: { }

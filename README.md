@@ -114,6 +114,9 @@ This function will be called when switching from View Source mode back to WYSIWY
 Date format to use, specified with the strings year, month & day e.g. "year-month-day".
 The year, month and day strings will be replaced with the users current year, month and day.
 
+**enablePasteFiltering** *boolean*
+If to enable paste filtering. **This feature is still experimental.**
+
 
 ## License
 

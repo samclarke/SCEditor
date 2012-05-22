@@ -1,18 +1,21 @@
 TODO:
 	Tidy up jquery.sceditor.js code - Will break compatibility as functions need renaming, ect.
-	Maybe add an onpaste handler to filter pasted text (would be good for BBCode)
 	Add XHTML output support
 	More themes and maybe switching?
 	Add ability to resize images in browsers that don't have native WYSIWYG resize
 	Add ability to modify tables in browsers that don't have native WYSIWYG table editing
 	Change buttons to have translatable command name as their content, so themes don't
 		have to use icons
-	Disable AYT emotions if not in toolbar
+	Todo: add setwysiwygeditorbbcodevalue
 
 Version 1.3.3:
 	Added dropDownCss option, thanks to @esion
 	Add txtExec option to setCommand function
 	Updated BBCode plugin to support some BBCodes in source mode
+	Updated editor to disable AYT emotion converstion if emotions is not in toolbar
+	Fixed rare problem with value not being subbmited
+		- Thanks to Marco for reporting
+	Added experimental paste filtering
 
 Version 1.3.2:
 	Created rangeHelper class to improve code quality

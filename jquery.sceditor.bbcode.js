@@ -424,10 +424,11 @@
 		/**
 		 * Converts BBCode to HTML
 		 * 
-		 * @param string text
-		 * @return string HTML
+		 * @param {String} text
+		 * @param {Bool} isPaste
+		 * @return {String} HTML
 		 */
-		base.getTextHandler = function(text) {
+		base.getTextHandler = function(text, isPaste) {
 			var	oldText, replaceBBCodeFunc,
 				bbcodeRegex = /\[([^\[\s=]*?)(?:([^\[]*?))?\]((?:[\s\S(?!=\[\\\1)](?!\[\1))*?)\[\/(\1)\]/g,
 				atribsRegex = /(\S+)=((?:(?:(["'])(?:\\\3|[^\3])*?\3))|(?:[^'"\s]+))/g;
@@ -484,7 +485,7 @@
 			// to preserve them. Otherwise they will just be converted to 1!
 			text = text.replace(/ {2}(?=([^<\>]*?<|[^<\>]*?$))/g, " &nbsp;");
 			
-			return wrapInDivs(text);
+			return wrapInDivs(text, isPaste);
 		};
 		
 		/**
@@ -493,7 +494,7 @@
 		 * @param string html
 		 * @return string HTML
 		 */
-		wrapInDivs = function(html)
+		wrapInDivs = function(html, excludeFirstLast)
 		{
 			var	d		= document,
 				inlineFrag	= d.createDocumentFragment(),
@@ -543,6 +544,35 @@
 				outputDiv.appendChild(div);
 			}
 			
+			// needed for paste, the first shouldn't be wrapped in a div
+			if(excludeFirstLast)
+			{
+				node = outputDiv.firstChild;
+				if(node && node.nodeName.toLowerCase() === "div")
+				{
+					while(next = node.firstChild)
+						outputDiv.insertBefore(next, node);
+					
+					if($.sceditor.ie >= 9)
+						outputDiv.insertBefore(d.createElement('br'), node);
+					
+					outputDiv.removeChild(node);
+				}
+				
+				node = outputDiv.lastChild;
+				if(node && node.nodeName.toLowerCase() === "div")
+				{
+					while(next = node.firstChild)
+						outputDiv.insertBefore(next, node);
+
+					if($.sceditor.ie >= 9)
+						outputDiv.insertBefore(d.createElement('br'), node);
+					
+					outputDiv.removeChild(node);
+				}
+			}
+
+			$(tmpDiv).remove();
 			return outputDiv.innerHTML;
 		};
 
