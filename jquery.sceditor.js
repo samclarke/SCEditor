@@ -1,8 +1,8 @@
 /**
- * SCEditor v1.3.2
+ * SCEditor v1.3.3
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
- * Copyright (C) 2011, Sam Clarke (samclarke.com)
+ * Copyright (C) 2011-2012, Sam Clarke (samclarke.com)
  *
  * SCEditor is dual licensed under the MIT and GPL licenses:
  *	http://www.opensource.org/licenses/mit-license.php
@@ -54,6 +54,7 @@
 		 * @private
 		 */
 		var $textEditor = null;
+		var textEditor  = null;
 
 		/**
 		 * The current dropdown
@@ -92,6 +93,8 @@
 			replaceEmoticons,
 			handleCommand,
 			saveRange,
+			handlePasteEvt,
+			handlePasteData,
 			handleKeyPress,
 			handleKeyUp,
 			handleMouseDown,
@@ -112,7 +115,7 @@
 		/**
 		 * All the commands supported by the editor
 		 */
-		base.commands = $.sceditor.commands;
+		base.commands = $.extend({}, (options.commands || $.sceditor.commands));
 
 		/**
 		 * Initializer. Creates the editor iframe and textarea
@@ -151,7 +154,8 @@
 				initResize();
 
 			$(document).click(documentClickHandler);
-			$textarea.parents("form")
+
+			(textarea.form ? $(textarea.form) : $textarea.parents("form"))
 				.attr('novalidate','novalidate')
 				.submit(formSubmitHandler);
 			
@@ -185,7 +189,7 @@
 		initEditor = function () {
 			var	contentEditable = $('<div contenteditable="true">')[0].contentEditable,
 				contentEditableSupported = typeof contentEditable !== 'undefined' && contentEditable !== 'inherit',
-				$doc;
+				$doc, $body;
 
 			$textEditor = $('<textarea></textarea>').hide();
 			$wysiwygEditor = $('<iframe frameborder="0"></iframe>');
@@ -195,7 +199,8 @@
 
 			// add the editor to the HTML and store the editors element
 			editorContainer.append($wysiwygEditor).append($textEditor);
-			wysiwygEditor = $wysiwygEditor[0];
+			wysiwygEditor	= $wysiwygEditor[0];
+			textEditor	= $textEditor[0];
 
 			setWidth($textarea.width());
 			setHeight($textarea.height());
@@ -218,9 +223,10 @@
 				getWysiwygDoc().designMode = 'On';
 
 			$doc = $(getWysiwygDoc());
+			$body = $doc.find("body");
 			// set the key press event
-			$doc.find("body").keypress(handleKeyPress);
-			$doc.find("body").keyup(handleKeyUp);
+			$body.keypress(handleKeyPress);
+			$body.keyup(handleKeyUp);
 			$doc.keypress(handleKeyPress);
 			$doc.keyup(handleKeyUp);
 			$doc.mousedown(handleMouseDown);
@@ -229,6 +235,9 @@
 				lastRange = null;
 			});
 			
+			if(base.options.enablePasteFiltering)
+				$body.bind("paste", handlePasteEvt);
+
 			rangeHelper = new $.sceditor.rangeHelper(wysiwygEditor.contentWindow);
 		};
 
@@ -456,14 +465,15 @@
 				content = $(content);
 				content.find(':not(input,textarea)').filter(function() { return this.nodeType===1; }).attr('unselectable', 'on');
 			}
-
-			//var menuItemPosition = menuItem.position();
-			//var editorContainerPosition = editorContainer.position();
-
-			$dropdown = $('<div class="sceditor-dropdown sceditor-' + dropDownName + '" />').css({
+			
+			var o_css = {
 				top: menuItem.offset().top,
 				left: menuItem.offset().left
-			}).append(content);
+			};
+
+			$.extend(o_css, base.options.dropDownCss);
+
+			$dropdown = $('<div class="sceditor-dropdown sceditor-' + dropDownName + '" />').css(o_css).append(content);
 
 			//editorContainer.after($dropdown);
 			$dropdown.appendTo($('body'));
@@ -485,6 +495,100 @@
 				base.closeDropDown();
 
 			dropdownIgnoreLastClick = false;
+		};
+		
+		handlePasteEvt = function(e) {
+			var	elm		= getWysiwygDoc().body,
+				checkCount	= 0,
+				pastearea	= elm.ownerDocument.createElement('div'),
+				prePasteContent	= elm.ownerDocument.createDocumentFragment();
+
+			rangeHelper.saveRange();
+			document.body.appendChild(pastearea);
+
+			if (e && e.clipboardData && e.clipboardData.getData)
+			{
+				var html, handled=true;
+		
+				if ((html = e.clipboardData.getData('text/html')) || (html = e.clipboardData.getData('text/plain')))
+					pastearea.innerHTML = html;
+				else
+					handled = false;
+		
+				if(handled)
+				{
+					handlePasteData(elm, pastearea);
+		
+					if (e.preventDefault)
+					{
+						e.stopPropagation();
+						e.preventDefault();
+					}
+		
+					return false;
+				}
+			}
+			
+			while(elm.firstChild)
+				prePasteContent.appendChild(elm.firstChild);
+			
+			function handlePaste(elm, pastearea) {
+				if (elm.childNodes.length > 0)
+				{
+					while(elm.firstChild)
+						pastearea.appendChild(elm.firstChild);
+					
+					while(prePasteContent.firstChild)
+						elm.appendChild(prePasteContent.firstChild);
+					
+					handlePasteData(elm, pastearea);
+				}
+				else
+				{
+					// Allow max 25 checks before giving up.
+					// Needed inscase empty input is posted or
+					// something gose wrong.
+					if(checkCount > 25)
+					{
+						while(prePasteContent.firstChild)
+							elm.appendChild(prePasteContent.firstChild);
+						
+						return;
+					}
+
+					++checkCount;
+					setTimeout(function () {
+						handlePaste(elm, pastearea);
+					}, 20);
+				}
+			}
+			handlePaste(elm, pastearea);
+			
+			base.focus();
+			
+			return true;
+		};
+		
+		/**
+		 * @param {Element} elm
+		 * @param {Element} pastearea
+		 */
+		handlePasteData = function(elm, pastearea) {
+			// fix any invalid nesting
+			$.sceditor.dom.fixNesting(pastearea);
+			
+			var pasteddata = pastearea.innerHTML;
+			
+			if(base.options.getHtmlHandler)
+				pasteddata = base.options.getHtmlHandler(pasteddata, $(pastearea));
+
+			pastearea.parentNode.removeChild(pastearea);
+
+			if(base.options.getTextHandler)
+				pasteddata = base.options.getTextHandler(pasteddata, true);
+
+			rangeHelper.restoreRange();
+			rangeHelper.insertHTML(pasteddata);
 		};
 
 		/**
@@ -560,6 +664,51 @@
 		};
 		
 		/**
+		 * Like wysiwygEditorInsertHtml but works on the
+		 * text editor instead
+		 * 
+		 * @param {String} text
+		 * @param {String} endText
+		 */
+		base.textEditorInsertText = function (text, endText) {
+			var range, start, end, txtLen;
+			
+			textEditor.focus();
+			
+			if(textEditor.selectionStart != null)
+			{
+				start = textEditor.selectionStart;
+				end = textEditor.selectionEnd;
+				txtLen = text.length;
+				
+				if(endText)
+					text += textEditor.value.substring(start, end) + endText;
+				
+				textEditor.value = textEditor.value.substring(0, start) + text + textEditor.value.substring(end, textEditor.value.length);
+				
+				if(endText)
+					textEditor.selectionStart = (start + text.length) - endText.length;
+				else
+					textEditor.selectionStart = start + text.length;
+				
+				textEditor.selectionEnd = textEditor.selectionStart;
+			}
+			else if(document.selection.createRange)
+			{
+				range = document.selection.createRange();
+				
+				if(endText)
+					text += range.text + endText;
+				
+				range.text = text;
+			}
+			else
+				textEditor.value += text + endText;
+			
+			textEditor.focus();
+		};
+		
+		/**
 		 * Gets the current rangeHelper instance
 		 */
 		base.getRangeHelper = function () {
@@ -626,6 +775,9 @@
 		 * @private
 		 */
 		replaceEmoticons = function (html) {
+			if(base.options.toolbar.indexOf('emoticon') === -1)
+				return html;
+			
 			var emoticons = $.extend({}, base.options.emoticons.more, base.options.emoticons.dropdown, base.options.emoticons.hidden);
 
 			$.each(emoticons, function (key, url) {
@@ -690,8 +842,13 @@
 			// check if in text mode and handle text commands
 			if(isTextMode())
 			{
-				if(command.hasOwnProperty("txtExec"))
-					command.txtExec.call(base, caller);
+				if(command.txtExec)
+				{
+					if($.isArray(command.txtExec))
+						base.textEditorInsertText.apply(base, command.txtExec);
+					else
+						command.txtExec.call(base, caller);
+				}
 				
 				return;
 			}
@@ -1021,10 +1178,10 @@
 				var	editor    = this,
 					content   = $("<div />"),
 					clickFunc = function (e) {
-					editor.execCommand("fontsize", $(this).data('sceditor-fontsize'));
-					editor.closeDropDown(true);
-					e.preventDefault();
-				};
+						editor.execCommand("fontsize", $(this).data('sceditor-fontsize'));
+						editor.closeDropDown(true);
+						e.preventDefault();
+					};
 
 				for (var i=1; i<= 7; i++) {
 					content.append(
@@ -1427,6 +1584,10 @@
 			},
 			keyPress: function (e, wysiwygEditor)
 			{
+				// make sure emoticons command is in the toolbar before running
+				if(this.options.toolbar.indexOf('emoticon') === -1)
+					return;
+				
 				var	editor = this,
 					pos = 0,
 					curChar = String.fromCharCode(e.which);
@@ -1570,7 +1731,7 @@
 	/**
 	 * Range helper class
 	 */
-	$.sceditor.rangeHelper = function(window, document) {
+	$.sceditor.rangeHelper = function(w, d) {
 		var	win, doc,
 			isW3C		= true,
 			startMarker	= "sceditor-start-marker",
@@ -1587,8 +1748,8 @@
 		init = function (window, document) {
 			doc	= document || window.contentDocument || window.document;
 			win	= window;
-			isW3C	= window.getSelection;
-		}(window, document);
+			isW3C	= !!window.getSelection;
+		}(w, d);
 	
 		/**
 		 * Inserts HTML.
@@ -1703,10 +1864,7 @@
 			// IE < 9
 			if(!isW3C)
 			{
-				if(range.text === '')
-					return '';
-	
-				if(range.htmlText)
+				if(range.text !== '' && range.htmlText)
 					return range.htmlText;
 			}
 	
@@ -1825,17 +1983,18 @@
 	
 			if(!isW3C)
 			{
+				range = doc.body.createTextRange();
 				var marker = doc.body.createTextRange();
-	
+
 				marker.moveToElementText(start);
 				range.setEndPoint('StartToStart', marker);
 				range.moveStart('character', 0);
-	
+
 				marker.moveToElementText(end);
 				range.setEndPoint('EndToStart', marker);
 				range.moveEnd('character', 0);
 	
-				base.selectRange(range.select());
+				base.selectRange(range);
 			}
 			else
 			{
@@ -2201,8 +2360,8 @@
 	/**
 	 * Checks if a command with the specified name exists
 	 * 
-	 * @param string name
-	 * @return bool
+	 * @param {String} name
+	 * @return Bool
 	 */
 	$.sceditor.commandExists = function(name) {
 		return typeof $.sceditor.commands[name] !== "undefined";
@@ -2211,16 +2370,20 @@
 	/**
 	 * Adds/updates a command.
 	 * 
-	 * @param string			name		The commands name
-	 * @param string|function	exec		The commands exec function or string for the native execCommand
-	 * @param string			tooltip		The commands tooltip text
-	 * @param function			keypress	Function that gets called every time a key is pressed
-	 * @return bool
+	 * Only name and exec are required. Exec is only required if
+	 * the command dose not already exist.
+	 *  
+	 * @param {String}		name		The commands name
+	 * @param {String|Function}	exec		The commands exec function or string for the native execCommand
+	 * @param {String}		tooltip		The commands tooltip text
+	 * @param {Function}		keypress	Function that gets called every time a key is pressed
+	 * @param {Function|Array}	txtExec		Called when the command is executed in source mode or array containing prepend and optional append
+	 * @return Bool
 	 */
-	$.sceditor.setCommand = function(name, exec, tooltip, keypress) {
-		if(!name || !exec)
+	$.sceditor.setCommand = function(name, exec, tooltip, keypress, txtExec) {
+		if(!name || !($.sceditor.commandExists(name) || exec))
 			return false;
-		
+
 		if(!$.sceditor.commandExists(name))
 			$.sceditor.commands[name] = {};
 
@@ -2231,6 +2394,9 @@
 
 		if(keypress)
 			$.sceditor.commands[name].keyPress = keypress;
+		
+		if(txtExec)
+			$.sceditor.commands[name].txtExec = txtExec;
 
 		return true;
 	};
@@ -2328,7 +2494,12 @@
 		// date format. year, month and day will be replaced with the users current year, month and day.
 		dateFormat: "year-month-day",
 
-		toolbarContainer: null
+		toolbarContainer: null,
+		
+		enablePasteFiltering: false,
+
+	        //add css to dropdown menu (eg. z-index)
+	        dropDownCss: { }
 	};
 
 	$.fn.sceditor = function (options) {

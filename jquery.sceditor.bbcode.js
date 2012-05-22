@@ -1,8 +1,8 @@
 /**
- * SCEditor BBCode Plugin v1.3.2
+ * SCEditor BBCode Plugin v1.3.3
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
- * Copyright (C) 2011, Sam Clarke (samclarke.com)
+ * Copyright (C) 2011-2012, Sam Clarke (samclarke.com)
  *
  * SCEditor is dual licensed under the MIT and GPL licenses:
  *	http://www.opensource.org/licenses/mit-license.php
@@ -32,7 +32,8 @@
 			handleTags,
 			formatString,
 			getStyle,
-			wrapInDivs;
+			wrapInDivs,
+			mergeTextModeCommands;
 
 		base.bbcodes = $.sceditorBBCodePlugin.bbcodes;
 
@@ -79,9 +80,69 @@
 			(new $.sceditor(element,
 				$.extend({}, base.options, {
 					getHtmlHandler: base.getHtmlHandler,
-					getTextHandler: base.getTextHandler
+					getTextHandler: base.getTextHandler,
+					commands: mergeTextModeCommands()
 				})
 			));
+		};
+		
+		mergeTextModeCommands = function() {
+			// TODO: use selection as display text if is one.
+			// TODO: add translations of the prompts
+			var merge = {
+				bold: { txtExec: ["[b]", "[/b]"] },
+				italic: { txtExec: ["[i]", "[/i]"] },
+				underline: { txtExec: ["[u]", "[/u]"] },
+				strike: { txtExec: ["[s]", "[/s]"] },
+				subscript: { txtExec: ["[sub]", "[/sub]"] },
+				superscript: { txtExec: ["[sup]", "[/sup]"] },
+				left: { txtExec: ["[left]", "[/left]"] },
+				center: { txtExec: ["[center]", "[/center]"] },
+				right: { txtExec: ["[right]", "[/right]"] },
+				justify: { txtExec: ["[justify]", "[/justify]"] },
+				//font: { txtExec: ["[u]", "[/u]"] },
+				//size: { txtExec: ["[u]", "[/u]"] },
+				//color: { txtExec: ["[u]", "[/u]"] },
+				//bulletlist: { txtExec: ["[u]", "[/u]"] },
+				//orderedlist: { txtExec: ["[u]", "[/u]"] },
+				//table: { txtExec: ["[u]", "[/u]"] },
+				horizontalrule: { txtExec: ["[hr]"] },
+				code: { txtExec: ["[code]", "[/code]"] },
+				image: { txtExec: function() {
+					var url = prompt(this._("Enter the images URL:"));
+					
+					if(url)
+						this.textEditorInsertText("[img]" + url + "[/img]");
+				} },
+				email: { txtExec: function() {
+					var	email	= prompt(this._("Enter the e-mail address:"), "@"),
+						text	= prompt(this._("Enter the displayed text:"), email) || email;
+					
+					if(email)
+						this.textEditorInsertText("[email=" + email + "]" + text + "[/email]");
+				} },
+				link: { txtExec: function() {
+					var	url	= prompt(this._("Enter the links URL:"), "http://"),
+						text	= prompt(this._("Enter the displayed text:"), url) || url;
+					
+					if(url)
+						this.textEditorInsertText("[url=" + url + "]" + text + "[/url]");
+				} },
+				quote: { txtExec: ["[quote]", "[/quote]"] },
+				youtube: { txtExec: function() {
+					var url = prompt(this._("Enter the YouTube video URL or ID:"));
+					
+					if(url)
+					{
+						if(url.indexOf("://") > -1)
+							url = url.replace(/^[^v]+v.(.{11}).*/,"$1");
+						
+						this.textEditorInsertText("[youtube]" + url + "[/youtube]");
+					}
+				} }
+			};
+
+			return $.extend(true, {}, merge, $.sceditor.commands);
 		};
 		
 		/**
@@ -363,10 +424,11 @@
 		/**
 		 * Converts BBCode to HTML
 		 * 
-		 * @param string text
-		 * @return string HTML
+		 * @param {String} text
+		 * @param {Bool} isPaste
+		 * @return {String} HTML
 		 */
-		base.getTextHandler = function(text) {
+		base.getTextHandler = function(text, isPaste) {
 			var	oldText, replaceBBCodeFunc,
 				bbcodeRegex = /\[([^\[\s=]*?)(?:([^\[]*?))?\]((?:[\s\S(?!=\[\\\1)](?!\[\1))*?)\[\/(\1)\]/g,
 				atribsRegex = /(\S+)=((?:(?:(["'])(?:\\\3|[^\3])*?\3))|(?:[^'"\s]+))/g;
@@ -423,7 +485,7 @@
 			// to preserve them. Otherwise they will just be converted to 1!
 			text = text.replace(/ {2}(?=([^<\>]*?<|[^<\>]*?$))/g, " &nbsp;");
 			
-			return wrapInDivs(text);
+			return wrapInDivs(text, isPaste);
 		};
 		
 		/**
@@ -432,7 +494,7 @@
 		 * @param string html
 		 * @return string HTML
 		 */
-		wrapInDivs = function(html)
+		wrapInDivs = function(html, excludeFirstLast)
 		{
 			var	d		= document,
 				inlineFrag	= d.createDocumentFragment(),
@@ -482,6 +544,35 @@
 				outputDiv.appendChild(div);
 			}
 			
+			// needed for paste, the first shouldn't be wrapped in a div
+			if(excludeFirstLast)
+			{
+				node = outputDiv.firstChild;
+				if(node && node.nodeName.toLowerCase() === "div")
+				{
+					while((next = node.firstChild))
+						outputDiv.insertBefore(next, node);
+					
+					if($.sceditor.ie >= 9)
+						outputDiv.insertBefore(d.createElement('br'), node);
+					
+					outputDiv.removeChild(node);
+				}
+				
+				node = outputDiv.lastChild;
+				if(node && node.nodeName.toLowerCase() === "div")
+				{
+					while((next = node.firstChild))
+						outputDiv.insertBefore(next, node);
+
+					if($.sceditor.ie >= 9)
+						outputDiv.insertBefore(d.createElement('br'), node);
+					
+					outputDiv.removeChild(node);
+				}
+			}
+
+			$(tmpDiv).remove();
 			return outputDiv.innerHTML;
 		};
 

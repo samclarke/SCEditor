@@ -1,4 +1,4 @@
-# SCEditor v1.3.2
+# SCEditor v1.3.3
 Copyright (C) 2011-2012, [Sam Clarke](http://www.samclarke.com).
 
 For more information visit: http://www.samclarke.com/2011/07/sceditor/
@@ -114,6 +114,9 @@ This function will be called when switching from View Source mode back to WYSIWY
 Date format to use, specified with the strings year, month & day e.g. "year-month-day".
 The year, month and day strings will be replaced with the users current year, month and day.
 
+**enablePasteFiltering** *boolean*
+If to enable paste filtering. **This feature is still experimental.**
+
 
 ## License
 
@@ -124,27 +127,9 @@ If you use SCEditor a link back or a donation would be appreciated, but not requ
 
 ## Contribute
 
-Any contributions and/or pull requests would be very welcome.
+Any contributions and/or pull requests would be welcome.
 
-If you would like to contribute here are just a few way you can help:
-
-* **Use it**
-The easiest way to contribute is to simply use SCEditor and if you encounter any bugs or problems, [https://github.com/samclarke/SCEditor/issues/new](report them).
-* **Translate it**
-Translating SCEditor would be a big help. If you do want to translate SCEditor, the "no.js" translation is a good translation to work from.
-* **Create a theme**
-I'm not really a designer so new themes would be very much appreciated!
-* **Send comments**
-If you think SCEditor is good/bad or have any suggestions on what could be improved I would love to hear them. Knowing what people like/dislike helps improve the editor.
-* **Donate**
-Donations are always welcome! They encourage me to spend more time and do more updates on the editor.
-* **Fix bugs and improve the editor**
-This is probably the hardest thing to do. DesignMode/ContentEditable are not the nicest of things to work with
-and while I have tried to comment the code as much as possible, some of it, especially the range related code like
-inserting HTML, is very fragile.
-At some point I plan to either switch to using rangy (although that would double the size) or create a small
-class like rangy to help reduce problems. The only reason this wasn't done from the start was size.
-
+Themes, translations, bug reports, bug fixes and donations would be greatly appreciated.
 
 
 ## Donate
@@ -157,9 +142,11 @@ or via [Flattr](http://flattr.com/thing/400345/SCEditor)
 ## Credits
 
 **Nomicons: The Full Monty Emoticons by:**
+
 Oscar Gruno, aka Nominell v. 2.0 -> oscargruno@mac.com
 Andy Fedosjeenko, aka Nightwolf -> bobo@animevanguard.com
 
 **Icons by:**
+
 Mark James (http://www.famfamfam.com/lab/icons/silk/)
 Licensed under the [Creative Commons CC-BY license](http://creativecommons.org/licenses/by/3.0/).
