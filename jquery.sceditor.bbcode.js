@@ -550,7 +550,7 @@
 				node = outputDiv.firstChild;
 				if(node && node.nodeName.toLowerCase() === "div")
 				{
-					while(next = node.firstChild)
+					while((next = node.firstChild))
 						outputDiv.insertBefore(next, node);
 					
 					if($.sceditor.ie >= 9)
@@ -562,7 +562,7 @@
 				node = outputDiv.lastChild;
 				if(node && node.nodeName.toLowerCase() === "div")
 				{
-					while(next = node.firstChild)
+					while((next = node.firstChild))
 						outputDiv.insertBefore(next, node);
 
 					if($.sceditor.ie >= 9)

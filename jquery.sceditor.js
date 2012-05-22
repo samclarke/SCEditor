@@ -469,7 +469,7 @@
 			var o_css = {
 				top: menuItem.offset().top,
 				left: menuItem.offset().left
-			}
+			};
 
 			$.extend(o_css, base.options.dropDownCss);
 
@@ -561,7 +561,7 @@
 						handlePaste(elm, pastearea);
 					}, 20);
 				}
-			};
+			}
 			handlePaste(elm, pastearea);
 			
 			base.focus();
