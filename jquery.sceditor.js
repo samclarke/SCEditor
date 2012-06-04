@@ -1,5 +1,5 @@
 /**
- * SCEditor v1.3.3
+ * SCEditor v1.3.4
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
  * Copyright (C) 2011-2012, Sam Clarke (samclarke.com)
@@ -109,8 +109,7 @@
 			handleWindowResize,
 			setHeight,
 			setWidth,
-			initLocale,
-			isTextMode;
+			initLocale;
 
 		/**
 		 * All the commands supported by the editor
@@ -764,7 +763,7 @@
 		 * Updates the forms textarea value
 		 */
 		base.updateTextareaValue = function () {
-			if(isTextMode())
+			if(base.inSourceMode())
 				$textarea.val(base.getTextareaValue(false));
 			else
 				$textarea.val(base.getWysiwygEditorValue());
@@ -803,7 +802,11 @@
 			return html;
 		};
 		
-		isTextMode = function () {
+		/**
+		 * If the editor is in source code mode
+		 * @return boolean
+		 */
+		base.inSourceMode = function () {
 			return $textEditor.is(':visible');
 		};
 
@@ -811,7 +814,7 @@
 		 * Switches between the WYSIWYG and plain text modes
 		 */
 		base.toggleTextMode = function () {
-			if(isTextMode())
+			if(base.inSourceMode())
 				base.setWysiwygEditorValue(base.getTextareaValue());
 			else
 				base.setTextareaValue(base.getWysiwygEditorValue());
@@ -827,9 +830,9 @@
 			$toolbar.find('.sceditor-button').each(function () {
 				var button = $(this);
 				
-				if(isTextMode() && !button.data('sceditor-txtmode'))
+				if(base.inSourceMode() && !button.data('sceditor-txtmode'))
 					button.addClass('disabled');
-				else if (!isTextMode() && !button.data('sceditor-wysiwygmode'))
+				else if (!base.inSourceMode() && !button.data('sceditor-wysiwygmode'))
 					button.addClass('disabled');
 			});
 		};
@@ -840,7 +843,7 @@
 		 */
 		handleCommand = function (caller, command) {
 			// check if in text mode and handle text commands
-			if(isTextMode())
+			if(base.inSourceMode())
 			{
 				if(command.txtExec)
 				{
@@ -866,17 +869,22 @@
 		 * Fucuses the editors input area
 		 */
 		base.focus = function () {
-			wysiwygEditor.contentWindow.focus();
-			
-			// Needed for IE < 9
-			if(lastRange !== null) {
-				rangeHelper.selectRange(lastRange);
+			if(!base.inSourceMode())
+			{
+				wysiwygEditor.contentWindow.focus();
 				
-				// remove the stored range after being set.
-				// If the editor loses focus it should be
-				// saved again.
-				lastRange = null;
+				// Needed for IE < 9
+				if(lastRange !== null) {
+					rangeHelper.selectRange(lastRange);
+					
+					// remove the stored range after being set.
+					// If the editor loses focus it should be
+					// saved again.
+					lastRange = null;
+				}
 			}
+			else
+				textEditor.focus();
 		};
 
 		/**

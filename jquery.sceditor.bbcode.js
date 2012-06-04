@@ -1,5 +1,5 @@
 /**
- * SCEditor BBCode Plugin v1.3.3
+ * SCEditor BBCode Plugin v1.3.4
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
  * Copyright (C) 2011-2012, Sam Clarke (samclarke.com)
@@ -174,7 +174,7 @@
 			var	name = $.camelCase(property),
 				$elm;
 
-			// add special exception for align
+			// add exception for align
 			if("text-align" === property)
 			{
 				$elm = $(element);
@@ -251,8 +251,8 @@
 			if(tagsToBbcodes[tag] && tagsToBbcodes[tag][blockLevel]) {
 				// loop all bbcodes for this tag
 				$.each(tagsToBbcodes[tag][blockLevel], function(bbcode, bbcodeAttribs) {
-					if((element[0].childNodes.length === 0 || element[0].childNodes[0].nodeName.toLowerCase() === "br") &&
-						!base.bbcodes[bbcode].allowsEmpty)
+					if(!base.bbcodes[bbcode].allowsEmpty &&
+						(element[0].childNodes.length === 0 || (element[0].childNodes[0].nodeName.toLowerCase() === "br" && element[0].childNodes.length === 1))						)
 						return;
 					
 					// if the bbcode requires any attributes then check this has
@@ -292,7 +292,7 @@
 			if(blockLevel && /^(br|div|p)$/.test(tag))
 			{
 				var parentChildren = element[0].parentNode.childNodes;
-				
+
 				// if it's a <p><br /></p> the paragraph will put the newline so skip the br
 				if(!("br" === tag && parentChildren.length === 1) &&
 					!("br" === tag && parentChildren[parentChildren.length-1] === element[0])) {

@@ -850,3 +850,26 @@ test("YouTube", function() {
 		"Normal"
 	);
 });
+
+
+test("Stripping empty", function() {
+	expect(3);
+	
+	equal(
+		this.sb.getHtmlHandler("", html2dom("<b><br /></b>", true)),
+		"",
+		"Bold tag with newline"
+	);
+	
+	equal(
+		this.sb.getHtmlHandler("", html2dom("<b></b>", true)),
+		"",
+		"Empty bold tag"
+	);
+	
+	equal(
+		this.sb.getHtmlHandler("", html2dom("<b><br />Content</b>", true)),
+		"[b]\nContent[/b]",
+		"Bold tag with content"
+	);
+});

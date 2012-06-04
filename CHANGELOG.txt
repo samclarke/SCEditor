@@ -7,6 +7,13 @@ TODO:
 	Change buttons to have translatable command name as their content, so themes don't
 		have to use icons
 	Todo: add setwysiwygeditorbbcodevalue
+	Add isWhiteSpace check to BBCode converter to strip empty tags better
+
+Version 1.3.4:
+	Updated focus method to work in source mode
+	Added public inSourceMode method
+	Fix bug causing BBCodes to be striped
+		- Thanks to Nibogo2 for reporting
 
 Version 1.3.3:
 	Added dropDownCss option, thanks to @esion
