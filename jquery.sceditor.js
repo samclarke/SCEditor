@@ -1,5 +1,5 @@
 /**
- * SCEditor v1.3.4
+ * SCEditor v1.3.5
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
  * Copyright (C) 2011-2012, Sam Clarke (samclarke.com)
