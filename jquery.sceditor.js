@@ -109,7 +109,9 @@
 			handleWindowResize,
 			setHeight,
 			setWidth,
-			initLocale;
+			initLocale,
+			sizeToPx,
+			updateToolBar;
 
 		/**
 		 * All the commands supported by the editor
@@ -186,9 +188,7 @@
 		 * @private
 		 */
 		initEditor = function () {
-			var	contentEditable = $('<div contenteditable="true">')[0].contentEditable,
-				contentEditableSupported = typeof contentEditable !== 'undefined' && contentEditable !== 'inherit',
-				$doc, $body;
+			var $doc, $body;
 
 			$textEditor = $('<textarea></textarea>').hide();
 			$wysiwygEditor = $('<iframe frameborder="0"></iframe>');
@@ -203,10 +203,6 @@
 
 			setWidth($textarea.width());
 			setHeight($textarea.height());
-
-			// turn on design mode if contenteditable not supported
-			if(!contentEditableSupported)
-				getWysiwygDoc().designMode = 'On';
 			
 			getWysiwygDoc().open();
 			getWysiwygDoc().write(
@@ -217,9 +213,7 @@
 			);
 			getWysiwygDoc().close();
 			
-			// turn on design mode if contenteditable not supported
-			if(!contentEditableSupported)
-				getWysiwygDoc().designMode = 'On';
+			base.readOnly(!!base.options.readOnly);
 
 			$doc = $(getWysiwygDoc());
 			$body = $doc.find("body");
@@ -246,8 +240,12 @@
 		 */
 		initToolBar = function () {
 			var buttonClick = function (e) {
-				handleCommand($(this), base.commands[$(this).data("sceditor-command")]);
 				e.preventDefault();
+				
+				if($(this).hasClass('disabled'))
+					return;
+				
+				handleCommand($(this), base.commands[$(this).data("sceditor-command")]);
 			};
 
 			$toolbar   = $('<div class="sceditor-toolbar" />');
@@ -295,6 +293,60 @@
 			else
 				$(base.options.toolbarContainer).append($toolbar);
 		};
+		
+		/**
+		 * Sets the editors read only property
+		 * 
+		 * If no argument is pass it will just return the editors current
+		 * read only state
+		 * 
+		 * @param bool readOnly
+		 * @return bool
+		 */
+		base.readOnly = function(readOnly) {
+			var	contentEditable = $('<div contenteditable="true">')[0].contentEditable,
+				contentEditableSupported = typeof contentEditable !== 'undefined' && contentEditable !== 'inherit';
+;
+			if(readOnly === false)
+			{
+				if(!contentEditableSupported)
+					getWysiwygDoc().designMode = 'On';
+
+				getWysiwygDoc().body.contentEditable = true;
+				$textEditor.removeAttr('readonly');
+			}
+			else if(readOnly === true)
+			{
+				if(!contentEditableSupported)
+					getWysiwygDoc().designMode = 'Off';
+				
+				getWysiwygDoc().body.contentEditable = false;
+				$textEditor.attr('readonly', 'readonly');
+			}
+			
+			updateToolBar(readOnly === true);
+			
+			return $textEditor.attr('readonly') === 'readonly';
+		};
+		
+		/**
+		 * Updates the toolbar to disable/enable the appropriate buttons
+		 * @private
+		 */
+		updateToolBar = function(disable) {
+			$toolbar.find('.sceditor-button').removeClass('disabled');
+			
+			$toolbar.find('.sceditor-button').each(function () {
+				var button = $(this);
+				
+				if(disable === true)
+					button.addClass('disabled');
+				else if(base.inSourceMode() && !button.data('sceditor-txtmode'))
+					button.addClass('disabled');
+				else if (!base.inSourceMode() && !button.data('sceditor-wysiwygmode'))
+					button.addClass('disabled');
+			});
+		};
 
 		/**
 		 * Creates an array of all the key press functions
@@ -308,6 +360,10 @@
 			});
 		};
 
+		/**
+		 * Sets the width of the editor
+		 * @private
+		 */
 		setWidth = function (width) {
 			editorContainer.width(width);
 
@@ -319,10 +375,15 @@
 			$textEditor.width(width + (width - $textEditor.outerWidth(true)));
 		};
 
+		/**
+		 * Sets the height of the editor
+		 * @private
+		 */
 		setHeight = function (height) {
 			editorContainer.height(height);
-
-			height = height - (base.options.toolbarContainer === null?$toolbar.outerHeight():0);
+			
+			height -= 3;
+			height -= base.options.toolbarContainer === null?$toolbar.outerHeight(true):0;
 
 			// fix the height and width of the textarea/iframe
 			$wysiwygEditor.height(height);
@@ -330,6 +391,46 @@
 
 			$textEditor.height(height);
 			$textEditor.height(height + (height - $textEditor.outerHeight(true)));
+		};
+		
+		/**
+		 * Converts the string returned from jQuery CSS func to px int
+		 * @private
+		 */
+		sizeToPx = function(size) {
+			if(typeof size !== "string")
+				return parseInt(size, 10);
+			
+			if(size.indexOf('px'))
+				return parseInt(size, 10) || 0;
+			
+			return 0;
+		};
+		
+		/**
+		 * Expands the editor to the size of it's content
+		 */
+		base.expandToContent = function() {
+			var toolbarHeight = (base.options.toolbarContainer === null?$toolbar.outerHeight():0);
+			
+			var	body = getWysiwygDoc().body,
+				documentElement = getWysiwygDoc().documentElement;
+				
+			var height = Math.max(	body.scrollHeight,
+						documentElement.scrollHeight,
+						body.offsetHeight,
+						documentElement.offsetHeight,
+						body.clientHeight,
+						documentElement.clientHeight);
+
+			height +=	toolbarHeight + 3 +
+					sizeToPx($wysiwygEditor.css("margin-top")) +
+					sizeToPx($wysiwygEditor.css("margin-bottom")) +
+					sizeToPx($wysiwygEditor.css("padding-top")) +
+					sizeToPx($wysiwygEditor.css("padding-bottom"));
+
+			if(height !== $wysiwygEditor.outerHeight(true))
+				setHeight(height);
 		};
 
 		/**
@@ -819,22 +920,12 @@
 			else
 				base.setTextareaValue(base.getWysiwygEditorValue());
 			
-			// enable all the buttons
-			$toolbar.find('.sceditor-button').removeClass('disabled');
 
 			lastRange = null;
 			$textEditor.toggle();
 			$wysiwygEditor.toggle();
 			
-			// diable any buttons that are not allowed for this mode
-			$toolbar.find('.sceditor-button').each(function () {
-				var button = $(this);
-				
-				if(base.inSourceMode() && !button.data('sceditor-txtmode'))
-					button.addClass('disabled');
-				else if (!base.inSourceMode() && !button.data('sceditor-wysiwygmode'))
-					button.addClass('disabled');
-			});
+			updateToolBar();
 		};
 
 		/**
@@ -2505,6 +2596,8 @@
 		toolbarContainer: null,
 		
 		enablePasteFiltering: false,
+		
+		readOnly: false,
 
 	        //add css to dropdown menu (eg. z-index)
 	        dropDownCss: { }

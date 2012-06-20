@@ -8,10 +8,13 @@ TODO:
 		have to use icons
 	Add function to inset BBCode instead of HTML only
 	Add isWhiteSpace check to BBCode converter to strip empty tags better
+	Add resize/expand to content option
 
 Version 1.3.5:
 	Fix bug in FF making pasting via right click difficult when empty
 		- Thanks to Nibogo2 for reporting
+	Added readonly method and option
+	Added expandToContent method
 
 Version 1.3.4:
 	Updated focus method to work in source mode
