@@ -53,7 +53,7 @@
 					$("textarea").data("sceditor").destory();
 					$("link:first").attr("href", theme);
 
-					initEditor();
+					setTimeout(initEditor, 20);
 				});
 
 				initEditor();
@@ -81,6 +81,8 @@ If you are using IE9+ or any non-IE browser just type [b]:[/b]) and it should be
 				<select id="theme">
 					<option value="default">Default</option>
 					<option value="modern">Modern</option>
+					<option value="office-toolbar">Office Toolbar</option>
+					<option value="office">Office</option>
 				</select>
 			</div>
 		</form>

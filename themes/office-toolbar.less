@@ -1,0 +1,85 @@
+/**
+ * Copyright (C) 2012, Sam Clarke (samclarke.com)
+ *
+ * SCEditor is dual licensed under the MIT and GPL licenses:
+ *	http://www.opensource.org/licenses/mit-license.php
+ *	http://www.gnu.org/licenses/gpl.html
+ *
+ * Icons by Mark James (http://www.famfamfam.com/lab/icons/silk/)
+ * Licensed under the Creative Commons CC-BY license (http://creativecommons.org/licenses/by/3.0/)
+ */
+
+@import "default.less";
+
+.sceditor-container {
+	border: 1px solid #8db2e3;
+}
+
+.sceditor-container textarea {
+	font-family: Consolas, "Bitstream Vera Sans Mono", "Andale Mono", Monaco, "DejaVu Sans Mono", "Lucida Console", monospace;
+}
+
+div.sceditor-toolbar {
+	border-bottom: 1px solid #95a9c3;
+
+	background: rgb(222,232,245);
+	background: -moz-linear-gradient(top, rgba(222,232,245,1) 0%, rgba(199,216,237,1) 29%, rgba(204,220,238,1) 61%, rgba(192,216,239,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(222,232,245,1)), color-stop(29%,rgba(199,216,237,1)), color-stop(61%,rgba(204,220,238,1)), color-stop(100%,rgba(192,216,239,1)));
+	background: -webkit-linear-gradient(top, rgba(222,232,245,1) 0%,rgba(199,216,237,1) 29%,rgba(204,220,238,1) 61%,rgba(192,216,239,1) 100%);
+	background: -o-linear-gradient(top, rgba(222,232,245,1) 0%,rgba(199,216,237,1) 29%,rgba(204,220,238,1) 61%,rgba(192,216,239,1) 100%);
+	background: -ms-linear-gradient(top, rgba(222,232,245,1) 0%,rgba(199,216,237,1) 29%,rgba(204,220,238,1) 61%,rgba(192,216,239,1) 100%);
+	background: linear-gradient(top, rgba(222,232,245,1) 0%,rgba(199,216,237,1) 29%,rgba(204,220,238,1) 61%,rgba(192,216,239,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dee8f5', endColorstr='#c0d8ef',GradientType=0 );
+}
+
+	div.sceditor-group {
+		border: 1px solid #7596bf;
+		background: transparent;
+		padding: 0;
+
+		background: rgb(202,220,240);
+		background: -moz-linear-gradient(top, rgba(202,220,240,1) 24%, rgba(188,208,233,1) 38%, rgba(208,225,247,1) 99%);
+		background: -webkit-gradient(linear, left top, left bottom, color-stop(24%,rgba(202,220,240,1)), color-stop(38%,rgba(188,208,233,1)), color-stop(99%,rgba(208,225,247,1)));
+		background: -webkit-linear-gradient(top, rgba(202,220,240,1) 24%,rgba(188,208,233,1) 38%,rgba(208,225,247,1) 99%);
+		background: -o-linear-gradient(top, rgba(202,220,240,1) 24%,rgba(188,208,233,1) 38%,rgba(208,225,247,1) 99%);
+		background: -ms-linear-gradient(top, rgba(202,220,240,1) 24%,rgba(188,208,233,1) 38%,rgba(208,225,247,1) 99%);
+		background: linear-gradient(top, rgba(202,220,240,1) 24%,rgba(188,208,233,1) 38%,rgba(208,225,247,1) 99%);
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cadcf0', endColorstr='#d0e1f7',GradientType=0 );
+	}
+		.sceditor-button:first-child { border-radius: 4px 0 0 4px; } // Opera CSS gradient overflow fix
+		.sceditor-button:last-child { border-radius: 0 4px 4px 0; } // Opera CSS gradient overflow fix
+		.sceditor-button {
+			-webkit-box-shadow:	inset 0 1px 0 0 #d5e3f1,
+						inset 0 -1px 0 0 #e3edfb,
+						inset 1px 0 0 0 #cddcef,
+						inset -1px 0 0 0 #b8ceea;
+			-moz-box-shadow:	inset 0 1px 0 0 #d5e3f1,
+						inset 0 -1px 0 0 #e3edfb,
+						inset 1px 0 0 0 #cddcef,
+						inset -1px 0 0 0 #b8ceea;
+			box-shadow:	inset 0 1px 0 0 #d5e3f1,
+					inset 0 -1px 0 0 #e3edfb,
+					inset 1px 0 0 0 #cddcef,
+					inset -1px 0 0 0 #b8ceea;
+		}
+		.sceditor-button:hover {
+			background: rgb(251,219,181);
+			background: -moz-linear-gradient(top, rgba(251,219,181,1) 11%, rgba(254,180,86,1) 29%, rgba(253,235,159,1) 99%);
+			background: -webkit-gradient(linear, left top, left bottom, color-stop(11%,rgba(251,219,181,1)), color-stop(29%,rgba(254,180,86,1)), color-stop(99%,rgba(253,235,159,1)));
+			background: -webkit-linear-gradient(top, rgba(251,219,181,1) 11%,rgba(254,180,86,1) 29%,rgba(253,235,159,1) 99%);
+			background: -o-linear-gradient(top, rgba(251,219,181,1) 11%,rgba(254,180,86,1) 29%,rgba(253,235,159,1) 99%);
+			background: -ms-linear-gradient(top, rgba(251,219,181,1) 11%,rgba(254,180,86,1) 29%,rgba(253,235,159,1) 99%);
+			background: linear-gradient(top, rgba(251,219,181,1) 11%,rgba(254,180,86,1) 29%,rgba(253,235,159,1) 99%);
+			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fbdbb5', endColorstr='#fdeb9f',GradientType=0 );
+
+			-webkit-box-shadow:	inset 0 1px 0 0 #ebd1b4,
+						inset 0 -1px 0 0 #ffe47f,
+						inset -1px 0 0 0 #b8ceea;
+			-moz-box-shadow:	inset 0 1px 0 0 #ebd1b4,
+						inset 0 -1px 0 0 #ffe47f,
+						inset -1px 0 0 0 #b8ceea;
+			box-shadow:	inset 0 1px 0 0 #ebd1b4,
+					inset 0 -1px 0 0 #ffe47f,
+					inset -1px 0 0 0 #b8ceea;
+		}
+
