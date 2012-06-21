@@ -59,7 +59,7 @@ in http://. This mode currently has limited As You Type emoticon conversion supp
 
 **emoticonsRoot** *string*
 If specified, this string will be prepended to all emoticon URLs. The default emoticons are in the "emoticons" directory so specifying the root as
-"http://example.com/" would "http://example.com/produce emoticons/smile.png"
+"http://example.com/" would produce "http://example.com/emoticons/smile.png"
 
 **emoticons** *map*
 Map in the following format:
@@ -82,6 +82,10 @@ Map in the following format:
 			":aliasforblink:": "emoticons/blink.png"
 		}
 	},
+
+**readOnly** *bool*
+Boolean value indicating if the editor is in read only mode or not. Can be changed later on with the readOnly method.
+
 
 **width** *int|string*
 Should either be an int which will set the width of the editor in px, or a percentage string (e.g. “100%”). If set to null the width will be set to that of the textarea it is replacing.
