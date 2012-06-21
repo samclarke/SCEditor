@@ -382,7 +382,6 @@
 		setHeight = function (height) {
 			editorContainer.height(height);
 			
-			height -= 3;
 			height -= base.options.toolbarContainer === null?$toolbar.outerHeight(true):0;
 
 			// fix the height and width of the textarea/iframe
@@ -423,7 +422,7 @@
 						body.clientHeight,
 						documentElement.clientHeight);
 
-			height +=	toolbarHeight + 3 +
+			height +=	toolbarHeight +
 					sizeToPx($wysiwygEditor.css("margin-top")) +
 					sizeToPx($wysiwygEditor.css("margin-bottom")) +
 					sizeToPx($wysiwygEditor.css("padding-top")) +
@@ -489,6 +488,7 @@
 				startHeight	= editorContainer.height();
 				dragging	= true;
 
+				editorContainer.addClass('resizing');
 				$cover.show();
 				$(document).bind('mousemove', mouseMoveFunc);
 				e.preventDefault();
@@ -501,6 +501,7 @@
 				dragging = false;
 				$cover.hide();
 
+				editorContainer.removeClass('resizing');
 				$(document).unbind('mousemove', mouseMoveFunc);
 				e.preventDefault();
 			});
@@ -924,6 +925,14 @@
 			lastRange = null;
 			$textEditor.toggle();
 			$wysiwygEditor.toggle();
+			
+			editorContainer.removeClass('sourceMode');
+			editorContainer.removeClass('wysiwygMode');
+			
+			if(base.inSourceMode())
+				editorContainer.addClass('sourceMode');
+			else
+				editorContainer.addClass('wysiwygMode');
 			
 			updateToolBar();
 		};

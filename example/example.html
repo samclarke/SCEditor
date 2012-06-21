@@ -5,7 +5,7 @@
 
 		<title>SCEditor Demo</title>
 
-		<link rel="stylesheet" href="../minified/jquery.sceditor.min.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../minified/themes/default.min.css" type="text/css" media="all" />
 
 		<script src="jquery-1.7.2.min.js"></script>
 		<script src="../minified/jquery.sceditor.min.js"></script>
@@ -41,9 +41,22 @@
 
 		<script>
 			$(document).ready(function() {
-				$("textarea").sceditorBBCodePlugin({
-					style: "../minified/jquery.sceditor.default.min.css"
+				var initEditor = function() {
+					$("textarea").sceditorBBCodePlugin({
+						style: "../minified/jquery.sceditor.default.min.css"
+					});
+				};
+
+				$("#theme").change(function() {
+					var theme = "../minified/themes/" + $(this).val() + ".min.css";
+
+					$("textarea").data("sceditor").destory();
+					$("link:first").attr("href", theme);
+
+					initEditor();
 				});
+
+				initEditor();
 			});
 		</script>
 	</head>
@@ -61,6 +74,14 @@ If you are using IE9+ or any non-IE browser just type [b]:[/b]) and it should be
 
 				<p>If you are using IE9+ or any other browser then it should automatically replace
 					:) and other emoticon codes with theit emoticon images.</p>
+			</div>
+
+			<div>
+				<label for="theme">Theme:</label>
+				<select id="theme">
+					<option value="default">Default</option>
+					<option value="modern">Modern</option>
+				</select>
 			</div>
 		</form>
 

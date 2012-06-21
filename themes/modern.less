@@ -1,0 +1,55 @@
+/**
+ * Copyright (C) 2011, Sam Clarke (samclarke.com)
+ *
+ * SCEditor is dual licensed under the MIT and GPL licenses:
+ *	http://www.opensource.org/licenses/mit-license.php
+ *	http://www.gnu.org/licenses/gpl.html
+ *
+ * Icons by Mark James (http://www.famfamfam.com/lab/icons/silk/)
+ * Licensed under the Creative Commons CC-BY license (http://creativecommons.org/licenses/by/3.0/)
+ */
+
+@import "default.less";
+
+.sceditor-container { border: 1px solid #999; }
+
+.sceditor-container textarea {
+	font-family: Consolas, "Bitstream Vera Sans Mono", "Andale Mono", Monaco, "DejaVu Sans Mono", "Lucida Console", monospace;
+	background: #2e3436;
+	color: #fff;
+	margin: 0;
+	padding: 5px;
+}
+
+.sceditor-button {
+	-moz-border-radius: 9px;
+	-webkit-border-radius: 9px;
+	-opera-border-radius: 9px;
+	-khtml-border-radius: 9px;
+	border-radius: 9px;
+}
+div.sceditor-group {
+	margin: 0;
+	padding: 0;
+}
+.sceditor-button {padding: 5px; margin-left: 1px;}
+.sceditor-button:hover {
+	background: #eee;
+	-webkit-box-shadow: inset 1px 1px 4px #aaa;
+	-moz-box-shadow: inset 1px 1px 4px #aaa;
+	box-shadow: inset 1px 1px 4px #aaa;
+}
+
+div.sceditor-group { background: transparent; }
+
+div.sceditor-toolbar {
+	background: #ccc;
+	background: -moz-linear-gradient(top, rgba(204,204,204,1) 0%, rgba(178,178,178,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(204,204,204,1)), color-stop(100%,rgba(178,178,178,1)));
+	background: -webkit-linear-gradient(top, rgba(204,204,204,1) 0%,rgba(178,178,178,1) 100%);
+	background: -o-linear-gradient(top, rgba(204,204,204,1) 0%,rgba(178,178,178,1) 100%);
+	background: -ms-linear-gradient(top, rgba(204,204,204,1) 0%,rgba(178,178,178,1) 100%);
+	background: linear-gradient(top, rgba(204,204,204,1) 0%,rgba(178,178,178,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cccccc', endColorstr='#b2b2b2',GradientType=0 );
+}
+

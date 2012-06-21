@@ -12,13 +12,10 @@
  * Licensed under the Creative Commons CC-BY license (http://creativecommons.org/licenses/by/3.0/)
  */
 
-/*
-	spritemapper.output_image = minified/jquery.sceditor.min.png
-	spritemapper.output_css = minified/jquery.sceditor.min.css
-*/
+@import "icons/famfamfam.less";
+
 .sceditor-container {
 	position: relative;
-	overflow: hidden;
 	border: 1px solid #aaa;
 	background: #fff;
 
@@ -27,6 +24,10 @@
 	-opera-border-radius: 4px;
 	-khtml-border-radius: 4px;
 	border-radius: 4px;
+}
+
+.sceditor-container.resizing {
+	overflow: hidden;
 }
 
 .sceditor-container, .sceditor-container div,
@@ -57,7 +58,6 @@ div.sceditor-dropdown, div.sceditor-dropdown div {
 		opacity: 0.3;
 	}
 	div.sceditor-grip {
-		background: #000;
 		overflow: hidden;
 		width: 10px;
 		height: 10px;
@@ -66,7 +66,7 @@ div.sceditor-dropdown, div.sceditor-dropdown div {
 		bottom: 0;
 		right: 0;
 		z-index: 3;
-		background: url('icons/grip.png');
+		.icon-famfamfam-grip;
 	}
 	div.sceditor-dropdown {
 		position: absolute;
@@ -130,7 +130,7 @@ div.sceditor-dropdown, div.sceditor-dropdown div {
 		background: #f7f7f7;
 		border-bottom: 1px solid #aaa;
 
-		-webkit-border-radius: 4px 4px 0 0;
+		-webkit-border-radius: 3px 3px 0 0;
 	}
 
 		div.sceditor-group {
@@ -155,9 +155,6 @@ div.sceditor-dropdown, div.sceditor-dropdown div {
 			cursor: pointer;
 			padding: 3px 4px;
 		}
-		/*.sceditor-button.disabled {
-			background-color: #666;
-		}*/
 		.sceditor-button.disabled div {
 			filter: alpha(opacity=30);
 			opacity: 0.3;
@@ -177,46 +174,46 @@ div.sceditor-dropdown, div.sceditor-dropdown div {
 			text-indent: -9999px;
 		}
 		.sceditor-button:hover { background: #eee; }
-			.sceditor-button-bold div { background: url('icons/text_bold.png'); }
-			.sceditor-button-italic div { background: url('icons/text_italic.png'); }
-			.sceditor-button-underline div { background: url('icons/text_underline.png'); }
-			.sceditor-button-strike div { background: url('icons/text_strikethrough.png'); }
-			.sceditor-button-subscript div { background: url('icons/text_subscript.png'); }
-			.sceditor-button-superscript div { background: url('icons/text_superscript.png'); }
+			.sceditor-button-bold div { .icon-famfamfam-text_bold; }
+			.sceditor-button-italic div { .icon-famfamfam-text_italic; }
+			.sceditor-button-underline div { .icon-famfamfam-text_underline; }
+			.sceditor-button-strike div { .icon-famfamfam-text_strikethrough; }
+			.sceditor-button-subscript div { .icon-famfamfam-text_subscript; }
+			.sceditor-button-superscript div { .icon-famfamfam-text_superscript; }
 
-			.sceditor-button-left div { background: url('icons/text_align_left.png'); }
-			.sceditor-button-center div { background: url('icons/text_align_center.png'); }
-			.sceditor-button-right div { background: url('icons/text_align_right.png'); }
-			.sceditor-button-justify div { background: url('icons/text_align_justify.png'); }
+			.sceditor-button-left div { .icon-famfamfam-text_align_left; }
+			.sceditor-button-center div { .icon-famfamfam-text_align_center; }
+			.sceditor-button-right div { .icon-famfamfam-text_align_right; }
+			.sceditor-button-justify div { .icon-famfamfam-text_align_justify; }
 
-			.sceditor-button-font div { background: url('icons/font.png'); }
-			.sceditor-button-size div { background: url('icons/font_size.png'); }
-			.sceditor-button-color div { background: url('icons/color_swatch.png'); }
-			.sceditor-button-removeformat div { background: url('icons/font_delete.png'); }
+			.sceditor-button-font div { .icon-famfamfam-font; }
+			.sceditor-button-size div { .icon-famfamfam-font_size; }
+			.sceditor-button-color div { .icon-famfamfam-color_swatch; }
+			.sceditor-button-removeformat div { .icon-famfamfam-font_delete; }
 
-			.sceditor-button-cut div { background: url('icons/cut.png'); }
-			.sceditor-button-copy div { background: url('icons/page_copy.png'); }
-			.sceditor-button-paste div { background: url('icons/page_white_paste.png'); }
-			.sceditor-button-pastetext div { background: url('icons/paste_plain.png'); }
+			.sceditor-button-cut div { .icon-famfamfam-cut; }
+			.sceditor-button-copy div { .icon-famfamfam-page_copy; }
+			.sceditor-button-paste div { .icon-famfamfam-page_white_paste; }
+			.sceditor-button-pastetext div { .icon-famfamfam-paste_plain; }
 
-			.sceditor-button-bulletlist div { background: url('icons/text_list_bullets.png'); }
-			.sceditor-button-orderedlist div { background: url('icons/text_list_numbers.png'); }
+			.sceditor-button-bulletlist div { .icon-famfamfam-text_list_bullets; }
+			.sceditor-button-orderedlist div { .icon-famfamfam-text_list_numbers; }
 
-			.sceditor-button-table div { background: url('icons/table_add.png'); }
+			.sceditor-button-table div { .icon-famfamfam-table_add; }
 
-			.sceditor-button-horizontalrule div { background: url('icons/text_horizontalrule.png'); }
-			.sceditor-button-image div { background: url('icons/image_add.png'); }
-			.sceditor-button-code div { background: url('icons/script_code.png'); }
-			.sceditor-button-email div { background: url('icons/email_add.png'); }
-			.sceditor-button-link div { background: url('icons/link_add.png'); }
-			.sceditor-button-unlink div { background: url('icons/link_break.png'); }
+			.sceditor-button-horizontalrule div { .icon-famfamfam-text_horizontalrule; }
+			.sceditor-button-image div { .icon-famfamfam-image_add; }
+			.sceditor-button-code div { .icon-famfamfam-script_code; }
+			.sceditor-button-email div { .icon-famfamfam-email_add; }
+			.sceditor-button-link div { .icon-famfamfam-url_add; }
+			.sceditor-button-unlink div { .icon-famfamfam-url_break; }
 
-			.sceditor-button-quote div { background: url('icons/comment.png'); }
+			.sceditor-button-quote div { .icon-famfamfam-comment; }
 
-			.sceditor-button-emoticon div { background: url('icons/emoticon_smile.png'); }
-			.sceditor-button-youtube div { background: url('icons/youtube.png'); }
-			.sceditor-button-date div { background: url('icons/date_add.png'); }
-			.sceditor-button-time div { background: url('icons/time_add.png'); }
+			.sceditor-button-emoticon div { .icon-famfamfam-emoticon_smile; }
+			.sceditor-button-youtube div { .icon-famfamfam-youtube; }
+			.sceditor-button-date div { .icon-famfamfam-date_add; }
+			.sceditor-button-time div { .icon-famfamfam-time_add; }
 
-			.sceditor-button-print div { background: url('icons/printer.png'); }
-			.sceditor-button-source div { background: url('icons/page_white_text.png'); }
+			.sceditor-button-print div { .icon-famfamfam-printer; }
+			.sceditor-button-source div { .icon-famfamfam-page_white_text; }

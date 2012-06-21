@@ -1,21 +1,38 @@
 #! /bin/bash
 
 # To use this build file type /build/build.sh in terminal from the root directory.
-# You must have the closure compiler jar in the build folder and spritemapper installed for this to work.
+
+# You must have uglifyjs, lessc and yui-compressor in order to run this script.
+
+# To create the CSS sprites you will need "glue"
 
 # compress CSS
 echo "Creating CSS sprites"
-spritemapper jquery.sceditor.css
+#glue themes/icons/src themes/icons --project --less --algorithm=vertical --optipng --namespace=icon
 
-# Remove the minified/ prefix from the sprite urls created above
-# as the css and sprite should be in the same directory
-sed 's|minified/||g' minified/jquery.sceditor.min.css > minified/jquery.sceditor.sed.css
+for f in themes/icons/*.png
+do
+	echo "Processing $f file..";
 
-mv minified/jquery.sceditor.sed.css minified/jquery.sceditor.min.css
+	filename=$(basename "$f")
+	filename="${filename%.*}"
+
+	cp $f minified/themes/$filename.png
+done
 
 
 echo "Minimising CSS"
-yui-compressor --type css -o minified/jquery.sceditor.min.css minified/jquery.sceditor.min.css
+
+for f in themes/*.less
+do
+	echo "Processing $f file..";
+
+	filename=$(basename "$f")
+	filename="${filename%.*}"
+
+	lessc --yui-compress $f > minified/themes/$filename.min.css
+done
+
 yui-compressor --type css -o minified/jquery.sceditor.default.min.css jquery.sceditor.default.css
 
 
