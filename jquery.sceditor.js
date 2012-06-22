@@ -104,14 +104,15 @@
 			initResize,
 			documentClickHandler,
 			formSubmitHandler,
-			preLoadEmoticons,
+			initEmoticons,
 			getWysiwygDoc,
 			handleWindowResize,
 			setHeight,
 			setWidth,
 			initLocale,
 			sizeToPx,
-			updateToolBar;
+			updateToolBar,
+			autofocus;
 
 		/**
 		 * All the commands supported by the editor
@@ -160,16 +161,6 @@
 				.attr('novalidate','novalidate')
 				.submit(formSubmitHandler);
 			
-			// prefix emoticon root to emoticon urls
-			if(base.options.emoticonsRoot && base.options.emoticons)
-			{
-				$.each(base.options.emoticons, function (idx, emoticons) {
-					$.each(emoticons, function (key, url) {
-						base.options.emoticons[idx][key] = base.options.emoticonsRoot + url;
-					});
-				});
-			}
-
 			// load any textarea value into the editor
 			var val = $textarea.hide().val();
 
@@ -178,9 +169,14 @@
 			if(base.options.getTextHandler)
 				val = base.options.getTextHandler(val);
 
-			base.setWysiwygEditorValue(val);
+			if(val)
+				base.setWysiwygEditorValue(val);
+			
+			if(base.options.autofocus)
+				autofocus();
+				
 			if(base.options.toolbar.indexOf('emoticon') !== -1)
-				preLoadEmoticons();
+				initEmoticons();
 		};
 
 		/**
@@ -190,8 +186,8 @@
 		initEditor = function () {
 			var $doc, $body;
 
-			$textEditor = $('<textarea></textarea>').hide();
-			$wysiwygEditor = $('<iframe frameborder="0"></iframe>');
+			$textEditor		= $('<textarea></textarea>').hide();
+			$wysiwygEditor	= $('<iframe frameborder="0"></iframe>');
 
 			if(window.location.protocol === "https:")
 				$wysiwygEditor.attr("src", "javascript:false");
@@ -199,7 +195,7 @@
 			// add the editor to the HTML and store the editors element
 			editorContainer.append($wysiwygEditor).append($textEditor);
 			wysiwygEditor	= $wysiwygEditor[0];
-			textEditor	= $textEditor[0];
+			textEditor		= $textEditor[0];
 
 			setWidth($textarea.width());
 			setHeight($textarea.height());
@@ -209,24 +205,26 @@
 				'<html><head><!--[if gte IE 9]><style>* {min-height: auto !important}</style><![endif]-->' +
 				'<meta http-equiv="Content-Type" content="text/html;charset=' + base.options.charset + '" />' +
 				'<link rel="stylesheet" type="text/css" href="' + base.options.style + '" />' +
-				'</head><body contenteditable="true"></body></html>'
+				'</head><body contenteditable="true"><div></div></body></html>'
 			);
 			getWysiwygDoc().close();
 			
 			base.readOnly(!!base.options.readOnly);
 
-			$doc = $(getWysiwygDoc());
-			$body = $doc.find("body");
+			$doc	= $(getWysiwygDoc());
+			$body	= $doc.find("body");
+			
 			// set the key press event
-			$body.keypress(handleKeyPress);
-			$body.keyup(handleKeyUp);
-			$doc.keypress(handleKeyPress);
-			$doc.keyup(handleKeyUp);
-			$doc.mousedown(handleMouseDown);
-			$doc.bind("beforedeactivate keyup", saveRange);
-			$doc.focus(function() {
-				lastRange = null;
-			});
+			$body.keypress(handleKeyPress)
+				.keyup(handleKeyUp);
+			
+			$doc.keypress(handleKeyPress)
+				.keyup(handleKeyUp)
+				.mousedown(handleMouseDown)
+				.bind("beforedeactivate keyup", saveRange)
+				.focus(function() {
+					lastRange = null;
+				});
 			
 			if(base.options.enablePasteFiltering)
 				$body.bind("paste", handlePasteEvt);
@@ -292,6 +290,24 @@
 				editorContainer.append($toolbar);
 			else
 				$(base.options.toolbarContainer).append($toolbar);
+		};
+		
+		autofocus = function() {
+			var	doc		= wysiwygEditor.contentWindow.document,
+				body	= doc.body, rng;
+
+			if(!doc.createRange)
+				return base.focus();
+			
+			if(!body.firstChild)
+				return;
+			
+			rng	= doc.createRange();
+			rng.setStart(body.firstChild, 0);
+			rng.setEnd(body.firstChild, 0);
+
+			rangeHelper.selectRange(rng);
+			body.focus();
 		};
 		
 		/**
@@ -538,7 +554,17 @@
 		 * Idea from: http://engineeredweb.com/blog/09/12/preloading-images-jquery-and-javascript
 		 * @private
 		 */
-		preLoadEmoticons = function () {
+		initEmoticons = function () {
+			// prefix emoticon root to emoticon urls
+			if(base.options.emoticonsRoot && base.options.emoticons)
+			{
+				$.each(base.options.emoticons, function (idx, emoticons) {
+					$.each(emoticons, function (key, url) {
+						base.options.emoticons[idx][key] = base.options.emoticonsRoot + url;
+					});
+				});
+			}
+			
 			var	emoticons = $.extend({}, base.options.emoticons.more, base.options.emoticons.dropdown, base.options.emoticons.hidden),
 				emoticon;
 
@@ -2607,9 +2633,11 @@
 		enablePasteFiltering: false,
 		
 		readOnly: false,
+		
+		autofocus: true,
 
-	        //add css to dropdown menu (eg. z-index)
-	        dropDownCss: { }
+		//add css to dropdown menu (eg. z-index)
+		dropDownCss: { }
 	};
 
 	$.fn.sceditor = function (options) {

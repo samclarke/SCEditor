@@ -19,6 +19,7 @@ Version 1.3.5:
 	Changed themes to be in .less format and added to build file
 	Added modern theme
 	Added office-toolbar and office themes
+	Added autofocus option
 
 Version 1.3.4:
 	Updated focus method to work in source mode
