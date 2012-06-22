@@ -468,7 +468,7 @@
 					.replace(/</g, "&lt;")
 					.replace(/>/g, "&gt;")
 					.replace(/\r/g, "")
-					.replace(/(\[\/?(?:left|center|right|justify)\])\n/g, "$1")
+					.replace(/(\[\/?(?:left|center|right|justify|align)\])\n/g, "$1")
 					.replace(/\n/g, "<br />");
 
 			while(text !== oldText)
@@ -1071,7 +1071,7 @@
 	 * @param BOOL			allowsEmpty	If this BBCodes is allowed to be empty, e.g. [b][/b]
 	 * @return Bool
 	 */
-	$.sceditorBBCodePlugin.setCommand = function(name, tags, styles, format, html, allowsEmpty) {
+	$.sceditorBBCodePlugin.setCommand = function(name, tags, styles, format, html, allowsEmpty, isBlock) {
 		if(!name || !format || !html)
 			return false;
 		
@@ -1089,6 +1089,8 @@
 			
 		if(allowsEmpty)
 			$.sceditorBBCodePlugin.bbcodes[name].allowsEmpty = allowsEmpty;
+		
+		$.sceditorBBCodePlugin.bbcodes[name].isBlock = !!isBlock;
 		
 		return true;
 	};
