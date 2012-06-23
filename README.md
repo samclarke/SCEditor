@@ -86,6 +86,8 @@ Map in the following format:
 **readOnly** *bool*
 Boolean value indicating if the editor is in read only mode or not. Can be changed later on with the readOnly method.
 
+**autofocus** *bool*
+Boolean value indicating if to auto focus the editor after initialisation.
 
 **width** *int|string*
 Should either be an int which will set the width of the editor in px, or a percentage string (e.g. “100%”). If set to null the width will be set to that of the textarea it is replacing.
