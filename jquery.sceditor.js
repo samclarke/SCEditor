@@ -107,8 +107,6 @@
 			initEmoticons,
 			getWysiwygDoc,
 			handleWindowResize,
-			setHeight,
-			setWidth,
 			initLocale,
 			sizeToPx,
 			updateToolBar,
@@ -162,10 +160,9 @@
 				.submit(formSubmitHandler);
 			
 			// load any textarea value into the editor
-			var val = $textarea.hide().val();
-
 			// Pass the value though the getTextHandler if it is set so that
 			// BBCode, ect. can be converted
+			var val = $textarea.hide().val();
 			if(base.options.getTextHandler)
 				val = base.options.getTextHandler(val);
 
@@ -197,8 +194,8 @@
 			wysiwygEditor	= $wysiwygEditor[0];
 			textEditor		= $textEditor[0];
 
-			setWidth($textarea.width());
-			setHeight($textarea.height());
+			base.width($textarea.width());
+			base.height($textarea.height());
 			
 			getWysiwygDoc().open();
 			getWysiwygDoc().write(
@@ -237,7 +234,15 @@
 		 * @private
 		 */
 		initToolBar = function () {
-			var buttonClick = function (e) {
+			var	group,
+				buttons,
+				accessibilityName,
+				button,
+				i,
+				buttonClick,
+				groups = base.options.toolbar.split("|");
+			
+			buttonClick = function (e) {
 				e.preventDefault();
 				
 				if($(this).hasClass('disabled'))
@@ -247,9 +252,6 @@
 			};
 
 			$toolbar   = $('<div class="sceditor-toolbar" />');
-			var	groups = base.options.toolbar.split("|"),
-				group, buttons, accessibilityName, button, i;
-
 			for (i=0; i < groups.length; i++) {
 				group   = $('<div class="sceditor-group" />');
 				buttons = groups[i].split(",");
@@ -281,7 +283,6 @@
 
 					group.append(button);
 				}
-
 				$toolbar.append(group);
 			}
 
@@ -322,7 +323,7 @@
 		base.readOnly = function(readOnly) {
 			var	contentEditable = $('<div contenteditable="true">')[0].contentEditable,
 				contentEditableSupported = typeof contentEditable !== 'undefined' && contentEditable !== 'inherit';
-;
+
 			if(readOnly === false)
 			{
 				if(!contentEditableSupported)
@@ -377,10 +378,13 @@
 		};
 
 		/**
-		 * Sets the width of the editor
-		 * @private
+		 * Sets or gets the width of the editor in px
+		 * @param int width New width
 		 */
-		setWidth = function (width) {
+		base.width = function (width) {
+			if(!width)
+				return editorContainer.width();
+			
 			editorContainer.width(width);
 
 			// fix the height and width of the textarea/iframe
@@ -392,10 +396,13 @@
 		};
 
 		/**
-		 * Sets the height of the editor
-		 * @private
+		 * Sets or gets the height of the editor in px
+		 * @param int height New height
 		 */
-		setHeight = function (height) {
+		base.height = function (height) {
+			if(!height)
+				return editorContainer.height();
+			
 			editorContainer.height(height);
 			
 			height -= base.options.toolbarContainer === null?$toolbar.outerHeight(true):0;
@@ -433,8 +440,8 @@
 				
 			var height = Math.max(	body.scrollHeight,
 						documentElement.scrollHeight,
-						body.offsetHeight,
-						documentElement.offsetHeight,
+						body.offbase.height,
+						documentElement.offbase.height,
 						body.clientHeight,
 						documentElement.clientHeight);
 
@@ -445,7 +452,7 @@
 					sizeToPx($wysiwygEditor.css("padding-bottom"));
 
 			if(height !== $wysiwygEditor.outerHeight(true))
-				setHeight(height);
+				base.height(height);
 		};
 
 		/**
@@ -486,10 +493,10 @@
 					newWidth  = startWidth  + (e.pageX - startX);
 
 				if (newWidth >= minWidth && (maxWidth < 0 || newWidth <= maxWidth))
-					setWidth(newWidth);
+					base.width(newWidth);
 
 				if (newHeight >= minHeight && (maxHeight < 0 || newHeight <= maxHeight))
-					setHeight(newHeight);
+					base.height(newHeight);
 
 				e.preventDefault();
 			};
@@ -1120,11 +1127,11 @@
 		 */
 		handleWindowResize = function () {
 			if(base.options.height !== null && base.options.height.toString().indexOf("%") > -1)
-				setHeight(editorContainer.parent().height() *
+				base.height(editorContainer.parent().height() *
 					(parseFloat(base.options.height) / 100));
 
 			if(base.options.width !== null && base.options.width.toString().indexOf("%") > -1)
-				setWidth(editorContainer.parent().width() *
+				base.width(editorContainer.parent().width() *
 					(parseFloat(base.options.width) / 100));
 		};
 		
