@@ -174,6 +174,11 @@
 				
 			if(base.options.toolbar.indexOf('emoticon') !== -1)
 				initEmoticons();
+			
+			// force into source mode if is a browser that can't handle
+			// full editing
+			if(!$.sceditor.isWysiwygSupported())
+				base.toggleTextMode();
 		};
 
 		/**
@@ -321,22 +326,13 @@
 		 * @return bool
 		 */
 		base.readOnly = function(readOnly) {
-			var	contentEditable = $('<div contenteditable="true">')[0].contentEditable,
-				contentEditableSupported = typeof contentEditable !== 'undefined' && contentEditable !== 'inherit';
-
 			if(readOnly === false)
 			{
-				if(!contentEditableSupported)
-					getWysiwygDoc().designMode = 'On';
-
 				getWysiwygDoc().body.contentEditable = true;
 				$textEditor.removeAttr('readonly');
 			}
 			else if(readOnly === true)
 			{
-				if(!contentEditableSupported)
-					getWysiwygDoc().designMode = 'Off';
-				
 				getWysiwygDoc().body.contentEditable = false;
 				$textEditor.attr('readonly', 'readonly');
 			}
@@ -784,17 +780,23 @@
 
 		/**
 		 * Like wysiwygEditorInsertHtml except it converts any HTML to text
-		 * @private
+		 * @param {String} text
+		 * @param {String} endText
 		 */
-		base.wysiwygEditorInsertText = function (text) {
-			text = text.replace(/&/g, "&amp;")
-					.replace(/</g, "&lt;")
-					.replace(/>/g, "&gt;")
-					.replace(/ /g, "&nbsp;")
-					.replace(/\r\n|\r/g, "\n")
-					.replace(/\n/g, "<br />");
+		base.wysiwygEditorInsertText = function (text, endText) {
+			var escape = function(str) {
+				if(!str)
+					return str;
+				
+				return str.replace(/&/g, "&amp;")
+							.replace(/</g, "&lt;")
+							.replace(/>/g, "&gt;")
+							.replace(/ /g, "&nbsp;")
+							.replace(/\r\n|\r/g, "\n")
+							.replace(/\n/g, "<br />");
+			};
 			
-			base.wysiwygEditorInsertHtml(text);
+			base.wysiwygEditorInsertHtml(escape(text), escape(endText));
 		};
 		
 		/**
@@ -949,12 +951,15 @@
 		 * Switches between the WYSIWYG and plain text modes
 		 */
 		base.toggleTextMode = function () {
+			// don't allow switching to WYSIWYG if doesn't support it
+			if(!$.sceditor.isWysiwygSupported() && base.inSourceMode())
+				return;
+			
 			if(base.inSourceMode())
 				base.setWysiwygEditorValue(base.getTextareaValue());
 			else
 				base.setTextareaValue(base.getWysiwygEditorValue());
 			
-
 			lastRange = null;
 			$textEditor.toggle();
 			$wysiwygEditor.toggle();
@@ -1068,7 +1073,7 @@
 		 * 
 		 * @private
 		 */
-		handleKeyPress = function (e) {
+		handleKeyPress = function(e) {
 			base.closeDropDown();
 			
 			var	selectedContainer = rangeHelper.parentNode(),
@@ -1109,14 +1114,14 @@
 				keyPressFuncs[i].call(base, e, wysiwygEditor, $textEditor);
 		};
 		
-		handleKeyUp = function (e) {
+		handleKeyUp = function(e) {
 		};
 
 		/**
 		 * Handles any mousedown press in the WYSIWYG editor
 		 * @private
 		 */
-		handleMouseDown = function (e) {
+		handleMouseDown = function(e) {
 			base.closeDropDown();
 			lastRange = null;
 		};
@@ -1125,7 +1130,7 @@
 		 * Handles the window resize event. Needed to resize then editor
 		 * when the window size changes in fluid deisgns.
 		 */
-		handleWindowResize = function () {
+		handleWindowResize = function() {
 			if(base.options.height !== null && base.options.height.toString().indexOf("%") > -1)
 				base.height(editorContainer.parent().height() *
 					(parseFloat(base.options.height) / 100));
@@ -1161,7 +1166,7 @@
 		 * @private
 		 * @return void
 		 */
-		initLocale = function () {
+		initLocale = function() {
 			if($.sceditor.locale[base.options.locale])
 				locale = $.sceditor.locale[base.options.locale];
 			else
@@ -1212,6 +1217,40 @@
 		return v > 4 ? v : undef;
 	
 	}());
+	
+	$.sceditor.isWysiwygSupported = function() {
+		var	contentEditable				= $('<div contenteditable="true">')[0].contentEditable,
+			contentEditableSupported	= typeof contentEditable !== 'undefined' && contentEditable !== 'inherit',
+			userAgent					= navigator.userAgent;
+		
+		// if no contentEditable suppot then can't do WYSIWYG
+		if(!contentEditableSupported)
+			return false;
+		
+		// I hate having to use UA sniffing but as far as I can tell they say they support
+		// contentediable/design mode when it isn't really usable. This is the only
+		// way I can think to detect them and force them into source mode
+		var isUnsupported = /Opera Mobi|Opera Mini/i.test(userAgent);
+		
+		if(/Android/i.test(userAgent) && /Safari/i.test(userAgent))
+		{
+			var m = /Safari\/(\d+)/.exec(userAgent);
+			
+			// 534+ supports content editable
+			isUnsupported = (!m[1] ? true : m[1] < 534);
+		}
+		
+		// iOS 5 seems to support content editable
+		if(/iPhone|iPod|iPad/i.test(userAgent))
+			isUnsupported = !/OS 5(_\d)+ like Mac OS X/i.test(userAgent);
+		
+		// FireFox dose support WYSIWYG on mobiles so override
+		// any previous value if using FF
+		if(/fennec/i.test(userAgent))
+			isUnsupported = false;
+
+		return !isUnsupported;
+	};
 	
 	/**
 	 * Escapes a string so it's safe to use in regex
@@ -2642,12 +2681,18 @@
 		readOnly: false,
 		
 		autofocus: true,
+		
+		// If to run the editor without WYSIWYG support
+		runWithoutWysiwygSupport: false,
 
 		//add css to dropdown menu (eg. z-index)
 		dropDownCss: { }
 	};
 
 	$.fn.sceditor = function (options) {
+		if(!options.runWithoutWysiwygSupport && !$.sceditor.isWysiwygSupported())
+			return;
+		
 		return this.each(function () {
 			(new $.sceditor(this, options));
 		});

@@ -24,7 +24,11 @@ Version 1.3.5:
 	Added modern theme
 	Added office-toolbar and office themes
 	Added autofocus option
-	Add a roadmap to the GitHub wiki
+	Added a roadmap to the GitHub wiki
+	Added height and width methods
+	Added method to check for WYSIWYG support
+	Changed so that by default the editor won't start in browsers
+		that do not support WYSIWYG editing (old mobile browsers)
 
 Version 1.3.4:
 	Updated focus method to work in source mode

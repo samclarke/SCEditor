@@ -1096,6 +1096,9 @@
 	};
 
 	$.fn.sceditorBBCodePlugin = function(options) {
+		if(!options.runWithoutWysiwygSupport && !$.sceditor.isWysiwygSupported())
+			return;
+		
 		return this.each(function() {
 			(new $.sceditorBBCodePlugin(this, options));
 		});
