@@ -188,7 +188,7 @@
 		initEditor = function () {
 			var $doc, $body;
 
-			$textEditor		= $('<textarea></textarea>').hide();
+			$textEditor	= $('<textarea></textarea>').hide();
 			$wysiwygEditor	= $('<iframe frameborder="0"></iframe>');
 
 			if(window.location.protocol === "https:")
@@ -197,7 +197,7 @@
 			// add the editor to the HTML and store the editors element
 			editorContainer.append($wysiwygEditor).append($textEditor);
 			wysiwygEditor	= $wysiwygEditor[0];
-			textEditor		= $textEditor[0];
+			textEditor	= $textEditor[0];
 
 			base.width($textarea.width());
 			base.height($textarea.height());
@@ -227,6 +227,12 @@
 				.focus(function() {
 					lastRange = null;
 				});
+			
+			if(base.options.rtl)
+			{
+				$body.attr('dir', 'rtl');
+				$textEditor.attr('dir', 'rtl');
+			}
 			
 			if(base.options.enablePasteFiltering)
 				$body.bind("paste", handlePasteEvt);
@@ -299,7 +305,7 @@
 		};
 		
 		autofocus = function() {
-			var	doc		= wysiwygEditor.contentWindow.document,
+			var	doc	= wysiwygEditor.contentWindow.document,
 				body	= doc.body, rng;
 
 			if(!doc.createRange)
@@ -308,7 +314,7 @@
 			if(!body.firstChild)
 				return;
 			
-			rng	= doc.createRange();
+			rng = doc.createRange();
 			rng.setStart(body.firstChild, 0);
 			rng.setEnd(body.firstChild, 0);
 
@@ -439,7 +445,7 @@
 						body.offbase.height,
 						documentElement.offbase.height,
 						body.clientHeight,
-						documentElement.clientHeight);
+						documentElement.clientHeight );
 
 			height +=	toolbarHeight +
 					sizeToPx($wysiwygEditor.css("margin-top")) +
@@ -2679,6 +2685,8 @@
 		enablePasteFiltering: false,
 		
 		readOnly: false,
+		
+		rtl: false,
 		
 		autofocus: true,
 		
