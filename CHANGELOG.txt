@@ -11,8 +11,7 @@ TODO:
 	Add resize/expand to content option
 	Force android and possibley other mobiles to source mode only
 	Improve add/update/delete of commands and BBCodes
-	Add RTL mode option and maybe RTL button for paragraphs
-	Add editor id/class option
+	Add RTL button for paragraphs
 
 
 Version 1.3.5:
@@ -30,6 +29,8 @@ Version 1.3.5:
 	Added method to check for WYSIWYG support
 	Changed so that by default the editor won't start in browsers
 		that do not support WYSIWYG editing (old mobile browsers)
+	Added rtl option
+	Added id option
 
 Version 1.3.4:
 	Updated focus method to work in source mode

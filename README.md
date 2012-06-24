@@ -123,6 +123,13 @@ The year, month and day strings will be replaced with the users current year, mo
 **enablePasteFiltering** *boolean*
 If to enable paste filtering. **This feature is still experimental.**
 
+**id** *string*
+String to set the ID attribute of the editor container to. Useful if you want different styles for multiple instances of SEditor.
+
+**rtl** *boolean*
+If true, the entire editor will be set to RTL mode.
+
+
 
 ## License
 

@@ -34,7 +34,7 @@
 		 * The div which contains the editor and toolbar
 		 * @private
 		 */
-		var editorContainer = null;
+		var $editorContainer = null;
 
 		/**
 		 * The editors toolbar
@@ -140,10 +140,10 @@
 				(base.options.width !== null && base.options.width.toString().indexOf("%") > -1))
 				$(window).resize(handleWindowResize);
 
-			editorContainer = $('<div class="sceditor-container" />')
+			$editorContainer = $('<div class="sceditor-container" />')
 				.width($textarea.outerWidth())
 				.height($textarea.outerHeight());
-			$textarea.after(editorContainer);
+			$textarea.after($editorContainer);
 
 			// create the editor 
 			initToolBar();
@@ -152,6 +152,9 @@
 
 			if(base.options.resizeEnabled)
 				initResize();
+			
+			if(base.options.id)
+				$editorContainer.attr('id', base.options.id);
 
 			$(document).click(documentClickHandler);
 
@@ -195,7 +198,7 @@
 				$wysiwygEditor.attr("src", "javascript:false");
 
 			// add the editor to the HTML and store the editors element
-			editorContainer.append($wysiwygEditor).append($textEditor);
+			$editorContainer.append($wysiwygEditor).append($textEditor);
 			wysiwygEditor	= $wysiwygEditor[0];
 			textEditor	= $textEditor[0];
 
@@ -299,7 +302,7 @@
 
 			// append the toolbar to the toolbarContainer option if given
 			if(base.options.toolbarContainer === null)
-				editorContainer.append($toolbar);
+				$editorContainer.append($toolbar);
 			else
 				$(base.options.toolbarContainer).append($toolbar);
 		};
@@ -385,9 +388,9 @@
 		 */
 		base.width = function (width) {
 			if(!width)
-				return editorContainer.width();
+				return $editorContainer.width();
 			
-			editorContainer.width(width);
+			$editorContainer.width(width);
 
 			// fix the height and width of the textarea/iframe
 			$wysiwygEditor.width(width);
@@ -403,9 +406,9 @@
 		 */
 		base.height = function (height) {
 			if(!height)
-				return editorContainer.height();
+				return $editorContainer.height();
 			
-			editorContainer.height(height);
+			$editorContainer.height(height);
 			
 			height -= base.options.toolbarContainer === null?$toolbar.outerHeight(true):0;
 
@@ -469,8 +472,8 @@
 				startY		= 0,
 				startWidth	= 0,
 				startHeight	= 0,
-				origWidth	= editorContainer.width(),
-				origHeight	= editorContainer.height(),
+				origWidth	= $editorContainer.width(),
+				origHeight	= $editorContainer.height(),
 				dragging	= false,
 				minHeight, maxHeight, minWidth, maxWidth, mouseMoveFunc;
 
@@ -503,17 +506,17 @@
 				e.preventDefault();
 			};
 
-			editorContainer.append($grip);
-			editorContainer.append($cover.hide());
+			$editorContainer.append($grip);
+			$editorContainer.append($cover.hide());
 
 			$grip.mousedown(function (e) {
 				startX		= e.pageX;
 				startY		= e.pageY;
-				startWidth	= editorContainer.width();
-				startHeight	= editorContainer.height();
+				startWidth	= $editorContainer.width();
+				startHeight	= $editorContainer.height();
 				dragging	= true;
 
-				editorContainer.addClass('resizing');
+				$editorContainer.addClass('resizing');
 				$cover.show();
 				$(document).bind('mousemove', mouseMoveFunc);
 				e.preventDefault();
@@ -526,7 +529,7 @@
 				dragging = false;
 				$cover.hide();
 
-				editorContainer.removeClass('resizing');
+				$editorContainer.removeClass('resizing');
 				$(document).unbind('mousemove', mouseMoveFunc);
 				e.preventDefault();
 			});
@@ -552,8 +555,8 @@
 			$textarea.removeAttr('novalidate').unbind('submit', formSubmitHandler);
 			$(window).unbind('resize', handleWindowResize);
 			
-			editorContainer.remove();
-			editorContainer = null;
+			$editorContainer.remove();
+			$editorContainer = null;
 			
 			$textarea.removeData("sceditor").show();
 		};
@@ -611,7 +614,7 @@
 
 			$dropdown = $('<div class="sceditor-dropdown sceditor-' + dropDownName + '" />').css(o_css).append(content);
 
-			//editorContainer.after($dropdown);
+			//$editorContainer.after($dropdown);
 			$dropdown.appendTo($('body'));
 			dropdownIgnoreLastClick = true;
 
@@ -970,13 +973,13 @@
 			$textEditor.toggle();
 			$wysiwygEditor.toggle();
 			
-			editorContainer.removeClass('sourceMode');
-			editorContainer.removeClass('wysiwygMode');
+			$editorContainer.removeClass('sourceMode');
+			$editorContainer.removeClass('wysiwygMode');
 			
 			if(base.inSourceMode())
-				editorContainer.addClass('sourceMode');
+				$editorContainer.addClass('sourceMode');
 			else
-				editorContainer.addClass('wysiwygMode');
+				$editorContainer.addClass('wysiwygMode');
 			
 			updateToolBar();
 		};
@@ -1138,11 +1141,11 @@
 		 */
 		handleWindowResize = function() {
 			if(base.options.height !== null && base.options.height.toString().indexOf("%") > -1)
-				base.height(editorContainer.parent().height() *
+				base.height($editorContainer.parent().height() *
 					(parseFloat(base.options.height) / 100));
 
 			if(base.options.width !== null && base.options.width.toString().indexOf("%") > -1)
-				base.width(editorContainer.parent().width() *
+				base.width($editorContainer.parent().width() *
 					(parseFloat(base.options.width) / 100));
 		};
 		
@@ -2692,6 +2695,8 @@
 		
 		// If to run the editor without WYSIWYG support
 		runWithoutWysiwygSupport: false,
+		
+		id: null,
 
 		//add css to dropdown menu (eg. z-index)
 		dropDownCss: { }
