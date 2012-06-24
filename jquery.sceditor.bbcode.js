@@ -451,11 +451,11 @@
 					
 					// if only one attribute then remove the = from the start and strip any quotes
 					if((attrs.charAt(0) === "=" && (attrs.split("=").length - 1) <= 1) || bbcode === 'url')
-						attrsMap.defaultAttr = base.stripQuotes(attrs.substr(1));
+						attrsMap.defaultattr = base.stripQuotes(attrs.substr(1));
 					else
 					{
 						if(attrs.charAt(0) === "=")
-							attrs = "defaultAttr" + attrs;
+							attrs = "defaultattr" + attrs;
 
 						while((matches = atribsRegex.exec(attrs)))
 							attrsMap[matches[1].toLowerCase()] = base.stripQuotes(matches[2]);
@@ -680,7 +680,7 @@
 				return '[font=' + this.stripQuotes(element.css('font-family')) + ']' + content + '[/font]';
 			},
 			html: function(element, attrs, content) {
-				return '<font face="' + attrs.defaultAttr + '">' + content + '</font>';
+				return '<font face="' + attrs.defaultattr + '">' + content + '</font>';
 			}
 		},
 		// END_COMMAND
@@ -723,7 +723,7 @@
 				return '[size=' + size + ']' + content + '[/size]';
 			},
 			html: function(element, attrs, content) {
-				return '<font size="' + attrs.defaultAttr + '">' + content + '</font>';
+				return '<font size="' + attrs.defaultattr + '">' + content + '</font>';
 			}
 		},
 		// END_COMMAND
@@ -777,7 +777,7 @@
 				return '[color=' + color + ']' + content + '[/color]';
 			},
 			html: function(element, attrs, content) {
-				return '<font color="' + attrs.defaultAttr + '">' + content + '</font>';
+				return '<font color="' + attrs.defaultattr + '">' + content + '</font>';
 			}
 		},
 		// END_COMMAND
@@ -901,8 +901,8 @@
 					attribs += ' height="' + attrs.height + '"';
 
 				// handle [img=340x240]url[/img]
-				if(typeof attrs.defaultAttr !== "undefined") {
-					parts = attrs.defaultAttr.split(/x/i);
+				if(typeof attrs.defaultattr !== "undefined") {
+					parts = attrs.defaultattr.split(/x/i);
 
 					attribs = ' width="' + parts[0] + '"' +
 						' height="' + (parts.length === 2 ? parts[1] : parts[0]) + '"';
@@ -929,10 +929,10 @@
 				return '[url=' + decodeURI(element.attr('href')) + ']' + content + '[/url]';
 			},
 			html: function(element, attrs, content) {
-				if(typeof attrs.defaultAttr === "undefined" || attrs.defaultAttr.length === 0)
-					attrs.defaultAttr = content;
+				if(typeof attrs.defaultattr === "undefined" || attrs.defaultattr.length === 0)
+					attrs.defaultattr = content;
 
-				return '<a href="' + encodeURI(attrs.defaultAttr) + '">' + content + '</a>';
+				return '<a href="' + encodeURI(attrs.defaultattr) + '">' + content + '</a>';
 			}
 		},
 		// END_COMMAND
@@ -940,10 +940,10 @@
 		// START_COMMAND: E-mail
 		email: {
 			html: function(element, attrs, content) {
-				if(typeof attrs.defaultAttr === "undefined")
-					attrs.defaultAttr = content;
+				if(typeof attrs.defaultattr === "undefined")
+					attrs.defaultattr = content;
 
-				return '<a href="mailto:' + attrs.defaultAttr + '">' + content + '</a>';
+				return '<a href="mailto:' + attrs.defaultattr + '">' + content + '</a>';
 			}
 		},
 		// END_COMMAND
@@ -968,8 +968,8 @@
 				return '[quote' + attr + ']' + content + '[/quote]';
 			},
 			html: function(element, attrs, content) {
-				if(typeof attrs.defaultAttr !== "undefined")
-					content = '<cite>' + attrs.defaultAttr + '</cite>' + content;
+				if(typeof attrs.defaultattr !== "undefined")
+					content = '<cite>' + attrs.defaultattr + '</cite>' + content;
 
 				return '<blockquote>' + content + '</blockquote>';
 			}
