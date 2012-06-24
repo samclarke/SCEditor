@@ -8,7 +8,14 @@
 
 # compress CSS
 echo "Creating CSS sprites"
-#glue themes/icons/src themes/icons --project --less --algorithm=vertical --optipng --namespace=icon
+
+glue themes/icons/src/famfamfam themes/icons --less --algorithm=vertical --optipng --namespace=sceditor-button
+sed -i 's/famfamfam\-//' themes/icons/famfamfam.less
+sed -i 's/url,/link,/' themes/icons/famfamfam.less
+sed -i 's/url{/link{/' themes/icons/famfamfam.less
+sed -i 's/{/ div {/' themes/icons/famfamfam.less
+sed -i 's/,/ div,/' themes/icons/famfamfam.less
+sed -i 's/grip div/grip/' themes/icons/famfamfam.less
 
 for f in themes/icons/*.png
 do

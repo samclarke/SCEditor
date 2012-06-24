@@ -172,7 +172,7 @@
 		
 		getStyle = function(element, property) {
 			var	name = $.camelCase(property),
-				$elm;
+				$elm, ret, dir;
 
 			// add exception for align
 			if("text-align" === property)
@@ -181,7 +181,14 @@
 				
 				if($elm.parent().css(property) !== $elm.css(property) &&
 					$elm.css('display') === "block" && !$elm.is('hr') && !$elm.is('th'))
-					return $elm.css(property);
+					ret = $elm.css(property);
+				
+				// IE changes text-align to the same as direction so skip unless overried by user
+				dir = element.style['direction'];
+				if(dir && ((/right/i.test(ret) && dir === 'rtl') || (/left/i.test(ret) && dir === 'ltr')))
+					return null;
+				
+				return ret;
 			}
 			
 			if(element.style)
@@ -468,7 +475,7 @@
 					.replace(/</g, "&lt;")
 					.replace(/>/g, "&gt;")
 					.replace(/\r/g, "")
-					.replace(/(\[\/?(?:left|center|right|justify|align)\])\n/g, "$1")
+					.replace(/(\[\/?(?:left|center|right|justify|align|rtl|ltr)\])\n/g, "$1")
 					.replace(/\n/g, "<br />");
 
 			while(text !== oldText)
@@ -1043,6 +1050,28 @@
 				'" data-youtube-id="{0}" frameborder="0" allowfullscreen></iframe>'
 		},
 		// END_COMMAND
+		
+		
+		// START_COMMAND: Rtl
+		rtl: {
+			styles: {
+				"direction": ["rtl"]
+			},
+			format: "[rtl]{0}[/rtl]",
+			html: '<div style="direction: rtl">{0}</div>'
+		},
+		// END_COMMAND
+		
+		// START_COMMAND: Ltr
+		ltr: {
+			styles: {
+				"direction": ["ltr"]
+			},
+			format: "[ltr]{0}[/ltr]",
+			html: '<div style="direction: ltr">{0}</div>'
+		},
+		// END_COMMAND
+		
 		
 		// this is here so that commands above can be removed
 		// without having to remove the , after the last one.

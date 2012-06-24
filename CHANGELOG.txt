@@ -9,10 +9,7 @@ TODO:
 	Add isWhiteSpace check to BBCode converter to strip empty tags better
 	Add unit test for above and for bbcodes with lots of white space, some with content and some without
 	Add resize/expand to content option
-	Force android and possibley other mobiles to source mode only
 	Improve add/update/delete of commands and BBCodes
-	Add RTL button for paragraphs
-
 
 Version 1.3.5:
 	Fix bug in FF making pasting via right click difficult when empty
@@ -31,6 +28,7 @@ Version 1.3.5:
 		that do not support WYSIWYG editing (old mobile browsers)
 	Added rtl option
 	Added id option
+	Added rtl & ltr commands
 
 Version 1.3.4:
 	Updated focus method to work in source mode

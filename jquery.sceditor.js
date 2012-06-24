@@ -1892,6 +1892,63 @@
 		// END_COMMAND
 
 
+		// START_COMMAND: Ltr
+		ltr: {
+			exec: function() {
+				var	elm	= this.getRangeHelper().getFirstBlockParent(),
+					$elm	= $(elm);
+				
+				this.focus();
+				
+				if(!elm || $elm.is('body'))
+				{
+					this.execCommand("formatBlock", "p");
+				
+					elm	= this.getRangeHelper().getFirstBlockParent();
+					$elm	= $(elm);
+					
+					if(!elm || $elm.is('body'))
+						return;
+				}
+
+				if($elm.css('direction') === 'ltr')
+					$(elm).css('direction', '');
+				else
+					$(elm).attr('direction', 'ltr');
+			},
+			tooltip: "Left-to-Right"
+		},
+		// END_COMMAND
+
+		// START_COMMAND: Rtl
+		rtl: {
+			exec: function() {
+				var	elm	= this.getRangeHelper().getFirstBlockParent(),
+					$elm	= $(elm);
+				
+				this.focus();
+				
+				if(!elm || $elm.is('body'))
+				{
+					this.execCommand("formatBlock", "p");
+				
+					elm	= this.getRangeHelper().getFirstBlockParent();
+					$elm	= $(elm);
+					
+					if(!elm || $elm.is('body'))
+						return;
+				}
+
+				if($elm.css('direction') === 'rtl')
+					$(elm).css('direction', '');
+				else
+					$(elm).css('direction', 'rtl');
+			},
+			tooltip: "Right-to-Left"
+		},
+		// END_COMMAND
+
+
 		// START_COMMAND: Print
 		print: {
 			exec: "print",
@@ -2067,6 +2124,21 @@
 				return range.commonAncestorContainer;
 			else
 				return range.parentElement();
+		};
+		
+		base.getFirstBlockParent = function() {
+			var func = function(node) {
+				if(!$.sceditor.dom.isInline(node))
+					return node;
+				
+				var p = node.parentNode;
+				if(p)
+					return func(p)
+				
+				return null;
+			};
+			
+			return func(base.parentNode());
 		};
 	
 		/**
@@ -2595,7 +2667,7 @@
 		toolbar:	"bold,italic,underline,strike,subscript,superscript|left,center,right,justify|" +
 				"font,size,color,removeformat|cut,copy,paste,pastetext|bulletlist,orderedlist|" +
 				"table|code,quote|horizontalrule,image,email,link,unlink|emoticon,youtube,date,time|" +
-				"print,source",
+				"ltr,rtl|print,source",
 
 		// Stylesheet to include in the WYSIWYG editor. Will style the WYSIWYG elements
 		style: "jquery.sceditor.default.css",
