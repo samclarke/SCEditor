@@ -207,7 +207,7 @@
 				'<html><head><!--[if gte IE 9]><style>* {min-height: auto !important}</style><![endif]-->' +
 				'<meta http-equiv="Content-Type" content="text/html;charset=' + base.options.charset + '" />' +
 				'<link rel="stylesheet" type="text/css" href="' + base.options.style + '" />' +
-				'</head><body contenteditable="true"><div></div></body></html>'
+				'</head><body contenteditable="true"><span></span></body></html>'
 			);
 			getWysiwygDoc().close();
 			
