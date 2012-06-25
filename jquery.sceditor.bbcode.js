@@ -432,10 +432,10 @@
 		 * Converts BBCode to HTML
 		 * 
 		 * @param {String} text
-		 * @param {Bool} isPaste
+		 * @param {Bool} isFragment
 		 * @return {String} HTML
 		 */
-		base.getTextHandler = function(text, isPaste) {
+		base.getTextHandler = function(text, isFragment) {
 			var	oldText, replaceBBCodeFunc,
 				bbcodeRegex = /\[([^\[\s=]*?)(?:([^\[]*?))?\]((?:[\s\S(?!=\[\\\1)](?!\[\1))*?)\[\/(\1)\]/g,
 				atribsRegex = /(\S+)=((?:(?:(["'])(?:\\\3|[^\3])*?\3))|(?:[^'"\s]+))/g;
@@ -492,7 +492,7 @@
 			// to preserve them. Otherwise they will just be converted to 1!
 			text = text.replace(/ {2}(?=([^<\>]*?<|[^<\>]*?$))/g, " &nbsp;");
 			
-			return wrapInDivs(text, isPaste);
+			return wrapInDivs(text, isFragment);
 		};
 		
 		/**

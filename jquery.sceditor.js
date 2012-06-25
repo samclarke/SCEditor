@@ -154,25 +154,21 @@
 			$(textarea.form).attr('novalidate','novalidate').submit(formSubmitHandler);
 			
 			// load any textarea value into the editor
-			// Pass the value though the getTextHandler if it is set so that
-			// BBCode, ect. can be converted
 			var val = $textarea.hide().val();
-			if(base.options.getTextHandler)
-				val = base.options.getTextHandler(val);
-
 			if(val)
-				base.setWysiwygEditorValue(val);
+				base.val(val);
 			
 			if(base.options.autofocus)
 				autofocus();
-				
-			if(base.options.toolbar.indexOf('emoticon') !== -1)
-				initEmoticons();
 			
 			// force into source mode if is a browser that can't handle
 			// full editing
 			if(!$.sceditor.isWysiwygSupported())
 				base.toggleTextMode();
+			
+			if(base.options.toolbar.indexOf('emoticon') !== -1)
+				initEmoticons();
+
 		};
 
 		/**
@@ -212,7 +208,6 @@
 			
 			// set the key press event
 			$body.keypress(handleKeyPress);
-			
 			$doc.keypress(handleKeyPress)
 				.mousedown(handleMouseDown)
 				.bind("beforedeactivate keyup", saveRange)
@@ -890,6 +885,32 @@
 			return base.inSourceMode() ?
 				base.getTextareaValue() :
 				base.getWysiwygEditorValue();
+		};
+		
+		/**
+		 * Inserts HTML/BBCode into the editor
+		 * 
+		 * If end is supplied any slected text will be placed inbetween
+		 * start and end
+		 * @param {String} start
+		 * @param {String} end
+		 * @param {Boolean} filter
+		 */
+		base.insert = function (start, end, filter) {
+			if(base.inSourceMode())
+				base.textEditorInsertText(start, end);
+			else
+			{
+				if(end)
+					start += base.getRangeHelper().selectedHtml() + end;
+				
+				if(filter !== false && base.options.getTextHandler)
+					start = base.options.getTextHandler(start, true);
+				
+				base.wysiwygEditorInsertHtml(start);
+			}
+				
+			return this;
 		};
 		
 		/**
