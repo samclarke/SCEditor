@@ -96,7 +96,6 @@
 			handlePasteEvt,
 			handlePasteData,
 			handleKeyPress,
-			handleKeyUp,
 			handleMouseDown,
 			initEditor,
 			initToolBar,
@@ -129,11 +128,6 @@
 			if(base.options.locale !== null && base.options.locale !== "en")
 				initLocale();
 			
-			if(base.options.height !== null)
-				$textarea.height(base.options.height);
-			if(base.options.width !== null)
-				$textarea.width(base.options.width);
-
 			// if either width or height are % based, add the resize handler to update the editor
 			// when the window is resized
 			if((base.options.height !== null && base.options.height.toString().indexOf("%") > -1) ||
@@ -141,9 +135,9 @@
 				$(window).resize(handleWindowResize);
 
 			$editorContainer = $('<div class="sceditor-container" />')
-				.width($textarea.outerWidth())
-				.height($textarea.outerHeight());
-			$textarea.after($editorContainer);
+						.width($textarea.outerWidth())
+						.height($textarea.outerHeight())
+						.insertAfter($textarea);
 
 			// create the editor 
 			initToolBar();
@@ -157,10 +151,7 @@
 				$editorContainer.attr('id', base.options.id);
 
 			$(document).click(documentClickHandler);
-
-			(textarea.form ? $(textarea.form) : $textarea.parents("form"))
-				.attr('novalidate','novalidate')
-				.submit(formSubmitHandler);
+			$(textarea.form).attr('novalidate','novalidate').submit(formSubmitHandler);
 			
 			// load any textarea value into the editor
 			// Pass the value though the getTextHandler if it is set so that
@@ -202,8 +193,8 @@
 			wysiwygEditor	= $wysiwygEditor[0];
 			textEditor	= $textEditor[0];
 
-			base.width($textarea.width());
-			base.height($textarea.height());
+			base.width(base.options.width ? base.options.width : $textarea.width());
+			base.height(base.options.height ? base.options.height : $textarea.height());
 			
 			getWysiwygDoc().open();
 			getWysiwygDoc().write(
@@ -220,11 +211,9 @@
 			$body	= $doc.find("body");
 			
 			// set the key press event
-			$body.keypress(handleKeyPress)
-				.keyup(handleKeyUp);
+			$body.keypress(handleKeyPress);
 			
 			$doc.keypress(handleKeyPress)
-				.keyup(handleKeyUp)
 				.mousedown(handleMouseDown)
 				.bind("beforedeactivate keyup", saveRange)
 				.focus(function() {
@@ -248,12 +237,9 @@
 		 * @private
 		 */
 		initToolBar = function () {
-			var	group,
-				buttons,
+			var	group, buttons,
 				accessibilityName,
-				button,
-				i,
-				buttonClick,
+				button, i, buttonClick,
 				groups = base.options.toolbar.split("|");
 			
 			buttonClick = function (e) {
@@ -263,9 +249,10 @@
 					return;
 				
 				handleCommand($(this), base.commands[$(this).data("sceditor-command")]);
+				return false;
 			};
 
-			$toolbar   = $('<div class="sceditor-toolbar" />');
+			$toolbar = $('<div class="sceditor-toolbar" />');
 			for (i=0; i < groups.length; i++) {
 				group   = $('<div class="sceditor-group" />');
 				buttons = groups[i].split(",");
@@ -398,6 +385,8 @@
 
 			$textEditor.width(width);
 			$textEditor.width(width + (width - $textEditor.outerWidth(true)));
+			
+			return this;
 		};
 
 		/**
@@ -410,7 +399,7 @@
 			
 			$editorContainer.height(height);
 			
-			height -= base.options.toolbarContainer === null?$toolbar.outerHeight(true):0;
+			height -= base.options.toolbarContainer === null ? $toolbar.outerHeight(true) : 0;
 
 			// fix the height and width of the textarea/iframe
 			$wysiwygEditor.height(height);
@@ -418,6 +407,8 @@
 
 			$textEditor.height(height);
 			$textEditor.height(height + (height - $textEditor.outerHeight(true)));
+			
+			return this;
 		};
 		
 		/**
@@ -438,15 +429,14 @@
 		 * Expands the editor to the size of it's content
 		 */
 		base.expandToContent = function() {
-			var toolbarHeight = (base.options.toolbarContainer === null?$toolbar.outerHeight():0);
-			
-			var	body = getWysiwygDoc().body,
+			var	toolbarHeight	= (base.options.toolbarContainer === null?$toolbar.outerHeight():0),
+				body		= getWysiwygDoc().body,
 				documentElement = getWysiwygDoc().documentElement;
-				
+
 			var height = Math.max(	body.scrollHeight,
 						documentElement.scrollHeight,
-						body.offbase.height,
-						documentElement.offbase.height,
+						body.offsetHeight.height,
+						documentElement.offsetHeight.height,
 						body.clientHeight,
 						documentElement.clientHeight );
 
@@ -809,6 +799,22 @@
 		};
 		
 		/**
+		 * Inserts text into either WYSIWYG or textEditor depending on which
+		 * mode the editor is in.
+		 * 
+		 * @param {String} text
+		 * @param {String} endText
+		 */
+		base.insertText = function (text, endText) {
+			if(base.inSourceMode())
+				base.textEditorInsertText(text, endText);
+			else
+				base.wysiwygEditorInsertText(text, endText);
+			
+			return this;
+		};
+		
+		/**
 		 * Like wysiwygEditorInsertHtml but works on the
 		 * text editor instead
 		 * 
@@ -822,9 +828,9 @@
 			
 			if(textEditor.selectionStart != null)
 			{
-				start = textEditor.selectionStart;
-				end = textEditor.selectionEnd;
-				txtLen = text.length;
+				start	= textEditor.selectionStart;
+				end	= textEditor.selectionEnd;
+				txtLen	= text.length;
 				
 				if(endText)
 					text += textEditor.value.substring(start, end) + endText;
@@ -860,6 +866,32 @@
 			return rangeHelper;
 		};
 
+		/**
+		 * Gets or sets the value of the editor
+		 * @param {String} val
+		 * @param {Boolean} filter
+		 */
+		base.val = function (val, filter) {
+			if(typeof val === "string")
+			{
+				if(base.inSourceMode())
+					base.setTextareaValue(val);
+				else
+				{
+					if(filter !== false && base.options.getTextHandler)
+						val = base.options.getTextHandler(val);
+					
+					base.setWysiwygEditorValue(val);
+				}
+				
+				return this;
+			}
+			
+			return base.inSourceMode() ?
+				base.getTextareaValue() :
+				base.getWysiwygEditorValue();
+		};
+		
 		/**
 		 * Gets the WYSIWYG editors HTML which is between the body tags
 		 */
@@ -1054,12 +1086,12 @@
 		 * @param mixed param
 		 */
 		base.execCommand = function (command, param) {
-			var executed = false;
+			var	executed	= false,
+				$parentNode	= $(rangeHelper.parentNode());
 			base.focus();
 
 			// don't apply any comannds to code elements
-			if($(rangeHelper.parentNode()).is('code') ||
-				$(rangeHelper.parentNode()).parents('code').length !== 0)
+			if($parentNode.is('code') || $parentNode.parents('code').length !== 0)
 				return;
 
 			if(getWysiwygDoc())
@@ -1068,12 +1100,11 @@
 				{
 					executed = getWysiwygDoc().execCommand(command, false, param);
 				}
-				catch (e){}
+				catch (e) {}
 			}
 
 			// show error if execution failed and an error message exists
-			if(!executed && typeof base.commands[command] !== "undefined" &&
-				typeof base.commands[command].errorMessage !== "undefined")
+			if(!executed && base.commands[command] && base.commands[command].errorMessage)
 				alert(base._(base.commands[command].errorMessage));
 		};
 		
@@ -1085,14 +1116,13 @@
 		handleKeyPress = function(e) {
 			base.closeDropDown();
 			
-			var	selectedContainer = rangeHelper.parentNode(),
-				$selectedContainer = $(selectedContainer);
+			var $parentNode = $(rangeHelper.parentNode());
 
-			// "Fix" (ok it's a hack) for blocklevel elements being duplicated in some browsers when
+			// "Fix" (ok it's a cludge) for blocklevel elements being duplicated in some browsers when
 			// enter is pressed instead of inserting a newline
 			if(e.which === 13)
 			{
-				if($selectedContainer.is('code, blockquote') || $selectedContainer.parents('code, blockquote').length !== 0)
+				if($parentNode.is('code, blockquote') || $parentNode.parents('code, blockquote').length !== 0)
 				{
 					lastRange = null;
 					base.wysiwygEditorInsertHtml('<br />', null, true);
@@ -1115,15 +1145,12 @@
 			}, true);
 
 			// don't apply to code elements
-			if($selectedContainer.is('code') || $selectedContainer.parents('code').length !== 0)
+			if($parentNode.is('code') || $parentNode.parents('code').length !== 0)
 				return;
 			
 			var i = keyPressFuncs.length;
 			while(i--)
 				keyPressFuncs[i].call(base, e, wysiwygEditor, $textEditor);
-		};
-		
-		handleKeyUp = function(e) {
 		};
 
 		/**
@@ -2133,7 +2160,7 @@
 				
 				var p = node.parentNode;
 				if(p)
-					return func(p)
+					return func(p);
 				
 				return null;
 			};
