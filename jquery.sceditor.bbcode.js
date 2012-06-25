@@ -955,14 +955,20 @@
 			},
 			isBlock: true,
 			format: function(element, content) {
-				var	attr = '';
-
-				if($(element).children("cite:first").length === 1) {
-					attr = '=' + $(element).children("cite:first").text();
-
-					content = '';
+				var	author,
+					attr = '',
+					$elm = $(element);
+		
+				if($elm.children("cite:first").length === 1 || $elm.data("author")) {
+					author = $(element).children("cite:first").text() || $elm.data("author");
+		
+					
+					$elm.data("author", author)
 					$(element).children("cite:first").remove();
-					content = this.elementToBbcode($(element));
+		
+					content	= '';
+					content	= this.elementToBbcode($(element));
+					attr	= '=' + author;
 				}
 
 				return '[quote' + attr + ']' + content + '[/quote]';

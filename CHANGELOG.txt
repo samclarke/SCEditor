@@ -29,6 +29,7 @@ Version 1.3.5:
 	Added id option
 	Added rtl & ltr commands
 	Added val, insertText and insert methods
+	Fix quote bug where author from nested quotes would be removed
 
 Version 1.3.4:
 	Updated focus method to work in source mode
