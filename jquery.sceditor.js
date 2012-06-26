@@ -2755,7 +2755,7 @@
 							df.appendChild(n);
 						}
 						// otherwise just move it
-						else if(node.nodeType === 1)
+						else
 							df.appendChild(node);
 					}
 					// if this node contains the start node then add it
