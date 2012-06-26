@@ -420,7 +420,7 @@ test("Email", function() {
 });
 
 test("Quote", function() {
-	expect(3);
+	expect(4);
 
 	equal(
 		this.sb.getHtmlHandler("", html2dom("<blockquote>Testing 1.2.3....</blockquote>", true)),
@@ -432,6 +432,12 @@ test("Quote", function() {
 		this.sb.getHtmlHandler("", html2dom("<blockquote><cite>admin</cite>Testing 1.2.3....</blockquote>", true)),
 		"[quote=admin]Testing 1.2.3....[/quote]",
 		"Quote with cite (author)"
+	);
+	
+	equal(
+		this.sb.getHtmlHandler("", html2dom("<blockquote><cite>admin</cite>Testing 1.2.3....<blockquote><cite>admin</cite>Testing 1.2.3....</blockquote></blockquote>", true)),
+		"[quote=admin]Testing 1.2.3....[quote=admin]Testing 1.2.3....[/quote][/quote]",
+		"Nested quote with cite (author)"
 	);
 	
 	equal(
