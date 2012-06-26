@@ -1075,6 +1075,21 @@
 		base.inSourceMode = function () {
 			return $textEditor.is(':visible');
 		};
+		
+		/**
+		 * Gets or sets if the editor is in sourceMode
+		 * @return boolean
+		 * @memberOf jQuery.sceditor.prototype
+		 */
+		base.sourceMode = function (enable) {
+			if(typeof enable !== 'boolean')
+				return base.inSourceMode();
+			
+			if((base.inSourceMode() && !enable) || (!base.inSourceMode() && enable))
+				base.toggleTextMode();
+			
+			return this;
+		};
 
 		/**
 		 * Switches between the WYSIWYG and plain text modes
@@ -1104,6 +1119,8 @@
 			
 			updateToolBar();
 		};
+		
+		
 
 		/**
 		 * Handles the passed command
