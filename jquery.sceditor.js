@@ -2588,6 +2588,8 @@
 				
 				while(node != null)
 				{
+					var next = reverse ? node.previousSibling : node.nextSibling;
+					
 					if(!innermostFirst && func(node) === false)
 						return false;
 					
@@ -2599,7 +2601,7 @@
 						return false;
 					
 					// move to next child
-					node = reverse ? node.previousSibling : node.nextSibling;
+					node = next;
 				}
 			}
 		},
@@ -2611,7 +2613,7 @@
 		/**
 		 * Checks if an element is inline
 		 * 
-		 * @param bool includeInlineBlock If passed inline-block will count as an inline element instead of block
+		 * @param {bool} includeInlineBlock If passed inline-block will count as an inline element instead of block
 		 * @return bool
 		 * @memberOf jQuery.sceditor.dom.prototype
 		 */
@@ -2630,8 +2632,8 @@
 		/**
 		 * Copys the CSS from 1 node to another
 		 * 
-		 * @param HTMLElement from
-		 * @param HTMLElement to
+		 * @param {HTMLElement} from
+		 * @param {HTMLElement} to
 		 * @memberOf jQuery.sceditor.dom.prototype
 		 */
 		copyCSS: function(from, to) {
@@ -2662,7 +2664,7 @@
 						rParent	= parent.parentNode,
 						before	= base.extractContents(parent, node),
 						middle	= node;
-					
+
 					// copy current styling so when moved out of the parent
 					// it still has the same styling
 					base.copyCSS(middle, middle);
@@ -2753,7 +2755,7 @@
 							df.appendChild(n);
 						}
 						// otherwise just move it
-						else
+						else if(node.nodeType === 1)
 							df.appendChild(node);
 					}
 					// if this node contains the start node then add it
@@ -2765,7 +2767,7 @@
 						n.appendChild(c);
 						df.appendChild(n);
 					}
-				});
+				}, false);
 
 				return df;
 			}(commonAncestor));

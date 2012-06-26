@@ -11,32 +11,31 @@ TODO:
 	Improve add/update/delete of commands and BBCodes
 
 Version 1.3.5:
-	Fix bug in FF making pasting via right click difficult when empty
+	Fixed bug in FF making pasting via right click difficult when empty
 		- Thanks to Nibogo2 for reporting
 	Added readonly method and option
 	Added expandToContent method
 	Reorgernised themes to their own directory.
 	Changed themes to be in .less format and added to build file
-	Added modern theme
-	Added office-toolbar and office themes
+	Added modern, office-toolbar and office themes
 	Added autofocus option
 	Added a roadmap to the GitHub wiki
 	Added height and width methods
 	Added method to check for WYSIWYG support
 	Changed so that by default the editor won't start in browsers
 		that do not support WYSIWYG editing (old mobile browsers)
-	Added rtl option
+	Added rtl option along with rtl & ltr commands
 	Added id option
-	Added rtl & ltr commands
-	Added val, insertText and insert methods
-	Fix quote bug where author from nested quotes would be removed
+	Added sourceMode, val, insertText and insert methods
+	Fixed quote bug where author from nested quotes would be removed
 	Added Estonian language file
 		- Thanks to Rivo for translating
+	Fixed bug with dom.fixNesting when fixing certain tags
 
 Version 1.3.4:
 	Updated focus method to work in source mode
 	Added public inSourceMode method
-	Fix bug causing BBCodes to be striped
+	Fixed bug causing BBCodes to be striped
 		- Thanks to Nibogo2 for reporting
 
 Version 1.3.3:
