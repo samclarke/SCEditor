@@ -964,7 +964,7 @@
 				
 				if(filter !== false && base.options.getTextHandler)
 					start = base.options.getTextHandler(start, true);
-				
+
 				if(convertEmoticons !== false)
 					start = replaceEmoticons(start);
 				
@@ -2090,6 +2090,8 @@
 	
 	/**
 	 * Range helper class
+	 * @class rangeHelper
+	 * @name jQuery.sceditor.rangeHelper
 	 */
 	$.sceditor.rangeHelper = function(w, d) {
 		var	win, doc,
@@ -2118,6 +2120,7 @@
 		 * html and endHTML.
 		 * @param string html
 		 * @param string endHTML
+		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.insertHTML = function(html, endHTML) {
 			var node, endNode, div;
@@ -2147,6 +2150,7 @@
 		 * node and endNode.
 		 * @param Node node
 		 * @param Node endNode
+		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.insertNode = function(node, endNode) {
 			if(isW3C)
@@ -2178,6 +2182,7 @@
 		/**
 		 * Clones the selected Range
 		 * @return Range|TextRange
+		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.cloneSelected = function() {
 			if(!isW3C)
@@ -2189,6 +2194,7 @@
 		/**
 		 * Gets the selected Range
 		 * @return Range|TextRange
+		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.selectedRange = function() {
 			var sel;
@@ -2210,6 +2216,7 @@
 		/**
 		 * Gets the selected HTML
 		 * @return string
+		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.selectedHtml = function() {
 			var range = base.selectedRange();
@@ -2231,6 +2238,11 @@
 			return '';
 		};
 		
+		/**
+		 * Gets the parent node of the selected contents in the range
+		 * @return HTMLElement
+		 * @memberOf jQuery.sceditor.rangeHelper.prototype
+		 */
 		base.parentNode = function() {
 			var range = base.selectedRange();
 			
@@ -2240,6 +2252,12 @@
 				return range.parentElement();
 		};
 		
+		/**
+		 * Gets the first block level parent of the selected
+		 * contents of the range.
+		 * @return HTMLElement
+		 * @memberOf jQuery.sceditor.rangeHelper.prototype
+		 */
 		base.getFirstBlockParent = function() {
 			var func = function(node) {
 				if(!$.sceditor.dom.isInline(node))
@@ -2259,6 +2277,7 @@
 		 * Inserts a node at either the start or end of the current selection
 		 * @param Bool start
 		 * @param Node node
+		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.insertNodeAt = function(start, node) {
 			var range = base.cloneSelected();
@@ -2275,6 +2294,7 @@
 		 * Creates a marker node
 		 * @param String id
 		 * @return Node
+		 * @private
 		 */
 		_createMarker = function(id) {
 			base.removeMarker(id);
@@ -2290,6 +2310,7 @@
 	
 		/**
 		 * Inserts start/end markers for the current selection
+		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.insertMarkers = function() {
 			base.insertNodeAt(true, _createMarker(startMarker));
@@ -2300,6 +2321,7 @@
 		 * Gets the marker with the specified ID
 		 * @param String id
 		 * @return Node
+		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.getMarker = function(id) {
 			return doc.getElementById(id);
@@ -2308,6 +2330,7 @@
 		/**
 		 * Removes the marker with the specified ID
 		 * @param String id
+		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.removeMarker = function(id) {
 			var marker = base.getMarker(id);
@@ -2318,6 +2341,7 @@
 	
 		/**
 		 * Removes the start/end markers
+		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.removeMarkers = function() {
 			base.removeMarker(startMarker);
@@ -2326,6 +2350,7 @@
 	
 		/**
 		 * Saves the current range location
+		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.saveRange = function() {
 			base.insertMarkers();
@@ -2334,6 +2359,7 @@
 		/**
 		 * Selected the specified range
 		 * @param Range|TextRange range
+		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.selectRange = function(range) {
 			if(!isW3C)
@@ -2347,6 +2373,7 @@
 	
 		/**
 		 * Restores the last saved range if possible
+		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.restoreRange = function() {
 			var	range	= base.selectedRange(),
@@ -2454,6 +2481,7 @@
 		 * @param Bool repSorted If the keys array is pre sorted
 		 * @param Int longestKey Length of the longest key
 		 * @param Bool requireWhiteSpace If the key must be surrounded by whitespace
+		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.raplaceKeyword = function(rep, includeAfter, repSorted, longestKey, requireWhiteSpace, curChar) {
 			if(!repSorted)
@@ -2519,6 +2547,8 @@
 
 	/**
 	 * Static DOM helper class
+	 * @class dom
+	 * @name jQuery.sceditor.dom
 	 */
 	$.sceditor.dom = {
 		/**
@@ -2527,11 +2557,12 @@
 		 * The function should accept 1 parameter being the node.
 		 * If the function returns false the loop will be exited.
 		 * 
-		 * @param HTMLElement	node
-		 * @param function		func			Function that is called for every node, should accept 1 param for the node
-		 * @param bool			innermostFirst	If the innermost node should be passed to the function before it's parents
-		 * @param bool			siblingsOnly	If to only traverse the nodes siblings
-		 * @param bool			reverse			If to traverse the nodes in reverse
+		 * @param {HTMLElement}	node
+		 * @param {function}	func		Function that is called for every node, should accept 1 param for the node
+		 * @param {bool}	innermostFirst	If the innermost node should be passed to the function before it's parents
+		 * @param {bool}	siblingsOnly	If to only traverse the nodes siblings
+		 * @param {bool}	reverse		If to traverse the nodes in reverse
+		 * @memberOf jQuery.sceditor.dom.prototype
 		 */
 		traverse: function(node, func, innermostFirst, siblingsOnly, reverse) {
 			if(node)
@@ -2565,6 +2596,7 @@
 		 * 
 		 * @param bool includeInlineBlock If passed inline-block will count as an inline element instead of block
 		 * @return bool
+		 * @memberOf jQuery.sceditor.dom.prototype
 		 */
 		isInline: function(elm, includeInlineBlock) {
 			if(elm == null || elm.nodeType !== 1)
@@ -2579,33 +2611,21 @@
 		},
 		
 		/**
-		 * Gets the next node. If the node has no siblings
-		 * it gets the parents next sibling, and so on untill
-		 * another element is found. If none are found
-		 * it returns null.
+		 * Copys the CSS from 1 node to another
 		 * 
-		 * @param HTMLElement node
-		 * @return HTMLElement
+		 * @param HTMLElement from
+		 * @param HTMLElement to
+		 * @memberOf jQuery.sceditor.dom.prototype
 		 */
-		/*getNext: function(node) {
-			if(!node)
-				return null;
-			
-			var n = node.nextSibling;
-			if(n)
-				return n;
-			
-			return getNext(node.parentNode);
-		},*/
-		
 		copyCSS: function(from, to) {
 			to.style.cssText = from.style.cssText;
 		},
 		
 		/**
-		 * Fixes block level elements in inline elements.
+		 * Fixes block level elements inside in inline elements.
 		 * 
-		 * @param HTMLElement The node to fix
+		 * @param {HTMLElement} node
+		 * @memberOf jQuery.sceditor.dom.prototype
 		 */
 		fixNesting: function(node) {
 			var	base = this,
@@ -2617,7 +2637,7 @@
 				};
 			
 			base.traverse(node, function(node) {
-				// if node is an element, and is blocklevel and the parent isn't block level
+				// if node is an element, and it is blocklevel and the parent isn't block level
 				// then it needs fixing
 				if(node.nodeType === 1 && !base.isInline(node) && base.isInline(node.parentNode))
 				{
@@ -2639,9 +2659,10 @@
 		/**
 		 * Finds the common parent of two nodes
 		 * 
-		 * @param HTMLElement node1
-		 * @param HTMLElement node2
+		 * @param {HTMLElement} node1
+		 * @param {HTMLElement} node2
 		 * @return HTMLElement
+		 * @memberOf jQuery.sceditor.dom.prototype
 		 */
 		findCommonAncestor: function(node1, node2) {
 			// not as fast as making two arrays of parents and comparing
@@ -2651,10 +2672,11 @@
 		},
 		
 		/**
-		 * Removes unused whitespace from the root and it's children
+		 * Removes unused whitespace from the root and all it's children
 		 * 
 		 * @param HTMLElement root
 		 * @return void
+		 * @memberOf jQuery.sceditor.dom.prototype
 		 */
 		removeWhiteSpace: function(root) {
 			// 00A0 is non-breaking space which should not be striped
@@ -2674,9 +2696,10 @@
 		/**
 		 * Extracts all the nodes between the start and end nodes
 		 * 
-		 * @param HTMLElement startNode The node to start extracting at
-		 * @param HTMLElement endNode The node to stop extracting at
-		 * @return DocumentFragment
+		 * @param {HTMLElement} startNode	The node to start extracting at
+		 * @param {HTMLElement} endNode		The node to stop extracting at
+		 * @return {DocumentFragment}
+		 * @memberOf jQuery.sceditor.dom.prototype
 		 */
 		extractContents: function(startNode, endNode) {
 			var	base		= this,
@@ -2889,7 +2912,7 @@
 	};
 
 	$.fn.sceditor = function (options) {
-		if(!options.runWithoutWysiwygSupport && !$.sceditor.isWysiwygSupported())
+		if((!options || !options.runWithoutWysiwygSupport) && !$.sceditor.isWysiwygSupported())
 			return;
 		
 		return this.each(function () {

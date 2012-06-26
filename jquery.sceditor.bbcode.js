@@ -113,9 +113,9 @@
 				//font: { txtExec: ["[u]", "[/u]"] },
 				//size: { txtExec: ["[u]", "[/u]"] },
 				//color: { txtExec: ["[u]", "[/u]"] },
-				//bulletlist: { txtExec: ["[u]", "[/u]"] },
-				//orderedlist: { txtExec: ["[u]", "[/u]"] },
-				//table: { txtExec: ["[u]", "[/u]"] },
+				bulletlist: { txtExec: ["[ul][li]", "[/li][/ul]"] },
+				orderedlist: { txtExec: ["[ol][li]", "[/li][/ol]"] },
+				table: { txtExec: ["[table][tr][td]", "[/td][/tr][/table]"] },
 				horizontalrule: { txtExec: ["[hr]"] },
 				code: { txtExec: ["[code]", "[/code]"] },
 				image: { txtExec: function() {
@@ -455,8 +455,9 @@
 		 * @memberOf jQuery.sceditorBBCodePlugin.prototype
 		 */
 		base.getTextHandler = function(text, isFragment) {
+
 			var	oldText, replaceBBCodeFunc,
-				bbcodeRegex = /\[([^\[\s=]*?)(?:([^\[]*?))?\]((?:[\s\S(?!=\[\\\1)](?!\[\1))*?)\[\/(\1)\]/g,
+				bbcodeRegex = /\[([^\[\s=]+)(?:([^\[]+))?\]((?:[\s\S](?!\[\1))*?)\[\/(\1)\]/g,
 				atribsRegex = /(\S+)=((?:(?:(["'])(?:\\\3|[^\3])*?\3))|(?:[^'"\s]+))/g;
 
 			replaceBBCodeFunc = function(str, bbcode, attrs, content)
@@ -505,8 +506,9 @@
 
 			// As hr is the only bbcode not to have a start and end tag it's
 			// just being replace here instead of adding support for it above.
-			text = text.replace(/\[hr\]/gi, "<hr>");
-			
+			text = text.replace(/\[hr\]/gi, "<hr>")
+					.replace(/\[\*\]/gi, "<li>");
+
 			// replace multi-spaces which are not inside tags with a non-breaking space
 			// to preserve them. Otherwise they will just be converted to 1!
 			text = text.replace(/ {2}(?=([^<\>]*?<|[^<\>]*?$))/g, " &nbsp;");
@@ -1151,7 +1153,7 @@
 	};
 
 	$.fn.sceditorBBCodePlugin = function(options) {
-		if(!options.runWithoutWysiwygSupport && !$.sceditor.isWysiwygSupported())
+		if((!options || !options.runWithoutWysiwygSupport) && !$.sceditor.isWysiwygSupported())
 			return;
 		
 		return this.each(function() {
