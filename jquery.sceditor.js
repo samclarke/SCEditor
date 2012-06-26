@@ -1,5 +1,5 @@
 /**
- * SCEditor v1.3.5
+ * SCEditor
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
  * Copyright (C) 2011-2012, Sam Clarke (samclarke.com)
@@ -7,6 +7,11 @@
  * SCEditor is dual licensed under the MIT and GPL licenses:
  *	http://www.opensource.org/licenses/mit-license.php
  *	http://www.gnu.org/licenses/gpl.html
+ * 
+ * @fileoverview SCEditor - A lightweight WYSIWYG BBCode and HTML editor
+ * @author Sam Clarke
+ * @version 1.3.5
+ * @requires jQuery 
  */
 
 // ==ClosureCompiler==
@@ -20,7 +25,19 @@
 (function ($) {
 	'use strict';
 
+	/**
+	 * SCEditor - A lightweight WYSIWYG editor
+	 *
+	 * @param {Element} el The textarea to be converted
+	 * @return {Object} options
+	 * @class sceditor
+	 * @name jQuery.sceditor
+	 */
 	$.sceditor = function (el, options) {
+		/**
+		 * Alias of this
+		 * @private
+		 */
 		var base = this;
 
 		/**
@@ -119,6 +136,7 @@
 		/**
 		 * Initializer. Creates the editor iframe and textarea
 		 * @private
+		 * @name sceditor.init
 		 */
 		init = function () {
 			$textarea.data("sceditor", base);
@@ -289,6 +307,10 @@
 				$(base.options.toolbarContainer).append($toolbar);
 		};
 		
+		/**
+		 * Autofocus the editor
+		 * @private
+		 */
 		autofocus = function() {
 			var	doc	= wysiwygEditor.contentWindow.document,
 				body	= doc.body, rng;
@@ -315,6 +337,8 @@
 		 * 
 		 * @param bool readOnly
 		 * @return bool
+		 * @since 1.3.5
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.readOnly = function(readOnly) {
 			if(readOnly === false)
@@ -367,6 +391,8 @@
 		/**
 		 * Sets or gets the width of the editor in px
 		 * @param int width New width
+		 * @since 1.3.5
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.width = function (width) {
 			if(!width)
@@ -386,7 +412,10 @@
 
 		/**
 		 * Sets or gets the height of the editor in px
-		 * @param int height New height
+		 * 
+		 * @param {int} height New height
+		 * @since 1.3.5
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.height = function (height) {
 			if(!height)
@@ -422,6 +451,8 @@
 		
 		/**
 		 * Expands the editor to the size of it's content
+		 * @since 1.3.5
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.expandToContent = function() {
 			var	toolbarHeight	= (base.options.toolbarContainer === null?$toolbar.outerHeight():0),
@@ -534,6 +565,7 @@
 		/**
 		 * Destroys the editor, removing all elements and
 		 * event handlers.
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.destory = function () {
 			$(document).unbind('click', documentClickHandler);
@@ -577,8 +609,8 @@
 		 * @param HTMLElement	menuItem	The button to align the drop down with
 		 * @param string	dropDownName	Used for styling the dropown, will be a class sceditor-dropDownName
 		 * @param string	content			The HTML content of the dropdown
-		 * @param bool		ieUnselectable	If to add the unselectable attribute to all the contents elements. Stops
-		 *									IE from deselecting the text in the editor
+		 * @param bool		ieUnselectable	If to add the unselectable attribute to all the contents elements. Stops IE from deselecting the text in the editor
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.createDropDown = function (menuItem, dropDownName, content, ieUnselectable) {
 			base.closeDropDown();
@@ -696,6 +728,7 @@
 		/**
 		 * @param {Element} elm
 		 * @param {Element} pastearea
+		 * @private
 		 */
 		handlePasteData = function(elm, pastearea) {
 			// fix any invalid nesting
@@ -719,6 +752,7 @@
 		 * Closes the current drop down
 		 * 
 		 * @param bool focus If to focus the editor on close
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.closeDropDown = function (focus) {
 			if($dropdown !== null) {
@@ -732,6 +766,7 @@
 
 		/**
 		 * Gets the WYSIWYG editors document
+		 * @private
 		 */
 		getWysiwygDoc = function () {
 			if (wysiwygEditor.contentDocument)
@@ -760,6 +795,7 @@
 		 * @param string endHtml	If specified instead of the inserted HTML replacing the selected text the selected text
 		 *                          will be placed between html and endHtml. If there is no selected text html and endHtml will
 		 *                          be concated together.
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.wysiwygEditorInsertHtml = function (html, endHtml, overrideCodeBlocking) {
 			base.focus();
@@ -776,6 +812,7 @@
 		 * Like wysiwygEditorInsertHtml except it converts any HTML to text
 		 * @param {String} text
 		 * @param {String} endText
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.wysiwygEditorInsertText = function (text, endText) {
 			var escape = function(str) {
@@ -799,6 +836,8 @@
 		 * 
 		 * @param {String} text
 		 * @param {String} endText
+		 * @since 1.3.5
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.insertText = function (text, endText) {
 			if(base.inSourceMode())
@@ -815,6 +854,7 @@
 		 * 
 		 * @param {String} text
 		 * @param {String} endText
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.textEditorInsertText = function (text, endText) {
 			var range, start, end, txtLen;
@@ -856,6 +896,7 @@
 		
 		/**
 		 * Gets the current rangeHelper instance
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.getRangeHelper = function () {
 			return rangeHelper;
@@ -865,6 +906,8 @@
 		 * Gets or sets the value of the editor
 		 * @param {String} val
 		 * @param {Boolean} filter
+		 * @since 1.3.5
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.val = function (val, filter) {
 			if(typeof val === "string")
@@ -892,20 +935,38 @@
 		 * 
 		 * If end is supplied any slected text will be placed inbetween
 		 * start and end
+		 * 
 		 * @param {String} start
 		 * @param {String} end
 		 * @param {Boolean} filter
+		 * @param {Boolean} convertEmoticons
+		 * @since 1.3.5
+		 * @memberOf jQuery.sceditor.prototype
 		 */
-		base.insert = function (start, end, filter) {
+		base.insert = function (start, end, filter, convertEmoticons) {
 			if(base.inSourceMode())
 				base.textEditorInsertText(start, end);
 			else
 			{
 				if(end)
-					start += base.getRangeHelper().selectedHtml() + end;
+				{
+					var	html = base.getRangeHelper().selectedHtml(),
+						frag = $('<div>').appendTo($('body')).hide().html(html);
+					
+					if(filter !== false && base.options.getHtmlHandler)
+					{
+						html = base.options.getHtmlHandler(html, frag);
+						frag.remove();
+					}
+					
+					start += html + end;
+				}
 				
 				if(filter !== false && base.options.getTextHandler)
 					start = base.options.getTextHandler(start, true);
+				
+				if(convertEmoticons !== false)
+					start = replaceEmoticons(start);
 				
 				base.wysiwygEditorInsertHtml(start);
 			}
@@ -915,6 +976,7 @@
 		
 		/**
 		 * Gets the WYSIWYG editors HTML which is between the body tags
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.getWysiwygEditorValue = function (filter) {
 			var	$body = $wysiwygEditor.contents().find("body"),
@@ -933,6 +995,7 @@
 		/**
 		 * Gets the text editor value
 		 * @param bool filter If to run the returned string through the filter or if to return the raw value. Defaults to filter.
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.getTextareaValue = function (filter) {
 			var val = $textEditor.val();
@@ -946,6 +1009,7 @@
 		/**
 		 * Sets the WYSIWYG HTML editor value. Should only be the HTML contained within the body tags
 		 * @param bool filter If to run the returned string through the filter or if to return the raw value. Defaults to filter.
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.setWysiwygEditorValue = function (value) {
 			getWysiwygDoc().body.innerHTML = replaceEmoticons(value);
@@ -953,6 +1017,7 @@
 
 		/**
 		 * Sets the text editor value
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.setTextareaValue = function (value) {
 			$textEditor.val(value);
@@ -960,6 +1025,7 @@
 
 		/**
 		 * Updates the forms textarea value
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.updateTextareaValue = function () {
 			if(base.inSourceMode())
@@ -1004,6 +1070,7 @@
 		/**
 		 * If the editor is in source code mode
 		 * @return boolean
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.inSourceMode = function () {
 			return $textEditor.is(':visible');
@@ -1011,6 +1078,7 @@
 
 		/**
 		 * Switches between the WYSIWYG and plain text modes
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.toggleTextMode = function () {
 			// don't allow switching to WYSIWYG if doesn't support it
@@ -1067,6 +1135,7 @@
 
 		/**
 		 * Fucuses the editors input area
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.focus = function () {
 			if(!base.inSourceMode())
@@ -1105,6 +1174,7 @@
 		 * 
 		 * @param string|function command
 		 * @param mixed param
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.execCommand = function (command, param) {
 			var	executed	= false,
@@ -1201,9 +1271,8 @@
 		 * Translates the string into the locale language.
 		 * 
 		 * Replaces any {0}, {1}, {2}, ect. with the params provided.
-
-		 * @public
 		 * @return string
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base._ = function() {
 			var args = arguments;
@@ -1242,23 +1311,14 @@
 		init();
 	};
 	
-	// ----------------------------------------------------------
-	// A short snippet for detecting versions of IE in JavaScript
-	// without resorting to user-agent sniffing
-	// ----------------------------------------------------------
-	// If you're not in IE (or IE version is less than 5) then:
-	// ie === undefined
-	// If you're in IE (>=5) then you can determine which version:
-	// ie === 7; // IE7
-	// Thus, to detect IE:
-	// if (ie) {}
-	// And to detect the version:
-	// ie === 6 // IE6
-	// ie > 7 // IE8, IE9 ...
-	// ie < 9 // Anything less than IE9
-	// ----------------------------------------------------------
-	// UPDATE: Now using Live NodeList idea from @jdalton
-	// Source: https://gist.github.com/527683
+	/**
+	 * Detects which version of IE is being used if any.
+	 * 
+	 * Will be the IE version number or undefined if not IE.
+	 * 
+	 * Source: https://gist.github.com/527683
+	 * @memberOf jQuery.sceditor
+	 */
 	$.sceditor.ie = (function(){
 
 		var	undef,
@@ -1275,10 +1335,16 @@
 	
 	}());
 	
+	/**
+	 * Detects if WYSIWYG is supported by the browser
+	 * 
+	 * @return bool
+	 * @memberOf jQuery.sceditor
+	 */
 	$.sceditor.isWysiwygSupported = function() {
-		var	contentEditable				= $('<div contenteditable="true">')[0].contentEditable,
+		var	contentEditable			= $('<div contenteditable="true">')[0].contentEditable,
 			contentEditableSupported	= typeof contentEditable !== 'undefined' && contentEditable !== 'inherit',
-			userAgent					= navigator.userAgent;
+			userAgent			= navigator.userAgent;
 		
 		// if no contentEditable suppot then can't do WYSIWYG
 		if(!contentEditableSupported)
@@ -2595,7 +2661,7 @@
 			var regex = /[^\S|\u00A0]+/g;
 
 			this.traverse(root, function(node) {
-				if(node.nodeType === 3 && $(node).parents('code, pre').length === 0)
+				if(node.nodeType === 3 && $(node).parents('code, pre').length === 0 && node.nodeValue)
 				{
 					if(!/\S|\u00A0/.test(node.nodeValue))
 						node.nodeValue = " ";

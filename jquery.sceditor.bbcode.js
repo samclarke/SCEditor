@@ -19,6 +19,14 @@
 (function($) {
 	'use strict';
 
+	/**
+	 * BBCode plugin for SCEditor
+	 *
+	 * @param {Element} el The textarea to be converted
+	 * @return {Object} options
+	 * @class sceditorBBCodePlugin
+	 * @name jQuery.sceditorBBCodePlugin
+	 */
 	$.sceditorBBCodePlugin = function(element, options) {
 		var base = this;
 
@@ -68,6 +76,8 @@
 
 		/**
 		 * Initializer
+		 * @Private
+		 * @name sceditorBBCodePlugin.init
 		 */
 		init = function() {
 			$.data(element, "sceditorbbcode", base);
@@ -139,7 +149,9 @@
 						
 						this.textEditorInsertText("[youtube]" + url + "[/youtube]");
 					}
-				} }
+				} },
+				rtl: { txtExec: ["[rtl]", "[/rtl]"] },
+				ltr: { txtExec: ["[ltr]", "[/ltr]"] },
 			};
 
 			return $.extend(true, {}, merge, $.sceditor.commands);
@@ -202,6 +214,7 @@
 		 * 
 		 * @private
 		 * @return string Content with any matching bbcode tags wrapped around it.
+		 * @Private
 		 */
 		handleStyles = function(element, content, blockLevel) {
 			var	elementPropVal,
@@ -248,6 +261,7 @@
 		 * @param	string			content		The Tags text content
 		 * @param	bool			blockLevel	If to convert block level tags
 		 * @return	string	Content with any matching bbcode tags wrapped around it.
+		 * @Private
 		 */
 		handleTags = function(element, content, blockLevel) {
 			var tag = element[0].nodeName.toLowerCase();
@@ -322,6 +336,7 @@
 		 * {0}, {1}, {2}, ect. with the params provided
 		 * @private
 		 * @return string
+		 * @Private
 		 */
 		formatString = function() {
 			var args = arguments;
@@ -336,6 +351,7 @@
 		 * Removes any leading or trailing quotes ('")
 		 *
 		 * @return string
+		 * @memberOf jQuery.sceditorBBCodePlugin.prototype
 		 */
 		base.stripQuotes = function(str) {
 			return str.replace(/^["']+/, "").replace(/["']+$/, "");
@@ -346,10 +362,11 @@
 		 * @param string	html	Html string, this function ignores this, it works off domBody
 		 * @param HtmlElement	domBody	Editors dom body object to convert
 		 * @return string BBCode which has been converted from HTML 
+		 * @memberOf jQuery.sceditorBBCodePlugin.prototype
 		 */
 		base.getHtmlHandler = function(html, domBody) {
 			$.sceditor.dom.removeWhiteSpace(domBody[0]);
-			
+
 			return $.trim(base.elementToBbcode(domBody));
 		};
 
@@ -361,6 +378,7 @@
 		 * @param HtmlElement	element		The element to convert to BBCode
 		 * @param array			vChildren	Valid child tags allowed
 		 * @return string BBCode
+		 * @memberOf jQuery.sceditorBBCodePlugin.prototype
 		 */
 		base.elementToBbcode = function($element) {
 			return (function toBBCode(node, vChildren) {
@@ -434,6 +452,7 @@
 		 * @param {String} text
 		 * @param {Bool} isFragment
 		 * @return {String} HTML
+		 * @memberOf jQuery.sceditorBBCodePlugin.prototype
 		 */
 		base.getTextHandler = function(text, isFragment) {
 			var	oldText, replaceBBCodeFunc,
@@ -500,6 +519,7 @@
 		 * 
 		 * @param string html
 		 * @return string HTML
+		 * @Private
 		 */
 		wrapInDivs = function(html, excludeFirstLast)
 		{
