@@ -126,6 +126,7 @@
 			initLocale,
 			sizeToPx,
 			updateToolBar,
+			textEditorSelectedText,
 			autofocus;
 
 		/**
@@ -1234,8 +1235,15 @@
 			updateToolBar();
 		};
 		
+		textEditorSelectedText = function () {
+			textEditor.focus();
+			
+			if(textEditor.selectionStart != null)
+				return textEditor.value.substring(textEditor.selectionStart, textEditor.selectionEnd);
+			else if(document.selection.createRange)
+				return document.selection.createRange().text;
+		};
 		
-
 		/**
 		 * Handles the passed command
 		 * @private
@@ -1249,7 +1257,7 @@
 					if($.isArray(command.txtExec))
 						base.textEditorInsertText.apply(base, command.txtExec);
 					else
-						command.txtExec.call(base, caller);
+						command.txtExec.call(base, caller, textEditorSelectedText());
 				}
 				
 				return;
@@ -1261,7 +1269,7 @@
 			if($.isFunction(command.exec))
 				command.exec.call(base, caller);
 			else
-				base.execCommand (command.exec, command.hasOwnProperty("execParam") ? command.execParam : null);
+				base.execCommand(command.exec, command.hasOwnProperty("execParam") ? command.execParam : null);
 		};
 
 		/**

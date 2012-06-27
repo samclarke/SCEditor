@@ -101,8 +101,6 @@
 		};
 		
 		mergeTextModeCommands = function() {
-			// TODO: use selection as display text if is one.
-			// TODO: add translations of the prompts
 			var merge = {
 				bold: { txtExec: ["[b]", "[/b]"] },
 				italic: { txtExec: ["[i]", "[/i]"] },
@@ -152,29 +150,29 @@
 				table: { txtExec: ["[table][tr][td]", "[/td][/tr][/table]"] },
 				horizontalrule: { txtExec: ["[hr]"] },
 				code: { txtExec: ["[code]", "[/code]"] },
-				image: { txtExec: function() {
-					var url = prompt(this._("Enter the images URL:"));
+				image: { txtExec: function(caller, selected) {
+					var url = prompt(this._("Enter the image URL:"), selected);
 					
 					if(url)
 						this.insertText("[img]" + url + "[/img]");
 				} },
-				email: { txtExec: function() {
-					var	email	= prompt(this._("Enter the e-mail address:"), "@"),
+				email: { txtExec: function(caller, selected) {
+					var	email	= prompt(this._("Enter the e-mail address:"), selected || "@"),
 						text	= prompt(this._("Enter the displayed text:"), email) || email;
 					
 					if(email)
 						this.insertText("[email=" + email + "]" + text + "[/email]");
 				} },
-				link: { txtExec: function() {
-					var	url	= prompt(this._("Enter the links URL:"), "http://"),
+				link: { txtExec: function(caller, selected) {
+					var	url	= prompt(this._("Enter URL:"), selected || "http://"),
 						text	= prompt(this._("Enter the displayed text:"), url) || url;
 					
 					if(url)
 						this.insertText("[url=" + url + "]" + text + "[/url]");
 				} },
 				quote: { txtExec: ["[quote]", "[/quote]"] },
-				youtube: { txtExec: function() {
-					var url = prompt(this._("Enter the YouTube video URL or ID:"));
+				youtube: { txtExec: function(caller, selected) {
+					var url = prompt(this._("Enter the YouTube video URL or ID:"), selected);
 					
 					if(url)
 					{
