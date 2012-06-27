@@ -71,6 +71,6 @@ fi
 if $DO_DOCS; then
 	echo "Creating Docs"
 
-	jsdoc -d=./doc ./
+	jsdoc --exclude=jquery.sceditor.xhtml.js -D="title:SCEditor" -D="noGlobal:true" -t=./build/CodeView -d=./docs ./
 fi
 
