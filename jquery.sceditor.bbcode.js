@@ -151,7 +151,7 @@
 					}
 				} },
 				rtl: { txtExec: ["[rtl]", "[/rtl]"] },
-				ltr: { txtExec: ["[ltr]", "[/ltr]"] },
+				ltr: { txtExec: ["[ltr]", "[/ltr]"] }
 			};
 
 			return $.extend(true, {}, merge, $.sceditor.commands);

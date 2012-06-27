@@ -330,31 +330,38 @@
 		};
 		
 		/**
-		 * Sets the editors read only property
+		 * Gets the readOnly property of the editor
 		 * 
-		 * If no argument is pass it will just return the editors current
-		 * read only state
-		 * 
-		 * @param bool readOnly
-		 * @return bool
 		 * @since 1.3.5
+		 * @function
 		 * @memberOf jQuery.sceditor.prototype
+		 * @name readOnly
+		 * @return {boolean}
+		 */
+		/**
+		 * Sets the readOnly property of the editor
+		 * 
+		 * @param {boolean} readOnly
+		 * @since 1.3.5
+		 * @function
+		 * @memberOf jQuery.sceditor.prototype
+		 * @name readOnly^2
+		 * @return {this}
 		 */
 		base.readOnly = function(readOnly) {
-			if(readOnly === false)
-			{
-				getWysiwygDoc().body.contentEditable = true;
+			if(typeof readOnly !== 'boolean')
+				return $textEditor.attr('readonly') === 'readonly';
+			
+			getWysiwygDoc().body.contentEditable = !readOnly;
+			
+			if(!readOnly)
 				$textEditor.removeAttr('readonly');
-			}
-			else if(readOnly === true)
-			{
-				getWysiwygDoc().body.contentEditable = false;
+			else
 				$textEditor.attr('readonly', 'readonly');
-			}
 			
-			updateToolBar(readOnly === true);
+			updateToolBar(readOnly);
 			
-			return $textEditor.attr('readonly') === 'readonly';
+			return this;
 		};
 		
 		/**
@@ -389,10 +396,23 @@
 		};
 
 		/**
-		 * Sets or gets the width of the editor in px
-		 * @param int width New width
+		 * Gets the width of the editor in px
+		 * 
 		 * @since 1.3.5
+		 * @function
 		 * @memberOf jQuery.sceditor.prototype
+		 * @name width
+		 * @return {int}
+		 */
+		/**
+		 * Sets the width of the editor
+		 * 
+		 * @param {int} width Width in px
+		 * @since 1.3.5
+		 * @function
+		 * @memberOf jQuery.sceditor.prototype
+		 * @name width^2
+		 * @return {this}
 		 */
 		base.width = function (width) {
 			if(!width)
@@ -411,11 +431,23 @@
 		};
 
 		/**
-		 * Sets or gets the height of the editor in px
+		 * Gets the height of the editor in px
 		 * 
-		 * @param {int} height New height
 		 * @since 1.3.5
+		 * @function
 		 * @memberOf jQuery.sceditor.prototype
+		 * @name height
+		 * @return {int}
+		 */
+		/**
+		 * Sets the height of the editor
+		 * 
+		 * @param {int} height Height in px
+		 * @since 1.3.5
+		 * @function
+		 * @memberOf jQuery.sceditor.prototype
+		 * @name height^2
+		 * @return {this}
 		 */
 		base.height = function (height) {
 			if(!height)
@@ -437,6 +469,7 @@
 		
 		/**
 		 * Converts the string returned from jQuery CSS func to px int
+		 * 
 		 * @private
 		 */
 		sizeToPx = function(size) {
@@ -451,7 +484,10 @@
 		
 		/**
 		 * Expands the editor to the size of it's content
+		 * 
 		 * @since 1.3.5
+		 * @function
+		 * @name expandToContent
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.expandToContent = function() {
@@ -565,6 +601,8 @@
 		/**
 		 * Destroys the editor, removing all elements and
 		 * event handlers.
+		 * @function
+		 * @name destory
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.destory = function () {
@@ -606,10 +644,13 @@
 
 		/**
 		 * Creates a menu item drop down
+		 * 
 		 * @param HTMLElement	menuItem	The button to align the drop down with
 		 * @param string	dropDownName	Used for styling the dropown, will be a class sceditor-dropDownName
 		 * @param string	content			The HTML content of the dropdown
 		 * @param bool		ieUnselectable	If to add the unselectable attribute to all the contents elements. Stops IE from deselecting the text in the editor
+		 * @function
+		 * @name createDropDown
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.createDropDown = function (menuItem, dropDownName, content, ieUnselectable) {
@@ -752,6 +793,8 @@
 		 * Closes the current drop down
 		 * 
 		 * @param bool focus If to focus the editor on close
+		 * @function
+		 * @name closeDropDown
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.closeDropDown = function (focus) {
@@ -783,18 +826,17 @@
 
 
 		/**
-		 * Inserts HTML into WYSIWYG editor. If endHtml is defined and some text is selected the
-		 * selected text will be put inbetween html and endHtml. If endHtml isn't defined and some
-		 * text is selected it will be replaced by the HTML
+		 * <p>Inserts HTML into WYSIWYG editor.</p>
 		 * 
-		 * The HTML can have only one root node, if it has more than one only the first will be used.
-		 * e.g. with: <b>test</b><i>test2</i> only <b>test</b> will be inserted. To fix this you could
-		 * do: <span><b>test</b><i>test2</i></span>
+		 * <p>If endHtml is specified instead of the inserted HTML replacing the selected
+		 * text the selected text will be placed between html and endHtml. If there is
+		 * no selected text html and endHtml will be concated together.</p>
 		 * 
-		 * @param string html		The HTML to insert
-		 * @param string endHtml	If specified instead of the inserted HTML replacing the selected text the selected text
-		 *                          will be placed between html and endHtml. If there is no selected text html and endHtml will
-		 *                          be concated together.
+		 * @param {string} html
+		 * @param {string} [endHtml=null]
+		 * @param {boolean} [overrideCodeBlocking=false]
+		 * @function
+		 * @name wysiwygEditorInsertHtml
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.wysiwygEditorInsertHtml = function (html, endHtml, overrideCodeBlocking) {
@@ -809,9 +851,13 @@
 		};
 
 		/**
-		 * Like wysiwygEditorInsertHtml except it converts any HTML to text
+		 * Like wysiwygEditorInsertHtml except it will convert any HTML into text
+		 * before inserting it.
+		 * 
 		 * @param {String} text
-		 * @param {String} endText
+		 * @param {String} [endText=null]
+		 * @function
+		 * @name wysiwygEditorInsertText
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.wysiwygEditorInsertText = function (text, endText) {
@@ -831,12 +877,18 @@
 		};
 		
 		/**
-		 * Inserts text into either WYSIWYG or textEditor depending on which
-		 * mode the editor is in.
+		 * <p>Inserts text into either WYSIWYG or textEditor depending on which
+		 * mode the editor is in.</p>
+		 * 
+		 * <p>If endText is specified any selected text will be placed between
+		 * text and endText. If no text is selected text and endText will
+		 * just be concated together.</p>
 		 * 
 		 * @param {String} text
-		 * @param {String} endText
+		 * @param {String} [endText=null]
 		 * @since 1.3.5
+		 * @function
+		 * @name insertText
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.insertText = function (text, endText) {
@@ -849,11 +901,13 @@
 		};
 		
 		/**
-		 * Like wysiwygEditorInsertHtml but works on the
-		 * text editor instead
+		 * Like wysiwygEditorInsertHtml but inserts text into the text
+		 * (source mode) editor instead
 		 * 
 		 * @param {String} text
-		 * @param {String} endText
+		 * @param {String} [endText=null]
+		 * @function
+		 * @name textEditorInsertText
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.textEditorInsertText = function (text, endText) {
@@ -896,6 +950,10 @@
 		
 		/**
 		 * Gets the current rangeHelper instance
+		 * 
+		 * @return jQuery.sceditor.rangeHelper
+		 * @function
+		 * @name getRangeHelper
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.getRangeHelper = function () {
@@ -903,10 +961,23 @@
 		};
 
 		/**
-		 * Gets or sets the value of the editor
-		 * @param {String} val
-		 * @param {Boolean} filter
+		 * Gets the value of the editor
+		 * 
 		 * @since 1.3.5
+		 * @return {string}
+		 * @function
+		 * @name val
+		 * @memberOf jQuery.sceditor.prototype
+		 */
+		/**
+		 * Sets the value of the editor
+		 * 
+		 * @param {String} val
+		 * @param {Boolean} [filter]
+		 * @return {this}
+		 * @since 1.3.5
+		 * @function
+		 * @name val^2
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.val = function (val, filter) {
@@ -931,16 +1002,20 @@
 		};
 		
 		/**
-		 * Inserts HTML/BBCode into the editor
+		 * <p>Inserts HTML/BBCode into the editor</p>
 		 * 
-		 * If end is supplied any slected text will be placed inbetween
-		 * start and end
+		 * <p>If end is supplied any slected text will be placed between
+		 * start and end. If there is no selected text start and end
+		 * will be concated together.</p>
 		 * 
 		 * @param {String} start
-		 * @param {String} end
-		 * @param {Boolean} filter
-		 * @param {Boolean} convertEmoticons
+		 * @param {String} [end=null]
+		 * @param {Boolean} [filter=true]
+		 * @param {Boolean} [convertEmoticons=true]
+		 * @return {this}
 		 * @since 1.3.5
+		 * @function
+		 * @name insert
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.insert = function (start, end, filter, convertEmoticons) {
@@ -976,6 +1051,11 @@
 		
 		/**
 		 * Gets the WYSIWYG editors HTML which is between the body tags
+		 * 
+		 * @param {bool} [filter=true]
+		 * @return {string}
+		 * @function
+		 * @name getWysiwygEditorValue
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.getWysiwygEditorValue = function (filter) {
@@ -994,7 +1074,11 @@
 
 		/**
 		 * Gets the text editor value
-		 * @param bool filter If to run the returned string through the filter or if to return the raw value. Defaults to filter.
+		 * 
+		 * @param {bool} [filter=true]
+		 * @return {string}
+		 * @function
+		 * @name getTextareaValue
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.getTextareaValue = function (filter) {
@@ -1007,8 +1091,12 @@
 		};
 
 		/**
-		 * Sets the WYSIWYG HTML editor value. Should only be the HTML contained within the body tags
-		 * @param bool filter If to run the returned string through the filter or if to return the raw value. Defaults to filter.
+		 * Sets the WYSIWYG HTML editor value. Should only be the HTML
+		 * contained within the body tags
+		 * 
+		 * @param {string} value
+		 * @function
+		 * @name setWysiwygEditorValue
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.setWysiwygEditorValue = function (value) {
@@ -1017,6 +1105,10 @@
 
 		/**
 		 * Sets the text editor value
+		 * 
+		 * @param {string} value
+		 * @function
+		 * @name setTextareaValue
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.setTextareaValue = function (value) {
@@ -1024,7 +1116,11 @@
 		};
 
 		/**
-		 * Updates the forms textarea value
+		 * Updates the textarea that the editor is replacing
+		 * with the value currently inside the editor.
+		 * 
+		 * @function
+		 * @name updateTextareaValue
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.updateTextareaValue = function () {
@@ -1069,7 +1165,10 @@
 		
 		/**
 		 * If the editor is in source code mode
-		 * @return boolean
+		 * 
+		 * @return {bool}
+		 * @function
+		 * @name inSourceMode
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.inSourceMode = function () {
@@ -1077,8 +1176,20 @@
 		};
 		
 		/**
-		 * Gets or sets if the editor is in sourceMode
+		 * Gets if the editor is in sourceMode
+		 * 
 		 * @return boolean
+		 * @function
+		 * @name sourceMode
+		 * @memberOf jQuery.sceditor.prototype
+		 */
+		/**
+		 * Sets if the editor is in sourceMode
+		 * 
+		 * @param {bool} enable
+		 * @return {this}
+		 * @function
+		 * @name sourceMode^2
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.sourceMode = function (enable) {
@@ -1093,6 +1204,9 @@
 
 		/**
 		 * Switches between the WYSIWYG and plain text modes
+		 * 
+		 * @function
+		 * @name toggleTextMode
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.toggleTextMode = function () {
@@ -1152,6 +1266,10 @@
 
 		/**
 		 * Fucuses the editors input area
+		 * 
+		 * @return {this}
+		 * @function
+		 * @name focus
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.focus = function () {
@@ -1171,6 +1289,8 @@
 			}
 			else
 				textEditor.focus();
+			
+			return this;
 		};
 
 		/**
@@ -1189,8 +1309,10 @@
 		/**
 		 * Executes a command on the WYSIWYG editor
 		 * 
-		 * @param string|function command
-		 * @param mixed param
+		 * @param {String|Function} command
+		 * @param {String|Boolean} [param]
+		 * @function
+		 * @name execCommand
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.execCommand = function (command, param) {
@@ -1288,7 +1410,12 @@
 		 * Translates the string into the locale language.
 		 * 
 		 * Replaces any {0}, {1}, {2}, ect. with the params provided.
-		 * @return string
+		 * 
+		 * @param {string} str
+		 * @param {...String} args
+		 * @return {string}
+		 * @function
+		 * @name _
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base._ = function() {
@@ -1334,6 +1461,7 @@
 	 * Will be the IE version number or undefined if not IE.
 	 * 
 	 * Source: https://gist.github.com/527683
+	 * @type {int}
 	 * @memberOf jQuery.sceditor
 	 */
 	$.sceditor.ie = (function(){
@@ -1355,7 +1483,7 @@
 	/**
 	 * Detects if WYSIWYG is supported by the browser
 	 * 
-	 * @return bool
+	 * @return {bool}
 	 * @memberOf jQuery.sceditor
 	 */
 	$.sceditor.isWysiwygSupported = function() {
@@ -1363,24 +1491,32 @@
 			contentEditableSupported	= typeof contentEditable !== 'undefined' && contentEditable !== 'inherit',
 			userAgent			= navigator.userAgent;
 		
-		// if no contentEditable suppot then can't do WYSIWYG
 		if(!contentEditableSupported)
 			return false;
 		
-		// I hate having to use UA sniffing but as far as I can tell they say they support
-		// contentediable/design mode when it isn't really usable. This is the only
-		// way I can think to detect them and force them into source mode
+		// I think blackberry and webos both support it or hopefully
+		// give a valid value for the contentEditable detection above
+		// so they are not included here.
+		
+		// I hate having to use UA sniffing but as some mobile browsers say they support
+		// contentediable/design mode when it isn't usable (i.e. you can't eneter text, ect.).
+		// This is the only way I can think of to detect them.
 		var isUnsupported = /Opera Mobi|Opera Mini/i.test(userAgent);
 		
-		if(/Android/i.test(userAgent) && /Safari/i.test(userAgent))
+		if(/Android/i.test(userAgent))
 		{
-			var m = /Safari\/(\d+)/.exec(userAgent);
+			isUnsupported = true;
 			
-			// 534+ supports content editable
-			isUnsupported = (!m[1] ? true : m[1] < 534);
+			if(/Safari/i.test(userAgent))
+			{
+				var m = /Safari\/(\d+)/.exec(userAgent);
+				
+				// android browser 534+ supports content editable
+				isUnsupported = (!m[1] ? true : m[1] < 534);
+			}
 		}
 		
-		// iOS 5 seems to support content editable
+		// iOS 5+ seems to support content editable
 		if(/iPhone|iPod|iPad/i.test(userAgent))
 			isUnsupported = !/OS 5(_\d)+ like Mac OS X/i.test(userAgent);
 		
@@ -1394,8 +1530,10 @@
 	
 	/**
 	 * Escapes a string so it's safe to use in regex
-	 * @param string str The strong to escape
-	 * @return string
+	 * 
+	 * @param {string} str
+	 * @return {string}
+	 * @memberOf jQuery.sceditor
 	 */
 	$.sceditor.regexEscape = function (str) {
 		return str.replace(/[\$\?\[\]\.\*\(\)\|]/g, "\\$&")
@@ -2567,7 +2705,9 @@
 	 * @class dom
 	 * @name jQuery.sceditor.dom
 	 */
-	$.sceditor.dom = {
+	$.sceditor.dom =
+	/** @lends jQuery.sceditor.dom */
+	{
 		/**
 		 * Loop all child nodes of the passed node
 		 * 
@@ -2579,7 +2719,6 @@
 		 * @param {bool}	innermostFirst	If the innermost node should be passed to the function before it's parents
 		 * @param {bool}	siblingsOnly	If to only traverse the nodes siblings
 		 * @param {bool}	reverse		If to traverse the nodes in reverse
-		 * @memberOf jQuery.sceditor.dom.prototype
 		 */
 		traverse: function(node, func, innermostFirst, siblingsOnly, reverse) {
 			if(node)
@@ -2606,6 +2745,10 @@
 			}
 		},
 		
+		/**
+		 * Like traverse but loops in reverse
+		 * @see traverse
+		 */
 		rTraverse: function(node, func, innermostFirst, siblingsOnly) {
 			this.traverse(node, func, innermostFirst, siblingsOnly, true);
 		},
@@ -2615,7 +2758,6 @@
 		 * 
 		 * @param {bool} includeInlineBlock If passed inline-block will count as an inline element instead of block
 		 * @return bool
-		 * @memberOf jQuery.sceditor.dom.prototype
 		 */
 		isInline: function(elm, includeInlineBlock) {
 			if(elm == null || elm.nodeType !== 1)
@@ -2634,7 +2776,6 @@
 		 * 
 		 * @param {HTMLElement} from
 		 * @param {HTMLElement} to
-		 * @memberOf jQuery.sceditor.dom.prototype
 		 */
 		copyCSS: function(from, to) {
 			to.style.cssText = from.style.cssText;
@@ -2644,7 +2785,6 @@
 		 * Fixes block level elements inside in inline elements.
 		 * 
 		 * @param {HTMLElement} node
-		 * @memberOf jQuery.sceditor.dom.prototype
 		 */
 		fixNesting: function(node) {
 			var	base = this,
@@ -2681,7 +2821,6 @@
 		 * @param {HTMLElement} node1
 		 * @param {HTMLElement} node2
 		 * @return HTMLElement
-		 * @memberOf jQuery.sceditor.dom.prototype
 		 */
 		findCommonAncestor: function(node1, node2) {
 			// not as fast as making two arrays of parents and comparing
@@ -2695,7 +2834,6 @@
 		 * 
 		 * @param HTMLElement root
 		 * @return void
-		 * @memberOf jQuery.sceditor.dom.prototype
 		 */
 		removeWhiteSpace: function(root) {
 			// 00A0 is non-breaking space which should not be striped
@@ -2718,7 +2856,6 @@
 		 * @param {HTMLElement} startNode	The node to start extracting at
 		 * @param {HTMLElement} endNode		The node to stop extracting at
 		 * @return {DocumentFragment}
-		 * @memberOf jQuery.sceditor.dom.prototype
 		 */
 		extractContents: function(startNode, endNode) {
 			var	base		= this,
@@ -2775,13 +2912,83 @@
 	};
 	
 	/**
+	 * Static command helper class
+	 * @class command
+	 * @name jQuery.sceditor.command
+	 */
+	$.sceditor.command = 
+	/** @lends jQuery.sceditor.command */
+	{
+		/**
+		 * Gets a command
+		 * 
+		 * @param {String} name
+		 * @return {Object|null}
+		 * @since v1.3.5
+		 */
+		get: function(name) {
+			return $.sceditor.commands[name] || null;
+		},
+		
+		/**
+		 * <p>Adds a command to the editor or updates an exisiting
+		 * command if a command with the specified name already exists.</p>
+		 * 
+		 * <p>Once a command is add it can be included in the toolbar by
+		 * adding it's name to the toolbar option in the constructor. It
+		 * can also be executed manually by calling {@link jQuery.sceditor.execCommand}</p>
+		 * 
+		 * @example
+		 * $.sceditor.command.set("hello",
+		 * {
+		 * 	exec: function() {
+		 * 		alert("Hello World!");
+		 * 	}
+		 * });
+		 * 
+		 * @param {String} name
+		 * @param {Object} cmd
+		 * @return {this|false} Returns false if name or cmd is false
+		 * @since v1.3.5
+		 */
+		set: function(name, cmd) {
+			if(!name || !cmd)
+				return false;
+			
+			// merge any existing command properties
+			cmd = $.extend($.sceditor.commands[name] || {}, cmd);
+		
+			cmd.remove = function() { $.sceditor.command.remove(name); };
+			
+			$.sceditor.commands[name] = cmd;
+			return this;
+		},
+		
+		/**
+		 * Removes a command
+		 * 
+		 * @param {String} name
+		 * @return {this}
+		 * @since v1.3.5
+		 */
+		remove: function(name) {
+			if($.sceditor.commands[name])
+				delete $.sceditor.commands[name];
+			
+			return this;
+		}
+	};
+	
+	/**
 	 * Checks if a command with the specified name exists
 	 * 
 	 * @param {String} name
-	 * @return Bool
+	 * @return {Bool}
+	 * @deprecated Since v1.3.5
+	 * @memberOf jQuery.sceditor
 	 */
 	$.sceditor.commandExists = function(name) {
-		return typeof $.sceditor.commands[name] !== "undefined";
+		return !!$.sceditor.command.get(name);
 	};
 	
 	/**
@@ -2795,27 +3002,17 @@
 	 * @param {String}		tooltip		The commands tooltip text
 	 * @param {Function}		keypress	Function that gets called every time a key is pressed
 	 * @param {Function|Array}	txtExec		Called when the command is executed in source mode or array containing prepend and optional append
-	 * @return Bool
+	 * @return {Bool}
+	 * @deprecated Since v1.3.5
+	 * @memberOf jQuery.sceditor
 	 */
 	$.sceditor.setCommand = function(name, exec, tooltip, keypress, txtExec) {
-		if(!name || !($.sceditor.commandExists(name) || exec))
-			return false;
-
-		if(!$.sceditor.commandExists(name))
-			$.sceditor.commands[name] = {};
-
-		$.sceditor.commands[name].exec = exec;
-
-		if(tooltip)
-			$.sceditor.commands[name].tooltip = tooltip;
-
-		if(keypress)
-			$.sceditor.commands[name].keyPress = keypress;
-		
-		if(txtExec)
-			$.sceditor.commands[name].txtExec = txtExec;
-
-		return true;
+		return !!$.sceditor.command.set(name, {
+			exec: exec,
+			tooltip: tooltip,
+			keypress: keypress,
+			txtExec: txtExec
+		});
 	};
 	
 	$.sceditor.defaultOptions = {
