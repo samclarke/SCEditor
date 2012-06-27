@@ -1,5 +1,5 @@
 /**
- * SCEditor BBCode Plugin v1.3.5
+ * SCEditor BBCode Plugin
  * http://www.samclarke.com/2011/07/sceditor/ 
  *
  * Copyright (C) 2011-2012, Sam Clarke (samclarke.com)
@@ -7,6 +7,10 @@
  * SCEditor is dual licensed under the MIT and GPL licenses:
  *	http://www.opensource.org/licenses/mit-license.php
  *	http://www.gnu.org/licenses/gpl.html
+ * 
+ * @author Sam Clarke
+ * @version 1.3.5
+ * @requires jQuery 
  */
 
 // ==ClosureCompiler==
@@ -18,7 +22,7 @@
 
 (function($) {
 	'use strict';
-
+	
 	/**
 	 * BBCode plugin for SCEditor
 	 *
@@ -76,7 +80,7 @@
 
 		/**
 		 * Initializer
-		 * @Private
+		 * @private
 		 * @name sceditorBBCodePlugin.init
 		 */
 		init = function() {
@@ -110,9 +114,39 @@
 				center: { txtExec: ["[center]", "[/center]"] },
 				right: { txtExec: ["[right]", "[/right]"] },
 				justify: { txtExec: ["[justify]", "[/justify]"] },
-				//font: { txtExec: ["[u]", "[/u]"] },
-				//size: { txtExec: ["[u]", "[/u]"] },
-				//color: { txtExec: ["[u]", "[/u]"] },
+				font: { txtExec: function(caller) {
+					var editor = this;
+					
+					$.sceditor.command.get('font')._createDropDown(
+						editor,
+						caller,
+						function(fontName) {
+							editor.insertText("[font="+fontName+"]", "[/font]");
+						}
+					);
+				} },
+				size: { txtExec: function(caller) {
+					var editor = this;
+					
+					$.sceditor.command.get('size')._createDropDown(
+						editor,
+						caller,
+						function(fontSize) {
+							editor.insertText("[size="+fontSize+"]", "[/size]");
+						}
+					);
+				} },
+				color: { txtExec: function(caller) {
+					var editor = this;
+					
+					$.sceditor.command.get('color')._createDropDown(
+						editor,
+						caller,
+						function(color) {
+							editor.insertText("[color="+color+"]", "[/color]");
+						}
+					);
+				} },
 				bulletlist: { txtExec: ["[ul][li]", "[/li][/ul]"] },
 				orderedlist: { txtExec: ["[ol][li]", "[/li][/ol]"] },
 				table: { txtExec: ["[table][tr][td]", "[/td][/tr][/table]"] },
@@ -122,21 +156,21 @@
 					var url = prompt(this._("Enter the images URL:"));
 					
 					if(url)
-						this.textEditorInsertText("[img]" + url + "[/img]");
+						this.insertText("[img]" + url + "[/img]");
 				} },
 				email: { txtExec: function() {
 					var	email	= prompt(this._("Enter the e-mail address:"), "@"),
 						text	= prompt(this._("Enter the displayed text:"), email) || email;
 					
 					if(email)
-						this.textEditorInsertText("[email=" + email + "]" + text + "[/email]");
+						this.insertText("[email=" + email + "]" + text + "[/email]");
 				} },
 				link: { txtExec: function() {
 					var	url	= prompt(this._("Enter the links URL:"), "http://"),
 						text	= prompt(this._("Enter the displayed text:"), url) || url;
 					
 					if(url)
-						this.textEditorInsertText("[url=" + url + "]" + text + "[/url]");
+						this.insertText("[url=" + url + "]" + text + "[/url]");
 				} },
 				quote: { txtExec: ["[quote]", "[/quote]"] },
 				youtube: { txtExec: function() {
@@ -147,7 +181,7 @@
 						if(url.indexOf("://") > -1)
 							url = url.replace(/^[^v]+v.(.{11}).*/,"$1");
 						
-						this.textEditorInsertText("[youtube]" + url + "[/youtube]");
+						this.insertText("[youtube]" + url + "[/youtube]");
 					}
 				} },
 				rtl: { txtExec: ["[rtl]", "[/rtl]"] },
@@ -521,7 +555,7 @@
 		 * 
 		 * @param string html
 		 * @return string HTML
-		 * @Private
+		 * @private
 		 */
 		wrapInDivs = function(html, excludeFirstLast)
 		{
@@ -1108,13 +1142,71 @@
 	};
 	
 	/**
+	 * Static BBCode helper class
+	 * @class command
+	 * @name jQuery.sceditorBBCodePlugin.bbcode
+	 */
+	$.sceditorBBCodePlugin.bbcode = 
+	/** @lends jQuery.sceditorBBCodePlugin.bbcode */
+	{
+		/**
+		 * Gets a BBCode
+		 * 
+		 * @param {String} name
+		 * @return {Object|null}
+		 * @since v1.3.5
+		 */
+		get: function(name) {
+			return $.sceditorBBCodePlugin.bbcodes[name] || null;
+		},
+		
+		/**
+		 * <p>Adds a BBCode to the parser or updates an exisiting
+		 * BBCode if a BBCode with the specified name already exists.</p>
+		 * 
+		 * @param {String} name
+		 * @param {Object} bbcode
+		 * @return {this|false} Returns false if name or bbcode is false
+		 * @since v1.3.5
+		 */
+		set: function(name, bbcode) {
+			if(!name || !bbcode)
+				return false;
+			
+			// merge any existing command properties
+			bbcode = $.extend($.sceditorBBCodePlugin.bbcodes[name] || {}, bbcode);
+		
+			bbcode.remove = function() { $.sceditorBBCodePlugin.bbcode.remove(name); };
+			
+			$.sceditorBBCodePlugin.bbcodes[name] = bbcode;
+			return this;
+		},
+		
+		/**
+		 * Removes a BBCode
+		 * 
+		 * @param {String} name
+		 * @return {this}
+		 * @since v1.3.5
+		 */
+		remove: function(name) {
+			if($.sceditorBBCodePlugin.bbcodes[name])
+				delete $.sceditorBBCodePlugin.bbcodes[name];
+			
+			return this;
+		}
+	};
+	
+	/**
 	 * Checks if a command with the specified name exists
 	 * 
 	 * @param string name
 	 * @return bool
+	 * @deprecated Since v1.3.5
+	 * @memberOf jQuery.sceditorBBCodePlugin
 	 */
 	$.sceditorBBCodePlugin.commandExists = function(name) {
-		return typeof $.sceditorBBCodePlugin.bbcodes[name] !== "undefined";
+		return !!$.sceditorBBCodePlugin.bbcode.get(name);
 	};
 	
 	/**
@@ -1125,31 +1217,21 @@
 	 * @param Object		styles		Any style properties this applies to, i.e. font-weight for [b]
 	 * @param String|Function	format		Function or string to convert the element into BBCode
 	 * @param String|Function	html		String or function to format the BBCode back into HTML.
-	 * @param BOOL			allowsEmpty	If this BBCodes is allowed to be empty, e.g. [b][/b]
+	 * @param bool			allowsEmpty	If this BBCodes is allowed to be empty, e.g. [b][/b]
 	 * @return Bool
+	 * @deprecated Since v1.3.5
+	 * @memberOf jQuery.sceditorBBCodePlugin
 	 */
 	$.sceditorBBCodePlugin.setCommand = function(name, tags, styles, format, html, allowsEmpty, isBlock) {
-		if(!name || !format || !html)
-			return false;
-		
-		if(!$.sceditorBBCodePlugin.commandExists(name))
-			$.sceditorBBCodePlugin.bbcodes[name] = {};
-
-		$.sceditorBBCodePlugin.bbcodes[name].format = format;
-		$.sceditorBBCodePlugin.bbcodes[name].html = html;
-		
-		if(tags)
-			$.sceditorBBCodePlugin.bbcodes[name].tags = tags;
-		
-		if(styles)
-			$.sceditorBBCodePlugin.bbcodes[name].styles = styles;
-			
-		if(allowsEmpty)
-			$.sceditorBBCodePlugin.bbcodes[name].allowsEmpty = allowsEmpty;
-		
-		$.sceditorBBCodePlugin.bbcodes[name].isBlock = !!isBlock;
-		
-		return true;
+		return $.sceditorBBCodePlugin.bbcode.set(name,
+		{
+			tags: tags || {},
+			styles: styles || {},
+			allowsEmpty: allowsEmpty,
+			isBlock: isBlock,
+			format: format,
+			html: html
+		});
 	};
 
 	$.fn.sceditorBBCodePlugin = function(options) {

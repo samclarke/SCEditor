@@ -1395,6 +1395,7 @@
 		/**
 		 * Handles the window resize event. Needed to resize then editor
 		 * when the window size changes in fluid deisgns.
+		 * @ignore
 		 */
 		handleWindowResize = function() {
 			if(base.options.height !== null && base.options.height.toString().indexOf("%") > -1)
@@ -1608,14 +1609,14 @@
 
 		// START_COMMAND: Font
 		font: {
-			exec: function (caller) {
-				var	editor  = this,
-					fonts   = editor.options.fonts.split(","),
+			_createDropDown: function(editor, caller, callback) {
+				var	fonts   = editor.options.fonts.split(","),
 					content = $("<div />"),
+					/** @private */
 					clickFunc = function (e) {
-						editor.execCommand("fontname", $(this).data('sceditor-font'));
+						callback($(this).data('sceditor-font'));
 						editor.closeDropDown(true);
-						e.preventDefault();
+						return false;
 					};
 
 				for (var i=0; i < fonts.length; i++) {
@@ -1627,16 +1628,27 @@
 
 				editor.createDropDown(caller, "font-picker", content);
 			},
+			exec: function (caller) {
+				var editor = this;
+				
+				$.sceditor.command.get('font')._createDropDown(
+					editor,
+					caller,
+					function(fontName) {
+						editor.execCommand("fontname", fontName);
+					}
+				);
+			},
 			tooltip: "Font Name"
 		},
 		// END_COMMAND
 		// START_COMMAND: Size
 		size: {
-			exec: function (caller) {
-				var	editor    = this,
-					content   = $("<div />"),
+			_createDropDown: function(editor, caller, callback) {
+				var	content   = $("<div />"),
+					/** @private */
 					clickFunc = function (e) {
-						editor.execCommand("fontsize", $(this).data('sceditor-fontsize'));
+						callback($(this).data('sceditor-fontsize'));
 						editor.closeDropDown(true);
 						e.preventDefault();
 					};
@@ -1650,16 +1662,26 @@
 
 				editor.createDropDown(caller, "fontsize-picker", content);
 			},
+			exec: function (caller) {
+				var editor = this;
+				
+				$.sceditor.command.get('size')._createDropDown(
+					editor,
+					caller,
+					function(fontSize) {
+						editor.execCommand("fontsize", fontSize);
+					}
+				);
+			},
 			tooltip: "Font Size"
 		},
 		// END_COMMAND
 		// START_COMMAND: Colour
 		color: {
-			exec: function (caller) {
-				var	editor			= this,
-					genColor		= {r: 255, g: 255, b: 255},
+			_createDropDown: function(editor, caller, callback) {
+				var	genColor		= {r: 255, g: 255, b: 255},
 					content			= $("<div />"),
-					colorColumns	= this.options.colors?this.options.colors.split("|"):new Array(21),
+					colorColumns		= editor.options.colors?editor.options.colors.split("|"):new Array(21),
 					// IE is slow at string concation so use an array
 					html			= [],
 					htmlIndex		= 0;
@@ -1694,12 +1716,23 @@
 				content.append(html.join(''))
 					.find('a')
 					.click(function (e) {
-						editor.execCommand("forecolor", $(this).attr('data-color'));
+						callback($(this).attr('data-color'));
 						editor.closeDropDown(true);
 						e.preventDefault();
 					});
 
 				editor.createDropDown(caller, "color-picker", content);
+			},
+			exec: function (caller) {
+				var editor = this;
+				
+				$.sceditor.command.get('color')._createDropDown(
+					editor,
+					caller,
+					function(color) {
+						editor.execCommand("forecolor", color);
+					}
+				);
 			},
 			tooltip: "Font Color"
 		},
@@ -2118,7 +2151,7 @@
 
 		// START_COMMAND: Date
 		date: {
-			exec: function () {
+			_date: function (editor) {
 				var	now   = new Date(),
 					year  = now.getYear(),
 					month = now.getMonth()+1,
@@ -2131,9 +2164,13 @@
 				if(day < 10)
 					day = "0" + day;
 
-				this.wysiwygEditorInsertHtml('<span>' +
-					this.options.dateFormat.replace(/year/i, year).replace(/month/i, month).replace(/day/i, day) + 
-					'</span>');
+				return editor.options.dateFormat.replace(/year/i, year).replace(/month/i, month).replace(/day/i, day);
+			},
+			exec: function () {
+				this.insertText($.sceditor.command.get('date')._date(this));
+			},
+			txtExec: function () {
+				this.insertText($.sceditor.command.get('date')._date(this));
 			},
 			tooltip: "Insert current date"
 		},
@@ -2141,7 +2178,7 @@
 
 		// START_COMMAND: Time
 		time: {
-			exec: function () {
+			_time: function () {
 				var	now   = new Date(),
 					hours = now.getHours(),
 					mins  = now.getMinutes(),
@@ -2154,7 +2191,13 @@
 				if(secs < 10)
 					secs = "0" + secs;
 
-				this.wysiwygEditorInsertHtml('<span>' + hours + ':' + mins + ':' + secs + '</span>');
+				return hours + ':' + mins + ':' + secs;
+			},
+			exec: function () {
+				this.insertText($.sceditor.command.get('time')._time());
+			},
+			txtExec: function () {
+				this.insertText($.sceditor.command.get('time')._time());
 			},
 			tooltip: "Insert current time"
 		},
@@ -2269,12 +2312,17 @@
 		}(w, d);
 	
 		/**
-		 * Inserts HTML.
+		 * <p>Inserts HTML into the current range replacing any selected
+		 * text.</p>
 		 *
-		 * If endHTML is specified the selected contents will be put between
-		 * html and endHTML.
-		 * @param string html
-		 * @param string endHTML
+		 * <p>If endHTML is specified the selected contents will be put between
+		 * html and endHTML. If there is nothing selected html and endHTML are
+		 * just concated together.</p>
+		 * 
+		 * @param {string} html
+		 * @param {string} endHTML
+		 * @function
+		 * @name insertHTML
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.insertHTML = function(html, endHTML) {
@@ -2299,12 +2347,17 @@
 		};
 	
 		/**
-		 * Inserts a DOM node.
+		 * <p>The same as insertHTML except with DOM nodes instead</p>
 		 *
-		 * If endNode is specified the selected contents will be put between
-		 * node and endNode.
-		 * @param Node node
-		 * @param Node endNode
+		 * <p><strong>Warning:</strong> the nodes must belong to the
+		 * document they are being inserted into. Some browsers
+		 * will throw exceptions if they don't.</p>
+		 * 
+		 * @param {Node} node
+		 * @param {Node} endNode
+		 * 
+		 * @function
+		 * @name insertNode
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.insertNode = function(node, endNode) {
@@ -2335,8 +2388,14 @@
 		};
 	
 		/**
-		 * Clones the selected Range
-		 * @return Range|TextRange
+		 * <p>Clones the selected Range</p>
+		 * 
+		 * <p>IE <= 8 will return a TextRange, all other browsers
+		 * will return a Range object.</p>
+		 * 
+		 * @return {Range|TextRange}
+		 * @function
+		 * @name cloneSelected
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.cloneSelected = function() {
@@ -2347,8 +2406,14 @@
 		};
 	
 		/**
-		 * Gets the selected Range
-		 * @return Range|TextRange
+		 * <p>Gets the selected Range</p>
+		 * 
+		 * <p>IE <= 8 will return a TextRange, all other browsers
+		 * will return a Range object.</p>
+		 * 
+		 * @return {Range|TextRange}
+		 * @function
+		 * @name selectedRange
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.selectedRange = function() {
@@ -2369,8 +2434,11 @@
 		};
 	
 		/**
-		 * Gets the selected HTML
-		 * @return string
+		 * Gets the currently selected HTML
+		 * 
+		 * @return {string}
+		 * @function
+		 * @name selectedHtml
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.selectedHtml = function() {
@@ -2395,7 +2463,10 @@
 		
 		/**
 		 * Gets the parent node of the selected contents in the range
-		 * @return HTMLElement
+		 * 
+		 * @return {HTMLElement}
+		 * @function
+		 * @name parentNode
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.parentNode = function() {
@@ -2410,7 +2481,10 @@
 		/**
 		 * Gets the first block level parent of the selected
 		 * contents of the range.
-		 * @return HTMLElement
+		 * 
+		 * @return {HTMLElement}
+		 * @function
+		 * @name getFirstBlockParent
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.getFirstBlockParent = function() {
@@ -2430,8 +2504,11 @@
 	
 		/**
 		 * Inserts a node at either the start or end of the current selection
-		 * @param Bool start
-		 * @param Node node
+		 * 
+		 * @param {Bool} start
+		 * @param {Node} node
+		 * @function
+		 * @name insertNodeAt
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.insertNodeAt = function(start, node) {
@@ -2447,8 +2524,9 @@
 	
 		/**
 		 * Creates a marker node
-		 * @param String id
-		 * @return Node
+		 * 
+		 * @param {String} id
+		 * @return {Node}
 		 * @private
 		 */
 		_createMarker = function(id) {
@@ -2465,7 +2543,12 @@
 	
 		/**
 		 * Inserts start/end markers for the current selection
+		 * which can be used by restoreRange to re-select the
+		 * range.
+		 * 
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
+		 * @function
+		 * @name insertMarkers
 		 */
 		base.insertMarkers = function() {
 			base.insertNodeAt(true, _createMarker(startMarker));
@@ -2474,8 +2557,11 @@
 	
 		/**
 		 * Gets the marker with the specified ID
-		 * @param String id
-		 * @return Node
+		 * 
+		 * @param {String} id
+		 * @return {Node}
+		 * @function
+		 * @name getMarker
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.getMarker = function(id) {
@@ -2484,7 +2570,10 @@
 	
 		/**
 		 * Removes the marker with the specified ID
-		 * @param String id
+		 * 
+		 * @param {String} id
+		 * @function
+		 * @name removeMarker
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.removeMarker = function(id) {
@@ -2496,6 +2585,9 @@
 	
 		/**
 		 * Removes the start/end markers
+		 * 
+		 * @function
+		 * @name removeMarkers
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.removeMarkers = function() {
@@ -2504,7 +2596,10 @@
 		};
 	
 		/**
-		 * Saves the current range location
+		 * Saves the current range location. Alias of insertMarkers()
+		 * 
+		 * @function
+		 * @name saveRage
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.saveRange = function() {
@@ -2512,8 +2607,11 @@
 		};
 	
 		/**
-		 * Selected the specified range
-		 * @param Range|TextRange range
+		 * Select the specified range
+		 * 
+		 * @param {Range|TextRange} range
+		 * @function
+		 * @name selectRange
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.selectRange = function(range) {
@@ -2527,7 +2625,10 @@
 		};
 	
 		/**
-		 * Restores the last saved range if possible
+		 * Restores the last range saved by saveRange() or insertMarkers()
+		 * 
+		 * @function
+		 * @name restoreRange
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.restoreRange = function() {
@@ -2631,11 +2732,14 @@
 	
 		/**
 		 * Replaces keys with values based on the current range
-		 * @param Array rep
-		 * @param Bool includePrev If to include text before or just text after
-		 * @param Bool repSorted If the keys array is pre sorted
-		 * @param Int longestKey Length of the longest key
-		 * @param Bool requireWhiteSpace If the key must be surrounded by whitespace
+		 * 
+		 * @param {Array} rep
+		 * @param {Bool} includePrev If to include text before or just text after
+		 * @param {Bool} repSorted If the keys array is pre sorted
+		 * @param {Int} longestKey Length of the longest key
+		 * @param {Bool} requireWhiteSpace If the key must be surrounded by whitespace
+		 * @function
+		 * @name raplaceKeyword
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.raplaceKeyword = function(rep, includeAfter, repSorted, longestKey, requireWhiteSpace, curChar) {
