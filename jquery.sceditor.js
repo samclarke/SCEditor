@@ -3222,13 +3222,12 @@
 
 		toolbarContainer: null,
 		
+		// Curently experimental
 		enablePasteFiltering: false,
 		
 		readOnly: false,
-		
 		rtl: false,
-		
-		autofocus: true,
+		autofocus: false,
 		
 		// If to run the editor without WYSIWYG support
 		runWithoutWysiwygSupport: false,
