@@ -1,7 +1,11 @@
+/**
+ * @author Katrine
+ * @license [MIT](http://www.opensource.org/licenses/mit-license.php)
+ */
 (function ($) {
 	'use strict';
 	
-	$.sceditor.locale["nb"] = {
+	$.sceditor.locale["no-NB"] = {
 		"Bold": "Fet",
 		"Italic": "Kursiv",
 		"Underline": "Understrek",
@@ -51,8 +55,13 @@
 		"Print": "Skriv ut",
 		"View source": "Vis kildekode",
 		"Description (optional):": "Beskrivelse (valgfritt):",
+		"Enter the image URL:": "Skriv inn bildet's URL:",
+		"Enter the e-mail address:": "Skriv inn e-postadresse:",
+		"Enter the displayed text:": "Skriv inn teksten som vises:",
+		"Enter URL:": "Skriv inn URL adresse:",
+		"Enter the YouTube video URL or ID:": "Angi YouTube video link eller ID:",
 		dateFormat: "day.month.year"
 	}
 	
-	$.sceditor.locale["no"] = $.sceditor.locale["nb"];
+	$.sceditor.locale["no"] = $.sceditor.locale["no-NB"];
 })(jQuery);
