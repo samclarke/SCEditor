@@ -942,6 +942,12 @@
 					text += range.text + endText;
 				
 				range.text = text;
+				
+				if(endText)
+				{
+					range.moveEnd('character', 0-endText.length);
+					range.select();
+				}
 			}
 			else
 				textEditor.value += text + endText;
