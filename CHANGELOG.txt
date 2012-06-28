@@ -33,6 +33,8 @@ Version 1.3.5:
 		- Thanks to Rivo for translating
 	Fixed bug with dom.fixNesting when fixing certain tags
 	Improve adding/updating/removing of commands and BBCodes
+	Fixed bug causing elements that are styled with diplay: block to be treated
+		as block level elements
 
 Version 1.3.4:
 	Updated focus method to work in source mode

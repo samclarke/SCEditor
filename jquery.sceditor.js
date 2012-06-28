@@ -2865,22 +2865,17 @@
 			this.traverse(node, func, innermostFirst, siblingsOnly, true);
 		},
 		
+		blockLevelList: "|body|hr|p|div|h1|h2|h3|h4|h5|h6|address|pre|form|table|tbody|thead|tfoot|th|tr|td|li|ol|ul|blockquote|code|center|",
 		/**
 		 * Checks if an element is inline
 		 * 
-		 * @param {bool} includeInlineBlock If passed inline-block will count as an inline element instead of block
 		 * @return bool
 		 */
-		isInline: function(elm, includeInlineBlock) {
+		isInline: function(elm) {
 			if(elm == null || elm.nodeType !== 1)
 				return true;
-			
-			var d = (window.getComputedStyle ? window.getComputedStyle(elm) : elm.currentStyle).display;
 
-			if(includeInlineBlock)
-				return d !== "block"; 
-			
-			return d === "inline"; 
+			return $.sceditor.dom.blockLevelList.indexOf("|" + elm.tagName.toLowerCase() + "|") < 0;
 		},
 		
 		/**
