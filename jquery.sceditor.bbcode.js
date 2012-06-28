@@ -496,7 +496,9 @@
 			{
 				var	attrsMap = {},
 					matches;
-					
+				
+				bbcode = bbcode.toLowerCase();
+				
 				if(attrs)
 				{
 					attrs = $.trim(attrs);
