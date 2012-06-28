@@ -2873,22 +2873,22 @@
 <span class='line'>2866</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
 <span class='line'>2867</span> </span><span class="WHIT">		
 <span class='line'>2868</span> 		</span><span class="COMM">/**
-<span class='line'>2869</span> 		 * Checks if an element is inline
-<span class='line'>2870</span> 		 * 
-<span class='line'>2871</span> 		 * @param {bool} includeInlineBlock If passed inline-block will count as an inline element instead of block
-<span class='line'>2872</span> 		 * @return bool
-<span class='line'>2873</span> 		 */</span><span class="WHIT">
-<span class='line'>2874</span> </span><span class="WHIT">		</span><span class="NAME">isInline</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">elm</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">includeInlineBlock</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>2875</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">elm</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">elm.nodeType</span><span class="WHIT"> </span><span class="PUNC">!==</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">)</span><span class="WHIT">
-<span class='line'>2876</span> </span><span class="WHIT">				</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>2877</span> </span><span class="WHIT">			
-<span class='line'>2878</span> 			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">d</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">window.getComputedStyle</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">window.getComputedStyle</span><span class="PUNC">(</span><span class="NAME">elm</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">elm.currentStyle</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">display</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>2879</span> 
-<span class='line'>2880</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">includeInlineBlock</span><span class="PUNC">)</span><span class="WHIT">
-<span class='line'>2881</span> </span><span class="WHIT">				</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">d</span><span class="WHIT"> </span><span class="PUNC">!==</span><span class="WHIT"> </span><span class="STRN">"block"</span><span class="PUNC">;</span><span class="WHIT"> 
-<span class='line'>2882</span> 			
-<span class='line'>2883</span> 			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">d</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">"inline"</span><span class="PUNC">;</span><span class="WHIT"> 
-<span class='line'>2884</span> 		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>2869</span> 		 * List of block level elements seperated by bars (|)
+<span class='line'>2870</span> 		 * @type {string}
+<span class='line'>2871</span> 		 */</span><span class="WHIT">
+<span class='line'>2872</span> </span><span class="WHIT">		</span><span class="NAME">blockLevelList</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"|body|hr|p|div|h1|h2|h3|h4|h5|h6|address|pre|form|table|tbody|thead|tfoot|th|tr|td|li|ol|ul|blockquote|code|center|"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>2873</span> </span><span class="WHIT">		
+<span class='line'>2874</span> 		</span><span class="COMM">/**
+<span class='line'>2875</span> 		 * Checks if an element is inline
+<span class='line'>2876</span> 		 * 
+<span class='line'>2877</span> 		 * @return {bool}
+<span class='line'>2878</span> 		 */</span><span class="WHIT">
+<span class='line'>2879</span> </span><span class="WHIT">		</span><span class="NAME">isInline</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">elm</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>2880</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">elm</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">elm.nodeType</span><span class="WHIT"> </span><span class="PUNC">!==</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>2881</span> </span><span class="WHIT">				</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>2882</span> 
+<span class='line'>2883</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">$.sceditor.dom.blockLevelList.indexOf</span><span class="PUNC">(</span><span class="STRN">"|"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">elm.tagName.toLowerCase</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"|"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>2884</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
 <span class='line'>2885</span> </span><span class="WHIT">		
 <span class='line'>2886</span> 		</span><span class="COMM">/**
 <span class='line'>2887</span> 		 * Copys the CSS from 1 node to another
@@ -2939,7 +2939,7 @@
 <span class='line'>2932</span> 		 * 
 <span class='line'>2933</span> 		 * @param {HTMLElement} node1
 <span class='line'>2934</span> 		 * @param {HTMLElement} node2
-<span class='line'>2935</span> 		 * @return HTMLElement
+<span class='line'>2935</span> 		 * @return {HTMLElement}
 <span class='line'>2936</span> 		 */</span><span class="WHIT">
 <span class='line'>2937</span> </span><span class="WHIT">		</span><span class="NAME">findCommonAncestor</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">node1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">node2</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>2938</span> </span><span class="WHIT">			</span><span class="COMM">// not as fast as making two arrays of parents and comparing</span><span class="WHIT">
@@ -3229,30 +3229,29 @@
 <span class='line'>3222</span> 
 <span class='line'>3223</span> </span><span class="WHIT">		</span><span class="NAME">toolbarContainer</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
 <span class='line'>3224</span> </span><span class="WHIT">		
-<span class='line'>3225</span> 		</span><span class="NAME">enablePasteFiltering</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>3226</span> </span><span class="WHIT">		
-<span class='line'>3227</span> 		</span><span class="NAME">readOnly</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>3228</span> </span><span class="WHIT">		
-<span class='line'>3229</span> 		</span><span class="NAME">rtl</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>3230</span> </span><span class="WHIT">		
-<span class='line'>3231</span> 		</span><span class="NAME">autofocus</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>3232</span> </span><span class="WHIT">		
-<span class='line'>3233</span> 		</span><span class="COMM">// If to run the editor without WYSIWYG support</span><span class="WHIT">
-<span class='line'>3234</span> </span><span class="WHIT">		</span><span class="NAME">runWithoutWysiwygSupport</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>3235</span> </span><span class="WHIT">		
-<span class='line'>3236</span> 		</span><span class="NAME">id</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>3237</span> 
-<span class='line'>3238</span> </span><span class="WHIT">		</span><span class="COMM">//add css to dropdown menu (eg. z-index)</span><span class="WHIT">
-<span class='line'>3239</span> </span><span class="WHIT">		</span><span class="NAME">dropDownCss</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>3240</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>3241</span> 
-<span class='line'>3242</span> </span><span class="WHIT">	</span><span class="NAME">$.fn.sceditor</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">options</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>3243</span> </span><span class="WHIT">		</span><span class="KEYW">if</span><span class="PUNC">(</span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">options</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">options.runWithoutWysiwygSupport</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">$.sceditor.isWysiwygSupported</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT">
-<span class='line'>3244</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>3245</span> </span><span class="WHIT">		
-<span class='line'>3246</span> 		</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.each</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>3247</span> </span><span class="WHIT">			</span><span class="PUNC">(</span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">$.sceditor</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">options</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>3248</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>3249</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>3250</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="NAME">jQuery</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>3251</span> </span></pre></body></html>
+<span class='line'>3225</span> 		</span><span class="COMM">// Curently experimental</span><span class="WHIT">
+<span class='line'>3226</span> </span><span class="WHIT">		</span><span class="NAME">enablePasteFiltering</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>3227</span> </span><span class="WHIT">		
+<span class='line'>3228</span> 		</span><span class="NAME">readOnly</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>3229</span> </span><span class="WHIT">		</span><span class="NAME">rtl</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>3230</span> </span><span class="WHIT">		</span><span class="NAME">autofocus</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>3231</span> </span><span class="WHIT">		
+<span class='line'>3232</span> 		</span><span class="COMM">// If to run the editor without WYSIWYG support</span><span class="WHIT">
+<span class='line'>3233</span> </span><span class="WHIT">		</span><span class="NAME">runWithoutWysiwygSupport</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>3234</span> </span><span class="WHIT">		
+<span class='line'>3235</span> 		</span><span class="NAME">id</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>3236</span> 
+<span class='line'>3237</span> </span><span class="WHIT">		</span><span class="COMM">//add css to dropdown menu (eg. z-index)</span><span class="WHIT">
+<span class='line'>3238</span> </span><span class="WHIT">		</span><span class="NAME">dropDownCss</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>3239</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>3240</span> 
+<span class='line'>3241</span> </span><span class="WHIT">	</span><span class="NAME">$.fn.sceditor</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">options</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>3242</span> </span><span class="WHIT">		</span><span class="KEYW">if</span><span class="PUNC">(</span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">options</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">options.runWithoutWysiwygSupport</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">$.sceditor.isWysiwygSupported</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>3243</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>3244</span> </span><span class="WHIT">		
+<span class='line'>3245</span> 		</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.each</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>3246</span> </span><span class="WHIT">			</span><span class="PUNC">(</span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">$.sceditor</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">options</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>3247</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>3248</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>3249</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="NAME">jQuery</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>3250</span> </span></pre></body></html>

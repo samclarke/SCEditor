@@ -2128,14 +2128,14 @@
 			exec: function (caller) {
 				var editor  = this;
 				var content = $(
-					this._('<form><div><label for="link">{0}</label> <input type="text" id="link" value="http://" /></div></form>',
-						this._("Video URL:")
+					editor._('<form><div><label for="link">{0}</label> <input type="text" id="link" value="http://" /></div></form>',
+						editor._("Video URL:")
 					))
 					.submit(function () {return false;});
 
 				content.append(
-					$(this._('<div><input type="button" class="button" value="{0}" /></div>',
-						this._("Insert")
+					$(editor._('<div><input type="button" class="button" value="{0}" /></div>',
+						editor._("Insert")
 					))
 					.click(function (e) {
 						var val = $(this).parent("form").find("#link").val();
@@ -2215,16 +2215,17 @@
 		// START_COMMAND: Ltr
 		ltr: {
 			exec: function() {
-				var	elm	= this.getRangeHelper().getFirstBlockParent(),
+				var	editor	= this,
+					elm	= editor.getRangeHelper().getFirstBlockParent(),
 					$elm	= $(elm);
 				
-				this.focus();
+				editor.focus();
 				
 				if(!elm || $elm.is('body'))
 				{
-					this.execCommand("formatBlock", "p");
+					editor.execCommand("formatBlock", "p");
 				
-					elm	= this.getRangeHelper().getFirstBlockParent();
+					elm	= editor.getRangeHelper().getFirstBlockParent();
 					$elm	= $(elm);
 					
 					if(!elm || $elm.is('body'))
@@ -2243,16 +2244,17 @@
 		// START_COMMAND: Rtl
 		rtl: {
 			exec: function() {
-				var	elm	= this.getRangeHelper().getFirstBlockParent(),
+				var	editor	= this,
+					elm	= editor.getRangeHelper().getFirstBlockParent(),
 					$elm	= $(elm);
 				
-				this.focus();
+				editor.focus();
 				
 				if(!elm || $elm.is('body'))
 				{
-					this.execCommand("formatBlock", "p");
+					editor.execCommand("formatBlock", "p");
 				
-					elm	= this.getRangeHelper().getFirstBlockParent();
+					elm	= editor.getRangeHelper().getFirstBlockParent();
 					$elm	= $(elm);
 					
 					if(!elm || $elm.is('body'))
@@ -2865,11 +2867,16 @@
 			this.traverse(node, func, innermostFirst, siblingsOnly, true);
 		},
 		
+		/**
+		 * List of block level elements seperated by bars (|)
+		 * @type {string}
+		 */
 		blockLevelList: "|body|hr|p|div|h1|h2|h3|h4|h5|h6|address|pre|form|table|tbody|thead|tfoot|th|tr|td|li|ol|ul|blockquote|code|center|",
+		
 		/**
 		 * Checks if an element is inline
 		 * 
-		 * @return bool
+		 * @return {bool}
 		 */
 		isInline: function(elm) {
 			if(elm == null || elm.nodeType !== 1)
@@ -2927,7 +2934,7 @@
 		 * 
 		 * @param {HTMLElement} node1
 		 * @param {HTMLElement} node2
-		 * @return HTMLElement
+		 * @return {HTMLElement}
 		 */
 		findCommonAncestor: function(node1, node2) {
 			// not as fast as making two arrays of parents and comparing
