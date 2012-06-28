@@ -802,7 +802,7 @@ test("Code", function() {
 
 	equal(
 		this.sb.getTextHandler("[code]Testing 1.2.3....[/code]").toLowerCase(),
-		"<code>testing 1.2.3....</code>",
+		"<div><code>testing 1.2.3....</code></div>",
 		"Normal"
 	);
 });

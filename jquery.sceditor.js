@@ -2871,17 +2871,20 @@
 		 * List of block level elements seperated by bars (|)
 		 * @type {string}
 		 */
-		blockLevelList: "|body|hr|p|div|h1|h2|h3|h4|h5|h6|address|pre|form|table|tbody|thead|tfoot|th|tr|td|li|ol|ul|blockquote|code|center|",
+		blockLevelList: "|body|hr|p|div|h1|h2|h3|h4|h5|h6|address|pre|form|table|tbody|thead|tfoot|th|tr|td|li|ol|ul|blockquote|center|",
 		
 		/**
 		 * Checks if an element is inline
 		 * 
 		 * @return {bool}
 		 */
-		isInline: function(elm) {
+		isInline: function(elm, includeCodeAsBlock) {
 			if(elm == null || elm.nodeType !== 1)
 				return true;
 
+			if(includeCodeAsBlock && elm.tagName.toLowerCase() === 'code')
+				return false;
+			
 			return $.sceditor.dom.blockLevelList.indexOf("|" + elm.tagName.toLowerCase() + "|") < 0;
 		},
 		
@@ -2903,7 +2906,7 @@
 		fixNesting: function(node) {
 			var	base = this,
 				getLastInlineParent = function(node) {
-					while(base.isInline(node.parentNode))
+					while(base.isInline(node.parentNode, true))
 						node = node.parentNode;
 					
 					return node;
@@ -2912,7 +2915,7 @@
 			base.traverse(node, function(node) {
 				// if node is an element, and it is blocklevel and the parent isn't block level
 				// then it needs fixing
-				if(node.nodeType === 1 && !base.isInline(node) && base.isInline(node.parentNode))
+				if(node.nodeType === 1 && !base.isInline(node, true) && base.isInline(node.parentNode, true))
 				{
 					var	parent	= getLastInlineParent(node),
 						rParent	= parent.parentNode,

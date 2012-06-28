@@ -40,6 +40,22 @@
 		</style>
 
 		<script>
+			// Source: http://www.backalleycoder.com/2011/03/20/link-tag-css-stylesheet-load-event/
+			var loadCSS = function(url, callback){
+				var link = document.createElement('link');
+				link.type = 'text/css';
+				link.rel = 'stylesheet';
+				link.href = url;
+			
+				document.getElementsByTagName('head')[0].appendChild(link);
+			
+				var img = document.createElement('img');
+				img.onerror = function(){
+					if(callback) callback(link);
+				}
+				img.src = url;
+			}
+			
 			$(document).ready(function() {
 				var initEditor = function() {
 					$("textarea").sceditorBBCodePlugin({
@@ -51,9 +67,10 @@
 					var theme = "../minified/themes/" + $(this).val() + ".min.css";
 
 					$("textarea").data("sceditor").destory();
-					$("link:first").attr("href", theme);
-
-					setTimeout(initEditor, 20);
+					$("link:first").remove();
+					$("#theme-style").remove();
+					
+					loadCSS(theme, initEditor);
 				});
 
 				initEditor();
