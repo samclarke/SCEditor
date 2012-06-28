@@ -35,6 +35,9 @@ Version 1.3.5:
 	Improve adding/updating/removing of commands and BBCodes
 	Fixed bug causing elements that are styled with diplay: block to be treated
 		as block level elements
+		- Thanks to Rene for reporting
+	Added Brazilian Portuguese language file
+		- Thanks to Martec for translating
 
 Version 1.3.4:
 	Updated focus method to work in source mode
