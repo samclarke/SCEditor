@@ -10,7 +10,7 @@
  * 
  * @fileoverview SCEditor - A lightweight WYSIWYG BBCode and HTML editor
  * @author Sam Clarke
- * @version 1.3.5
+ * @version 1.3.6
  * @requires jQuery 
  */
 
@@ -144,19 +144,16 @@
 			base.options = $.extend({}, $.sceditor.defaultOptions, options);
 
 			// Load locale
-			if(base.options.locale !== null && base.options.locale !== "en")
+			if(base.options.locale && base.options.locale !== "en")
 				initLocale();
 			
 			// if either width or height are % based, add the resize handler to update the editor
 			// when the window is resized
-			if((base.options.height !== null && base.options.height.toString().indexOf("%") > -1) ||
-				(base.options.width !== null && base.options.width.toString().indexOf("%") > -1))
+			var h = base.options.height, w = base.options.width;
+			if((h && (h + "").indexOf("%") > -1) || (w && (w + "").indexOf("%") > -1))
 				$(window).resize(handleWindowResize);
 
-			$editorContainer = $('<div class="sceditor-container" />')
-						.width($textarea.outerWidth())
-						.height($textarea.outerHeight())
-						.insertAfter($textarea);
+			$editorContainer = $('<div class="sceditor-container" />').insertAfter($textarea);
 
 			// create the editor 
 			initToolBar();
@@ -391,7 +388,7 @@
 		 */
 		initKeyPressFuncs = function () {
 			$.each(base.commands, function (command, values) {
-				if(typeof values.keyPress !== "undefined")
+				if(values.keyPress)
 					keyPressFuncs.push(values.keyPress);
 			});
 		};
@@ -456,7 +453,7 @@
 			
 			$editorContainer.height(height);
 			
-			height -= base.options.toolbarContainer === null ? $toolbar.outerHeight(true) : 0;
+			height -= !base.options.toolbarContainer ? $toolbar.outerHeight(true) : 0;
 
 			// fix the height and width of the textarea/iframe
 			$wysiwygEditor.height(height);
@@ -799,7 +796,7 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.closeDropDown = function (focus) {
-			if($dropdown !== null) {
+			if($dropdown) {
 				$dropdown.remove();
 				$dropdown = null;
 			}
@@ -1332,6 +1329,7 @@
 		base.execCommand = function (command, param) {
 			var	executed	= false,
 				$parentNode	= $(rangeHelper.parentNode());
+			
 			base.focus();
 
 			// don't apply any comannds to code elements
