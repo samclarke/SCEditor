@@ -1364,7 +1364,7 @@
 			// enter is pressed instead of inserting a newline
 			if(e.which === 13)
 			{
-				if($parentNode.is('code, blockquote') || $parentNode.parents('code, blockquote').length !== 0)
+				if($parentNode.is('code,blockquote,pre') || $parentNode.parents('code,blockquote,pre').length !== 0)
 				{
 					lastRange = null;
 					base.wysiwygEditorInsertHtml('<br />', null, true);
