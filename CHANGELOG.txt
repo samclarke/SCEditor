@@ -11,6 +11,9 @@ TODO:
 	Improve custom BBCodes to support self-closing tags
 	Improve newline handling for blocklevel tags which don't require a new line after them
 
+Version 1.3.6:
+	
+
 Version 1.3.5:
 	Fixed bug in FF making pasting via right click difficult when empty
 		- Thanks to Nibogo2 for reporting

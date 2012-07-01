@@ -260,7 +260,7 @@
 			
 			$.each(stylesToBbcodes[blockLevel], function(property, bbcodes) {
 				elementPropVal = getStyle(element[0], property);
-				if(elementPropVal == null || elementPropVal === "")
+				if(!elementPropVal)
 					return;
 
 				// if the parent has the same style use that instead of this one
@@ -273,7 +273,7 @@
 						!base.bbcodes[bbcode].allowsEmpty)
 						return;
 					
-					if(values === null || $.inArray(elementPropVal.toString(), values) > -1) {
+					if(!values || $.inArray(elementPropVal.toString(), values) > -1) {
 						if($.isFunction(base.bbcodes[bbcode].format))
 							content = base.bbcodes[bbcode].format.call(base, element, content);
 						else
@@ -310,19 +310,19 @@
 					
 					// if the bbcode requires any attributes then check this has
 					// all needed
-					if(bbcodeAttribs !== null) {
+					if(bbcodeAttribs) {
 						var runBbcode = false;
 
 						// loop all the bbcode attribs
 						$.each(bbcodeAttribs, function(attrib, values)
 						{
 							// check if has the bbcodes attrib
-							if(element.attr(attrib) == null)
+							if(!element.attr(attrib))
 								return;
 
 							// if the element has the bbcodes attribute and the bbcode attribute
 							// has values check one of the values matches
-							if(values !== null && $.inArray(element.attr(attrib), values) < 0)
+							if(values && $.inArray(element.attr(attrib), values) < 0)
 								return;
 
 							// break this loop as we have matched this bbcode
@@ -373,9 +373,7 @@
 		formatString = function() {
 			var args = arguments;
 			return args[0].replace(/\{(\d+)\}/g, function(str, p1) {
-				return typeof args[p1-0+1] !== "undefined"? 
-						args[p1-0+1] :
-						'{' + p1 + '}';
+				return args[p1-0+1] || '{' + p1 + '}';
 			});
 		};
 

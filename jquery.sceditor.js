@@ -51,33 +51,33 @@
 		 * The div which contains the editor and toolbar
 		 * @private
 		 */
-		var $editorContainer = null;
+		var $editorContainer;
 
 		/**
 		 * The editors toolbar
 		 * @private
 		 */
-		var $toolbar = null;
+		var $toolbar;
 
 		/**
 		 * The editors iframe which should be in design mode
 		 * @private
 		 */
-		var $wysiwygEditor = null;
-		var wysiwygEditor  = null;
+		var $wysiwygEditor;
+		var wysiwygEditor;
 
 		/**
 		 * The editors textarea for viewing source
 		 * @private
 		 */
-		var $textEditor = null;
-		var textEditor  = null;
+		var $textEditor;
+		var textEditor;
 
 		/**
 		 * The current dropdown
 		 * @private
 		 */
-		var $dropdown               = null;
+		var $dropdown;
 		var dropdownIgnoreLastClick = false;
 
 		/**
@@ -90,13 +90,13 @@
 		 * Store the last cursor position. Needed for IE because it forgets
 		 * @private
 		 */
-		var lastRange = null;
+		var lastRange;
 		
 		/**
 		 * The editors locale
 		 * @private
 		 */
-		var locale = null;
+		var locale;
 
 		/**
 		 * Stores a cache of preloaded images
@@ -104,7 +104,7 @@
 		 */
 		var preLoadCache = [];
 		
-		var rangeHelper = null;
+		var rangeHelper;
 
 		var	init,
 			replaceEmoticons,
@@ -170,9 +170,7 @@
 			$(textarea.form).attr('novalidate','novalidate').submit(formSubmitHandler);
 			
 			// load any textarea value into the editor
-			var val = $textarea.hide().val();
-			if(val)
-				base.val(val);
+			base.val($textarea.hide().val());
 			
 			if(base.options.autofocus)
 				autofocus();
@@ -205,15 +203,15 @@
 			wysiwygEditor	= $wysiwygEditor[0];
 			textEditor	= $textEditor[0];
 
-			base.width(base.options.width ? base.options.width : $textarea.width());
-			base.height(base.options.height ? base.options.height : $textarea.height());
+			base.width(base.options.width || $textarea.width());
+			base.height(base.options.height || $textarea.height());
 			
 			getWysiwygDoc().open();
 			getWysiwygDoc().write(
 				'<html><head><!--[if gte IE 9]><style>* {min-height: auto !important}</style><![endif]-->' +
 				'<meta http-equiv="Content-Type" content="text/html;charset=' + base.options.charset + '" />' +
 				'<link rel="stylesheet" type="text/css" href="' + base.options.style + '" />' +
-				'</head><body contenteditable="true"><span></span></body></html>'
+				'</head><body contenteditable="true"></body></html>'
 			);
 			getWysiwygDoc().close();
 			
@@ -299,10 +297,10 @@
 			}
 
 			// append the toolbar to the toolbarContainer option if given
-			if(base.options.toolbarContainer === null)
-				$editorContainer.append($toolbar);
-			else
+			if(base.options.toolbarContainer)
 				$(base.options.toolbarContainer).append($toolbar);
+			else
+				$editorContainer.append($toolbar);
 		};
 		
 		/**
@@ -489,7 +487,7 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.expandToContent = function() {
-			var	toolbarHeight	= (!base.options.toolbarContainer?$toolbar.outerHeight():0),
+			var	toolbarHeight	= !base.options.toolbarContainer?$toolbar.outerHeight():0,
 				doc		= getWysiwygDoc(),
 				currentHeight	= $wysiwygEditor.outerHeight(true),
 				height		= doc.body.scrollHeight || doc.documentElement.scrollHeight;
@@ -517,21 +515,10 @@
 				dragging	= false,
 				minHeight, maxHeight, minWidth, maxWidth, mouseMoveFunc;
 
-			minHeight = (base.options.resizeMinHeight == null ?
-					origHeight / 2 :
-					base.options.resizeMinHeight);
-
-			maxHeight = (base.options.resizeMaxHeight == null ?
-					origHeight * 2 :
-					base.options.resizeMaxHeight);
-
-			minWidth = (base.options.resizeMinWidth == null ?
-					origWidth / 2 :
-					base.options.resizeMinWidth);
-
-			maxWidth = (base.options.resizeMaxWidth == null ?
-					origWidth * 2 :
-					base.options.resizeMaxWidth);
+			minHeight = base.options.resizeMinHeight || origHeight / 1.5;
+			maxHeight = base.options.resizeMaxHeight || origHeight * 2.;
+			minWidth = base.options.resizeMinWidth  || origWidth / 1.25;
+			maxWidth = base.options.resizeMaxWidth || origWidth * 1.25;
 
 			mouseMoveFunc = function (e) {
 				var	newHeight = startHeight + (e.pageY - startY),
@@ -903,7 +890,7 @@
 			
 			textEditor.focus();
 			
-			if(textEditor.selectionStart != null)
+			if(textEditor.selectionStart)
 			{
 				start	= textEditor.selectionStart;
 				end	= textEditor.selectionEnd;
@@ -1094,6 +1081,9 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.setWysiwygEditorValue = function (value) {
+			if(!value)
+				value = '<p>' + ($.sceditor.ie ? '' : '<br />') + '</p>';
+			
 			getWysiwygDoc().body.innerHTML = replaceEmoticons(value);
 		};
 
@@ -1279,7 +1269,7 @@
 				wysiwygEditor.contentWindow.focus();
 				
 				// Needed for IE < 9
-				if(lastRange !== null) {
+				if(lastRange) {
 					rangeHelper.selectRange(lastRange);
 					
 					// remove the stored range after being set.
@@ -1400,11 +1390,11 @@
 		 * @ignore
 		 */
 		handleWindowResize = function() {
-			if(base.options.height !== null && base.options.height.toString().indexOf("%") > -1)
+			if(base.options.height && base.options.height.toString().indexOf("%") > -1)
 				base.height($editorContainer.parent().height() *
 					(parseFloat(base.options.height) / 100));
 
-			if(base.options.width !== null && base.options.width.toString().indexOf("%") > -1)
+			if(base.options.width && base.options.width.toString().indexOf("%") > -1)
 				base.width($editorContainer.parent().width() *
 					(parseFloat(base.options.width) / 100));
 		};
@@ -1424,13 +1414,11 @@
 		base._ = function() {
 			var args = arguments;
 			
-			if(locale !== null && locale[args[0]])
+			if(locale && locale[args[0]])
 				args[0] = locale[args[0]];
 			
 			return args[0].replace(/\{(\d+)\}/g, function(str, p1) {
-				return typeof args[p1-0+1] !== 'undefined'? 
-						args[p1-0+1] :
-						'{' + p1 + '}';
+				return args[p1-0+1] || '{' + p1 + '}';
 			});
 		};
 		
@@ -1450,7 +1438,7 @@
 					locale = $.sceditor.locale[lang[0]];
 			}
 			
-			if(locale !== null && locale.dateFormat)
+			if(locale && locale.dateFormat)
 				base.options.dateFormat = locale.dateFormat;
 		};
 
@@ -2973,7 +2961,7 @@
 		extractContents: function(startNode, endNode) {
 			var	base		= this,
 				$commonAncestor	= base.findCommonAncestor(startNode, endNode),
-				commonAncestor	= $commonAncestor===null?null:$commonAncestor.get(0),
+				commonAncestor	= !$commonAncestor?null:$commonAncestor.get(0),
 				startReached	= false,
 				endReached	= false;
 
