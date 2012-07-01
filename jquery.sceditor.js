@@ -489,24 +489,14 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.expandToContent = function() {
-			var	toolbarHeight	= (base.options.toolbarContainer === null?$toolbar.outerHeight():0),
-				body		= getWysiwygDoc().body,
-				documentElement = getWysiwygDoc().documentElement;
+			var	toolbarHeight	= (!base.options.toolbarContainer?$toolbar.outerHeight():0),
+				doc		= getWysiwygDoc(),
+				currentHeight	= $wysiwygEditor.outerHeight(true),
+				height		= doc.body.scrollHeight || doc.documentElement.scrollHeight;
 
-			var height = Math.max(	body.scrollHeight,
-						documentElement.scrollHeight,
-						body.offsetHeight.height,
-						documentElement.offsetHeight.height,
-						body.clientHeight,
-						documentElement.clientHeight );
+			height += toolbarHeight + (currentHeight - $wysiwygEditor.height());
 
-			height +=	toolbarHeight +
-					sizeToPx($wysiwygEditor.css("margin-top")) +
-					sizeToPx($wysiwygEditor.css("margin-bottom")) +
-					sizeToPx($wysiwygEditor.css("padding-top")) +
-					sizeToPx($wysiwygEditor.css("padding-bottom"));
-
-			if(height !== $wysiwygEditor.outerHeight(true))
+			if(height !== currentHeight)
 				base.height(height);
 		};
 
@@ -1635,7 +1625,8 @@
 					content.append(
 						$('<a class="sceditor-font-option" href="#"><font face="' + fonts[i] + '">' + fonts[i] + '</font></a>')
 							.data('sceditor-font', fonts[i])
-							.click(clickFunc));
+							.click(clickFunc)
+					);
 				}
 
 				editor.createDropDown(caller, "font-picker", content);
@@ -1669,7 +1660,8 @@
 					content.append(
 						$('<a class="sceditor-fontsize-option" href="#"><font size="' + i + '">' + i + '</font></a>')
 							.data('sceditor-fontsize', i)
-							.click(clickFunc));
+							.click(clickFunc)
+					);
 				}
 
 				editor.createDropDown(caller, "fontsize-picker", content);
@@ -1699,13 +1691,13 @@
 					htmlIndex		= 0;
 
 				for (var i=0; i < colorColumns.length; ++i) {
-					var colors = (typeof colorColumns[i] !== "undefined")?colorColumns[i].split(","):new Array(21);
+					var colors = colorColumns[i]?colorColumns[i].split(","):new Array(21);
 
 					html[htmlIndex++] = '<div class="sceditor-color-column">';
 
 					for (var x=0; x < colors.length; ++x) {
 						// use pre defined colour if can otherwise use the generated color
-						var color = (typeof colors[x] !== "undefined")?colors[x]:"#" + genColor.r.toString(16) + genColor.g.toString(16) + genColor.b.toString(16);
+						var color = colors[x]?colors[x]:"#" + genColor.r.toString(16) + genColor.g.toString(16) + genColor.b.toString(16);
 
 						html[htmlIndex++] = '<a href="#" class="sceditor-color-option" style="background-color: '+color+'" data-color="'+color+'"></a>';
 
