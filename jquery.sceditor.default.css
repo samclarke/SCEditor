@@ -5,6 +5,12 @@ html, body, p, code:before, table {
 	font-size: 13px;
 	color: #111;
 }
+html { height: 100%; }
+body {
+	min-height: 100%;
+	word-wrap: break-word;
+}
+
 
 ul, ol {
 	margin-top: 0;
@@ -51,6 +57,4 @@ blockquote cite {
 	border-bottom: 1px solid #aaa;
 }
 div { min-height: 1em; }
-html { height: 100%; }
-body { min-height: 100%; }
 h1, h2, h3, h4, h5, h6 { padding: 0; margin: 0; }

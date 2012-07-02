@@ -472,41 +472,14 @@
 		 * @see #resizeToContent
 		 */
 		base.expandToContent = function() {
-			base.resizeToContent(true);
-		};
-		
-		/**
-		 * <p>Resizes the editor to the size of it's content.</p>
-		 * 
-		 * <p>If expandOnly is set to true the editor will expand
-		 * only, it won't shrink.</p>
-		 * 
-		 * @since 1.3.6
-		 * @param {boolean} [expandOnly=false]
-		 * @function
-		 * @name resizeToContent
-		 * @memberOf jQuery.sceditor.prototype
-		 */
-		base.resizeToContent = function(expandOnly) {
-			var	$body		= $(getWysiwygDoc().body),
+			var	doc		= getWysiwygDoc(),
 				currentHeight	= $editorContainer.height(),
-				height		= 0,
+				height		= doc.body.scrollHeight || doc.documentElement.scrollHeight,
 				padding		= (currentHeight - $wysiwygEditor.height());
 
-			if(!$.sceditor.ie || $.sceditor.ie > 8)
-			{
-				$body.attr("style", "min-height: 0px; float: left; display: inline;");
-				height = $body[0].offsetHeight + padding;
-				$body.removeAttr("style");
-			}
-			else
-				height = $body[0].scrollHeight + padding;
-			
+			height += padding;
 
-			if(expandOnly && height < currentHeight)
-				return;
-			
-			if(height !== currentHeight)
+			if(height > currentHeight)
 				base.height(height);
 		};
 
