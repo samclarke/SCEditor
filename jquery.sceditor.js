@@ -25,6 +25,40 @@
 (function ($) {
 	'use strict';
 
+	var _templates = {
+		emoticon:	'<img src="{url}" data-sceditor-emoticon="{key}" alt="{key}" />',
+		fontOpt:	'<a class="sceditor-font-option" href="#" data-font="{font}"><font face="{font}">{font}</font></a>',
+		sizeOpt:	'<a class="sceditor-fontsize-option" data-size="{size}" href="#"><font size="{size}">{size}</font></a>',
+		youtubeMenu:	'<form><div><label for="link">{label}</label> <input type="text" id="link" value="http://" /></div><div><input type="button" class="button" value="{insert}" /></div></form>',
+		youtube:	'<iframe width="560" height="315" src="http://www.youtube.com/embed/{id}?wmode=opaque" data-youtube-id="{id}" frameborder="0" allowfullscreen></iframe>'
+	};
+
+	/**
+	 * <p>Replaces any params in a template with the passed params.</p>
+	 * 
+	 * <p>If createHTML is passed it will use jQuery to create the HTML. The
+	 * 	same as doing: $(editor.tmpl("html", {params...}));</p>
+	 * 
+	 * @param {string} templateName
+	 * @param {Object} params
+	 * @param {Boolean} createHTML
+	 * @function
+	 * @name tmpl
+	 * @memberOf jQuery.sceditor.prototype
+	 */
+	var _tmpl = function(name, params, createHTML) {
+		var template = _templates[name];
+		
+		$.each(params, function(name, val) {
+			template = template.replace(new RegExp('\{' + name + '\}', 'g'), val);
+		});
+		
+		if(createHTML)
+			template = $(template);
+		
+		return template;
+	};
+	
 	/**
 	 * SCEditor - A lightweight WYSIWYG editor
 	 *
@@ -1125,7 +1159,7 @@
 
 				html = html.replace(
 					new RegExp(reg, 'gm'),
-					group + '<img src="' + url + '" data-sceditor-emoticon="' + key + '" alt="' + key + '" />'
+					group + _tmpl('emoticon', {key: key, url: url})
 				);
 			});
 
@@ -1589,16 +1623,14 @@
 					content = $("<div />"),
 					/** @private */
 					clickFunc = function (e) {
-						callback($(this).data('sceditor-font'));
+						callback($(this).data('font'));
 						editor.closeDropDown(true);
 						return false;
 					};
 
 				for (var i=0; i < fonts.length; i++) {
 					content.append(
-						$('<a class="sceditor-font-option" href="#"><font face="' + fonts[i] + '">' + fonts[i] + '</font></a>')
-							.data('sceditor-font', fonts[i])
-							.click(clickFunc)
+						_tmpl('fontOpt', {font: fonts[i]}, true).click(clickFunc)
 					);
 				}
 
@@ -1624,16 +1656,14 @@
 				var	content   = $("<div />"),
 					/** @private */
 					clickFunc = function (e) {
-						callback($(this).data('sceditor-fontsize'));
+						callback($(this).data('size'));
 						editor.closeDropDown(true);
 						e.preventDefault();
 					};
 
 				for (var i=1; i<= 7; i++) {
 					content.append(
-						$('<a class="sceditor-fontsize-option" href="#"><font size="' + i + '">' + i + '</font></a>')
-							.data('sceditor-fontsize', i)
-							.click(clickFunc)
+						_tmpl('sizeOpt', {size: i}, true).click(clickFunc)
 					);
 				}
 
@@ -2004,17 +2034,12 @@
 								alt: code
 							})
 							.click(function (e) {
-								var	start = '', end = '';
+								var end = '';
 								
 								if(editor.options.emoticonsCompat)
-								{
-									start = '<span> ';
-									end   = ' </span>';
-								}
+									end   = ' ';
 								
-								editor.wysiwygEditorInsertHtml(start + '<img src="' + $(this).attr("src") +
-									'" data-sceditor-emoticon="' + $(this).attr('alt') + '" />' + end);
-
+								editor.insert($(this).attr('alt') + end);
 								editor.closeDropDown(true);
 								e.preventDefault();
 							})
@@ -2066,7 +2091,7 @@
 					$.each($.extend({}, editor.options.emoticons.more, editor.options.emoticons.dropdown, editor.options.emoticons.hidden), function(key, url) {
 						editor.EmoticonsCache[pos++] = [
 							key,
-							'<img src="' + url + '" data-sceditor-emoticon="' + key + '" alt="' + key + '" />'
+							_tmpl("emoticon", {key: key, url: url})
 						];
 					});
 
@@ -2095,30 +2120,30 @@
 		// START_COMMAND: YouTube
 		youtube: {
 			exec: function (caller) {
-				var editor  = this;
-				var content = $(
-					editor._('<form><div><label for="link">{0}</label> <input type="text" id="link" value="http://" /></div></form>',
-						editor._("Video URL:")
-					))
-					.submit(function () {return false;});
+				var	editor = this,
+					matches, content = _tmpl("youtubeMenu", {
+						label: editor._("Video URL:"),
+						insert: editor._("Insert")
+					}, true).submit(function () {
+						return false;
+					});
 
-				content.append(
-					$(editor._('<div><input type="button" class="button" value="{0}" /></div>',
-						editor._("Insert")
-					))
-					.click(function (e) {
-						var val = $(this).parent("form").find("#link").val();
-	
-						if(val !== "" && val !== "http://") {
-							// See http://www.abovetopsecret.com/forum/thread270269/pg1
-							val = val.replace(/^[^v]+v.(.{11}).*/,"$1"); 
-							editor.wysiwygEditorInsertHtml('<iframe width="560" height="315" src="http://www.youtube.com/embed/' + val +
-								'?wmode=opaque" data-youtube-id="' + val + '" frameborder="0" allowfullscreen></iframe>');
-						}
-	
-						editor.closeDropDown(true);
-						e.preventDefault();
-					}));
+				content.find('.button').click(function (e) {
+					var val = content.find("#link").val().replace("http://", "");
+
+					if (val !== "") {
+						matches = val.match(/(?:v=|v\/|embed\/|youtu.be\/)(.{11})/);
+						if (matches) val = matches[1];
+
+						if (/^[a-zA-Z0-9_-]{11}$/.test(val)) editor.wysiwygEditorInsertHtml(_tmpl("youtube", {
+							id: val
+						}));
+						else alert('Invalid YouTube ID');
+					}
+
+					editor.closeDropDown(true);
+					e.preventDefault();
+				});
 
 				editor.createDropDown(caller, "insertlink", content);
 			},
