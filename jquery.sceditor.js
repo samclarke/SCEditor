@@ -124,7 +124,6 @@
 			getWysiwygDoc,
 			handleWindowResize,
 			initLocale,
-			sizeToPx,
 			updateToolBar,
 			textEditorSelectedText,
 			autofocus;
@@ -448,7 +447,7 @@
 		base.height = function (height) {
 			if(!height)
 				return $editorContainer.height();
-			
+
 			$editorContainer.height(height);
 			
 			height -= !base.options.toolbarContainer ? $toolbar.outerHeight(true) : 0;
@@ -464,36 +463,49 @@
 		};
 		
 		/**
-		 * Converts the string returned from jQuery CSS func to px int
-		 * 
-		 * @private
-		 */
-		sizeToPx = function(size) {
-			if(typeof size !== "string")
-				return parseInt(size, 10);
-			
-			if(size.indexOf('px'))
-				return parseInt(size, 10) || 0;
-			
-			return 0;
-		};
-		
-		/**
 		 * Expands the editor to the size of it's content
 		 * 
 		 * @since 1.3.5
 		 * @function
 		 * @name expandToContent
 		 * @memberOf jQuery.sceditor.prototype
+		 * @see #resizeToContent
 		 */
 		base.expandToContent = function() {
-			var	toolbarHeight	= !base.options.toolbarContainer?$toolbar.outerHeight():0,
-				doc		= getWysiwygDoc(),
-				currentHeight	= $wysiwygEditor.outerHeight(true),
-				height		= doc.body.scrollHeight || doc.documentElement.scrollHeight;
+			base.resizeToContent(true);
+		};
+		
+		/**
+		 * <p>Resizes the editor to the size of it's content.</p>
+		 * 
+		 * <p>If expandOnly is set to true the editor will expand
+		 * only, it won't shrink.</p>
+		 * 
+		 * @since 1.3.6
+		 * @param {boolean} [expandOnly=false]
+		 * @function
+		 * @name resizeToContent
+		 * @memberOf jQuery.sceditor.prototype
+		 */
+		base.resizeToContent = function(expandOnly) {
+			var	$body		= $(getWysiwygDoc().body),
+				currentHeight	= $editorContainer.height(),
+				height		= 0,
+				padding		= (currentHeight - $wysiwygEditor.height());
 
-			height += toolbarHeight + (currentHeight - $wysiwygEditor.height());
+			if(!$.sceditor.ie || $.sceditor.ie > 8)
+			{
+				$body.attr("style", "min-height: 0px; float: left; display: inline;");
+				height = $body[0].offsetHeight + padding;
+				$body.removeAttr("style");
+			}
+			else
+				height = $body[0].scrollHeight + padding;
+			
 
+			if(expandOnly && height < currentHeight)
+				return;
+			
 			if(height !== currentHeight)
 				base.height(height);
 		};
