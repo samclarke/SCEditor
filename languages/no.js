@@ -60,6 +60,9 @@
 		"Enter the displayed text:": "Skriv inn teksten som vises:",
 		"Enter URL:": "Skriv inn URL adresse:",
 		"Enter the YouTube video URL or ID:": "Angi YouTube video link eller ID:",
+		"Insert a Quote": "Sett inn sitat",
+		"Invalid YouTube video": "Ugyldig Youtube video",
+		
 		dateFormat: "day.month.year"
 	}
 	
