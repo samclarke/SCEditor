@@ -25,7 +25,7 @@
 		"Copy": "Copiar",
 		"Your browser does not allow the copy command. Please use the keyboard shortcut Ctrl/Cmd-C": "Su navegador no acepta el comando copiar. Por favor, use la combinaci\u00f3n Ctrl/Cmd-C",
 		"Paste": "Pegar",
-		"Your browser does not allow the paste command. Please use the keyboard shortcut Ctrl/Cmd-V": "Su navegador no acepta el comando cortar. Por favor, use la combinaci\u00f3n Ctrl/Cmd-V",
+		"Your browser does not allow the paste command. Please use the keyboard shortcut Ctrl/Cmd-V": "Su navegador no acepta el comando pegar. Por favor, use la combinaci\u00f3n Ctrl/Cmd-V",
 		"Paste your text inside the following box:": "Pega el texto dentro del siguiente recuadro",
 		"Paste Text": "Pegar Texto",
 		"Bullet list": "Lista de Vi\u00f1etas",
@@ -60,6 +60,8 @@
 		"Enter the displayed text:": "Ingresar el texto mostrado:",
 		"Enter URL:": "Ingresar URL:",
 		"Enter the YouTube video URL or ID:": "Ingresar URL o ID de YouTube",
+		"Insert a Quote":"Insertar Cita",
+		
 		dateFormat: "day-month-year"
 	}
 })(jQuery);
