@@ -12,7 +12,8 @@ TODO:
 	Improve newline handling for blocklevel tags which don't require a new line after them
 
 Version 1.3.6:
-	
+	Added Spanish translation
+		- Thanks to Maxpower for translating
 
 Version 1.3.5:
 	Fixed bug in FF making pasting via right click difficult when empty
