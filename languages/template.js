@@ -64,6 +64,7 @@
 		"Enter the displayed text:": "",
 		"Enter URL:": "",
 		"Enter the YouTube video URL or ID:": "",
+		"Insert a Quote":"",
 		
 		// month format, replace - with the date format seperator and order in the
 		// order used
