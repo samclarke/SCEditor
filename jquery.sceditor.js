@@ -267,15 +267,15 @@
 
 				for (var x=0; x < buttons.length; x++) {
 					// the button must be a valid command otherwise ignore it
-					if(!base.commands.hasOwnProperty(buttons[x]))
+					if(!base.commands[buttons[x]])
 						continue;
 
-					accessibilityName = base.commands[buttons[x]].tooltip ? base._(base.commands[buttons[x]].tooltip) : buttons[x];
+					accessibilityName = base.commands[buttons[x]].tooltip || buttons[x];
 					
 					button = $('<a class="sceditor-button sceditor-button-' + buttons[x] +
 						' " unselectable="on"><div unselectable="on">' + accessibilityName + '</div></a>');
 
-					if(base.commands[buttons[x]].hasOwnProperty("tooltip"))
+					if(base.commands[buttons[x]].tooltip)
 						button.attr('title', base._(base.commands[buttons[x]].tooltip));
 						
 					if(base.commands[buttons[x]].exec)
