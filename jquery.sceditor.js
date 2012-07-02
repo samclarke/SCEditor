@@ -22,14 +22,38 @@
 /*jshint smarttabs: true, scripturl: true, jquery: true, devel:true, eqnull:true, curly: false */
 /*global XMLSerializer: true*/
 
-(function ($) {
+;(function ($, window, document) {
 	'use strict';
 
 	var _templates = {
 		emoticon:	'<img src="{url}" data-sceditor-emoticon="{key}" alt="{key}" />',
+		
 		fontOpt:	'<a class="sceditor-font-option" href="#" data-font="{font}"><font face="{font}">{font}</font></a>',
+		
 		sizeOpt:	'<a class="sceditor-fontsize-option" data-size="{size}" href="#"><font size="{size}">{size}</font></a>',
-		youtubeMenu:	'<form><div><label for="link">{label}</label> <input type="text" id="link" value="http://" /></div><div><input type="button" class="button" value="{insert}" /></div></form>',
+		
+		pastetext:	'<div><label for="txt">{label}</label> ' +
+				'<textarea cols="20" rows="7" id="txt"></textarea></div>' +
+				'<div><input type="button" class="button" value="{insert}" /></div>',
+				
+		table:		'<div><label for="rows">{rows}</label><input type="text" id="rows" value="2" /></div>' +
+				'<div><label for="cols">{cols}</label><input type="text" id="cols" value="2" /></div>' +
+				'<div><input type="button" class="button" value="{insert}" /></div>',
+		
+		image:		'<div><label for="link">{url}</label> <input type="text" id="image" value="http://" /></div>' +
+				'<div><label for="width">{width}</label> <input type="text" id="width" size="2" /></div>' +
+				'<div><label for="height">{height}</label> <input type="text" id="height" size="2" /></div>' +
+				'<div><input type="button" class="button" value="{insert}" /></div>',
+		
+		email:		'<div><label for="email">{label}</label> <input type="text" id="email" value="" /></div>' +
+				'<div><input type="button" class="button" value="{insert}" /></div>',
+		
+		link:		'<div><label for="link">{url}</label> <input type="text" id="link" value="http://" /></div>' +
+				'<div><label for="des">{desc}</label> <input type="text" id="des" value="" /></div>' +
+				'<div><input type="button" class="button" value="{ins}" /></div>',
+				
+		youtubeMenu:	'<div><label for="link">{label}</label> <input type="text" id="link" value="http://" /></div><div><input type="button" class="button" value="{insert}" /></div>',
+		
 		youtube:	'<iframe width="560" height="315" src="http://www.youtube.com/embed/{id}?wmode=opaque" data-youtube-id="{id}" frameborder="0" allowfullscreen></iframe>'
 	};
 
@@ -37,7 +61,7 @@
 	 * <p>Replaces any params in a template with the passed params.</p>
 	 * 
 	 * <p>If createHTML is passed it will use jQuery to create the HTML. The
-	 * 	same as doing: $(editor.tmpl("html", {params...}));</p>
+	 * same as doing: $(editor.tmpl("html", {params...}));</p>
 	 * 
 	 * @param {string} templateName
 	 * @param {Object} params
@@ -50,7 +74,7 @@
 		var template = _templates[name];
 		
 		$.each(params, function(name, val) {
-			template = template.replace(new RegExp('\{' + name + '\}', 'g'), val);
+			template = template.replace(new RegExp('\\{' + name + '\\}', 'g'), val);
 		});
 		
 		if(createHTML)
@@ -535,7 +559,7 @@
 				minHeight, maxHeight, minWidth, maxWidth, mouseMoveFunc;
 
 			minHeight = base.options.resizeMinHeight || origHeight / 1.5;
-			maxHeight = base.options.resizeMaxHeight || origHeight * 2.;
+			maxHeight = base.options.resizeMaxHeight || origHeight * 2.5;
 			minWidth = base.options.resizeMinWidth  || origWidth / 1.25;
 			maxWidth = base.options.resizeMaxWidth || origWidth * 1.25;
 
@@ -860,11 +884,11 @@
 					return str;
 				
 				return str.replace(/&/g, "&amp;")
-							.replace(/</g, "&lt;")
-							.replace(/>/g, "&gt;")
-							.replace(/ /g, "&nbsp;")
-							.replace(/\r\n|\r/g, "\n")
-							.replace(/\n/g, "<br />");
+					.replace(/</g, "&lt;")
+					.replace(/>/g, "&gt;")
+					.replace(/ /g, "&nbsp;")
+					.replace(/\r\n|\r/g, "\n")
+					.replace(/\n/g, "<br />");
 			};
 			
 			base.wysiwygEditorInsertHtml(escape(text), escape(endText));
@@ -1265,7 +1289,7 @@
 				return;
 			}
 			
-			if(!command.hasOwnProperty("exec"))
+			if(!command.exec)
 				return;
 			
 			if($.isFunction(command.exec))
@@ -1310,7 +1334,7 @@
 		 */
 		saveRange = function () {
 			/* this is only needed for IE */
-			if(!$.browser.msie)
+			if(!$.sceditor.ie)
 				return;
 
 			lastRange = rangeHelper.selectedRange();
@@ -1628,11 +1652,8 @@
 						return false;
 					};
 
-				for (var i=0; i < fonts.length; i++) {
-					content.append(
-						_tmpl('fontOpt', {font: fonts[i]}, true).click(clickFunc)
-					);
-				}
+				for (var i=0; i < fonts.length; i++)
+					content.append(_tmpl('fontOpt', {font: fonts[i]}, true).click(clickFunc));
 
 				editor.createDropDown(caller, "font-picker", content);
 			},
@@ -1661,11 +1682,8 @@
 						e.preventDefault();
 					};
 
-				for (var i=1; i<= 7; i++) {
-					content.append(
-						_tmpl('sizeOpt', {size: i}, true).click(clickFunc)
-					);
-				}
+				for (var i=1; i<= 7; i++)
+					content.append(_tmpl('sizeOpt', {size: i}, true).click(clickFunc));
 
 				editor.createDropDown(caller, "fontsize-picker", content);
 			},
@@ -1776,19 +1794,16 @@
 		pastetext: {
 			exec: function (caller) {
 				var	editor = this,
-					content = $(this._('<form><div><label for="txt">{0}</label> <textarea cols="20" rows="7" id="txt">' +
-						'</textarea></div></form>',
-						this._("Paste your text inside the following box:")
-					))
-					.submit(function () {return false;});
+					content = _tmpl("pastetext", {
+						label: editor._("Paste your text inside the following box:"),
+						insert: editor._("Insert")
+					}, true);
 
-				content.append($(this._('<div><input type="button" class="button" value="{0}" /></div>',
-					this._("Insert")
-				)).click(function (e) {
-					editor.wysiwygEditorInsertText($(this).parent("form").find("#txt").val());
+				content.find('.button').click(function (e) {
+					editor.wysiwygEditorInsertText(content.find("#txt").val());
 					editor.closeDropDown(true);
 					e.preventDefault();
-				}));
+				});
 
 				editor.createDropDown(caller, "pastetext", content);
 			},
@@ -1810,21 +1825,17 @@
 
 		// START_COMMAND: Table
 		table: {
-			exec: function (caller) {
+			exec: function (caller) {	
 				var	editor  = this,
-					content = $(this._(
-						'<form><div><label for="rows">{0}</label><input type="text" id="rows" value="2" /></div>' +
-							'<div><label for="cols">{1}</label><input type="text" id="cols" value="2" /></div></form>',
-						this._("Rows:"),
-						this._("Cols:")
-					))
-					.submit(function () {return false;});
+					content = _tmpl("table", {
+						rows: editor._("Rows:"),
+						cols: editor._("Cols:"),
+						insert: editor._("Insert")
+					}, true);
 
-				content.append($(this._('<div><input type="button" class="button" value="{0}" /></div>',
-					this._("Insert")
-				)).click(function (e) {
-					var rows = $(this).parent("form").find("#rows").val() - 0,
-						cols = $(this).parent("form").find("#cols").val() - 0,
+				content.find('.button').click(function (e) {
+					var	rows = content.find("#rows").val() - 0,
+						cols = content.find("#cols").val() - 0,
 						html = '<table>';
 
 					if(rows < 1 || cols < 1)
@@ -1832,21 +1843,19 @@
 					
 					for (var row=0; row < rows; row++) {
 						html += '<tr>';
-						for (var col=0; col < cols; col++) {
-							if($.browser.msie)
-								html += '<td></td>';
-							else
-								html += '<td><br class="sceditor-ignore" /></td>';
-						}
+						
+						for (var col=0; col < cols; col++)
+							html += '<td>' + ($.sceditor.ie ? '' : '<br class="sceditor-ignore" />') + '</td>';
+						
 						html += '</tr>';
 					}
+					
 					html += '</table>';
 
 					editor.wysiwygEditorInsertHtml(html);
-
 					editor.closeDropDown(true);
 					e.preventDefault();
-				}));
+				});
 
 				editor.createDropDown(caller, "inserttable", content);
 			},
@@ -1874,27 +1883,21 @@
 		image: {
 			exec: function (caller) {
 				var	editor  = this,
-					content = $(this._('<form><div><label for="link">{0}</label> <input type="text" id="image" value="http://" /></div>' +
-						'<div><label for="width">{1}</label> <input type="text" id="width" size="2" /></div>' +
-						'<div><label for="height">{2}</label> <input type="text" id="height" size="2" /></div></form>',
-							this._("URL:"),
-							this._("Width (optional):"),
-							this._("Height (optional):")
-						))
-					.submit(function () {return false;});
+					content = _tmpl("image", {
+						url: editor._("URL:"),
+						width: editor._("Width (optional):"),
+						height: editor._("Height (optional):"),
+						insert: editor._("Insert")
+					}, true);
 
-				content.append($(this._('<div><input type="button" class="button" value="Insert" /></div>',
-						this._("Insert")
-					)).click(function (e) {
-					var $form	= $(this).parent("form"),
-						val		= $form.find("#image").val(),
+				content.find('.button').click(function (e) {
+					var	val	= content.find("#image").val(),
 						attrs	= '',
-						width,
-						height;
+						width, height;
 
-					if((width = $form.find("#width").val()))
+					if((width = content.find("#width").val()))
 						attrs += ' width="' + width + '"';
-					if((height = $form.find("#height").val()))
+					if((height = content.find("#height").val()))
 						attrs += ' height="' + height + '"';
 
 					if(val && val !== "http://")
@@ -1902,7 +1905,7 @@
 
 					editor.closeDropDown(true);
 					e.preventDefault();
-				}));
+				});
 
 				editor.createDropDown(caller, "insertimage", content);
 			},
@@ -1914,13 +1917,13 @@
 		email: {
 			exec: function (caller) {
 				var	editor  = this,
-					content = $(this._('<form><div><label for="email">{0}</label> <input type="text" id="email" value="" /></div></form>',
-						this._("E-mail:")
-					))
-					.submit(function () {return false;});
+					content = _tmpl("email", {
+						email: editor._("E-mail:"),
+						insert: editor._("Insert")
+					}, true);
 
-				content.append($('<div><input type="button" class="button" value="Insert" /></div>').click(function (e) {
-					var val = $(this).parent("form").find("#email").val();
+				content.find('.button').click(function (e) {
+					var val = content.find("#email").val();
 
 					if(val)
 					{
@@ -1935,7 +1938,7 @@
 
 					editor.closeDropDown(true);
 					e.preventDefault();
-				}));
+				});
 
 				editor.createDropDown(caller, "insertemail", content);
 			},
@@ -1947,19 +1950,15 @@
 		link: {
 			exec: function (caller) {
 				var	editor  = this,
-					content = $(this._('<form><div><label for="link">{0}</label> <input type="text" id="link" value="http://" /></div>' +
-							'<div><label for="des">{1}</label> <input type="text" id="des" value="" /></div></form>',
-						this._("URL:"),
-						this._("Description (optional):")
-					))
-					.submit(function () {return false;});
+					content = _tmpl("link", {
+						url: editor._("URL:"),
+						desc: editor._("Description (optional):"),
+						ins: editor._("Insert")
+					}, true);
 
-				content.append($(
-					this._('<div><input type="button" class="button" value="{0}" /></div>',
-						this._("Insert")
-					)).click(function (e) {
-					var val = $(this).parent("form").find("#link").val(),
-						description = $(this).parent("form").find("#des").val();
+				content.find('.button').click(function (e) {
+					var	val		= content.find("#link").val(),
+						description	= content.find("#des").val();
 
 					if(val !== "" && val !== "http://") {
 						// needed for IE to reset the last range
@@ -1978,7 +1977,7 @@
 
 					editor.closeDropDown(true);
 					e.preventDefault();
-				}));
+				});
 
 				editor.createDropDown(caller, "insertlink", content);
 			},
@@ -2124,9 +2123,7 @@
 					matches, content = _tmpl("youtubeMenu", {
 						label: editor._("Video URL:"),
 						insert: editor._("Insert")
-					}, true).submit(function () {
-						return false;
-					});
+					}, true);
 
 				content.find('.button').click(function (e) {
 					var val = content.find("#link").val().replace("http://", "");
@@ -2135,10 +2132,10 @@
 						matches = val.match(/(?:v=|v\/|embed\/|youtu.be\/)(.{11})/);
 						if (matches) val = matches[1];
 
-						if (/^[a-zA-Z0-9_-]{11}$/.test(val)) editor.wysiwygEditorInsertHtml(_tmpl("youtube", {
-							id: val
-						}));
-						else alert('Invalid YouTube ID');
+						if (/^[a-zA-Z0-9_\-]{11}$/.test(val))
+							editor.wysiwygEditorInsertHtml(_tmpl("youtube", { id: val }));
+						else
+							alert('Invalid YouTube video');
 					}
 
 					editor.closeDropDown(true);
@@ -2777,7 +2774,6 @@
 			i	= rep.length;
 			while(i--)
 			{
-				//pat = new RegExp("(?:^|\\s)" + $.sceditor.regexEscape(rep[i][0]) + "(?=\\s|$)");
 				pat = new RegExp("(?:[\\s\xA0\u2002\u2003\u2009])" + $.sceditor.regexEscape(rep[i][0]) + "(?=[\\s\xA0\u2002\u2003\u2009])");
 				lookStart = before.length - 1 - rep[i][0].length;
 				
@@ -3052,9 +3048,9 @@
 		 * @example
 		 * $.sceditor.command.set("hello",
 		 * {
-		 * 	exec: function() {
-		 * 		alert("Hello World!");
-		 * 	}
+		 *     exec: function() {
+		 *         alert("Hello World!");
+		 *     }
 		 * });
 		 * 
 		 * @param {String} name
@@ -3245,4 +3241,4 @@
 			(new $.sceditor(this, options));
 		});
 	};
-})(jQuery);
+})(jQuery, window, document);
