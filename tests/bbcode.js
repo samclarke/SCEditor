@@ -859,7 +859,7 @@ test("YouTube", function() {
 
 
 test("Stripping empty", function() {
-	expect(3);
+	expect(7);
 	
 	equal(
 		this.sb.getHtmlHandler("", html2dom("<b><br /></b>", true)),
@@ -877,5 +877,29 @@ test("Stripping empty", function() {
 		this.sb.getHtmlHandler("", html2dom("<b><br />Content</b>", true)),
 		"[b]\nContent[/b]",
 		"Bold tag with content"
+	);
+	
+	equal(
+		this.sb.getHtmlHandler("", html2dom("<b><span><br /></span></b>", true)),
+		"",
+		"Bold tag with only whitespace content"
+	);
+	
+	equal(
+		this.sb.getHtmlHandler("", html2dom("<b><span><span><span></span><span></span></span><br /></span></b>", true)),
+		"",
+		"Bold tag with only whitespace content"
+	);
+	
+	equal(
+		this.sb.getHtmlHandler("", html2dom("<b><span><br />test<span></b>", true)),
+		"[b]\ntest[/b]",
+		"Bold tag with nested content"
+	);
+	
+	equal(
+		this.sb.getHtmlHandler("", html2dom("<b><span><br /><span>test<span><span></b>", true)),
+		"[b]\ntest[/b]",
+		"Bold tag with nested content"
 	);
 });

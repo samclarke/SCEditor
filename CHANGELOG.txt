@@ -5,8 +5,6 @@ TODO:
 	Add ability to modify tables in browsers that don't have native WYSIWYG table editing
 	Change buttons to have translatable command name as their content, so themes don't
 		have to use icons
-	Add isWhiteSpace check to BBCode converter to strip empty tags better
-	Add unit test for above and for bbcodes with lots of white space, some with content and some without
 	Add resize/expand to content option
 	Improve custom BBCodes to support self-closing tags
 	Improve newline handling for blocklevel tags which don't require a new line after them

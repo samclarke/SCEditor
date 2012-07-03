@@ -45,6 +45,7 @@
 			formatString,
 			getStyle,
 			wrapInDivs,
+			isEmpty,
 			mergeTextModeCommands;
 
 		base.bbcodes = $.sceditorBBCodePlugin.bbcodes;
@@ -240,6 +241,23 @@
 			
 			return null;
 		};
+		
+		isEmpty = function(element) {
+			var	childNodes = element.childNodes,
+				i = childNodes.length;
+
+			if(element.nodeValue)
+				return false;
+			
+			if(childNodes.length === 0 || (childNodes.length === 1 && (/br/i.test(childNodes[0].nodeName) || isEmpty(childNodes[0]))))
+				return true;
+			
+			while(i--)
+				if(!isEmpty(childNodes[i]))
+					return false;
+			
+			return true;
+		};
 
 		/**
 		 * Checks if any bbcode styles match the elements styles
@@ -260,17 +278,14 @@
 			
 			$.each(stylesToBbcodes[blockLevel], function(property, bbcodes) {
 				elementPropVal = getStyle(element[0], property);
-				if(!elementPropVal)
-					return;
-
+				
 				// if the parent has the same style use that instead of this one
 				// so you dont end up with [i]parent[i]child[/i][/i]
-				if(getStyle(element.parent()[0], property) === elementPropVal)
+				if(!elementPropVal || getStyle(element.parent()[0], property) === elementPropVal)
 					return;
 
 				$.each(bbcodes, function(bbcode, values) {
-					if((element[0].childNodes.length === 0 || element[0].childNodes[0].nodeName.toLowerCase() === "br") &&
-						!base.bbcodes[bbcode].allowsEmpty)
+					if(!base.bbcodes[bbcode].allowsEmpty && isEmpty(element[0]))
 						return;
 					
 					if(!values || $.inArray(elementPropVal.toString(), values) > -1) {
@@ -304,8 +319,7 @@
 			if(tagsToBbcodes[tag] && tagsToBbcodes[tag][blockLevel]) {
 				// loop all bbcodes for this tag
 				$.each(tagsToBbcodes[tag][blockLevel], function(bbcode, bbcodeAttribs) {
-					if(!base.bbcodes[bbcode].allowsEmpty &&
-						(element[0].childNodes.length === 0 || (element[0].childNodes[0].nodeName.toLowerCase() === "br" && element[0].childNodes.length === 1))						)
+					if(!base.bbcodes[bbcode].allowsEmpty && isEmpty(element[0]))
 						return;
 					
 					// if the bbcode requires any attributes then check this has
@@ -316,13 +330,9 @@
 						// loop all the bbcode attribs
 						$.each(bbcodeAttribs, function(attrib, values)
 						{
-							// check if has the bbcodes attrib
-							if(!element.attr(attrib))
-								return;
-
 							// if the element has the bbcodes attribute and the bbcode attribute
 							// has values check one of the values matches
-							if(values && $.inArray(element.attr(attrib), values) < 0)
+							if(!element.attr(attrib) || (values && $.inArray(element.attr(attrib), values) < 0))
 								return;
 
 							// break this loop as we have matched this bbcode
