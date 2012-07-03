@@ -26,6 +26,13 @@
 	'use strict';
 
 	var _templates = {
+		html:		'<html><head><!--[if gte IE 9]><style>* {min-height: auto !important}</style><![endif]-->' +
+				'<meta http-equiv="Content-Type" content="text/html;charset={charset}" />' +
+				'<link rel="stylesheet" type="text/css" href="{style}" />' +
+				'</head><body contenteditable="true"></body></html>',
+		
+		toolbarButton:	'<a class="sceditor-button sceditor-button-{name}" data-sceditor-command="{name}" unselectable="on"><div unselectable="on">{dispName}</div></a>',
+				
 		emoticon:	'<img src="{url}" data-sceditor-emoticon="{key}" alt="{key}" />',
 		
 		fontOpt:	'<a class="sceditor-font-option" href="#" data-font="{font}"><font face="{font}">{font}</font></a>',
@@ -264,12 +271,10 @@
 			base.height(base.options.height || $textarea.height());
 			
 			getWysiwygDoc().open();
-			getWysiwygDoc().write(
-				'<html><head><!--[if gte IE 9]><style>* {min-height: auto !important}</style><![endif]-->' +
-				'<meta http-equiv="Content-Type" content="text/html;charset=' + base.options.charset + '" />' +
-				'<link rel="stylesheet" type="text/css" href="' + base.options.style + '" />' +
-				'</head><body contenteditable="true"></body></html>'
-			);
+			getWysiwygDoc().write(_tmpl("html", {
+				charset: base.options.charset,
+				style: base.options.style
+			}));
 			getWysiwygDoc().close();
 			
 			base.readOnly(!!base.options.readOnly);
@@ -304,17 +309,15 @@
 		 */
 		initToolBar = function () {
 			var	group, buttons,
-				accessibilityName,
 				button, i, buttonClick,
 				groups = base.options.toolbar.split("|");
 			
 			buttonClick = function (e) {
 				e.preventDefault();
 				
-				if($(this).hasClass('disabled'))
-					return;
+				if(!$(this).hasClass('disabled'))
+					handleCommand($(this), base.commands[$(this).data("sceditor-command")]);
 				
-				handleCommand($(this), base.commands[$(this).data("sceditor-command")]);
 				return false;
 			};
 
@@ -328,10 +331,10 @@
 					if(!base.commands[buttons[x]])
 						continue;
 
-					accessibilityName = base.commands[buttons[x]].tooltip || buttons[x];
-					
-					button = $('<a class="sceditor-button sceditor-button-' + buttons[x] +
-						' " unselectable="on"><div unselectable="on">' + accessibilityName + '</div></a>');
+					button = _tmpl("toolbarButton", {
+						name: buttons[x],
+						dispName: base.commands[buttons[x]].tooltip || buttons[x]
+					}, true).click(buttonClick);
 
 					if(base.commands[buttons[x]].tooltip)
 						button.attr('title', base._(base.commands[buttons[x]].tooltip));
@@ -343,10 +346,6 @@
 						
 					if(base.commands[buttons[x]].txtExec)
 						button.data('sceditor-txtmode', true);
-
-					// add the click handler for the button
-					button.data("sceditor-command", buttons[x]);
-					button.click(buttonClick);
 
 					group.append(button);
 				}
