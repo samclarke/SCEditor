@@ -231,7 +231,12 @@
 				$editorContainer.attr('id', base.options.id);
 
 			$(document).click(documentClickHandler);
-			$(textarea.form).attr('novalidate','novalidate').submit(formSubmitHandler);
+			$(textarea.form)
+				.attr('novalidate','novalidate')
+				.bind("reset", function() {
+					base.val($textarea.val());
+				})
+				.submit(formSubmitHandler);
 			
 			// load any textarea value into the editor
 			base.val($textarea.hide().val());
