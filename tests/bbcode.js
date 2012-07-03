@@ -859,7 +859,7 @@ test("YouTube", function() {
 
 
 test("Stripping empty", function() {
-	expect(7);
+	expect(8);
 	
 	equal(
 		this.sb.getHtmlHandler("", html2dom("<b><br /></b>", true)),
@@ -900,6 +900,12 @@ test("Stripping empty", function() {
 	equal(
 		this.sb.getHtmlHandler("", html2dom("<b><span><br /><span>test<span><span></b>", true)),
 		"[b]\ntest[/b]",
+		"Bold tag with nested content"
+	);
+	
+	equal(
+		this.sb.getHtmlHandler("", html2dom("<b><span><span><img src='test.png' /><span><span></b>", true)),
+		"[b][img=0x0]test.png[/img][/b]",
 		"Bold tag with nested content"
 	);
 });
