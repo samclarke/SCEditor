@@ -251,6 +251,16 @@
 			
 			if(base.options.toolbar.indexOf('emoticon') !== -1)
 				initEmoticons();
+			
+			// Can't use load event as it gets fired before CSS is loaded
+			// in some browsers
+			if(base.options.autoExpand)
+				var interval = setInterval(function() {
+					if (!document.readyState || document.readyState === "complete") {
+						base.expandToContent();
+						clearInterval(interval);
+					}
+				}, 10);
 		};
 
 		/**
@@ -303,6 +313,9 @@
 			
 			if(base.options.enablePasteFiltering)
 				$body.bind("paste", handlePasteEvt);
+			
+			if(base.options.autoExpand)
+				$doc.bind("keyup", base.expandToContent)
 
 			rangeHelper = new $.sceditor.rangeHelper(wysiwygEditor.contentWindow);
 		};
@@ -527,19 +540,24 @@
 		 * Expands the editor to the size of it's content
 		 * 
 		 * @since 1.3.5
+		 * @param {Boolean} [ignoreMaxHeight=false]
 		 * @function
 		 * @name expandToContent
 		 * @memberOf jQuery.sceditor.prototype
 		 * @see #resizeToContent
 		 */
-		base.expandToContent = function() {
+		base.expandToContent = function(ignoreMaxHeight) {
 			var	doc		= getWysiwygDoc(),
 				currentHeight	= $editorContainer.height(),
 				height		= doc.body.scrollHeight || doc.documentElement.scrollHeight,
-				padding		= (currentHeight - $wysiwygEditor.height());
+				padding		= (currentHeight - $wysiwygEditor.height()),
+				maxHeight	= base.options.resizeMaxHeight || ((base.options.height || $textarea.height()) * 2);
 
 			height += padding;
 
+			if(ignoreMaxHeight !== true && height > maxHeight)
+				height = maxHeight;
+			
 			if(height > currentHeight)
 				base.height(height);
 		};
@@ -3228,6 +3246,7 @@
 		readOnly: false,
 		rtl: false,
 		autofocus: false,
+		autoExpand: false,
 		
 		// If to run the editor without WYSIWYG support
 		runWithoutWysiwygSupport: false,
