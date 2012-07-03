@@ -251,7 +251,6 @@
 			
 			if(base.options.toolbar.indexOf('emoticon') !== -1)
 				initEmoticons();
-
 		};
 
 		/**
@@ -2875,7 +2874,7 @@
 		 * @return {bool}
 		 */
 		isInline: function(elm, includeCodeAsBlock) {
-			if(elm == null || elm.nodeType !== 1)
+			if(!elm || elm.nodeType !== 1)
 				return true;
 
 			if(includeCodeAsBlock && elm.tagName.toLowerCase() === 'code')
