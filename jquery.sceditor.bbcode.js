@@ -373,7 +373,9 @@
 		formatString = function() {
 			var args = arguments;
 			return args[0].replace(/\{(\d+)\}/g, function(str, p1) {
-				return args[p1-0+1] || '{' + p1 + '}';
+				return typeof args[p1-0+1] !== "undefined" ?
+					args[p1-0+1] :
+					'{' + p1 + '}';
 			});
 		};
 
