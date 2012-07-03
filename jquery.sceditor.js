@@ -954,7 +954,7 @@
 			
 			textEditor.focus();
 			
-			if(textEditor.selectionStart)
+			if(typeof textEditor.selectionStart !== "undefined")
 			{
 				start	= textEditor.selectionStart;
 				end	= textEditor.selectionEnd;
@@ -972,7 +972,7 @@
 				
 				textEditor.selectionEnd = textEditor.selectionStart;
 			}
-			else if(document.selection.createRange)
+			else if(typeof textEditor.selection.createRange !== "undefined")
 			{
 				range = document.selection.createRange();
 				
