@@ -499,7 +499,7 @@
 		base.getTextHandler = function(text, isFragment) {
 
 			var	oldText, replaceBBCodeFunc,
-				bbcodeRegex = /\[([^\[\s=]+)(?:([^\[]+))?\]((?:[\s\S](?!\[\1))*?)\[\/(\1)\]/g,
+				bbcodeRegex = /\[([^\[\s=]+)(?:([^\[\]]+))?\]((?:[\s\S](?!\[\1))*?)\[\/(\1)\]/g,
 				atribsRegex = /(\S+)=((?:(?:(["'])(?:\\\3|[^\3])*?\3))|(?:[^'"\s]+))/g;
 
 			replaceBBCodeFunc = function(str, bbcode, attrs, content)
