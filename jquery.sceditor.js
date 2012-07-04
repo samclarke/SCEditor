@@ -73,9 +73,7 @@
 	 * @param {string} templateName
 	 * @param {Object} params
 	 * @param {Boolean} createHTML
-	 * @function
-	 * @name tmpl
-	 * @memberOf jQuery.sceditor.prototype
+	 * @private
 	 */
 	var _tmpl = function(name, params, createHTML) {
 		var template = _templates[name];
@@ -1941,7 +1939,7 @@
 			exec: function (caller) {
 				var	editor  = this,
 					content = _tmpl("email", {
-						email: editor._("E-mail:"),
+						label: editor._("E-mail:"),
 						insert: editor._("Insert")
 					}, true);
 
