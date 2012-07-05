@@ -52,11 +52,11 @@
 				'<div><label for="height">{height}</label> <input type="text" id="height" size="2" /></div>' +
 				'<div><input type="button" class="button" value="{insert}" /></div>',
 		
-		email:		'<div><label for="email">{label}</label> <input type="text" id="email" value="" /></div>' +
+		email:		'<div><label for="email">{label}</label> <input type="text" id="email" /></div>' +
 				'<div><input type="button" class="button" value="{insert}" /></div>',
 		
 		link:		'<div><label for="link">{url}</label> <input type="text" id="link" value="http://" /></div>' +
-				'<div><label for="des">{desc}</label> <input type="text" id="des" value="" /></div>' +
+				'<div><label for="des">{desc}</label> <input type="text" id="des" /></div>' +
 				'<div><input type="button" class="button" value="{ins}" /></div>',
 				
 		youtubeMenu:	'<div><label for="link">{label}</label> <input type="text" id="link" value="http://" /></div><div><input type="button" class="button" value="{insert}" /></div>',
