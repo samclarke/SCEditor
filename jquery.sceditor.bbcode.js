@@ -949,11 +949,18 @@
 				}
 			},
 			format: function(element, content) {
+				var	attribs = '',
+					style = function(name) {
+						return element.style ? element.style['width'] : null;
+					};
+				
 				// check if this is an emoticon image
 				if(typeof element.attr('data-sceditor-emoticon') !== "undefined")
 					return content;
 
-				var attribs = "=" + $(element).width() + "x" + $(element).height();
+				// only add width and height if one is specified
+				if(element.attr('width') || element.attr('height') || style('width') || style('height'))
+					attribs = "=" + $(element).width() + "x" + $(element).height();
 
 				return '[img' + attribs + ']' + element.attr('src') + '[/img]';
 			},
