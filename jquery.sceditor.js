@@ -313,7 +313,7 @@
 				$body.bind("paste", handlePasteEvt);
 
 			if(base.options.autoExpand)
-				$doc.bind("keyup", base.expandToContent)
+				$doc.bind("keyup", base.expandToContent);
 
 			rangeHelper = new $.sceditor.rangeHelper(wysiwygEditor.contentWindow);
 		};
