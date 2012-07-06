@@ -909,3 +909,20 @@ test("Stripping empty", function() {
 		"Bold tag with nested content"
 	);
 });
+
+
+test("Strip Quotes", function() {
+	expect(2);
+	
+	equal(
+		this.sb.getHtmlHandler("", html2dom("<span  style='font-family: \"Arial Black\"'>test</span>", true)),
+		"[font=Arial Black]test[/font]",
+		"Quotes that should be stripped"
+	);
+	
+		equal(
+		this.sb.getHtmlHandler("", html2dom("<span  style=\"font-family: 'Arial Black', Arial\">test</span>", true)),
+		"[font='Arial Black', Arial]test[/font]",
+		"Quotes that shouldn't be stripped"
+	);
+});

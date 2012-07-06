@@ -17,6 +17,8 @@ Version 1.3.6:
 	Added autoExpand option
 	Fixed bug related to inserting BBCodes in source mode when textarea is empty.
 		- Thanks to Martec for reporting
+	Fixed stripQuotes bug
+		- Thanks to Maxpower for reporting
 
 Version 1.3.5:
 	Fixed bug in FF making pasting via right click difficult when empty
