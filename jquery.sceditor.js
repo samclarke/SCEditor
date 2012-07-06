@@ -1,17 +1,17 @@
 /**
  * SCEditor
- * http://www.samclarke.com/2011/07/sceditor/ 
+ * http://www.samclarke.com/2011/07/sceditor/
  *
  * Copyright (C) 2011-2012, Sam Clarke (samclarke.com)
  *
  * SCEditor is dual licensed under the MIT and GPL licenses:
  *	http://www.opensource.org/licenses/mit-license.php
  *	http://www.gnu.org/licenses/gpl.html
- * 
+ *
  * @fileoverview SCEditor - A lightweight WYSIWYG BBCode and HTML editor
  * @author Sam Clarke
  * @version 1.3.6
- * @requires jQuery 
+ * @requires jQuery
  */
 
 // ==ClosureCompiler==
@@ -30,46 +30,46 @@
 				'<meta http-equiv="Content-Type" content="text/html;charset={charset}" />' +
 				'<link rel="stylesheet" type="text/css" href="{style}" />' +
 				'</head><body contenteditable="true"></body></html>',
-		
+
 		toolbarButton:	'<a class="sceditor-button sceditor-button-{name}" data-sceditor-command="{name}" unselectable="on"><div unselectable="on">{dispName}</div></a>',
-				
+
 		emoticon:	'<img src="{url}" data-sceditor-emoticon="{key}" alt="{key}" />',
-		
+
 		fontOpt:	'<a class="sceditor-font-option" href="#" data-font="{font}"><font face="{font}">{font}</font></a>',
-		
+
 		sizeOpt:	'<a class="sceditor-fontsize-option" data-size="{size}" href="#"><font size="{size}">{size}</font></a>',
-		
+
 		pastetext:	'<div><label for="txt">{label}</label> ' +
 				'<textarea cols="20" rows="7" id="txt"></textarea></div>' +
 				'<div><input type="button" class="button" value="{insert}" /></div>',
-				
+
 		table:		'<div><label for="rows">{rows}</label><input type="text" id="rows" value="2" /></div>' +
 				'<div><label for="cols">{cols}</label><input type="text" id="cols" value="2" /></div>' +
 				'<div><input type="button" class="button" value="{insert}" /></div>',
-		
+
 		image:		'<div><label for="link">{url}</label> <input type="text" id="image" value="http://" /></div>' +
 				'<div><label for="width">{width}</label> <input type="text" id="width" size="2" /></div>' +
 				'<div><label for="height">{height}</label> <input type="text" id="height" size="2" /></div>' +
 				'<div><input type="button" class="button" value="{insert}" /></div>',
-		
+
 		email:		'<div><label for="email">{label}</label> <input type="text" id="email" /></div>' +
 				'<div><input type="button" class="button" value="{insert}" /></div>',
-		
+
 		link:		'<div><label for="link">{url}</label> <input type="text" id="link" value="http://" /></div>' +
 				'<div><label for="des">{desc}</label> <input type="text" id="des" /></div>' +
 				'<div><input type="button" class="button" value="{ins}" /></div>',
-				
+
 		youtubeMenu:	'<div><label for="link">{label}</label> <input type="text" id="link" value="http://" /></div><div><input type="button" class="button" value="{insert}" /></div>',
-		
+
 		youtube:	'<iframe width="560" height="315" src="http://www.youtube.com/embed/{id}?wmode=opaque" data-youtube-id="{id}" frameborder="0" allowfullscreen></iframe>'
 	};
 
 	/**
 	 * <p>Replaces any params in a template with the passed params.</p>
-	 * 
+	 *
 	 * <p>If createHTML is passed it will use jQuery to create the HTML. The
 	 * same as doing: $(editor.tmpl("html", {params...}));</p>
-	 * 
+	 *
 	 * @param {string} templateName
 	 * @param {Object} params
 	 * @param {Boolean} createHTML
@@ -77,17 +77,17 @@
 	 */
 	var _tmpl = function(name, params, createHTML) {
 		var template = _templates[name];
-		
+
 		$.each(params, function(name, val) {
 			template = template.replace(new RegExp('\\{' + name + '\\}', 'g'), val);
 		});
-		
+
 		if(createHTML)
 			template = $(template);
-		
+
 		return template;
 	};
-	
+
 	/**
 	 * SCEditor - A lightweight WYSIWYG editor
 	 *
@@ -154,7 +154,7 @@
 		 * @private
 		 */
 		var lastRange;
-		
+
 		/**
 		 * The editors locale
 		 * @private
@@ -166,7 +166,7 @@
 		 * @private
 		 */
 		var preLoadCache = [];
-		
+
 		var rangeHelper;
 
 		var	init,
@@ -208,7 +208,7 @@
 			// Load locale
 			if(base.options.locale && base.options.locale !== "en")
 				initLocale();
-			
+
 			// if either width or height are % based, add the resize handler to update the editor
 			// when the window is resized
 			var h = base.options.height, w = base.options.width;
@@ -217,14 +217,14 @@
 
 			$editorContainer = $('<div class="sceditor-container" />').insertAfter($textarea);
 
-			// create the editor 
+			// create the editor
 			initToolBar();
 			initEditor();
 			initKeyPressFuncs();
 
 			if(base.options.resizeEnabled)
 				initResize();
-			
+
 			if(base.options.id)
 				$editorContainer.attr('id', base.options.id);
 
@@ -235,21 +235,21 @@
 					base.val($textarea.val());
 				})
 				.submit(formSubmitHandler);
-			
+
 			// load any textarea value into the editor
 			base.val($textarea.hide().val());
-			
+
 			if(base.options.autofocus)
 				autofocus();
-			
+
 			// force into source mode if is a browser that can't handle
 			// full editing
 			if(!$.sceditor.isWysiwygSupported())
 				base.toggleTextMode();
-			
+
 			if(base.options.toolbar.indexOf('emoticon') !== -1)
 				initEmoticons();
-			
+
 			// Can't use load event as it gets fired before CSS is loaded
 			// in some browsers
 			if(base.options.autoExpand)
@@ -281,19 +281,19 @@
 
 			base.width(base.options.width || $textarea.width());
 			base.height(base.options.height || $textarea.height());
-			
+
 			getWysiwygDoc().open();
 			getWysiwygDoc().write(_tmpl("html", {
 				charset: base.options.charset,
 				style: base.options.style
 			}));
 			getWysiwygDoc().close();
-			
+
 			base.readOnly(!!base.options.readOnly);
 
 			$doc	= $(getWysiwygDoc());
 			$body	= $doc.find("body");
-			
+
 			// set the key press event
 			$body.keypress(handleKeyPress);
 			$doc.keypress(handleKeyPress)
@@ -302,18 +302,18 @@
 				.focus(function() {
 					lastRange = null;
 				});
-			
+
 			if(base.options.rtl)
 			{
 				$body.attr('dir', 'rtl');
 				$textEditor.attr('dir', 'rtl');
 			}
-			
+
 			if(base.options.enablePasteFiltering)
 				$body.bind("paste", handlePasteEvt);
-			
+
 			if(base.options.autoExpand)
-				$doc.bind("keyup", base.expandToContent)
+				$doc.bind("keyup", base.expandToContent);
 
 			rangeHelper = new $.sceditor.rangeHelper(wysiwygEditor.contentWindow);
 		};
@@ -326,13 +326,13 @@
 			var	group, buttons,
 				button, i, buttonClick,
 				groups = base.options.toolbar.split("|");
-			
+
 			buttonClick = function (e) {
 				e.preventDefault();
-				
+
 				if(!$(this).hasClass('disabled'))
 					handleCommand($(this), base.commands[$(this).data("sceditor-command")]);
-				
+
 				return false;
 			};
 
@@ -353,12 +353,12 @@
 
 					if(base.commands[buttons[x]].tooltip)
 						button.attr('title', base._(base.commands[buttons[x]].tooltip));
-						
+
 					if(base.commands[buttons[x]].exec)
 						button.data('sceditor-wysiwygmode', true);
 					else
 						button.addClass('disabled');
-						
+
 					if(base.commands[buttons[x]].txtExec)
 						button.data('sceditor-txtmode', true);
 
@@ -373,7 +373,7 @@
 			else
 				$editorContainer.append($toolbar);
 		};
-		
+
 		/**
 		 * Autofocus the editor
 		 * @private
@@ -384,10 +384,10 @@
 
 			if(!doc.createRange)
 				return base.focus();
-			
+
 			if(!body.firstChild)
 				return;
-			
+
 			rng = doc.createRange();
 			rng.setStart(body.firstChild, 0);
 			rng.setEnd(body.firstChild, 0);
@@ -395,10 +395,10 @@
 			rangeHelper.selectRange(rng);
 			body.focus();
 		};
-		
+
 		/**
 		 * Gets the readOnly property of the editor
-		 * 
+		 *
 		 * @since 1.3.5
 		 * @function
 		 * @memberOf jQuery.sceditor.prototype
@@ -407,7 +407,7 @@
 		 */
 		/**
 		 * Sets the readOnly property of the editor
-		 * 
+		 *
 		 * @param {boolean} readOnly
 		 * @since 1.3.5
 		 * @function
@@ -418,29 +418,29 @@
 		base.readOnly = function(readOnly) {
 			if(typeof readOnly !== 'boolean')
 				return $textEditor.attr('readonly') === 'readonly';
-			
+
 			getWysiwygDoc().body.contentEditable = !readOnly;
-			
+
 			if(!readOnly)
 				$textEditor.removeAttr('readonly');
 			else
 				$textEditor.attr('readonly', 'readonly');
-			
+
 			updateToolBar(readOnly);
-			
+
 			return this;
 		};
-		
+
 		/**
 		 * Updates the toolbar to disable/enable the appropriate buttons
 		 * @private
 		 */
 		updateToolBar = function(disable) {
 			$toolbar.find('.sceditor-button').removeClass('disabled');
-			
+
 			$toolbar.find('.sceditor-button').each(function () {
 				var button = $(this);
-				
+
 				if(disable === true)
 					button.addClass('disabled');
 				else if(base.inSourceMode() && !button.data('sceditor-txtmode'))
@@ -464,7 +464,7 @@
 
 		/**
 		 * Gets the width of the editor in px
-		 * 
+		 *
 		 * @since 1.3.5
 		 * @function
 		 * @memberOf jQuery.sceditor.prototype
@@ -473,7 +473,7 @@
 		 */
 		/**
 		 * Sets the width of the editor
-		 * 
+		 *
 		 * @param {int} width Width in px
 		 * @since 1.3.5
 		 * @function
@@ -484,7 +484,7 @@
 		base.width = function (width) {
 			if(!width)
 				return $editorContainer.width();
-			
+
 			$editorContainer.width(width);
 
 			// fix the height and width of the textarea/iframe
@@ -493,13 +493,13 @@
 
 			$textEditor.width(width);
 			$textEditor.width(width + (width - $textEditor.outerWidth(true)));
-			
+
 			return this;
 		};
 
 		/**
 		 * Gets the height of the editor in px
-		 * 
+		 *
 		 * @since 1.3.5
 		 * @function
 		 * @memberOf jQuery.sceditor.prototype
@@ -508,7 +508,7 @@
 		 */
 		/**
 		 * Sets the height of the editor
-		 * 
+		 *
 		 * @param {int} height Height in px
 		 * @since 1.3.5
 		 * @function
@@ -521,7 +521,7 @@
 				return $editorContainer.height();
 
 			$editorContainer.height(height);
-			
+
 			height -= !base.options.toolbarContainer ? $toolbar.outerHeight(true) : 0;
 
 			// fix the height and width of the textarea/iframe
@@ -530,13 +530,13 @@
 
 			$textEditor.height(height);
 			$textEditor.height(height + (height - $textEditor.outerHeight(true)));
-			
+
 			return this;
 		};
-		
+
 		/**
 		 * Expands the editor to the size of it's content
-		 * 
+		 *
 		 * @since 1.3.5
 		 * @param {Boolean} [ignoreMaxHeight=false]
 		 * @function
@@ -555,7 +555,7 @@
 
 			if(ignoreMaxHeight !== true && height > maxHeight)
 				height = maxHeight;
-			
+
 			if(height > currentHeight)
 				base.height(height);
 		};
@@ -623,18 +623,18 @@
 				e.preventDefault();
 			});
 		};
-		
+
 		formSubmitHandler = function(e) {
 			base.updateTextareaValue();
-			
+
 			$(this).removeAttr('novalidate');
-			
+
 			if(this.checkValidity && !this.checkValidity())
 				e.preventDefault();
-			
+
 			$(this).attr('novalidate','novalidate');
 		};
-		
+
 		/**
 		 * Destroys the editor, removing all elements and
 		 * event handlers.
@@ -646,10 +646,10 @@
 			$(document).unbind('click', documentClickHandler);
 			$textarea.removeAttr('novalidate').unbind('submit', formSubmitHandler);
 			$(window).unbind('resize', handleWindowResize);
-			
+
 			$editorContainer.remove();
 			$editorContainer = null;
-			
+
 			$textarea.removeData("sceditor").show();
 		};
 
@@ -668,7 +668,7 @@
 					});
 				});
 			}
-			
+
 			var	emoticons = $.extend({}, base.options.emoticons.more, base.options.emoticons.dropdown, base.options.emoticons.hidden),
 				emoticon;
 
@@ -681,7 +681,7 @@
 
 		/**
 		 * Creates a menu item drop down
-		 * 
+		 *
 		 * @param HTMLElement	menuItem	The button to align the drop down with
 		 * @param string	dropDownName	Used for styling the dropown, will be a class sceditor-dropDownName
 		 * @param string	content			The HTML content of the dropdown
@@ -692,14 +692,14 @@
 		 */
 		base.createDropDown = function (menuItem, dropDownName, content, ieUnselectable) {
 			base.closeDropDown();
-			
+
 			// IE needs unselectable attr to stop it from unselecting the text in the editor.
 			// The editor can cope if IE does unselect the text it's just not nice.
 			if(ieUnselectable !== false) {
 				content = $(content);
 				content.find(':not(input,textarea)').filter(function() { return this.nodeType===1; }).attr('unselectable', 'on');
 			}
-			
+
 			var o_css = {
 				top: menuItem.offset().top,
 				left: menuItem.offset().left
@@ -730,7 +730,7 @@
 
 			dropdownIgnoreLastClick = false;
 		};
-		
+
 		handlePasteEvt = function(e) {
 			var	elm		= getWysiwygDoc().body,
 				checkCount	= 0,
@@ -743,38 +743,38 @@
 			if (e && e.clipboardData && e.clipboardData.getData)
 			{
 				var html, handled=true;
-		
+
 				if ((html = e.clipboardData.getData('text/html')) || (html = e.clipboardData.getData('text/plain')))
 					pastearea.innerHTML = html;
 				else
 					handled = false;
-		
+
 				if(handled)
 				{
 					handlePasteData(elm, pastearea);
-		
+
 					if (e.preventDefault)
 					{
 						e.stopPropagation();
 						e.preventDefault();
 					}
-		
+
 					return false;
 				}
 			}
-			
+
 			while(elm.firstChild)
 				prePasteContent.appendChild(elm.firstChild);
-			
+
 			function handlePaste(elm, pastearea) {
 				if (elm.childNodes.length > 0)
 				{
 					while(elm.firstChild)
 						pastearea.appendChild(elm.firstChild);
-					
+
 					while(prePasteContent.firstChild)
 						elm.appendChild(prePasteContent.firstChild);
-					
+
 					handlePasteData(elm, pastearea);
 				}
 				else
@@ -786,7 +786,7 @@
 					{
 						while(prePasteContent.firstChild)
 							elm.appendChild(prePasteContent.firstChild);
-						
+
 						return;
 					}
 
@@ -797,12 +797,12 @@
 				}
 			}
 			handlePaste(elm, pastearea);
-			
+
 			base.focus();
-			
+
 			return true;
 		};
-		
+
 		/**
 		 * @param {Element} elm
 		 * @param {Element} pastearea
@@ -811,9 +811,9 @@
 		handlePasteData = function(elm, pastearea) {
 			// fix any invalid nesting
 			$.sceditor.dom.fixNesting(pastearea);
-			
+
 			var pasteddata = pastearea.innerHTML;
-			
+
 			if(base.options.getHtmlHandler)
 				pasteddata = base.options.getHtmlHandler(pasteddata, $(pastearea));
 
@@ -828,7 +828,7 @@
 
 		/**
 		 * Closes the current drop down
-		 * 
+		 *
 		 * @param bool focus If to focus the editor on close
 		 * @function
 		 * @name closeDropDown
@@ -839,7 +839,7 @@
 				$dropdown.remove();
 				$dropdown = null;
 			}
-			
+
 			if(focus === true)
 				base.focus();
 		};
@@ -864,11 +864,11 @@
 
 		/**
 		 * <p>Inserts HTML into WYSIWYG editor.</p>
-		 * 
+		 *
 		 * <p>If endHtml is specified instead of the inserted HTML replacing the selected
 		 * text the selected text will be placed between html and endHtml. If there is
 		 * no selected text html and endHtml will be concated together.</p>
-		 * 
+		 *
 		 * @param {string} html
 		 * @param {string} [endHtml=null]
 		 * @param {boolean} [overrideCodeBlocking=false]
@@ -878,19 +878,19 @@
 		 */
 		base.wysiwygEditorInsertHtml = function (html, endHtml, overrideCodeBlocking) {
 			base.focus();
-			
+
 			// don't apply to code elements
 			if(!overrideCodeBlocking && ($(rangeHelper.parentNode()).is('code') ||
 				$(rangeHelper.parentNode()).parents('code').length !== 0))
 				return;
-			
+
 			rangeHelper.insertHTML(html, endHtml);
 		};
 
 		/**
 		 * Like wysiwygEditorInsertHtml except it will convert any HTML into text
 		 * before inserting it.
-		 * 
+		 *
 		 * @param {String} text
 		 * @param {String} [endText=null]
 		 * @function
@@ -901,7 +901,7 @@
 			var escape = function(str) {
 				if(!str)
 					return str;
-				
+
 				return str.replace(/&/g, "&amp;")
 					.replace(/</g, "&lt;")
 					.replace(/>/g, "&gt;")
@@ -909,18 +909,18 @@
 					.replace(/\r\n|\r/g, "\n")
 					.replace(/\n/g, "<br />");
 			};
-			
+
 			base.wysiwygEditorInsertHtml(escape(text), escape(endText));
 		};
-		
+
 		/**
 		 * <p>Inserts text into either WYSIWYG or textEditor depending on which
 		 * mode the editor is in.</p>
-		 * 
+		 *
 		 * <p>If endText is specified any selected text will be placed between
 		 * text and endText. If no text is selected text and endText will
 		 * just be concated together.</p>
-		 * 
+		 *
 		 * @param {String} text
 		 * @param {String} [endText=null]
 		 * @since 1.3.5
@@ -933,14 +933,14 @@
 				base.textEditorInsertText(text, endText);
 			else
 				base.wysiwygEditorInsertText(text, endText);
-			
+
 			return this;
 		};
-		
+
 		/**
 		 * Like wysiwygEditorInsertHtml but inserts text into the text
 		 * (source mode) editor instead
-		 * 
+		 *
 		 * @param {String} text
 		 * @param {String} [endText=null]
 		 * @function
@@ -949,36 +949,36 @@
 		 */
 		base.textEditorInsertText = function (text, endText) {
 			var range, start, end, txtLen;
-			
+
 			textEditor.focus();
-			
+
 			if(typeof textEditor.selectionStart !== "undefined")
 			{
 				start	= textEditor.selectionStart;
 				end	= textEditor.selectionEnd;
 				txtLen	= text.length;
-				
+
 				if(endText)
 					text += textEditor.value.substring(start, end) + endText;
-				
+
 				textEditor.value = textEditor.value.substring(0, start) + text + textEditor.value.substring(end, textEditor.value.length);
-				
+
 				if(endText)
 					textEditor.selectionStart = (start + text.length) - endText.length;
 				else
 					textEditor.selectionStart = start + text.length;
-				
+
 				textEditor.selectionEnd = textEditor.selectionStart;
 			}
 			else if(typeof textEditor.selection.createRange !== "undefined")
 			{
 				range = document.selection.createRange();
-				
+
 				if(endText)
 					text += range.text + endText;
-				
+
 				range.text = text;
-				
+
 				if(endText)
 				{
 					range.moveEnd('character', 0-endText.length);
@@ -987,13 +987,13 @@
 			}
 			else
 				textEditor.value += text + endText;
-			
+
 			textEditor.focus();
 		};
-		
+
 		/**
 		 * Gets the current rangeHelper instance
-		 * 
+		 *
 		 * @return jQuery.sceditor.rangeHelper
 		 * @function
 		 * @name getRangeHelper
@@ -1005,7 +1005,7 @@
 
 		/**
 		 * Gets the value of the editor
-		 * 
+		 *
 		 * @since 1.3.5
 		 * @return {string}
 		 * @function
@@ -1014,7 +1014,7 @@
 		 */
 		/**
 		 * Sets the value of the editor
-		 * 
+		 *
 		 * @param {String} val
 		 * @param {Boolean} [filter]
 		 * @return {this}
@@ -1032,25 +1032,25 @@
 				{
 					if(filter !== false && base.options.getTextHandler)
 						val = base.options.getTextHandler(val);
-					
+
 					base.setWysiwygEditorValue(val);
 				}
-				
+
 				return this;
 			}
-			
+
 			return base.inSourceMode() ?
 				base.getTextareaValue() :
 				base.getWysiwygEditorValue();
 		};
-		
+
 		/**
 		 * <p>Inserts HTML/BBCode into the editor</p>
-		 * 
+		 *
 		 * <p>If end is supplied any slected text will be placed between
 		 * start and end. If there is no selected text start and end
 		 * will be concated together.</p>
-		 * 
+		 *
 		 * @param {String} start
 		 * @param {String} [end=null]
 		 * @param {Boolean} [filter=true]
@@ -1070,31 +1070,31 @@
 				{
 					var	html = base.getRangeHelper().selectedHtml(),
 						frag = $('<div>').appendTo($('body')).hide().html(html);
-					
+
 					if(filter !== false && base.options.getHtmlHandler)
 					{
 						html = base.options.getHtmlHandler(html, frag);
 						frag.remove();
 					}
-					
+
 					start += html + end;
 				}
-				
+
 				if(filter !== false && base.options.getTextHandler)
 					start = base.options.getTextHandler(start, true);
 
 				if(convertEmoticons !== false)
 					start = replaceEmoticons(start);
-				
+
 				base.wysiwygEditorInsertHtml(start);
 			}
-				
+
 			return this;
 		};
-		
+
 		/**
 		 * Gets the WYSIWYG editors HTML which is between the body tags
-		 * 
+		 *
 		 * @param {bool} [filter=true]
 		 * @return {string}
 		 * @function
@@ -1104,11 +1104,11 @@
 		base.getWysiwygEditorValue = function (filter) {
 			var	$body = $wysiwygEditor.contents().find("body"),
 				html;
-			
+
 			// fix any invalid nesting
 			$.sceditor.dom.fixNesting($body.get(0));
 			html = $body.html();
-			
+
 			if(filter !== false && base.options.getHtmlHandler)
 				html = base.options.getHtmlHandler(html, $body);
 
@@ -1117,7 +1117,7 @@
 
 		/**
 		 * Gets the text editor value
-		 * 
+		 *
 		 * @param {bool} [filter=true]
 		 * @return {string}
 		 * @function
@@ -1136,7 +1136,7 @@
 		/**
 		 * Sets the WYSIWYG HTML editor value. Should only be the HTML
 		 * contained within the body tags
-		 * 
+		 *
 		 * @param {string} value
 		 * @function
 		 * @name setWysiwygEditorValue
@@ -1145,13 +1145,13 @@
 		base.setWysiwygEditorValue = function (value) {
 			if(!value)
 				value = '<p>' + ($.sceditor.ie ? '' : '<br />') + '</p>';
-			
+
 			getWysiwygDoc().body.innerHTML = replaceEmoticons(value);
 		};
 
 		/**
 		 * Sets the text editor value
-		 * 
+		 *
 		 * @param {string} value
 		 * @function
 		 * @name setTextareaValue
@@ -1164,7 +1164,7 @@
 		/**
 		 * Updates the textarea that the editor is replacing
 		 * with the value currently inside the editor.
-		 * 
+		 *
 		 * @function
 		 * @name updateTextareaValue
 		 * @memberOf jQuery.sceditor.prototype
@@ -1183,7 +1183,7 @@
 		replaceEmoticons = function (html) {
 			if(base.options.toolbar.indexOf('emoticon') === -1)
 				return html;
-			
+
 			var emoticons = $.extend({}, base.options.emoticons.more, base.options.emoticons.dropdown, base.options.emoticons.hidden);
 
 			$.each(emoticons, function (key, url) {
@@ -1192,7 +1192,7 @@
 				// of HTML tags
 				var	reg = $.sceditor.regexEscape(key) + "(?=([^\\<\\>]*?<(?!/code)|[^\\<\\>]*?$))",
 					group = '';
-				
+
 				// Make sure the emoticon is surrounded by whitespace or is at the start/end of a string or html tag
 				if(base.options.emoticonsCompat)
 				{
@@ -1208,10 +1208,10 @@
 
 			return html;
 		};
-		
+
 		/**
 		 * If the editor is in source code mode
-		 * 
+		 *
 		 * @return {bool}
 		 * @function
 		 * @name inSourceMode
@@ -1220,10 +1220,10 @@
 		base.inSourceMode = function () {
 			return $textEditor.is(':visible');
 		};
-		
+
 		/**
 		 * Gets if the editor is in sourceMode
-		 * 
+		 *
 		 * @return boolean
 		 * @function
 		 * @name sourceMode
@@ -1231,7 +1231,7 @@
 		 */
 		/**
 		 * Sets if the editor is in sourceMode
-		 * 
+		 *
 		 * @param {bool} enable
 		 * @return {this}
 		 * @function
@@ -1241,16 +1241,16 @@
 		base.sourceMode = function (enable) {
 			if(typeof enable !== 'boolean')
 				return base.inSourceMode();
-			
+
 			if((base.inSourceMode() && !enable) || (!base.inSourceMode() && enable))
 				base.toggleTextMode();
-			
+
 			return this;
 		};
 
 		/**
 		 * Switches between the WYSIWYG and plain text modes
-		 * 
+		 *
 		 * @function
 		 * @name toggleTextMode
 		 * @memberOf jQuery.sceditor.prototype
@@ -1259,36 +1259,36 @@
 			// don't allow switching to WYSIWYG if doesn't support it
 			if(!$.sceditor.isWysiwygSupported() && base.inSourceMode())
 				return;
-			
+
 			if(base.inSourceMode())
 				base.setWysiwygEditorValue(base.getTextareaValue());
 			else
 				base.setTextareaValue(base.getWysiwygEditorValue());
-			
+
 			lastRange = null;
 			$textEditor.toggle();
 			$wysiwygEditor.toggle();
-			
+
 			$editorContainer.removeClass('sourceMode');
 			$editorContainer.removeClass('wysiwygMode');
-			
+
 			if(base.inSourceMode())
 				$editorContainer.addClass('sourceMode');
 			else
 				$editorContainer.addClass('wysiwygMode');
-			
+
 			updateToolBar();
 		};
-		
+
 		textEditorSelectedText = function () {
 			textEditor.focus();
-			
+
 			if(textEditor.selectionStart != null)
 				return textEditor.value.substring(textEditor.selectionStart, textEditor.selectionEnd);
 			else if(document.selection.createRange)
 				return document.selection.createRange().text;
 		};
-		
+
 		/**
 		 * Handles the passed command
 		 * @private
@@ -1304,13 +1304,13 @@
 					else
 						command.txtExec.call(base, caller, textEditorSelectedText());
 				}
-				
+
 				return;
 			}
-			
+
 			if(!command.exec)
 				return;
-			
+
 			if($.isFunction(command.exec))
 				command.exec.call(base, caller);
 			else
@@ -1319,7 +1319,7 @@
 
 		/**
 		 * Fucuses the editors input area
-		 * 
+		 *
 		 * @return {this}
 		 * @function
 		 * @name focus
@@ -1329,11 +1329,11 @@
 			if(!base.inSourceMode())
 			{
 				wysiwygEditor.contentWindow.focus();
-				
+
 				// Needed for IE < 9
 				if(lastRange) {
 					rangeHelper.selectRange(lastRange);
-					
+
 					// remove the stored range after being set.
 					// If the editor loses focus it should be
 					// saved again.
@@ -1342,7 +1342,7 @@
 			}
 			else
 				textEditor.focus();
-			
+
 			return this;
 		};
 
@@ -1361,7 +1361,7 @@
 
 		/**
 		 * Executes a command on the WYSIWYG editor
-		 * 
+		 *
 		 * @param {String|Function} command
 		 * @param {String|Boolean} [param]
 		 * @function
@@ -1371,7 +1371,7 @@
 		base.execCommand = function (command, param) {
 			var	executed	= false,
 				$parentNode	= $(rangeHelper.parentNode());
-			
+
 			base.focus();
 
 			// don't apply any comannds to code elements
@@ -1391,15 +1391,15 @@
 			if(!executed && base.commands[command] && base.commands[command].errorMessage)
 				alert(base._(base.commands[command].errorMessage));
 		};
-		
+
 		/**
 		 * Handles any key press in the WYSIWYG editor
-		 * 
+		 *
 		 * @private
 		 */
 		handleKeyPress = function(e) {
 			base.closeDropDown();
-			
+
 			var $parentNode = $(rangeHelper.parentNode());
 
 			// "Fix" (ok it's a cludge) for blocklevel elements being duplicated in some browsers when
@@ -1431,7 +1431,7 @@
 			// don't apply to code elements
 			if($parentNode.is('code') || $parentNode.parents('code').length !== 0)
 				return;
-			
+
 			var i = keyPressFuncs.length;
 			while(i--)
 				keyPressFuncs[i].call(base, e, wysiwygEditor, $textEditor);
@@ -1460,12 +1460,12 @@
 				base.width($editorContainer.parent().width() *
 					(parseFloat(base.options.width) / 100));
 		};
-		
+
 		/**
 		 * Translates the string into the locale language.
-		 * 
+		 *
 		 * Replaces any {0}, {1}, {2}, ect. with the params provided.
-		 * 
+		 *
 		 * @param {string} str
 		 * @param {...String} args
 		 * @return {string}
@@ -1475,17 +1475,17 @@
 		 */
 		base._ = function() {
 			var args = arguments;
-			
+
 			if(locale && locale[args[0]])
 				args[0] = locale[args[0]];
-			
+
 			return args[0].replace(/\{(\d+)\}/g, function(str, p1) {
 				return typeof args[p1-0+1] !== "undefined" ?
 					args[p1-0+1] :
 					'{' + p1 + '}';
 			});
 		};
-		
+
 		/**
 		 * Init the locale variable with the specified locale if possible
 		 * @private
@@ -1497,11 +1497,11 @@
 			else
 			{
 				var lang = base.options.locale.split("-");
-				
+
 				if($.sceditor.locale[lang[0]])
 					locale = $.sceditor.locale[lang[0]];
 			}
-			
+
 			if(locale && locale.dateFormat)
 				base.options.dateFormat = locale.dateFormat;
 		};
@@ -1509,12 +1509,12 @@
 		// run the initializer
 		init();
 	};
-	
+
 	/**
 	 * Detects which version of IE is being used if any.
-	 * 
+	 *
 	 * Will be the IE version number or undefined if not IE.
-	 * 
+	 *
 	 * Source: https://gist.github.com/527683
 	 * @type {int}
 	 * @memberOf jQuery.sceditor
@@ -1525,19 +1525,19 @@
 			v	= 3,
 			div	= document.createElement('div'),
 			all	= div.getElementsByTagName('i');
-	
+
 		while (
 			div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
 			all[0]
 		);
-		
+
 		return v > 4 ? v : undef;
-	
+
 	}());
-	
+
 	/**
 	 * Detects if WYSIWYG is supported by the browser
-	 * 
+	 *
 	 * @return {bool}
 	 * @memberOf jQuery.sceditor
 	 */
@@ -1545,36 +1545,36 @@
 		var	contentEditable			= $('<div contenteditable="true">')[0].contentEditable,
 			contentEditableSupported	= typeof contentEditable !== 'undefined' && contentEditable !== 'inherit',
 			userAgent			= navigator.userAgent;
-		
+
 		if(!contentEditableSupported)
 			return false;
-		
+
 		// I think blackberry and webos both support it or hopefully
 		// give a valid value for the contentEditable detection above
 		// so they are not included here.
-		
+
 		// I hate having to use UA sniffing but as some mobile browsers say they support
 		// contentediable/design mode when it isn't usable (i.e. you can't eneter text, ect.).
 		// This is the only way I can think of to detect them.
 		var isUnsupported = /Opera Mobi|Opera Mini/i.test(userAgent);
-		
+
 		if(/Android/i.test(userAgent))
 		{
 			isUnsupported = true;
-			
+
 			if(/Safari/i.test(userAgent))
 			{
 				var m = /Safari\/(\d+)/.exec(userAgent);
-				
+
 				// android browser 534+ supports content editable
 				isUnsupported = (!m[1] ? true : m[1] < 534);
 			}
 		}
-		
+
 		// iOS 5+ seems to support content editable
 		if(/iPhone|iPod|iPad/i.test(userAgent))
 			isUnsupported = !/OS 5(_\d)+ like Mac OS X/i.test(userAgent);
-		
+
 		// FireFox dose support WYSIWYG on mobiles so override
 		// any previous value if using FF
 		if(/fennec/i.test(userAgent))
@@ -1582,10 +1582,10 @@
 
 		return !isUnsupported;
 	};
-	
+
 	/**
 	 * Escapes a string so it's safe to use in regex
-	 * 
+	 *
 	 * @param {string} str
 	 * @return {string}
 	 * @memberOf jQuery.sceditor
@@ -1680,7 +1680,7 @@
 			},
 			exec: function (caller) {
 				var editor = this;
-				
+
 				$.sceditor.command.get('font')._createDropDown(
 					editor,
 					caller,
@@ -1710,7 +1710,7 @@
 			},
 			exec: function (caller) {
 				var editor = this;
-				
+
 				$.sceditor.command.get('size')._createDropDown(
 					editor,
 					caller,
@@ -1771,7 +1771,7 @@
 			},
 			exec: function (caller) {
 				var editor = this;
-				
+
 				$.sceditor.command.get('color')._createDropDown(
 					editor,
 					caller,
@@ -1846,7 +1846,7 @@
 
 		// START_COMMAND: Table
 		table: {
-			exec: function (caller) {	
+			exec: function (caller) {
 				var	editor  = this,
 					content = _tmpl("table", {
 						rows: editor._("Rows:"),
@@ -1861,16 +1861,16 @@
 
 					if(rows < 1 || cols < 1)
 						return;
-					
+
 					for (var row=0; row < rows; row++) {
 						html += '<tr>';
-						
+
 						for (var col=0; col < cols; col++)
 							html += '<td>' + ($.sceditor.ie ? '' : '<br class="sceditor-ignore" />') + '</td>';
-						
+
 						html += '</tr>';
 					}
-					
+
 					html += '</table>';
 
 					editor.wysiwygEditorInsertHtml(html);
@@ -1989,7 +1989,7 @@
 						{
 							if(!description)
 								description = val;
-							
+
 							editor.wysiwygEditorInsertHtml('<a href="' + val + '">' + description + '</a>');
 						}
 						else
@@ -2025,14 +2025,14 @@
 				if(html)
 				{
 					author = (author ? '<cite>' + author + '</cite>' : '');
-					
+
 					before = before + author + html + end + '<br />';
 					end = null;
 				}
 				// if not add a newline to the end of the inserted quote
 				else if(this.getRangeHelper().selectedHtml() === "")
 					end = '<br />' + end;
-				
+
 				this.wysiwygEditorInsertHtml(before, end);
 			},
 			tooltip: "Insert a Quote"
@@ -2055,10 +2055,10 @@
 							})
 							.click(function (e) {
 								var end = '';
-								
+
 								if(editor.options.emoticonsCompat)
 									end   = ' ';
-								
+
 								editor.insert($(this).attr('alt') + end);
 								editor.closeDropDown(true);
 								e.preventDefault();
@@ -2100,14 +2100,14 @@
 				// make sure emoticons command is in the toolbar before running
 				if(this.options.toolbar.indexOf('emoticon') === -1)
 					return;
-				
+
 				var	editor = this,
 					pos = 0,
 					curChar = String.fromCharCode(e.which);
-					
+
 				if(!editor.EmoticonsCache) {
 					editor.EmoticonsCache = [];
-					
+
 					$.each($.extend({}, editor.options.emoticons.more, editor.options.emoticons.dropdown, editor.options.emoticons.hidden), function(key, url) {
 						editor.EmoticonsCache[pos++] = [
 							key,
@@ -2119,15 +2119,15 @@
 						return a[0].length - b[0].length;
 					});
 				}
-				
+
 				if(!editor.longestEmoticonCode)
 					editor.longestEmoticonCode = editor.EmoticonsCache[editor.EmoticonsCache.length - 1][0].length;
-				
+
 				if(editor.getRangeHelper().raplaceKeyword(editor.EmoticonsCache, true, true, editor.longestEmoticonCode, editor.options.emoticonsCompat, curChar))
 				{
 					if(/^\s$/.test(curChar) && editor.options.emoticonsCompat)
 						return true;
-					
+
 					e.preventDefault();
 					e.stopPropagation();
 					return false;
@@ -2230,16 +2230,16 @@
 				var	editor	= this,
 					elm	= editor.getRangeHelper().getFirstBlockParent(),
 					$elm	= $(elm);
-				
+
 				editor.focus();
-				
+
 				if(!elm || $elm.is('body'))
 				{
 					editor.execCommand("formatBlock", "p");
-				
+
 					elm	= editor.getRangeHelper().getFirstBlockParent();
 					$elm	= $(elm);
-					
+
 					if(!elm || $elm.is('body'))
 						return;
 				}
@@ -2259,16 +2259,16 @@
 				var	editor	= this,
 					elm	= editor.getRangeHelper().getFirstBlockParent(),
 					$elm	= $(elm);
-				
+
 				editor.focus();
-				
+
 				if(!elm || $elm.is('body'))
 				{
 					editor.execCommand("formatBlock", "p");
-				
+
 					elm	= editor.getRangeHelper().getFirstBlockParent();
 					$elm	= $(elm);
-					
+
 					if(!elm || $elm.is('body'))
 						return;
 				}
@@ -2301,13 +2301,13 @@
 			tooltip: "View source"
 		},
 		// END_COMMAND
-		
+
 		// this is here so that commands above can be removed
 		// without having to remove the , after the last one.
 		// Needed for IE.
 		ignore: {}
 	};
-	
+
 	/**
 	 * Range helper class
 	 * @class rangeHelper
@@ -2320,7 +2320,7 @@
 			endMarker	= "sceditor-end-marker",
 			base		= this,
 			init, _createMarker, _getOuterText, _selectOuterText;
-	
+
 		/**
 		 * @constructor
 		 * @param Window window
@@ -2332,7 +2332,7 @@
 			win	= window;
 			isW3C	= !!window.getSelection;
 		}(w, d);
-	
+
 		/**
 		 * <p>Inserts HTML into the current range replacing any selected
 		 * text.</p>
@@ -2340,7 +2340,7 @@
 		 * <p>If endHTML is specified the selected contents will be put between
 		 * html and endHTML. If there is nothing selected html and endHTML are
 		 * just concated together.</p>
-		 * 
+		 *
 		 * @param {string} html
 		 * @param {string} endHTML
 		 * @function
@@ -2349,35 +2349,35 @@
 		 */
 		base.insertHTML = function(html, endHTML) {
 			var node, endNode, div;
-	
+
 			if(endHTML)
 				html += base.selectedHtml() + endHTML;
-			
+
 			if(isW3C)
 			{
 				div		= doc.createElement('div');
 				node		= doc.createDocumentFragment();
 				div.innerHTML	= html;
-	
+
 				while(div.firstChild)
 					node.appendChild(div.firstChild);
-	
+
 				base.insertNode(node);
 			}
 			else
 				base.selectedRange().pasteHTML(html);
 		};
-	
+
 		/**
 		 * <p>The same as insertHTML except with DOM nodes instead</p>
 		 *
 		 * <p><strong>Warning:</strong> the nodes must belong to the
 		 * document they are being inserted into. Some browsers
 		 * will throw exceptions if they don't.</p>
-		 * 
+		 *
 		 * @param {Node} node
 		 * @param {Node} endNode
-		 * 
+		 *
 		 * @function
 		 * @name insertNode
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
@@ -2388,19 +2388,19 @@
 				var	toInsert	= doc.createDocumentFragment(),
 					range		= base.selectedRange(),
 					selection, selectAfter;
-	
+
 				toInsert.appendChild(node);
-	
+
 				if(endNode)
 				{
 					toInsert.appendChild(range.extractContents());
 					toInsert.appendChild(endNode);
 				}
-	
+
 				selectAfter = toInsert.lastChild;
 				range.deleteContents();
 				range.insertNode(toInsert);
-	
+
 				selection = doc.createRange();
 				selection.setStartAfter(selectAfter);
 				base.selectRange(selection);
@@ -2408,13 +2408,13 @@
 			else
 				base.insertHTML(node.outerHTML, endNode?endNode.outerHTML:null);
 		};
-	
+
 		/**
 		 * <p>Clones the selected Range</p>
-		 * 
+		 *
 		 * <p>IE <= 8 will return a TextRange, all other browsers
 		 * will return a Range object.</p>
-		 * 
+		 *
 		 * @return {Range|TextRange}
 		 * @function
 		 * @name cloneSelected
@@ -2423,16 +2423,16 @@
 		base.cloneSelected = function() {
 			if(!isW3C)
 				return base.selectedRange().duplicate();
-	
+
 			return base.selectedRange().cloneRange();
 		};
-	
+
 		/**
 		 * <p>Gets the selected Range</p>
-		 * 
+		 *
 		 * <p>IE <= 8 will return a TextRange, all other browsers
 		 * will return a Range object.</p>
-		 * 
+		 *
 		 * @return {Range|TextRange}
 		 * @function
 		 * @name selectedRange
@@ -2440,24 +2440,24 @@
 		 */
 		base.selectedRange = function() {
 			var sel;
-	
+
 			if(win.getSelection)
 				sel = win.getSelection();
 			else
 				sel = doc.selection;
-	
+
 			if(sel.getRangeAt && sel.rangeCount <= 0)
 				sel.addRange(doc.createRange());
-	
+
 			if(!isW3C)
 				return sel.createRange();
-	
+
 			return sel.getRangeAt(0);
 		};
-	
+
 		/**
 		 * Gets the currently selected HTML
-		 * 
+		 *
 		 * @return {string}
 		 * @function
 		 * @name selectedHtml
@@ -2465,27 +2465,27 @@
 		 */
 		base.selectedHtml = function() {
 			var range = base.selectedRange();
-	
+
 			if(!range)
 				return '';
-	
+
 			// IE9+ and all other browsers
 			if (window.XMLSerializer)
 				return new XMLSerializer().serializeToString(range.cloneContents());
-	
+
 			// IE < 9
 			if(!isW3C)
 			{
 				if(range.text !== '' && range.htmlText)
 					return range.htmlText;
 			}
-	
+
 			return '';
 		};
-		
+
 		/**
 		 * Gets the parent node of the selected contents in the range
-		 * 
+		 *
 		 * @return {HTMLElement}
 		 * @function
 		 * @name parentNode
@@ -2493,17 +2493,17 @@
 		 */
 		base.parentNode = function() {
 			var range = base.selectedRange();
-			
+
 			if(isW3C)
 				return range.commonAncestorContainer;
 			else
 				return range.parentElement();
 		};
-		
+
 		/**
 		 * Gets the first block level parent of the selected
 		 * contents of the range.
-		 * 
+		 *
 		 * @return {HTMLElement}
 		 * @function
 		 * @name getFirstBlockParent
@@ -2513,20 +2513,20 @@
 			var func = function(node) {
 				if(!$.sceditor.dom.isInline(node))
 					return node;
-				
+
 				var p = node.parentNode;
 				if(p)
 					return func(p);
-				
+
 				return null;
 			};
-			
+
 			return func(base.parentNode());
 		};
-	
+
 		/**
 		 * Inserts a node at either the start or end of the current selection
-		 * 
+		 *
 		 * @param {Bool} start
 		 * @param {Node} node
 		 * @function
@@ -2535,39 +2535,39 @@
 		 */
 		base.insertNodeAt = function(start, node) {
 			var range = base.cloneSelected();
-	
+
 			range.collapse(start);
-	
+
 			if(range.insertNode)
 				range.insertNode(node);
 			else
 				range.pasteHTML(node.outerHTML);
 		};
-	
+
 		/**
 		 * Creates a marker node
-		 * 
+		 *
 		 * @param {String} id
 		 * @return {Node}
 		 * @private
 		 */
 		_createMarker = function(id) {
 			base.removeMarker(id);
-	
+
 			var marker = doc.createElement("span");
 			marker.id = id;
 			marker.style.lineHeight	= "0";
 			marker.style.display	= "none";
 			marker.className	= "sceditor-selection";
-	
+
 			return marker;
 		};
-	
+
 		/**
 		 * Inserts start/end markers for the current selection
 		 * which can be used by restoreRange to re-select the
 		 * range.
-		 * 
+		 *
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 * @function
 		 * @name insertMarkers
@@ -2576,10 +2576,10 @@
 			base.insertNodeAt(true, _createMarker(startMarker));
 			base.insertNodeAt(false, _createMarker(endMarker));
 		};
-	
+
 		/**
 		 * Gets the marker with the specified ID
-		 * 
+		 *
 		 * @param {String} id
 		 * @return {Node}
 		 * @function
@@ -2589,10 +2589,10 @@
 		base.getMarker = function(id) {
 			return doc.getElementById(id);
 		};
-	
+
 		/**
 		 * Removes the marker with the specified ID
-		 * 
+		 *
 		 * @param {String} id
 		 * @function
 		 * @name removeMarker
@@ -2600,14 +2600,14 @@
 		 */
 		base.removeMarker = function(id) {
 			var marker = base.getMarker(id);
-	
+
 			if(marker)
 				marker.parentNode.removeChild(marker);
 		};
-	
+
 		/**
 		 * Removes the start/end markers
-		 * 
+		 *
 		 * @function
 		 * @name removeMarkers
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
@@ -2616,10 +2616,10 @@
 			base.removeMarker(startMarker);
 			base.removeMarker(endMarker);
 		};
-	
+
 		/**
 		 * Saves the current range location. Alias of insertMarkers()
-		 * 
+		 *
 		 * @function
 		 * @name saveRage
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
@@ -2627,10 +2627,10 @@
 		base.saveRange = function() {
 			base.insertMarkers();
 		};
-	
+
 		/**
 		 * Select the specified range
-		 * 
+		 *
 		 * @param {Range|TextRange} range
 		 * @function
 		 * @name selectRange
@@ -2645,10 +2645,10 @@
 				win.getSelection().addRange(range);
 			}
 		};
-	
+
 		/**
 		 * Restores the last range saved by saveRange() or insertMarkers()
-		 * 
+		 *
 		 * @function
 		 * @name restoreRange
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
@@ -2657,10 +2657,10 @@
 			var	range	= base.selectedRange(),
 				start	= base.getMarker(startMarker),
 				end	= base.getMarker(endMarker);
-	
+
 			if(!start || !end)
 				return false;
-	
+
 			if(!isW3C)
 			{
 				range = doc.body.createTextRange();
@@ -2673,7 +2673,7 @@
 				marker.moveToElementText(end);
 				range.setEndPoint('EndToStart', marker);
 				range.moveEnd('character', 0);
-	
+
 				base.selectRange(range);
 			}
 			else
@@ -2681,13 +2681,13 @@
 				range = doc.createRange();
 				range.setStartBefore(start);
 				range.setEndAfter(end);
-	
+
 				base.selectRange(range);
 			}
-	
+
 			base.removeMarkers();
 		};
-	
+
 		/**
 		 * Selects the text left and right of the current selection
 		 * @param int left
@@ -2709,10 +2709,10 @@
 				range.setEnd(range.endContainer, range.endOffset+right);
 				//range.deleteContents();
 			}
-	
+
 			base.selectRange(range);
 		};
-	
+
 		/**
 		 * Gets the text left or right of the current selection
 		 * @param bool before
@@ -2723,7 +2723,7 @@
 			var	ret	= "",
 				range	= base.cloneSelected(),
 				node;
-	
+
 			range.collapse(false);
 			if(before)
 			{
@@ -2751,10 +2751,10 @@
 
 			return ret;
 		};
-	
+
 		/**
 		 * Replaces keys with values based on the current range
-		 * 
+		 *
 		 * @param {Array} rep
 		 * @param {Bool} includePrev If to include text before or just text after
 		 * @param {Bool} repSorted If the keys array is pre sorted
@@ -2782,33 +2782,33 @@
 				// space-key which would be valid when it's not.
 				if(!isW3C)
 					return false;
-				
+
 				++maxKeyLen;
 			}
 
 			before = _getOuterText(true, maxKeyLen);
-	
+
 			if(includeAfter)
 				after	= _getOuterText(false, maxKeyLen);
-			
+
 			str	= before + (curChar!=null?curChar:"") + after;
 			i	= rep.length;
 			while(i--)
 			{
 				pat = new RegExp("(?:[\\s\xA0\u2002\u2003\u2009])" + $.sceditor.regexEscape(rep[i][0]) + "(?=[\\s\xA0\u2002\u2003\u2009])");
 				lookStart = before.length - 1 - rep[i][0].length;
-				
+
 				if(requireWhiteSpace)
 					--lookStart;
-					
+
 				lookStart = Math.max(0, lookStart);
 
 				if((!requireWhiteSpace && (start = str.indexOf(rep[i][0], lookStart)) > -1) ||
-					(requireWhiteSpace && (start = str.substr(lookStart).search(pat)) > -1)) 
+					(requireWhiteSpace && (start = str.substr(lookStart).search(pat)) > -1))
 				{
 					if(requireWhiteSpace)
 						start += lookStart + 1;
-					
+
 					// make sure the substr is between before and after not entierly in one
 					// or the other
 					if(start > before.length || start+rep[i][0].length + (requireWhiteSpace?1:0) < before.length)
@@ -2820,7 +2820,7 @@
 					return true;
 				}
 			}
-			
+
 			return false;
 		};
 	};
@@ -2835,10 +2835,10 @@
 	{
 		/**
 		 * Loop all child nodes of the passed node
-		 * 
+		 *
 		 * The function should accept 1 parameter being the node.
 		 * If the function returns false the loop will be exited.
-		 * 
+		 *
 		 * @param {HTMLElement}	node
 		 * @param {function}	func		Function that is called for every node, should accept 1 param for the node
 		 * @param {bool}	innermostFirst	If the innermost node should be passed to the function before it's parents
@@ -2849,27 +2849,27 @@
 			if(node)
 			{
 				node = reverse ? node.lastChild : node.firstChild;
-				
+
 				while(node != null)
 				{
 					var next = reverse ? node.previousSibling : node.nextSibling;
-					
+
 					if(!innermostFirst && func(node) === false)
 						return false;
-					
+
 					// traverse all children
 					if(!siblingsOnly && this.traverse(node, func, innermostFirst, siblingsOnly, reverse) === false)
 						return false;
-					
+
 					if(innermostFirst && func(node) === false)
 						return false;
-					
+
 					// move to next child
 					node = next;
 				}
 			}
 		},
-		
+
 		/**
 		 * Like traverse but loops in reverse
 		 * @see traverse
@@ -2877,16 +2877,16 @@
 		rTraverse: function(node, func, innermostFirst, siblingsOnly) {
 			this.traverse(node, func, innermostFirst, siblingsOnly, true);
 		},
-		
+
 		/**
 		 * List of block level elements seperated by bars (|)
 		 * @type {string}
 		 */
 		blockLevelList: "|body|hr|p|div|h1|h2|h3|h4|h5|h6|address|pre|form|table|tbody|thead|tfoot|th|tr|td|li|ol|ul|blockquote|center|",
-		
+
 		/**
 		 * Checks if an element is inline
-		 * 
+		 *
 		 * @return {bool}
 		 */
 		isInline: function(elm, includeCodeAsBlock) {
@@ -2895,23 +2895,23 @@
 
 			if(includeCodeAsBlock && elm.tagName.toLowerCase() === 'code')
 				return false;
-			
+
 			return $.sceditor.dom.blockLevelList.indexOf("|" + elm.tagName.toLowerCase() + "|") < 0;
 		},
-		
+
 		/**
 		 * Copys the CSS from 1 node to another
-		 * 
+		 *
 		 * @param {HTMLElement} from
 		 * @param {HTMLElement} to
 		 */
 		copyCSS: function(from, to) {
 			to.style.cssText = from.style.cssText;
 		},
-		
+
 		/**
 		 * Fixes block level elements inside in inline elements.
-		 * 
+		 *
 		 * @param {HTMLElement} node
 		 */
 		fixNesting: function(node) {
@@ -2919,10 +2919,10 @@
 				getLastInlineParent = function(node) {
 					while(base.isInline(node.parentNode, true))
 						node = node.parentNode;
-					
+
 					return node;
 				};
-			
+
 			base.traverse(node, function(node) {
 				// if node is an element, and it is blocklevel and the parent isn't block level
 				// then it needs fixing
@@ -2936,16 +2936,16 @@
 					// copy current styling so when moved out of the parent
 					// it still has the same styling
 					base.copyCSS(middle, middle);
-					
+
 					rParent.insertBefore(before, parent);
 					rParent.insertBefore(middle, parent);
 				}
 			});
 		},
-		
+
 		/**
 		 * Finds the common parent of two nodes
-		 * 
+		 *
 		 * @param {HTMLElement} node1
 		 * @param {HTMLElement} node2
 		 * @return {HTMLElement}
@@ -2956,10 +2956,10 @@
 			// fixing invalid nesting it doesn't need to be very fast
 			return $(node1).parents().has($(node2)).first();
 		},
-		
+
 		/**
 		 * Removes unused whitespace from the root and all it's children
-		 * 
+		 *
 		 * @param HTMLElement root
 		 * @return void
 		 */
@@ -2977,10 +2977,10 @@
 				}
 			});
 		},
-		
+
 		/**
 		 * Extracts all the nodes between the start and end nodes
-		 * 
+		 *
 		 * @param {HTMLElement} startNode	The node to start extracting at
 		 * @param {HTMLElement} endNode		The node to stop extracting at
 		 * @return {DocumentFragment}
@@ -2994,7 +2994,7 @@
 
 			return (function extract(root) {
 				var df = startNode.ownerDocument.createDocumentFragment();
-				
+
 				base.traverse(root, function(node) {
 					// if end has been reached exit loop
 					if(endReached || (node === endNode && startReached))
@@ -3038,18 +3038,18 @@
 			}(commonAncestor));
 		}
 	};
-	
+
 	/**
 	 * Static command helper class
 	 * @class command
 	 * @name jQuery.sceditor.command
 	 */
-	$.sceditor.command = 
+	$.sceditor.command =
 	/** @lends jQuery.sceditor.command */
 	{
 		/**
 		 * Gets a command
-		 * 
+		 *
 		 * @param {String} name
 		 * @return {Object|null}
 		 * @since v1.3.5
@@ -3057,15 +3057,15 @@
 		get: function(name) {
 			return $.sceditor.commands[name] || null;
 		},
-		
+
 		/**
 		 * <p>Adds a command to the editor or updates an exisiting
 		 * command if a command with the specified name already exists.</p>
-		 * 
+		 *
 		 * <p>Once a command is add it can be included in the toolbar by
 		 * adding it's name to the toolbar option in the constructor. It
 		 * can also be executed manually by calling {@link jQuery.sceditor.execCommand}</p>
-		 * 
+		 *
 		 * @example
 		 * $.sceditor.command.set("hello",
 		 * {
@@ -3073,7 +3073,7 @@
 		 *         alert("Hello World!");
 		 *     }
 		 * });
-		 * 
+		 *
 		 * @param {String} name
 		 * @param {Object} cmd
 		 * @return {this|false} Returns false if name or cmd is false
@@ -3082,19 +3082,19 @@
 		set: function(name, cmd) {
 			if(!name || !cmd)
 				return false;
-			
+
 			// merge any existing command properties
 			cmd = $.extend($.sceditor.commands[name] || {}, cmd);
-		
+
 			cmd.remove = function() { $.sceditor.command.remove(name); };
-			
+
 			$.sceditor.commands[name] = cmd;
 			return this;
 		},
-		
+
 		/**
 		 * Removes a command
-		 * 
+		 *
 		 * @param {String} name
 		 * @return {this}
 		 * @since v1.3.5
@@ -3102,14 +3102,14 @@
 		remove: function(name) {
 			if($.sceditor.commands[name])
 				delete $.sceditor.commands[name];
-			
+
 			return this;
 		}
 	};
-	
+
 	/**
 	 * Checks if a command with the specified name exists
-	 * 
+	 *
 	 * @param {String} name
 	 * @return {Bool}
 	 * @deprecated Since v1.3.5
@@ -3118,13 +3118,13 @@
 	$.sceditor.commandExists = function(name) {
 		return !!$.sceditor.command.get(name);
 	};
-	
+
 	/**
 	 * Adds/updates a command.
-	 * 
+	 *
 	 * Only name and exec are required. Exec is only required if
 	 * the command dose not already exist.
-	 *  
+	 *
 	 * @param {String}		name		The commands name
 	 * @param {String|Function}	exec		The commands exec function or string for the native execCommand
 	 * @param {String}		tooltip		The commands tooltip text
@@ -3142,7 +3142,7 @@
 			txtExec: txtExec
 		});
 	};
-	
+
 	$.sceditor.defaultOptions = {
 		// Toolbar buttons order and groups. Should be comma seperated and have a bar | to seperate groups
 		toolbar:	"bold,italic,underline,strike,subscript,superscript|left,center,right,justify|" +
@@ -3158,9 +3158,9 @@
 
 		// Colors should be comma seperated and have a bar | to signal a new column. If null the colors will be auto generated.
 		colors: null,
-		
+
 		locale: "en",
-		
+
 		charset: "utf-8",
 
 		// compatibility mode for if you have emoticons such as :/ This mode requires
@@ -3232,23 +3232,23 @@
 
 		getHtmlHandler: null,
 		getTextHandler: null,
-		
+
 		// date format. year, month and day will be replaced with the users current year, month and day.
 		dateFormat: "year-month-day",
 
 		toolbarContainer: null,
-		
+
 		// Curently experimental
 		enablePasteFiltering: false,
-		
+
 		readOnly: false,
 		rtl: false,
 		autofocus: false,
 		autoExpand: false,
-		
+
 		// If to run the editor without WYSIWYG support
 		runWithoutWysiwygSupport: false,
-		
+
 		id: null,
 
 		//add css to dropdown menu (eg. z-index)
@@ -3258,7 +3258,7 @@
 	$.fn.sceditor = function (options) {
 		if((!options || !options.runWithoutWysiwygSupport) && !$.sceditor.isWysiwygSupported())
 			return;
-		
+
 		return this.each(function () {
 			(new $.sceditor(this, options));
 		});

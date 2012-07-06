@@ -1,16 +1,16 @@
 /**
  * SCEditor BBCode Plugin
- * http://www.samclarke.com/2011/07/sceditor/ 
+ * http://www.samclarke.com/2011/07/sceditor/
  *
  * Copyright (C) 2011-2012, Sam Clarke (samclarke.com)
  *
  * SCEditor is dual licensed under the MIT and GPL licenses:
  *	http://www.opensource.org/licenses/mit-license.php
  *	http://www.gnu.org/licenses/gpl.html
- * 
+ *
  * @author Sam Clarke
  * @version 1.3.6
- * @requires jQuery 
+ * @requires jQuery
  */
 
 // ==ClosureCompiler==
@@ -22,7 +22,7 @@
 
 (function($) {
 	'use strict';
-	
+
 	/**
 	 * BBCode plugin for SCEditor
 	 *
@@ -63,7 +63,7 @@
 		 * @private
 		 */
 		var stylesToBbcodes = {};
-		
+
 		/**
 		 * Allowed children of specific HTML tags. Empty array if no
 		 * children other than text nodes are allowed
@@ -86,7 +86,7 @@
 		 */
 		init = function() {
 			$.data(element, "sceditorbbcode", base);
-			
+
 			base.options = $.extend({}, $.sceditor.defaultOptions, options);
 
 			// build the BBCode cache
@@ -100,7 +100,7 @@
 				})
 			));
 		};
-		
+
 		mergeTextModeCommands = function() {
 			var merge = {
 				bold: { txtExec: ["[b]", "[/b]"] },
@@ -115,7 +115,7 @@
 				justify: { txtExec: ["[justify]", "[/justify]"] },
 				font: { txtExec: function(caller) {
 					var editor = this;
-					
+
 					$.sceditor.command.get('font')._createDropDown(
 						editor,
 						caller,
@@ -126,7 +126,7 @@
 				} },
 				size: { txtExec: function(caller) {
 					var editor = this;
-					
+
 					$.sceditor.command.get('size')._createDropDown(
 						editor,
 						caller,
@@ -137,7 +137,7 @@
 				} },
 				color: { txtExec: function(caller) {
 					var editor = this;
-					
+
 					$.sceditor.command.get('color')._createDropDown(
 						editor,
 						caller,
@@ -153,33 +153,33 @@
 				code: { txtExec: ["[code]", "[/code]"] },
 				image: { txtExec: function(caller, selected) {
 					var url = prompt(this._("Enter the image URL:"), selected);
-					
+
 					if(url)
 						this.insertText("[img]" + url + "[/img]");
 				} },
 				email: { txtExec: function(caller, selected) {
 					var	email	= prompt(this._("Enter the e-mail address:"), selected || "@"),
 						text	= prompt(this._("Enter the displayed text:"), email) || email;
-					
+
 					if(email)
 						this.insertText("[email=" + email + "]" + text + "[/email]");
 				} },
 				link: { txtExec: function(caller, selected) {
 					var	url	= prompt(this._("Enter URL:"), selected || "http://"),
 						text	= prompt(this._("Enter the displayed text:"), url) || url;
-					
+
 					if(url)
 						this.insertText("[url=" + url + "]" + text + "[/url]");
 				} },
 				quote: { txtExec: ["[quote]", "[/quote]"] },
 				youtube: { txtExec: function(caller, selected) {
 					var url = prompt(this._("Enter the YouTube video URL or ID:"), selected);
-					
+
 					if(url)
 					{
 						if(url.indexOf("://") > -1)
 							url = url.replace(/^[^v]+v.(.{11}).*/,"$1");
-						
+
 						this.insertText("[youtube]" + url + "[/youtube]");
 					}
 				} },
@@ -189,10 +189,10 @@
 
 			return $.extend(true, {}, merge, $.sceditor.commands);
 		};
-		
+
 		/**
 		 * Populates tagsToBbcodes and stylesToBbcodes to enable faster lookups
-		 * 
+		 *
 		 * @private
 		 */
 		buildBbcodeCache = function() {
@@ -214,7 +214,7 @@
 					});
 			});
 		};
-		
+
 		getStyle = function(element, property) {
 			var	name = $.camelCase(property),
 				$elm, ret, dir;
@@ -223,45 +223,45 @@
 			if("text-align" === property)
 			{
 				$elm = $(element);
-				
+
 				if($elm.parent().css(property) !== $elm.css(property) &&
 					$elm.css('display') === "block" && !$elm.is('hr') && !$elm.is('th'))
 					ret = $elm.css(property);
-				
+
 				// IE changes text-align to the same as direction so skip unless overried by user
 				dir = element.style['direction'];
 				if(dir && ((/right/i.test(ret) && dir === 'rtl') || (/left/i.test(ret) && dir === 'ltr')))
 					return null;
-				
+
 				return ret;
 			}
-			
+
 			if(element.style)
 				return element.style[name];
-			
+
 			return null;
 		};
-		
+
 		isEmpty = function(element) {
 			var	childNodes = element.childNodes,
 				i = childNodes.length;
 
 			if(element.nodeValue)
 				return false;
-			
+
 			if(childNodes.length === 0 || (childNodes.length === 1 && (/br/i.test(childNodes[0].nodeName) || isEmpty(childNodes[0]))))
 				return true;
-			
+
 			while(i--)
 				if(!isEmpty(childNodes[i]))
 					return false;
-			
+
 			return true;
 		};
 
 		/**
 		 * Checks if any bbcode styles match the elements styles
-		 * 
+		 *
 		 * @private
 		 * @return string Content with any matching bbcode tags wrapped around it.
 		 * @Private
@@ -272,13 +272,13 @@
 
 			// convert blockLevel to boolean
 			blockLevel = !!blockLevel;
-			
+
 			if(!stylesToBbcodes[blockLevel])
 				return content;
-			
+
 			$.each(stylesToBbcodes[blockLevel], function(property, bbcodes) {
 				elementPropVal = getStyle(element[0], property);
-				
+
 				// if the parent has the same style use that instead of this one
 				// so you dont end up with [i]parent[i]child[/i][/i]
 				if(!elementPropVal || getStyle(element.parent()[0], property) === elementPropVal)
@@ -287,7 +287,7 @@
 				$.each(bbcodes, function(bbcode, values) {
 					if(!content && !base.bbcodes[bbcode].allowsEmpty && isEmpty(element[0]))
 						return;
-					
+
 					if(!values || $.inArray(elementPropVal.toString(), values) > -1) {
 						if($.isFunction(base.bbcodes[bbcode].format))
 							content = base.bbcodes[bbcode].format.call(base, element, content);
@@ -302,7 +302,7 @@
 
 		/**
 		 * Handles a HTML tag and finds any matching bbcodes
-		 * 
+		 *
 		 * @private
 		 * @param	jQuery element	element		The element to convert
 		 * @param	string			content		The Tags text content
@@ -312,7 +312,7 @@
 		 */
 		handleTags = function(element, content, blockLevel) {
 			var tag = element[0].nodeName.toLowerCase();
-			
+
 			// convert blockLevel to boolean
 			blockLevel = !!blockLevel;
 
@@ -321,7 +321,7 @@
 				$.each(tagsToBbcodes[tag][blockLevel], function(bbcode, bbcodeAttribs) {
 					if(!content && !base.bbcodes[bbcode].allowsEmpty && isEmpty(element[0]))
 						return;
-					
+
 					// if the bbcode requires any attributes then check this has
 					// all needed
 					if(bbcodeAttribs) {
@@ -350,7 +350,7 @@
 						content = formatString(base.bbcodes[bbcode].format, content);
 				});
 			}
-			
+
 			// add newline after paragraph elements p and div (WebKit uses divs) and br tags
 			if(blockLevel && /^(br|div|p)$/.test(tag))
 			{
@@ -403,7 +403,7 @@
 		 * Converts HTML to BBCode
 		 * @param string	html	Html string, this function ignores this, it works off domBody
 		 * @param HtmlElement	domBody	Editors dom body object to convert
-		 * @return string BBCode which has been converted from HTML 
+		 * @return string BBCode which has been converted from HTML
 		 * @memberOf jQuery.sceditorBBCodePlugin.prototype
 		 */
 		base.getHtmlHandler = function(html, domBody) {
@@ -415,7 +415,7 @@
 		/**
 		 * Converts a HTML dom element to BBCode starting from
 		 * the innermost element and working backwards
-		 * 
+		 *
 		 * @private
 		 * @param HtmlElement	element		The element to convert to BBCode
 		 * @param array			vChildren	Valid child tags allowed
@@ -432,7 +432,7 @@
 						tag		= node.nodeName.toLowerCase(),
 						vChild		= validChildren[tag],
 						isValidChild	= true;
-					
+
 					if(typeof vChildren === 'object')
 					{
 						isValidChild = $.inArray(tag, vChildren) > -1;
@@ -443,7 +443,7 @@
 						if(!isValidChild)
 							vChild = vChildren;
 					}
-					
+
 					// 3 is text element
 					if(node.nodeType !== 3)
 					{
@@ -454,7 +454,7 @@
 						// don't loop inside iframes
 						if(tag !== 'iframe')
 							curTag = toBBCode(node, vChild);
-						
+
 						if(isValidChild)
 						{
 							// code tags should skip most styles
@@ -463,11 +463,11 @@
 								// handle inline bbcodes
 								curTag = handleStyles($node, curTag);
 								curTag = handleTags($node, curTag);
-								
+
 								// handle blocklevel bbcodes
 								curTag = handleStyles($node, curTag, true);
 							}
-							
+
 							ret += handleTags($node, curTag, true);
 						}
 						else
@@ -483,14 +483,14 @@
 					else if(!node.wholeText)
 						ret += node.nodeValue;
 				}, false, true);
-				
+
 				return ret;
 			}($element.get(0)));
 		};
 
 		/**
 		 * Converts BBCode to HTML
-		 * 
+		 *
 		 * @param {String} text
 		 * @param {Bool} isFragment
 		 * @return {String} HTML
@@ -506,13 +506,13 @@
 			{
 				var	attrsMap = {},
 					matches;
-				
+
 				bbcode = bbcode.toLowerCase();
-				
+
 				if(attrs)
 				{
 					attrs = $.trim(attrs);
-					
+
 					// if only one attribute then remove the = from the start and strip any quotes
 					if((attrs.charAt(0) === "=" && (attrs.split("=").length - 1) <= 1) || bbcode === 'url')
 						attrsMap.defaultattr = base.stripQuotes(attrs.substr(1));
@@ -556,13 +556,13 @@
 			// replace multi-spaces which are not inside tags with a non-breaking space
 			// to preserve them. Otherwise they will just be converted to 1!
 			text = text.replace(/ {2}(?=([^<\>]*?<|[^<\>]*?$))/g, " &nbsp;");
-			
+
 			return wrapInDivs(text, isFragment);
 		};
-		
+
 		/**
 		 * Wraps divs around inline HTML. Needed for IE
-		 * 
+		 *
 		 * @param string html
 		 * @return string HTML
 		 * @private
@@ -574,10 +574,10 @@
 				outputDiv	= d.createElement('div'),
 				tmpDiv		= d.createElement('div'),
 				div, node, next, nodeName;
-			
+
 			$(tmpDiv).hide().appendTo(d.body);
 			tmpDiv.innerHTML = html;
-			
+
 			node = tmpDiv.firstChild;
 			while(node)
 			{
@@ -590,33 +590,33 @@
 					{
 						div = d.createElement('div');
 						div.appendChild(inlineFrag);
-						
+
 						// Putting BR in a div in IE9 causes it to do a double line break,
 						// as much as I hate browser UA sniffing, to do feature detection would
 						// be more code than it's worth for this specific bug.
 						if(nodeName === "br" && (!$.sceditor.ie || $.sceditor.ie < 9))
 							div.appendChild(d.createElement('br'));
-						
+
 						outputDiv.appendChild(div);
 						inlineFrag = d.createDocumentFragment();
 					}
-					
+
 					if(nodeName !== "br")
 						outputDiv.appendChild(node);
 				}
 				else
 					inlineFrag.appendChild(node);
-					
+
 				node = next;
 			}
-			
+
 			if(inlineFrag.childNodes.length > 0)
 			{
 				div = d.createElement('div');
 				div.appendChild(inlineFrag);
 				outputDiv.appendChild(div);
 			}
-			
+
 			// needed for paste, the first shouldn't be wrapped in a div
 			if(excludeFirstLast)
 			{
@@ -625,13 +625,13 @@
 				{
 					while((next = node.firstChild))
 						outputDiv.insertBefore(next, node);
-					
+
 					if($.sceditor.ie >= 9)
 						outputDiv.insertBefore(d.createElement('br'), node);
-					
+
 					outputDiv.removeChild(node);
 				}
-				
+
 				node = outputDiv.lastChild;
 				if(node && node.nodeName.toLowerCase() === "div")
 				{
@@ -640,7 +640,7 @@
 
 					if($.sceditor.ie >= 9)
 						outputDiv.insertBefore(d.createElement('br'), node);
-					
+
 					outputDiv.removeChild(node);
 				}
 			}
@@ -651,7 +651,7 @@
 
 		init();
 	};
-	
+
 	$.sceditorBBCodePlugin.bbcodes = {
 		// START_COMMAND: Bold
 		b: {
@@ -812,32 +812,32 @@
 				 */
 				var rgbToHex = function(rgbStr) {
 					var m;
-		
+
 					function toHex(n) {
 						n = parseInt(n,10);
 						if(isNaN(n))
 							return "00";
 						n = Math.max(0,Math.min(n,255)).toString(16);
-		
+
 						return n.length<2 ? '0'+n : n;
 					}
-		
+
 					// rgb(n,n,n);
 					if((m = rgbStr.match(/rgb\((\d+),\s*?(\d+),\s*?(\d+)\)/i)))
 						return '#' + toHex(m[1]) + toHex(m[2]-0) + toHex(m[3]-0);
-		
+
 					// expand shorthand
 					if((m = rgbStr.match(/#([0-f])([0-f])([0-f])\s*?$/i)))
 						return '#' + m[1] + m[1] + m[2] + m[2] + m[3] + m[3];
-					
+
 					return rgbStr;
 				};
-		
+
 				var color = element.css('color');
 
 				if(element[0].nodeName.toLowerCase() === "font" && element.attr('color'))
 					color = element.attr('color');
-				
+
 				color = rgbToHex(color);
 
 				return '[color=' + color + ']' + content + '[/color]';
@@ -1024,14 +1024,14 @@
 				var	author,
 					attr = '',
 					$elm = $(element);
-		
+
 				if($elm.children("cite:first").length === 1 || $elm.data("author")) {
 					author = $(element).children("cite:first").text() || $elm.data("author");
-		
-					
+
+
 					$elm.data("author", author)
 					$(element).children("cite:first").remove();
-		
+
 					content	= '';
 					content	= this.elementToBbcode($(element));
 					attr	= '=' + author;
@@ -1122,8 +1122,8 @@
 				'" data-youtube-id="{0}" frameborder="0" allowfullscreen></iframe>'
 		},
 		// END_COMMAND
-		
-		
+
+
 		// START_COMMAND: Rtl
 		rtl: {
 			styles: {
@@ -1133,7 +1133,7 @@
 			html: '<div style="direction: rtl">{0}</div>'
 		},
 		// END_COMMAND
-		
+
 		// START_COMMAND: Ltr
 		ltr: {
 			styles: {
@@ -1143,25 +1143,25 @@
 			html: '<div style="direction: ltr">{0}</div>'
 		},
 		// END_COMMAND
-		
-		
+
+
 		// this is here so that commands above can be removed
 		// without having to remove the , after the last one.
 		// Needed for IE.
 		ignore: {}
 	};
-	
+
 	/**
 	 * Static BBCode helper class
 	 * @class command
 	 * @name jQuery.sceditorBBCodePlugin.bbcode
 	 */
-	$.sceditorBBCodePlugin.bbcode = 
+	$.sceditorBBCodePlugin.bbcode =
 	/** @lends jQuery.sceditorBBCodePlugin.bbcode */
 	{
 		/**
 		 * Gets a BBCode
-		 * 
+		 *
 		 * @param {String} name
 		 * @return {Object|null}
 		 * @since v1.3.5
@@ -1169,11 +1169,11 @@
 		get: function(name) {
 			return $.sceditorBBCodePlugin.bbcodes[name] || null;
 		},
-		
+
 		/**
 		 * <p>Adds a BBCode to the parser or updates an exisiting
 		 * BBCode if a BBCode with the specified name already exists.</p>
-		 * 
+		 *
 		 * @param {String} name
 		 * @param {Object} bbcode
 		 * @return {this|false} Returns false if name or bbcode is false
@@ -1182,19 +1182,19 @@
 		set: function(name, bbcode) {
 			if(!name || !bbcode)
 				return false;
-			
+
 			// merge any existing command properties
 			bbcode = $.extend($.sceditorBBCodePlugin.bbcodes[name] || {}, bbcode);
-		
+
 			bbcode.remove = function() { $.sceditorBBCodePlugin.bbcode.remove(name); };
-			
+
 			$.sceditorBBCodePlugin.bbcodes[name] = bbcode;
 			return this;
 		},
-		
+
 		/**
 		 * Removes a BBCode
-		 * 
+		 *
 		 * @param {String} name
 		 * @return {this}
 		 * @since v1.3.5
@@ -1202,14 +1202,14 @@
 		remove: function(name) {
 			if($.sceditorBBCodePlugin.bbcodes[name])
 				delete $.sceditorBBCodePlugin.bbcodes[name];
-			
+
 			return this;
 		}
 	};
-	
+
 	/**
 	 * Checks if a command with the specified name exists
-	 * 
+	 *
 	 * @param string name
 	 * @return bool
 	 * @deprecated Since v1.3.5
@@ -1218,10 +1218,10 @@
 	$.sceditorBBCodePlugin.commandExists = function(name) {
 		return !!$.sceditorBBCodePlugin.bbcode.get(name);
 	};
-	
+
 	/**
 	 * Adds/updates a BBCode.
-	 * 
+	 *
 	 * @param String		name		The BBCode name
 	 * @param Object		tags		Any html tags this bbcode applies to, i.e. strong for [b]
 	 * @param Object		styles		Any style properties this applies to, i.e. font-weight for [b]
@@ -1247,7 +1247,7 @@
 	$.fn.sceditorBBCodePlugin = function(options) {
 		if((!options || !options.runWithoutWysiwygSupport) && !$.sceditor.isWysiwygSupported())
 			return;
-		
+
 		return this.each(function() {
 			(new $.sceditorBBCodePlugin(this, options));
 		});
