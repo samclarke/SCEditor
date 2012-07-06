@@ -396,7 +396,7 @@
 		 * @memberOf jQuery.sceditorBBCodePlugin.prototype
 		 */
 		base.stripQuotes = function(str) {
-			return str.replace(/^["']+/, "").replace(/["']+$/, "");
+			return str.replace(/^(["'])(.*?)\1$/, "$2");
 		};
 
 		/**
