@@ -176,6 +176,7 @@
 			handlePasteEvt,
 			handlePasteData,
 			handleKeyPress,
+			handleFormReset,
 			handleMouseDown,
 			initEditor,
 			initToolBar,
@@ -231,9 +232,7 @@
 			$(document).click(documentClickHandler);
 			$(textarea.form)
 				.attr('novalidate','novalidate')
-				.bind("reset", function() {
-					base.val($textarea.val());
-				})
+				.bind("reset", handleFormReset)
 				.submit(formSubmitHandler);
 
 			// load any textarea value into the editor
@@ -644,13 +643,19 @@
 		 */
 		base.destory = function () {
 			$(document).unbind('click', documentClickHandler);
-			$textarea.removeAttr('novalidate').unbind('submit', formSubmitHandler);
 			$(window).unbind('resize', handleWindowResize);
+			
+			$(textarea.form).removeAttr('novalidate')
+				.unbind('submit', formSubmitHandler)
+				.unbind("reset", handleFormReset);
 
+			$(getWysiwygDoc()).find('*').remove();
+			$(getWysiwygDoc()).unbind("keypress mousedown beforedeactivate keyup focus paste keypress");
+
+			$editorContainer.find('*').remove();
 			$editorContainer.remove();
-			$editorContainer = null;
 
-			$textarea.removeData("sceditor").show();
+			$textarea.removeData("sceditor").removeData("sceditorbbcode").show();
 		};
 
 		/**
@@ -1435,6 +1440,14 @@
 			var i = keyPressFuncs.length;
 			while(i--)
 				keyPressFuncs[i].call(base, e, wysiwygEditor, $textEditor);
+		};
+		
+		/**
+		 * Handles any mousedown press in the WYSIWYG editor
+		 * @private
+		 */
+		handleFormReset = function(e) {
+			base.val($textarea.val());
 		};
 
 		/**

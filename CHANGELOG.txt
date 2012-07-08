@@ -19,6 +19,7 @@ Version 1.3.6:
 		- Thanks to Martec for reporting
 	Fixed stripQuotes bug
 		- Thanks to Maxpower for reporting
+	Fixed destory() to stop memory leak
 
 Version 1.3.5:
 	Fixed bug in FF making pasting via right click difficult when empty
