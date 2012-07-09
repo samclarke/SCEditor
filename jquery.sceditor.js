@@ -637,20 +637,25 @@
 			});
 		};
 
+		/**
+		 * Handles the forms submit event
+		 * @private
+		 */
 		formSubmitHandler = function(e) {
 			base.updateTextareaValue();
-
 			$(this).removeAttr('novalidate');
 
 			if(this.checkValidity && !this.checkValidity())
 				e.preventDefault();
 
 			$(this).attr('novalidate','novalidate');
+			base.blur();
 		};
 
 		/**
 		 * Destroys the editor, removing all elements and
 		 * event handlers.
+		 * 
 		 * @function
 		 * @name destory
 		 * @memberOf jQuery.sceditor.prototype
@@ -1364,6 +1369,21 @@
 
 			return this;
 		};
+		
+		/**
+		 * Blurs the editors input area
+		 *
+		 * @return {this}
+		 * @function
+		 * @name blur
+		 * @memberOf jQuery.sceditor.prototype
+		 * @since 1.3.6
+		 */
+		base.blur = function () {
+			$textEditor.focus().blur();
+
+			return this;
+		};
 
 		/**
 		 * Saves the current range. Needed for IE because it forgets
@@ -1576,29 +1596,43 @@
 		if(!contentEditableSupported)
 			return false;
 
-		// I think blackberry and webos both support it or hopefully
+		// I think blackberry supports it or will at least
 		// give a valid value for the contentEditable detection above
-		// so they are not included here.
+		// so it's' not included here.
+		
+		
+		// The latest WebOS dose support contentEditable.
+		// But I still till need to check if all supported
+		// versions of WebOS support contentEditable
+
 
 		// I hate having to use UA sniffing but as some mobile browsers say they support
 		// contentediable/design mode when it isn't usable (i.e. you can't eneter text, ect.).
-		// This is the only way I can think of to detect them.
+		// This is the only way I can think of to detect them. It's also how every other editor
+		// I've seen detects them
 		var isUnsupported = /Opera Mobi|Opera Mini/i.test(userAgent);
 
 		if(/Android/i.test(userAgent))
 		{
 			isUnsupported = true;
 
-			if(/Safari/i.test(userAgent))
+			if(/Safari/.test(userAgent))
 			{
-				var m = /Safari\/(\d+)/.exec(userAgent);
-
 				// android browser 534+ supports content editable
-				isUnsupported = (!m[1] ? true : m[1] < 534);
+				var m = /Safari\/(\d+)/.exec(userAgent);
+				isUnsupported = (!m || !m[1] ? true : m[1] < 534);
 			}
 		}
+		
+		// Amazon Silk doesn't but as it uses webkit like android
+		// it might in a later version if it uses version >= 534
+		if(/ Silk\//i.test(userAgent))
+		{
+			var m = /AppleWebKit\/(\d+)/.exec(userAgent);
+			isUnsupported = (!m || !m[1] ? true : m[1] < 534);
+		}
 
-		// iOS 5+ seems to support content editable
+		// iOS 5+ supports content editable
 		if(/iPhone|iPod|iPad/i.test(userAgent))
 			isUnsupported = !/OS 5(_\d)+ like Mac OS X/i.test(userAgent);
 
