@@ -121,6 +121,12 @@
 		 * @private
 		 */
 		var $toolbar;
+		
+		/**
+		 * Wrapper div for editor's iframe/textarea
+		 * Needed for iOS scrolling bug fix
+		 */
+		var $wrapper;
 
 		/**
 		 * The editors iframe which should be in design mode
@@ -269,12 +275,17 @@
 
 			$textEditor	= $('<textarea></textarea>').hide();
 			$wysiwygEditor	= $('<iframe frameborder="0"></iframe>');
+			$wrapper	= $('<div class="wrapper" />');
 
 			if(window.location.protocol === "https:")
 				$wysiwygEditor.attr("src", "javascript:false");
+			
+			if(/iPhone|iPod|iPad/i.test(navigator.userAgent))
+				$wrapper.addClass('ios-fix');
 
 			// add the editor to the HTML and store the editors element
-			$editorContainer.append($wysiwygEditor).append($textEditor);
+			$wrapper.append($wysiwygEditor).append($textEditor);
+			$editorContainer.append($wrapper);
 			wysiwygEditor	= $wysiwygEditor[0];
 			textEditor	= $textEditor[0];
 
@@ -529,6 +540,9 @@
 
 			$textEditor.height(height);
 			$textEditor.height(height + (height - $textEditor.outerHeight(true)));
+
+			$wrapper.height(height);
+			$wrapper.height(height + (height - $wrapper.outerHeight(true)));
 
 			return this;
 		};
