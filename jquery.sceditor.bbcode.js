@@ -764,9 +764,11 @@
 			format: function(element, content) {
 				var	fontSize = element.css('fontSize'),
 					size     = 1;
-
+				
+				if(element.attr('size'))
+					size = element.attr('size');
 				// Most browsers return px value but IE returns 1-7
-				if(fontSize.indexOf("px") > -1) {
+				else if(fontSize.indexOf("px") > -1) {
 					// convert size to an int
 					fontSize = fontSize.replace("px", "") - 0;
 

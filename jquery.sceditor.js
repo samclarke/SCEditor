@@ -280,7 +280,7 @@
 			if(window.location.protocol === "https:")
 				$wysiwygEditor.attr("src", "javascript:false");
 			
-			if(/iPhone|iPod|iPad/i.test(navigator.userAgent))
+			if(/iPhone|iPod|iPad| wosbrowser\//i.test(navigator.userAgent))
 				$wrapper.addClass('ios-fix');
 
 			// add the editor to the HTML and store the editors element
