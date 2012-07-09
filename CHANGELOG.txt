@@ -20,6 +20,7 @@ Version 1.3.6:
 	Fixed stripQuotes bug
 		- Thanks to Maxpower for reporting
 	Fixed destory() to stop memory leak
+	Fixed iOS bug with content overflowing the container
 
 Version 1.3.5:
 	Fixed bug in FF making pasting via right click difficult when empty
