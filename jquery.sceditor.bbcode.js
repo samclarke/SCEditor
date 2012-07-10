@@ -158,15 +158,17 @@
 						this.insertText("[img]" + url + "[/img]");
 				} },
 				email: { txtExec: function(caller, selected) {
-					var	email	= prompt(this._("Enter the e-mail address:"), selected || "@"),
-						text	= prompt(this._("Enter the displayed text:"), email) || email;
+					var	display = selected && selected.indexOf('@') > -1 ? null : selected,
+						email	= prompt(this._("Enter the e-mail address:"), (display ? '' : selected)),
+						text	= prompt(this._("Enter the displayed text:"), display || email) || email;
 
 					if(email)
 						this.insertText("[email=" + email + "]" + text + "[/email]");
 				} },
 				link: { txtExec: function(caller, selected) {
-					var	url	= prompt(this._("Enter URL:"), selected || "http://"),
-						text	= prompt(this._("Enter the displayed text:"), url) || url;
+					var	display = selected && selected.indexOf('http://') > -1 ? null : selected,
+						url	= prompt(this._("Enter URL:"), (display ? 'http://' : selected)),
+						text	= prompt(this._("Enter the displayed text:"), display || url) || url;
 
 					if(url)
 						this.insertText("[url=" + url + "]" + text + "[/url]");
