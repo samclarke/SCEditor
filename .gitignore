@@ -5,3 +5,5 @@ example/less-1.3.0.min.js
 .project
 jquery.sceditor.xhtml.js
 _site/*
+.c9revisions/*
+.settings
