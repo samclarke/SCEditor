@@ -356,17 +356,18 @@
 			// add newline after paragraph elements p and div (WebKit uses divs) and br tags
 			if(blockLevel && /^(br|div|p)$/.test(tag))
 			{
-				var parentChildren = element[0].parentNode.childNodes;
+				var	parent		= element[0].parentNode,
+					parentChildren	= parent.childNodes;
 
 				// if it's a <p><br /></p> the paragraph will put the newline so skip the br
 				if(!("br" === tag && parentChildren.length === 1) &&
-					!("br" === tag && parentChildren[parentChildren.length-1] === element[0])) {
+					!("br" === tag && /^(div|p)$/i.test(parent.nodeName) && parentChildren[parentChildren.length-1] === element[0])) {
 					content += "\n";
 				}
 
 				// needed for browsers that enter textnode then when return is pressed put the rest in a div, i.e.:
 				// text<div>line 2</div>
-				if("br" !== tag && !$.sceditor.dom.isInline(element.parent()[0]) && element[0].previousSibling &&
+				if("br" !== tag && !$.sceditor.dom.isInline(parent) && element[0].previousSibling &&
 					element[0].previousSibling.nodeType === 3) {
 					content = "\n" + content;
 				}

@@ -23,6 +23,8 @@ Version 1.3.6:
 	Fixed iOS bug with content overflowing the container
 	Fixed font size BBCode bug with WebOS browser
 	Added blur() function
+	Fixed list bug where newlines from the end would be removed
+		- Thanks to Birkoff Keren for reporting
 
 Version 1.3.5:
 	Fixed bug in FF making pasting via right click difficult when empty
