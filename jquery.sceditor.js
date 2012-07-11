@@ -141,7 +141,6 @@
 		 * @private
 		 */
 		var $dropdown;
-		var dropdownIgnoreLastClick = false;
 
 		/**
 		 * Array of all the commands key press functions
@@ -168,7 +167,7 @@
 		var preLoadCache = [];
 
 		var rangeHelper;
-		
+
 		var $blurElm;
 
 		var	init,
@@ -294,7 +293,7 @@
 
 			$doc	= $(getWysiwygDoc());
 			$body	= $doc.find("body");
-			
+
 			// iframe overflow fix
 			if(/iPhone|iPod|iPad| wosbrowser\//i.test(navigator.userAgent))
 				$body.height('100%');
@@ -329,14 +328,14 @@
 		 */
 		initToolBar = function () {
 			var	group, buttons,
-				button, i, buttonClick,
+				button, i, x, buttonClick,
 				groups = base.options.toolbar.split("|");
 
-			buttonClick = function (e) {
-				e.preventDefault();
+			buttonClick = function () {
+				var self = $(this);
 
-				if(!$(this).hasClass('disabled'))
-					handleCommand($(this), base.commands[$(this).data("sceditor-command")]);
+				if(!self.hasClass('disabled'))
+					handleCommand(self, base.commands[self.data("sceditor-command")]);
 
 				return false;
 			};
@@ -346,7 +345,7 @@
 				group   = $('<div class="sceditor-group" />');
 				buttons = groups[i].split(",");
 
-				for (var x=0; x < buttons.length; x++) {
+				for (x=0; x < buttons.length; x++) {
 					// the button must be a valid command otherwise ignore it
 					if(!base.commands[buttons[x]])
 						continue;
@@ -647,7 +646,7 @@
 		/**
 		 * Destroys the editor, removing all elements and
 		 * event handlers.
-		 * 
+		 *
 		 * @function
 		 * @name destory
 		 * @memberOf jQuery.sceditor.prototype
@@ -655,7 +654,7 @@
 		base.destory = function () {
 			$(document).unbind('click', documentClickHandler);
 			$(window).unbind('resize', handleWindowResize);
-			
+
 			$(textarea.form).removeAttr('novalidate')
 				.unbind('submit', formSubmitHandler)
 				.unbind("reset", handleFormReset);
@@ -727,7 +726,6 @@
 
 			//$editorContainer.after($dropdown);
 			$dropdown.appendTo($('body'));
-			dropdownIgnoreLastClick = true;
 
 			// stop clicks within the dropdown from being handled
 			$dropdown.click(function (e) {
@@ -741,10 +739,8 @@
 		 */
 		documentClickHandler = function (e) {
 			// ignore right clicks
-			if(!dropdownIgnoreLastClick && e.which !== 3)
+			if(e.which !== 3)
 				base.closeDropDown();
-
-			dropdownIgnoreLastClick = false;
 		};
 
 		handlePasteEvt = function(e) {
@@ -1361,7 +1357,7 @@
 
 			return this;
 		};
-		
+
 		/**
 		 * Blurs the editors input area
 		 *
@@ -1376,7 +1372,7 @@
 			// so create a special blur element to use
 			if(!$blurElm)
 				$blurElm = $('<input style="width:0; height:0; opacity:0" type="text" />').appendTo($editorContainer);
-			
+
 			$blurElm.removeAttr("disabled")
 				.focus()
 				.blur()
@@ -1475,7 +1471,7 @@
 			while(i--)
 				keyPressFuncs[i].call(base, e, wysiwygEditor, $textEditor);
 		};
-		
+
 		/**
 		 * Handles any mousedown press in the WYSIWYG editor
 		 * @private
@@ -1597,8 +1593,8 @@
 		// I think blackberry supports it or will at least
 		// give a valid value for the contentEditable detection above
 		// so it's' not included here.
-		
-		
+
+
 		// The latest WebOS dose support contentEditable.
 		// But I still till need to check if all supported
 		// versions of WebOS support contentEditable
@@ -1621,7 +1617,7 @@
 				isUnsupported = (!match || !match[1] ? true : match[1] < 534);
 			}
 		}
-		
+
 		// Amazon Silk doesn't but as it uses webkit like android
 		// it might in a later version if it uses version >= 534
 		if(/ Silk\//i.test(userAgent))
@@ -2226,7 +2222,7 @@
 			},
 			exec: function (caller) {
 				var editor = this;
-				
+
 				$.sceditor.command.get('youtube')._dropDown(
 					editor,
 					caller,
