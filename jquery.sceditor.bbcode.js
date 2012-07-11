@@ -231,7 +231,7 @@
 					ret = $elm.css(property);
 
 				// IE changes text-align to the same as direction so skip unless overried by user
-				dir = element.style['direction'];
+				dir = element.style.direction;
 				if(dir && ((/right/i.test(ret) && dir === 'rtl') || (/left/i.test(ret) && dir === 'ltr')))
 					return null;
 
@@ -269,8 +269,7 @@
 		 * @Private
 		 */
 		handleStyles = function(element, content, blockLevel) {
-			var	elementPropVal,
-				tag = element[0].nodeName.toLowerCase();
+			var	elementPropVal;
 
 			// convert blockLevel to boolean
 			blockLevel = !!blockLevel;
@@ -956,7 +955,7 @@
 			format: function(element, content) {
 				var	attribs = '',
 					style = function(name) {
-						return element.style ? element.style['width'] : null;
+						return element.style ? element.style[name] : null;
 					};
 
 				// check if this is an emoticon image
@@ -1041,7 +1040,7 @@
 					author = $(element).children("cite:first").text() || $elm.data("author");
 
 
-					$elm.data("author", author)
+					$elm.data("author", author);
 					$(element).children("cite:first").remove();
 
 					content	= '';

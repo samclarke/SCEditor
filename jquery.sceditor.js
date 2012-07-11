@@ -1378,9 +1378,9 @@
 				$blurElm = $('<input style="width:0; height:0; opacity:0" type="text" />').appendTo($editorContainer);
 			
 			$blurElm.removeAttr("disabled")
-                 		.focus()
-                 		.blur()
-                 		.attr("disabled", "disabled");
+				.focus()
+				.blur()
+				.attr("disabled", "disabled");
 
 			return this;
 		};
@@ -1480,7 +1480,7 @@
 		 * Handles any mousedown press in the WYSIWYG editor
 		 * @private
 		 */
-		handleFormReset = function(e) {
+		handleFormReset = function() {
 			base.val($textarea.val());
 		};
 
@@ -1488,7 +1488,7 @@
 		 * Handles any mousedown press in the WYSIWYG editor
 		 * @private
 		 */
-		handleMouseDown = function(e) {
+		handleMouseDown = function() {
 			base.closeDropDown();
 			lastRange = null;
 		};
@@ -1567,19 +1567,16 @@
 	 * @memberOf jQuery.sceditor
 	 */
 	$.sceditor.ie = (function(){
-
 		var	undef,
 			v	= 3,
 			div	= document.createElement('div'),
 			all	= div.getElementsByTagName('i');
 
-		while (
-			div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
-			all[0]
-		);
+		do {
+			div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->';
+		} while (all[0]);
 
 		return v > 4 ? v : undef;
-
 	}());
 
 	/**
@@ -1591,7 +1588,8 @@
 	$.sceditor.isWysiwygSupported = function() {
 		var	contentEditable			= $('<div contenteditable="true">')[0].contentEditable,
 			contentEditableSupported	= typeof contentEditable !== 'undefined' && contentEditable !== 'inherit',
-			userAgent			= navigator.userAgent;
+			userAgent			= navigator.userAgent,
+			match;
 
 		if(!contentEditableSupported)
 			return false;
@@ -1619,8 +1617,8 @@
 			if(/Safari/.test(userAgent))
 			{
 				// android browser 534+ supports content editable
-				var m = /Safari\/(\d+)/.exec(userAgent);
-				isUnsupported = (!m || !m[1] ? true : m[1] < 534);
+				match = /Safari\/(\d+)/.exec(userAgent);
+				isUnsupported = (!match || !match[1] ? true : match[1] < 534);
 			}
 		}
 		
@@ -1628,8 +1626,8 @@
 		// it might in a later version if it uses version >= 534
 		if(/ Silk\//i.test(userAgent))
 		{
-			var m = /AppleWebKit\/(\d+)/.exec(userAgent);
-			isUnsupported = (!m || !m[1] ? true : m[1] < 534);
+			match = /AppleWebKit\/(\d+)/.exec(userAgent);
+			isUnsupported = (!match || !match[1] ? true : match[1] < 534);
 		}
 
 		// iOS 5+ supports content editable
@@ -1728,7 +1726,7 @@
 				var	fonts   = editor.options.fonts.split(","),
 					content = $("<div />"),
 					/** @private */
-					clickFunc = function (e) {
+					clickFunc = function () {
 						callback($(this).data('font'));
 						editor.closeDropDown(true);
 						return false;
@@ -2156,7 +2154,7 @@
 
 				editor.createDropDown(caller, "insertemoticon", content);
 			},
-			keyPress: function (e, wysiwygEditor)
+			keyPress: function (e)
 			{
 				// make sure emoticons command is in the toolbar before running
 				if(this.options.toolbar.indexOf('emoticon') === -1)
@@ -2420,7 +2418,7 @@
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.insertHTML = function(html, endHTML) {
-			var node, endNode, div;
+			var node, div;
 
 			if(endHTML)
 				html += base.selectedHtml() + endHTML;
@@ -2793,8 +2791,7 @@
 		 */
 		_getOuterText = function(before, length) {
 			var	ret	= "",
-				range	= base.cloneSelected(),
-				node;
+				range	= base.cloneSelected();
 
 			range.collapse(false);
 			if(before)
