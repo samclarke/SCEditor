@@ -116,7 +116,7 @@
 				font: { txtExec: function(caller) {
 					var editor = this;
 
-					$.sceditor.command.get('font')._createDropDown(
+					$.sceditor.command.get('font')._dropDown(
 						editor,
 						caller,
 						function(fontName) {
@@ -127,7 +127,7 @@
 				size: { txtExec: function(caller) {
 					var editor = this;
 
-					$.sceditor.command.get('size')._createDropDown(
+					$.sceditor.command.get('size')._dropDown(
 						editor,
 						caller,
 						function(fontSize) {
@@ -138,7 +138,7 @@
 				color: { txtExec: function(caller) {
 					var editor = this;
 
-					$.sceditor.command.get('color')._createDropDown(
+					$.sceditor.command.get('color')._dropDown(
 						editor,
 						caller,
 						function(color) {
@@ -174,16 +174,16 @@
 						this.insertText("[url=" + url + "]" + text + "[/url]");
 				} },
 				quote: { txtExec: ["[quote]", "[/quote]"] },
-				youtube: { txtExec: function(caller, selected) {
-					var url = prompt(this._("Enter the YouTube video URL or ID:"), selected);
+				youtube: { txtExec: function(caller) {
+					var editor = this;
 
-					if(url)
-					{
-						if(url.indexOf("://") > -1)
-							url = url.replace(/^[^v]+v.(.{11}).*/,"$1");
-
-						this.insertText("[youtube]" + url + "[/youtube]");
-					}
+					$.sceditor.command.get('youtube')._dropDown(
+						editor,
+						caller,
+						function(id) {
+							editor.insertText("[youtube]" + id + "[/youtube]");
+						}
+					);
 				} },
 				rtl: { txtExec: ["[rtl]", "[/rtl]"] },
 				ltr: { txtExec: ["[ltr]", "[/ltr]"] }
@@ -767,7 +767,7 @@
 			format: function(element, content) {
 				var	fontSize = element.css('fontSize'),
 					size     = 1;
-				
+
 				if(element.attr('size'))
 					size = element.attr('size');
 				// Most browsers return px value but IE returns 1-7
@@ -958,7 +958,7 @@
 					style = function(name) {
 						return element.style ? element.style['width'] : null;
 					};
-				
+
 				// check if this is an emoticon image
 				if(typeof element.attr('data-sceditor-emoticon') !== "undefined")
 					return content;

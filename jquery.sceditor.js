@@ -1724,7 +1724,7 @@
 
 		// START_COMMAND: Font
 		font: {
-			_createDropDown: function(editor, caller, callback) {
+			_dropDown: function(editor, caller, callback) {
 				var	fonts   = editor.options.fonts.split(","),
 					content = $("<div />"),
 					/** @private */
@@ -1742,7 +1742,7 @@
 			exec: function (caller) {
 				var editor = this;
 
-				$.sceditor.command.get('font')._createDropDown(
+				$.sceditor.command.get('font')._dropDown(
 					editor,
 					caller,
 					function(fontName) {
@@ -1755,7 +1755,7 @@
 		// END_COMMAND
 		// START_COMMAND: Size
 		size: {
-			_createDropDown: function(editor, caller, callback) {
+			_dropDown: function(editor, caller, callback) {
 				var	content   = $("<div />"),
 					/** @private */
 					clickFunc = function (e) {
@@ -1772,7 +1772,7 @@
 			exec: function (caller) {
 				var editor = this;
 
-				$.sceditor.command.get('size')._createDropDown(
+				$.sceditor.command.get('size')._dropDown(
 					editor,
 					caller,
 					function(fontSize) {
@@ -1785,7 +1785,7 @@
 		// END_COMMAND
 		// START_COMMAND: Colour
 		color: {
-			_createDropDown: function(editor, caller, callback) {
+			_dropDown: function(editor, caller, callback) {
 				var	genColor		= {r: 255, g: 255, b: 255},
 					content			= $("<div />"),
 					colorColumns		= editor.options.colors?editor.options.colors.split("|"):new Array(21),
@@ -1833,7 +1833,7 @@
 			exec: function (caller) {
 				var editor = this;
 
-				$.sceditor.command.get('color')._createDropDown(
+				$.sceditor.command.get('color')._dropDown(
 					editor,
 					caller,
 					function(color) {
@@ -2200,9 +2200,9 @@
 
 		// START_COMMAND: YouTube
 		youtube: {
-			exec: function (caller) {
-				var	editor = this,
-					matches, content = _tmpl("youtubeMenu", {
+			_dropDown: function (editor, caller, handleIdFunc) {
+				var	matches,
+					content = _tmpl("youtubeMenu", {
 						label: editor._("Video URL:"),
 						insert: editor._("Insert")
 					}, true);
@@ -2215,7 +2215,7 @@
 						if (matches) val = matches[1];
 
 						if (/^[a-zA-Z0-9_\-]{11}$/.test(val))
-							editor.wysiwygEditorInsertHtml(_tmpl("youtube", { id: val }));
+							handleIdFunc(val);
 						else
 							alert('Invalid YouTube video');
 					}
@@ -2225,6 +2225,17 @@
 				});
 
 				editor.createDropDown(caller, "insertlink", content);
+			},
+			exec: function (caller) {
+				var editor = this;
+				
+				$.sceditor.command.get('youtube')._dropDown(
+					editor,
+					caller,
+					function(id) {
+						editor.wysiwygEditorInsertHtml(_tmpl("youtube", { id: id }));
+					}
+				);
 			},
 			tooltip: "Insert a YouTube video"
 		},
