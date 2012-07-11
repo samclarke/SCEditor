@@ -327,8 +327,8 @@
 		 * @private
 		 */
 		initToolBar = function () {
-			var	group, buttons,
-				button, i, x, buttonClick,
+			var	$group, $button, buttons,
+				i, x, buttonClick,
 				groups = base.options.toolbar.split("|");
 
 			buttonClick = function () {
@@ -342,7 +342,7 @@
 
 			$toolbar = $('<div class="sceditor-toolbar" />');
 			for (i=0; i < groups.length; i++) {
-				group   = $('<div class="sceditor-group" />');
+				$group   = $('<div class="sceditor-group" />');
 				buttons = groups[i].split(",");
 
 				for (x=0; x < buttons.length; x++) {
@@ -350,25 +350,25 @@
 					if(!base.commands[buttons[x]])
 						continue;
 
-					button = _tmpl("toolbarButton", {
+					$button = _tmpl("toolbarButton", {
 						name: buttons[x],
 						dispName: base.commands[buttons[x]].tooltip || buttons[x]
 					}, true).click(buttonClick);
 
 					if(base.commands[buttons[x]].tooltip)
-						button.attr('title', base._(base.commands[buttons[x]].tooltip));
+						$button.attr('title', base._(base.commands[buttons[x]].tooltip));
 
 					if(base.commands[buttons[x]].exec)
-						button.data('sceditor-wysiwygmode', true);
+						$button.data('sceditor-wysiwygmode', true);
 					else
-						button.addClass('disabled');
+						$button.addClass('disabled');
 
 					if(base.commands[buttons[x]].txtExec)
-						button.data('sceditor-txtmode', true);
+						$button.data('sceditor-txtmode', true);
 
-					group.append(button);
+					$group.append($button);
 				}
-				$toolbar.append(group);
+				$toolbar.append($group);
 			}
 
 			// append the toolbar to the toolbarContainer option if given
@@ -982,7 +982,7 @@
 
 				textEditor.selectionEnd = textEditor.selectionStart;
 			}
-			else if(typeof textEditor.selection.createRange !== "undefined")
+			else if(typeof document.selection.createRange !== "undefined")
 			{
 				range = document.selection.createRange();
 
@@ -992,10 +992,10 @@
 				range.text = text;
 
 				if(endText)
-				{
 					range.moveEnd('character', 0-endText.length);
-					range.select();
-				}
+
+				range.moveStart('character', range.End - range.Start);
+				range.select();
 			}
 			else
 				textEditor.value += text + endText;
