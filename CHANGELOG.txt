@@ -1,14 +1,3 @@
-TODO:
-	Tidy up jquery.sceditor.js code - Will break compatibility as functions need renaming, ect.
-	Add XHTML output support
-	Add ability to resize images in browsers that don't have native WYSIWYG resize
-	Add ability to modify tables in browsers that don't have native WYSIWYG table editing
-	Change buttons to have translatable command name as their content, so themes don't
-		have to use icons
-	Add resize/expand to content option
-	Improve custom BBCodes to support self-closing tags
-	Improve newline handling for blocklevel tags which don't require a new line after them
-
 Version 1.3.6:
 	Added Spanish translation
 		- Thanks to Maxpower for translating
