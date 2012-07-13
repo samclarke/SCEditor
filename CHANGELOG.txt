@@ -14,6 +14,8 @@ Version 1.3.6:
 	Added blur() function
 	Fixed list bug where newlines from the end would be removed
 		- Thanks to Birkoff Keren for reporting
+	Fixed whitespace removal bug causing some whitespace to be left.
+		- Thanks to Martec for reporting
 
 Version 1.3.5:
 	Fixed bug in FF making pasting via right click difficult when empty
@@ -69,7 +71,7 @@ Version 1.3.1:
 	Fix IE9 bug showing resize handles
 	Fix IE ranges sometimes causing the last typed charecter to be unselected
 		- Thanks to Maxime Lemercier for repoting
-	
+
 Version 1.3.0:
 	Add package.json file
 	Add Contribute to README
@@ -168,7 +170,7 @@ Version 1.2.1:
 Version 1.2:
 	Fix typo stopping value getting posted
 	Added code tag.
-	Added Quote tag. 
+	Added Quote tag.
 	Improved how HTML is inserted.
 
 Version 1.1:
@@ -176,6 +178,6 @@ Version 1.1:
 	Fixed BBCode bold bug with FF 3.5
 	Changed toolbar CSS to use a sprite
 	Fixed rounded corners CSS in Chrome
-	
+
 Version 1:
 	First version
