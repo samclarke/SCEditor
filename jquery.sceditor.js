@@ -2370,9 +2370,11 @@
 		source: {
 			exec: function () {
 				this.toggleTextMode();
+				this.blur();
 			},
 			txtExec: function () {
 				this.toggleTextMode();
+				this.blur();
 			},
 			tooltip: "View source"
 		},
@@ -2968,8 +2970,8 @@
 			if(!elm || elm.nodeType !== 1)
 				return true;
 
-			if(includeCodeAsBlock && elm.tagName.toLowerCase() === 'code')
-				return false;
+			if(elm.tagName.toLowerCase() === 'code')
+				return !includeCodeAsBlock;
 
 			return $.sceditor.dom.blockLevelList.indexOf("|" + elm.tagName.toLowerCase() + "|") < 0;
 		},
