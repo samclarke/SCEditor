@@ -43,8 +43,9 @@ code {
 	border: 1px solid #aaa;
 	white-space: pre;
 	padding: .25em;
+	display: block;
 }
-.ie6 code, .ie7 code, .ie8 code {margin-top: 0;}
+.ie6 code, .ie7 code {margin-top: 0;}
 code:before, code {
 	display: block;
 	text-align: left;
