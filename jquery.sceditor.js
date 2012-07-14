@@ -1052,7 +1052,7 @@
 			}
 
 			return base.inSourceMode() ?
-				base.getTextareaValue() :
+				base.getTextareaValue(false) :
 				base.getWysiwygEditorValue();
 		};
 
