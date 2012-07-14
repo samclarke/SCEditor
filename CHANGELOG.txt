@@ -16,6 +16,8 @@ Version 1.3.6:
 		- Thanks to Birkoff Keren for reporting
 	Fixed whitespace removal bug causing some whitespace to be left.
 		- Thanks to Martec for reporting
+	Fixed val() helper function bug returning HTML when in source mode.
+		- Thanks to Maxpower for reporting
 
 Version 1.3.5:
 	Fixed bug in FF making pasting via right click difficult when empty
