@@ -591,8 +591,20 @@
 						// Putting BR in a div in IE9 causes it to do a double line break,
 						// as much as I hate browser UA sniffing, to do feature detection would
 						// be more code than it's worth for this specific bug.
-						if(nodeName === "br" && (!$.sceditor.ie || $.sceditor.ie < 9))
+						if(nodeName === "br" && !$.sceditor.ie)
 							div.appendChild(d.createElement('br'));
+
+						// If it's an empty DIV and in compatibility mode is below IE8 then
+						// we must add a non-breaking space to the div otherwise the div
+						// will be collapsed. Adding a BR works but when you press enter
+						// to make a newline it suddenly gose back to the normal IE div
+						// behaviour and creates two lines, one for the newline and one
+						// for the BR. I'm sure there must be a better fix but I've yet to
+						// find one.
+						// Cannot do zoom: 1; or set a height on the div to fix it as that
+						// causes resize handles to be added to the div when it's clicked on/
+						if(!div.childNodes.length && (d.documentMode && d.documentMode < 8 || $.sceditor.ie < 8))
+							div.appendChild(d.createTextNode('\u00a0'));
 
 						outputDiv.appendChild(div);
 						inlineFrag = d.createDocumentFragment();

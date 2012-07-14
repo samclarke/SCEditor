@@ -26,10 +26,15 @@
 	'use strict';
 
 	var _templates = {
-		html:		'<html><head><!--[if gte IE 9]><style>* {min-height: auto !important}</style><![endif]-->' +
-				'<meta http-equiv="Content-Type" content="text/html;charset={charset}" />' +
-				'<link rel="stylesheet" type="text/css" href="{style}" />' +
-				'</head><body contenteditable="true"></body></html>',
+		html:		'<!DOCTYPE html>' +
+				'<html>' +
+					'<head>' +
+						'<!--[if IE]><style>* {min-height: auto !important}</style><![endif]-->' +
+						'<meta http-equiv="Content-Type" content="text/html;charset={charset}" />' +
+						'<link rel="stylesheet" type="text/css" href="{style}" />' +
+					'</head>' +
+					'<body contenteditable="true"></body>' +
+				'</html>',
 
 		toolbarButton:	'<a class="sceditor-button sceditor-button-{name}" data-sceditor-command="{name}" unselectable="on"><div unselectable="on">{dispName}</div></a>',
 
