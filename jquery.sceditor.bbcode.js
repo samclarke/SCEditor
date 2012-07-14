@@ -286,7 +286,7 @@
 					return;
 
 				$.each(bbcodes, function(bbcode, values) {
-					if(!content && !base.bbcodes[bbcode].allowsEmpty && isEmpty(element[0]))
+					if(!/\S|\u00A0/.test(content) && !base.bbcodes[bbcode].allowsEmpty && isEmpty(element[0]))
 						return;
 
 					if(!values || $.inArray(elementPropVal.toString(), values) > -1) {
@@ -320,7 +320,7 @@
 			if(tagsToBbcodes[tag] && tagsToBbcodes[tag][blockLevel]) {
 				// loop all bbcodes for this tag
 				$.each(tagsToBbcodes[tag][blockLevel], function(bbcode, bbcodeAttribs) {
-					if(!content && !base.bbcodes[bbcode].allowsEmpty && isEmpty(element[0]))
+					if(!/\S|\u00A0/.test(content) && !base.bbcodes[bbcode].allowsEmpty && isEmpty(element[0]))
 						return;
 
 					// if the bbcode requires any attributes then check this has
