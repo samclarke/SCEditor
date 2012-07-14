@@ -1,4 +1,5 @@
-# SCEditor v1.3.6
+# SCEditor v1.4.0
+
 Copyright (C) 2011-2012, [Sam Clarke](http://www.samclarke.com).
 
 For more information visit: http://www.samclarke.com/2011/07/sceditor/
@@ -13,7 +14,7 @@ or contacting me via: http://www.samclarke.com/contact or GitHub
 Include the JQuery and SCEditor JavaScript
 	<link rel="stylesheet" href="minified/jquery.sceditor.min.css" type="text/css" media="all" />
 	<script type="text/javascript" src="minified/jquery.sceditor.min.js"></script>
-	
+
 Then to change all textareas to WYSIWYG editors, simply do:
 
 	$(document).ready(function() {
@@ -38,7 +39,7 @@ The locale to use, e.g. en-GB, en-US, no-NB, ect. The language file for the spec
 
 	<script src="../minified/jquery.sceditor.min.js"></script>
 	<script src="../languages/nl.js"></script>
-	
+
 	// setup the editor here
 
 **charset** *string*
