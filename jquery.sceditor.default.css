@@ -7,12 +7,12 @@ html, body, p, code:before, table {
 }
 html {
 	height: 100%;
-	overflow: auto; 
-	-webkit-overflow-scrolling: touch; 
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
 }
 body {
-	overflow: auto; 
-	-webkit-overflow-scrolling: touch; 
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
 	min-height: 100%;
 	word-wrap: break-word;
 }
@@ -44,6 +44,7 @@ code {
 	white-space: pre;
 	padding: .25em;
 }
+.ie6 code, .ie7 code, .ie8 code {margin-top: 0;}
 code:before, code {
 	display: block;
 	text-align: left;

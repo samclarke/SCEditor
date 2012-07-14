@@ -294,6 +294,11 @@
 			$doc	= $(getWysiwygDoc());
 			$body	= $doc.find("body");
 
+			// Add IE version class to the HTML element so can apply
+			// conditional styling without CSS hacks
+			if($.sceditor.ie)
+				$doc.find("html").addClass('ie' + $.sceditor.ie);
+
 			// iframe overflow fix
 			if(/iPhone|iPod|iPad| wosbrowser\//i.test(navigator.userAgent))
 				$body.height('100%');
