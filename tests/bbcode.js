@@ -920,9 +920,9 @@ test("Strip Quotes", function() {
 		"Quotes that should be stripped"
 	);
 
-		equal(
-		this.sb.getHtmlHandler("", html2dom("<span  style=\"font-family: 'Arial Black', Arial\">test</span>", true)),
-		"[font='Arial Black', Arial]test[/font]",
+	var ret = this.sb.getHtmlHandler("", html2dom("<span  style=\"font-family: 'Arial Black', Arial\">test</span>", true));
+	ok(
+		ret === "[font='Arial Black', Arial]test[/font]" || ret === '[font="Arial Black", Arial]test[/font]',
 		"Quotes that shouldn't be stripped"
 	);
 });

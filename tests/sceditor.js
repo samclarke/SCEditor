@@ -48,7 +48,7 @@ test("Quote", function() {
 
 test("Quote with author", function() {
 	expect(1);
-	
+
 	this.s.commands.quote.exec.call(this.s, null, "Simple <b>test</b>", "admin")
 	equal(
 		this.s.getWysiwygEditorValue(),
