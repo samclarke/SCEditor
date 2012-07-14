@@ -20,7 +20,7 @@
 
 /*jshint smarttabs: true, jquery: true, eqnull:true, curly: false */
 
-(function($) {
+(function($, window, document) {
 	'use strict';
 
 	/**
@@ -44,7 +44,9 @@
 			handleTags,
 			formatString,
 			getStyle,
+			fixBlockNewLines,
 			wrapInDivs,
+			removeFirstLastDiv,
 			isEmpty,
 			mergeTextModeCommands;
 
@@ -248,7 +250,7 @@
 			var	childNodes = element.childNodes,
 				i = childNodes.length;
 
-			if(element.nodeValue)
+			if(element.nodeValue && /\S|\u00A0/.test(element.nodeValue))
 				return false;
 
 			if(childNodes.length === 0 || (childNodes.length === 1 && (/br/i.test(childNodes[0].nodeName) || isEmpty(childNodes[0]))))
@@ -352,19 +354,22 @@
 				});
 			}
 
-			// add newline after paragraph elements p and div (WebKit uses divs) and br tags
-			if(blockLevel && /^(br|div|p)$/.test(tag))
+			if(blockLevel && (!$.sceditor.dom.isInline(element[0], true) || tag === "br"))
 			{
-				// Only treat divs/p as a newline if their last child was not a new line.
-				if(!(/^(div|p)$/i.test(tag) && element[0].lastChild && element[0].lastChild.nodeName.toLowerCase() === "br"))
-					content += "\n";
+				var	parent		= element[0].parentNode,
+					parentIsInline	= $.sceditor.dom.isInline(parent, true) || parent.nodeName.toLowerCase() === "body";
 
+				// Ignore last br in a blocklevel element as it's collapsed &&
+				// Do not add a newline after a block level element if it is the last child of another
+				// lock level element
+				if(!(tag === "br" && !parentIsInline && parent.lastChild === element[0]) &&
+					!(!parentIsInline && parent.lastChild === element[0]))
+					content += "\n";
+// TODO: pre-pend br to ul ol elements ?
 				// needed for browsers that enter textnode then when return is pressed put the rest in a div, i.e.:
 				// text<div>line 2</div>
-				if("br" !== tag && !$.sceditor.dom.isInline(element[0].parentNode) && element[0].previousSibling &&
-					element[0].previousSibling.nodeType === 3) {
+				if("br" !== tag && !parentIsInline && element[0].previousSibling && element[0].previousSibling.nodeType === 3)
 					content = "\n" + content;
-				}
 			}
 
 			return content;
@@ -536,7 +541,6 @@
 					.replace(/</g, "&lt;")
 					.replace(/>/g, "&gt;")
 					.replace(/\r/g, "")
-					.replace(/(\[\/?(?:left|center|right|justify|align|rtl|ltr)\])\n/g, "$1")
 					.replace(/\n/g, "<br />");
 
 			while(text !== oldText)
@@ -557,6 +561,19 @@
 			return wrapInDivs(text, isFragment);
 		};
 
+		fixBlockNewLines = function(node)
+		{
+			$.sceditor.dom.rTraverse(node, function(node) {
+				if(node.nodeName.toLowerCase() === "br" && node.previousSibling && !$.sceditor.dom.isInline(node.previousSibling, true))
+					node.parentNode.removeChild(node);
+				else if(node.nodeType === 1 && !$.sceditor.dom.isInline(node, true))
+				{
+					if(!$.sceditor.ie)
+						node.appendChild(document.createElement('br'));
+				}
+			});
+		};
+
 		/**
 		 * Wraps divs around inline HTML. Needed for IE
 		 *
@@ -574,6 +591,8 @@
 
 			$(tmpDiv).hide().appendTo(d.body);
 			tmpDiv.innerHTML = html;
+
+			fixBlockNewLines(tmpDiv);
 
 			node = tmpDiv.firstChild;
 			while(node)
@@ -628,34 +647,39 @@
 
 			// needed for paste, the first shouldn't be wrapped in a div
 			if(excludeFirstLast)
-			{
-				node = outputDiv.firstChild;
-				if(node && node.nodeName.toLowerCase() === "div")
-				{
-					while((next = node.firstChild))
-						outputDiv.insertBefore(next, node);
-
-					if($.sceditor.ie >= 9)
-						outputDiv.insertBefore(d.createElement('br'), node);
-
-					outputDiv.removeChild(node);
-				}
-
-				node = outputDiv.lastChild;
-				if(node && node.nodeName.toLowerCase() === "div")
-				{
-					while((next = node.firstChild))
-						outputDiv.insertBefore(next, node);
-
-					if($.sceditor.ie >= 9)
-						outputDiv.insertBefore(d.createElement('br'), node);
-
-					outputDiv.removeChild(node);
-				}
-			}
+				removeFirstLastDiv(outputDiv);
 
 			$(tmpDiv).remove();
 			return outputDiv.innerHTML;
+		};
+
+		removeFirstLastDiv = function(outputDiv)
+		{
+			var node, next;
+
+			node = outputDiv.firstChild;
+			if(node && node.nodeName.toLowerCase() === "div")
+			{
+				while((next = node.firstChild))
+					outputDiv.insertBefore(next, node);
+
+				if($.sceditor.ie >= 9)
+					outputDiv.insertBefore(document.createElement('br'), node);
+
+				outputDiv.removeChild(node);
+			}
+
+			node = outputDiv.lastChild;
+			if(node && node.nodeName.toLowerCase() === "div")
+			{
+				while((next = node.firstChild))
+					outputDiv.insertBefore(next, node);
+
+				if($.sceditor.ie >= 9)
+					outputDiv.insertBefore(document.createElement('br'), node);
+
+				outputDiv.removeChild(node);
+			}
 		};
 
 		init();
@@ -1270,4 +1294,4 @@
 			(new $.sceditorBBCodePlugin(this, options));
 		});
 	};
-})(jQuery);
+})(jQuery, window, document);
