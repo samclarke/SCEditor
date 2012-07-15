@@ -26,7 +26,7 @@
 	/**
 	 * BBCode plugin for SCEditor
 	 *
-	 * @param {Element} el The textarea to be converted
+	 * @param {Element} element The textarea to be converted
 	 * @return {Object} options
 	 * @class sceditorBBCodePlugin
 	 * @name jQuery.sceditorBBCodePlugin
@@ -80,11 +80,9 @@
 			youtube: []
 		};
 
-
 		/**
 		 * Initializer
 		 * @private
-		 * @name sceditorBBCodePlugin.init
 		 */
 		init = function() {
 			$.data(element, "sceditorbbcode", base);
@@ -307,10 +305,10 @@
 		 * Handles a HTML tag and finds any matching bbcodes
 		 *
 		 * @private
-		 * @param	jQuery element	element		The element to convert
-		 * @param	string			content		The Tags text content
-		 * @param	bool			blockLevel	If to convert block level tags
-		 * @return	string	Content with any matching bbcode tags wrapped around it.
+		 * @param {jQuery} element The element to convert
+		 * @param {String} content The Tags text content
+		 * @param {Bool} blockLevel If to convert block level tags
+		 * @return {String} Content with any matching bbcode tags wrapped around it.
 		 * @Private
 		 */
 		handleTags = function(element, content, blockLevel) {
@@ -577,17 +575,17 @@
 		/**
 		 * Wraps divs around inline HTML. Needed for IE
 		 *
-		 * @param string html
-		 * @return string HTML
+		 * @param {String} html
+		 * @return {String} HTML
 		 * @private
 		 */
 		wrapInDivs = function(html, excludeFirstLast)
 		{
-			var	d		= document,
+			var	div, node, next, nodeName,
+				d		= document,
 				inlineFrag	= d.createDocumentFragment(),
 				outputDiv	= d.createElement('div'),
-				tmpDiv		= d.createElement('div'),
-				div, node, next, nodeName;
+				tmpDiv		= d.createElement('div');
 
 			$(tmpDiv).hide().appendTo(d.body);
 			tmpDiv.innerHTML = html;
@@ -653,6 +651,11 @@
 			return outputDiv.innerHTML;
 		};
 
+		/**
+		 * This should really be worked into the wrapInDivs function.
+		 * Ignore adding to the first div and undo adding to last.
+		 * @private
+		 */
 		removeFirstLastDiv = function(outputDiv)
 		{
 			var node, next;
