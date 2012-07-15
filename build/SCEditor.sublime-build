@@ -1,0 +1,19 @@
+{
+	"cmd": ["./build/build.sh"],
+	"working_dir": "${project_path:${folder}}",
+	"shell": true,
+	"variants": [
+		{
+			"cmd": ["./build/build.sh", "--css"],
+			"name": "Build with CSS"
+		},
+		{
+			"cmd": ["./build/build.sh", "--docs"],
+			"name": "Build with Docs"
+		},
+		{
+			"cmd": ["./build/build.sh", "--css", "--docs"],
+			"name": "Build with CSS and Docs"
+		}
+	]
+}
