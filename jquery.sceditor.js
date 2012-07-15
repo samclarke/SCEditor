@@ -2166,6 +2166,9 @@
 
 				editor.createDropDown(caller, "insertemoticon", content);
 			},
+			txtExec: function(caller) {
+				$.sceditor.command.get('emoticon').exec.call(this, caller);
+			},
 			keyPress: function (e)
 			{
 				// make sure emoticons command is in the toolbar before running
