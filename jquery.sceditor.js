@@ -477,7 +477,7 @@
 		};
 
 		/**
-		 * Gets the width of the editor in px
+		 * Gets the width of the editor in pixels
 		 *
 		 * @since 1.3.5
 		 * @function
@@ -488,7 +488,7 @@
 		/**
 		 * Sets the width of the editor
 		 *
-		 * @param {int} width Width in px
+		 * @param {int} width Width in pixels
 		 * @since 1.3.5
 		 * @function
 		 * @memberOf jQuery.sceditor.prototype
@@ -658,10 +658,10 @@
 		 * event handlers.
 		 *
 		 * @function
-		 * @name destory
+		 * @name destroy
 		 * @memberOf jQuery.sceditor.prototype
 		 */
-		base.destory = function () {
+		base.destroy = function () {
 			$(document).unbind('click', documentClickHandler);
 			$(window).unbind('resize', handleWindowResize);
 
@@ -1504,7 +1504,7 @@
 
 		/**
 		 * Handles the window resize event. Needed to resize then editor
-		 * when the window size changes in fluid deisgns.
+		 * when the window size changes in fluid designs.
 		 * @ignore
 		 */
 		handleWindowResize = function() {
@@ -1614,7 +1614,7 @@
 
 
 		// I hate having to use UA sniffing but as some mobile browsers say they support
-		// contentediable/design mode when it isn't usable (i.e. you can't eneter text, ect.).
+		// contentediable/design mode when it isn't usable (i.e. you can't enter text, ect.).
 		// This is the only way I can think of to detect them. It's also how every other editor
 		// I've seen detects them
 		var isUnsupported = /Opera Mobi|Opera Mini/i.test(userAgent);
