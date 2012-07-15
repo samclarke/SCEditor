@@ -11,7 +11,7 @@
  * @fileoverview SCEditor - A lightweight WYSIWYG BBCode and HTML editor
  * @author Sam Clarke
  * @version 1.4.0
- * @requires jQuery
+ * @requires jQuerya
  */
 
 // ==ClosureCompiler==
@@ -273,16 +273,16 @@
 		initEditor = function () {
 			var $doc, $body;
 
-			$textEditor	= $('<textarea></textarea>').hide();
-			$wysiwygEditor	= $('<iframe frameborder="0"></iframe>');
+			$textEditor    = $('<textarea></textarea>').hide();
+			$wysiwygEditor = $('<iframe frameborder="0"></iframe>');
 
 			if(window.location.protocol === "https:")
 				$wysiwygEditor.attr("src", "javascript:false");
 
 			// add the editor to the HTML and store the editors element
 			$editorContainer.append($wysiwygEditor).append($textEditor);
-			wysiwygEditor	= $wysiwygEditor[0];
-			textEditor	= $textEditor[0];
+			wysiwygEditor = $wysiwygEditor[0];
+			textEditor    = $textEditor[0];
 
 			base.width(base.options.width || $textarea.width());
 			base.height(base.options.height || $textarea.height());
@@ -296,8 +296,8 @@
 
 			base.readOnly(!!base.options.readOnly);
 
-			$doc	= $(getWysiwygDoc());
-			$body	= $doc.find("body");
+			$doc  = $(getWysiwygDoc());
+			$body = $doc.find("body");
 
 			// Add IE version class to the HTML element so can apply
 			// conditional styling without CSS hacks
@@ -337,8 +337,7 @@
 		 * @private
 		 */
 		initToolBar = function () {
-			var	$group, $button, buttons,
-				i, x, buttonClick,
+			var	$group, $button, buttons, i, x, buttonClick,
 				groups = base.options.toolbar.split("|");
 
 			buttonClick = function () {
@@ -393,8 +392,9 @@
 		 * @private
 		 */
 		autofocus = function() {
-			var	doc	= wysiwygEditor.contentWindow.document,
-				body	= doc.body, rng;
+			var	rng,
+				doc  = wysiwygEditor.contentWindow.document,
+				body = doc.body;
 
 			if(!doc.createRange)
 				return base.focus();
@@ -559,11 +559,11 @@
 		 * @see #resizeToContent
 		 */
 		base.expandToContent = function(ignoreMaxHeight) {
-			var	doc		= getWysiwygDoc(),
-				currentHeight	= $editorContainer.height(),
-				height		= doc.body.scrollHeight || doc.documentElement.scrollHeight,
-				padding		= (currentHeight - $wysiwygEditor.height()),
-				maxHeight	= base.options.resizeMaxHeight || ((base.options.height || $textarea.height()) * 2);
+			var	doc           = getWysiwygDoc(),
+				currentHeight = $editorContainer.height(),
+				height        = doc.body.scrollHeight || doc.documentElement.scrollHeight,
+				padding       = (currentHeight - $wysiwygEditor.height()),
+				maxHeight     = base.options.resizeMaxHeight || ((base.options.height || $textarea.height()) * 2);
 
 			height += padding;
 
@@ -579,22 +579,22 @@
 		 * @private
 		 */
 		initResize = function () {
-			var	$grip		= $('<div class="sceditor-grip" />'),
+			var	minHeight, maxHeight, minWidth, maxWidth, mouseMoveFunc,
+				$grip       = $('<div class="sceditor-grip" />'),
 				// cover is used to cover the editor iframe so document still gets mouse move events
-				$cover		= $('<div class="sceditor-resize-cover" />'),
-				startX		= 0,
-				startY		= 0,
-				startWidth	= 0,
-				startHeight	= 0,
-				origWidth	= $editorContainer.width(),
-				origHeight	= $editorContainer.height(),
-				dragging	= false,
-				minHeight, maxHeight, minWidth, maxWidth, mouseMoveFunc;
+				$cover      = $('<div class="sceditor-resize-cover" />'),
+				startX      = 0,
+				startY      = 0,
+				startWidth  = 0,
+				startHeight = 0,
+				origWidth   = $editorContainer.width(),
+				origHeight  = $editorContainer.height(),
+				dragging    = false;
 
 			minHeight = base.options.resizeMinHeight || origHeight / 1.5;
 			maxHeight = base.options.resizeMaxHeight || origHeight * 2.5;
-			minWidth = base.options.resizeMinWidth  || origWidth / 1.25;
-			maxWidth = base.options.resizeMaxWidth || origWidth * 1.25;
+			minWidth  = base.options.resizeMinWidth  || origWidth  / 1.25;
+			maxWidth  = base.options.resizeMaxWidth  || origWidth  * 1.25;
 
 			mouseMoveFunc = function (e) {
 				var	newHeight = startHeight + (e.pageY - startY),
@@ -613,11 +613,11 @@
 			$editorContainer.append($cover.hide());
 
 			$grip.mousedown(function (e) {
-				startX		= e.pageX;
-				startY		= e.pageY;
-				startWidth	= $editorContainer.width();
-				startHeight	= $editorContainer.height();
-				dragging	= true;
+				startX      = e.pageX;
+				startY      = e.pageY;
+				startWidth  = $editorContainer.width();
+				startHeight = $editorContainer.height();
+				dragging    = true;
 
 				$editorContainer.addClass('resizing');
 				$cover.show();
@@ -698,8 +698,8 @@
 				emoticon;
 
 			$.each(emoticons, function (key, url) {
-				emoticon	= document.createElement('img');
-				emoticon.src	= url;
+				emoticon     = document.createElement('img');
+				emoticon.src = url;
 				preLoadCache.push(emoticon);
 			});
 		};
@@ -757,10 +757,10 @@
 		};
 
 		handlePasteEvt = function(e) {
-			var	elm		= getWysiwygDoc().body,
-				checkCount	= 0,
-				pastearea	= elm.ownerDocument.createElement('div'),
-				prePasteContent	= elm.ownerDocument.createDocumentFragment();
+			var	elm             = getWysiwygDoc().body,
+				checkCount      = 0,
+				pastearea       = elm.ownerDocument.createElement('div'),
+				prePasteContent = elm.ownerDocument.createDocumentFragment();
 
 			rangeHelper.saveRange();
 			document.body.appendChild(pastearea);
@@ -979,9 +979,9 @@
 
 			if(typeof textEditor.selectionStart !== "undefined")
 			{
-				start	= textEditor.selectionStart;
-				end	= textEditor.selectionEnd;
-				txtLen	= text.length;
+				start  = textEditor.selectionStart;
+				end    = textEditor.selectionEnd;
+				txtLen = text.length;
 
 				if(endText)
 					text += textEditor.value.substring(start, end) + endText;
@@ -1215,13 +1215,13 @@
 				// escape the key before using it as a regex
 				// and append the regex to only find emoticons outside
 				// of HTML tags
-				var	reg = $.sceditor.regexEscape(key) + "(?=([^\\<\\>]*?<(?!/code)|[^\\<\\>]*?$))",
+				var	reg   = $.sceditor.regexEscape(key) + "(?=([^\\<\\>]*?<(?!/code)|[^\\<\\>]*?$))",
 					group = '';
 
 				// Make sure the emoticon is surrounded by whitespace or is at the start/end of a string or html tag
 				if(base.options.emoticonsCompat)
 				{
-					reg = "((>|^|\\s|\xA0|\u2002|\u2003|\u2009|&nbsp;))" + reg + "(?=(\\s|$|<|\xA0|\u2002|\u2003|\u2009|&nbsp;))";
+					reg   = "((>|^|\\s|\xA0|\u2002|\u2003|\u2009|&nbsp;))" + reg + "(?=(\\s|$|<|\xA0|\u2002|\u2003|\u2009|&nbsp;))";
 					group = '$1';
 				}
 
@@ -1294,8 +1294,8 @@
 			$textEditor.toggle();
 			$wysiwygEditor.toggle();
 
-			$editorContainer.removeClass('sourceMode');
-			$editorContainer.removeClass('wysiwygMode');
+			$editorContainer.removeClass('sourceMode')
+					.removeClass('wysiwygMode');
 
 			if(base.inSourceMode())
 				$editorContainer.addClass('sourceMode');
@@ -1417,8 +1417,8 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.execCommand = function (command, param) {
-			var	executed	= false,
-				$parentNode	= $(rangeHelper.parentNode());
+			var	executed    = false,
+				$parentNode = $(rangeHelper.parentNode());
 
 			base.focus();
 
@@ -1577,9 +1577,9 @@
 	 */
 	$.sceditor.ie = (function(){
 		var	undef,
-			v	= 3,
-			div	= document.createElement('div'),
-			all	= div.getElementsByTagName('i');
+			v   = 3,
+			div = document.createElement('div'),
+			all = div.getElementsByTagName('i');
 
 		do {
 			div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->';
@@ -1595,9 +1595,9 @@
 	 * @memberOf jQuery.sceditor
 	 */
 	$.sceditor.isWysiwygSupported = function() {
-		var	contentEditable			= $('<div contenteditable="true">')[0].contentEditable,
-			contentEditableSupported	= typeof contentEditable !== 'undefined' && contentEditable !== 'inherit',
-			userAgent			= navigator.userAgent,
+		var	contentEditable          = $('<div contenteditable="true">')[0].contentEditable,
+			contentEditableSupported = typeof contentEditable !== 'undefined' && contentEditable !== 'inherit',
+			userAgent                = navigator.userAgent,
 			match;
 
 		if(!contentEditableSupported)
@@ -1793,12 +1793,12 @@
 		// START_COMMAND: Colour
 		color: {
 			_dropDown: function(editor, caller, callback) {
-				var	genColor		= {r: 255, g: 255, b: 255},
-					content			= $("<div />"),
-					colorColumns		= editor.options.colors?editor.options.colors.split("|"):new Array(21),
+				var	genColor     = {r: 255, g: 255, b: 255},
+					content      = $("<div />"),
+					colorColumns = editor.options.colors?editor.options.colors.split("|"):new Array(21),
 					// IE is slow at string concation so use an array
-					html			= [],
-					htmlIndex		= 0;
+					html         = [],
+					htmlIndex    = 0;
 
 				for (var i=0; i < colorColumns.length; ++i) {
 					var colors = colorColumns[i]?colorColumns[i].split(","):new Array(21);
@@ -1883,8 +1883,8 @@
 		pastetext: {
 			exec: function (caller) {
 				var	val,
-					editor	= this,
-					content	= _tmpl("pastetext", {
+					editor  = this,
+					content = _tmpl("pastetext", {
 						label: editor._("Paste your text inside the following box:"),
 						insert: editor._("Insert")
 					}, true);
@@ -1985,9 +1985,9 @@
 					}, true);
 
 				content.find('.button').click(function (e) {
-					var	val	= content.find("#image").val(),
-						attrs	= '',
-						width, height;
+					var	width, height,
+						val   = content.find("#image").val(),
+						attrs = '';
 
 					if((width = content.find("#width").val()))
 						attrs += ' width="' + width + '"';
@@ -2051,8 +2051,8 @@
 					}, true);
 
 				content.find('.button').click(function (e) {
-					var	val		= content.find("#link").val(),
-						description	= content.find("#des").val();
+					var	val         = content.find("#link").val(),
+						description = content.find("#des").val();
 
 					if(val !== "" && val !== "http://") {
 						// needed for IE to reset the last range
@@ -2090,8 +2090,8 @@
 		// START_COMMAND: Quote
 		quote: {
 			exec: function (caller, html, author) {
-				var	before	= '<blockquote>',
-					end	= '</blockquote>';
+				var	before = '<blockquote>',
+					end    = '</blockquote>';
 
 				// if there is HTML passed set end to null so any selected
 				// text is replaced
@@ -2117,7 +2117,7 @@
 			exec: function (caller) {
 				var	appendEmoticon,
 					editor  = this,
-					end	= (editor.options.emoticonsCompat ? ' ' : ''),
+					end     = (editor.options.emoticonsCompat ? ' ' : ''),
 					content = $('<div />'),
 					line    = $('<div />');
 
@@ -2149,8 +2149,8 @@
 					var more = $(
 						this._('<a class="sceditor-more">{0}</a>', this._("More"))
 					).click(function () {
-						var	emoticons	= $.extend({}, editor.options.emoticons.dropdown, editor.options.emoticons.more);
-							content		= $('<div />');
+						var	emoticons = $.extend({}, editor.options.emoticons.dropdown, editor.options.emoticons.more);
+							content   = $('<div />');
 
 						$.each(emoticons, appendEmoticon);
 
@@ -2175,8 +2175,8 @@
 				if(this.options.toolbar.indexOf('emoticon') === -1)
 					return;
 
-				var	editor = this,
-					pos = 0,
+				var	editor  = this,
+					pos     = 0,
 					curChar = String.fromCharCode(e.which);
 
 				if(!editor.EmoticonsCache) {
@@ -2312,9 +2312,9 @@
 		// START_COMMAND: Ltr
 		ltr: {
 			exec: function() {
-				var	editor	= this,
-					elm	= editor.getRangeHelper().getFirstBlockParent(),
-					$elm	= $(elm);
+				var	editor = this,
+					elm    = editor.getRangeHelper().getFirstBlockParent(),
+					$elm   = $(elm);
 
 				editor.focus();
 
@@ -2322,8 +2322,8 @@
 				{
 					editor.execCommand("formatBlock", "p");
 
-					elm	= editor.getRangeHelper().getFirstBlockParent();
-					$elm	= $(elm);
+					elm  = editor.getRangeHelper().getFirstBlockParent();
+					$elm = $(elm);
 
 					if(!elm || $elm.is('body'))
 						return;
@@ -2341,9 +2341,9 @@
 		// START_COMMAND: Rtl
 		rtl: {
 			exec: function() {
-				var	editor	= this,
-					elm	= editor.getRangeHelper().getFirstBlockParent(),
-					$elm	= $(elm);
+				var	editor = this,
+					elm    = editor.getRangeHelper().getFirstBlockParent(),
+					$elm   = $(elm);
 
 				editor.focus();
 
@@ -2351,8 +2351,8 @@
 				{
 					editor.execCommand("formatBlock", "p");
 
-					elm	= editor.getRangeHelper().getFirstBlockParent();
-					$elm	= $(elm);
+					elm  = editor.getRangeHelper().getFirstBlockParent();
+					$elm = $(elm);
 
 					if(!elm || $elm.is('body'))
 						return;
@@ -2401,12 +2401,11 @@
 	 * @name jQuery.sceditor.rangeHelper
 	 */
 	$.sceditor.rangeHelper = function(w, d) {
-		var	win, doc,
-			isW3C		= true,
-			startMarker	= "sceditor-start-marker",
-			endMarker	= "sceditor-end-marker",
-			base		= this,
-			init, _createMarker, _getOuterText, _selectOuterText;
+		var	win, doc, init, _createMarker, _getOuterText, _selectOuterText,
+			isW3C       = true,
+			startMarker = "sceditor-start-marker",
+			endMarker   = "sceditor-end-marker",
+			base        = this;
 
 		/**
 		 * @constructor
@@ -2415,9 +2414,9 @@
 		 * @private
 		 */
 		init = function (window, document) {
-			doc	= document || window.contentDocument || window.document;
-			win	= window;
-			isW3C	= !!window.getSelection;
+			doc   = document || window.contentDocument || window.document;
+			win   = window;
+			isW3C = !!window.getSelection;
 		}(w, d);
 
 		/**
@@ -2442,9 +2441,9 @@
 
 			if(isW3C)
 			{
-				div		= doc.createElement('div');
-				node		= doc.createDocumentFragment();
-				div.innerHTML	= html;
+				div           = doc.createElement('div');
+				node          = doc.createDocumentFragment();
+				div.innerHTML = html;
 
 				while(div.firstChild)
 					node.appendChild(div.firstChild);
@@ -2472,9 +2471,9 @@
 		base.insertNode = function(node, endNode) {
 			if(isW3C)
 			{
-				var	toInsert	= doc.createDocumentFragment(),
-					range		= base.selectedRange(),
-					selection, selectAfter;
+				var	selection, selectAfter,
+					toInsert = doc.createDocumentFragment(),
+					range    = base.selectedRange();
 
 				toInsert.appendChild(node);
 
@@ -2581,10 +2580,9 @@
 		base.parentNode = function() {
 			var range = base.selectedRange();
 
-			if(isW3C)
-				return range.commonAncestorContainer;
-			else
-				return range.parentElement();
+			return isW3C ?
+				range.commonAncestorContainer :
+				range.parentElement();
 		};
 
 		/**
@@ -2602,10 +2600,8 @@
 					return node;
 
 				var p = node.parentNode;
-				if(p)
-					return func(p);
 
-				return null;
+				return p ? func(p) : null;
 			};
 
 			return func(base.parentNode());
@@ -2641,11 +2637,11 @@
 		_createMarker = function(id) {
 			base.removeMarker(id);
 
-			var marker = doc.createElement("span");
-			marker.id = id;
-			marker.style.lineHeight	= "0";
-			marker.style.display	= "none";
-			marker.className	= "sceditor-selection";
+			var marker              = doc.createElement("span");
+			marker.id               = id;
+			marker.style.lineHeight = "0";
+			marker.style.display    = "none";
+			marker.className        = "sceditor-selection";
 
 			return marker;
 		};
@@ -2741,9 +2737,10 @@
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.restoreRange = function() {
-			var	range	= base.selectedRange(),
-				start	= base.getMarker(startMarker),
-				end	= base.getMarker(endMarker);
+			var	marker,
+				range = base.selectedRange(),
+				start = base.getMarker(startMarker),
+				end   = base.getMarker(endMarker);
 
 			if(!start || !end)
 				return false;
@@ -2751,7 +2748,7 @@
 			if(!isW3C)
 			{
 				range = doc.body.createTextRange();
-				var marker = doc.body.createTextRange();
+				marker = doc.body.createTextRange();
 
 				marker.moveToElementText(start);
 				range.setEndPoint('StartToStart', marker);
@@ -2785,6 +2782,7 @@
 			var range = base.cloneSelected();
 
 			range.collapse(false);
+
 			if(!isW3C)
 			{
 				range.moveStart('character', 0-left);
@@ -2794,7 +2792,6 @@
 			{
 				range.setStart(range.startContainer, range.startOffset-left);
 				range.setEnd(range.endContainer, range.endOffset+right);
-				//range.deleteContents();
 			}
 
 			base.selectRange(range);
@@ -2807,10 +2804,11 @@
 		 * @private
 		 */
 		_getOuterText = function(before, length) {
-			var	ret	= "",
-				range	= base.cloneSelected();
+			var	ret   = "",
+				range = base.cloneSelected();
 
 			range.collapse(false);
+
 			if(before)
 			{
 				if(!isW3C)
@@ -2856,8 +2854,8 @@
 					return a.length - b.length;
 				});
 
-			var	maxKeyLen = longestKey || rep[rep.length-1][0].length,
-				before, after, str, i, start, left, pat, lookStart;
+			var	before, after, str, i, start, left, pat, lookStart,
+				maxKeyLen = longestKey || rep[rep.length-1][0].length;
 
 			before = after = str = "";
 
@@ -2875,13 +2873,13 @@
 			before = _getOuterText(true, maxKeyLen);
 
 			if(includeAfter)
-				after	= _getOuterText(false, maxKeyLen);
+				after = _getOuterText(false, maxKeyLen);
 
-			str	= before + (curChar!=null?curChar:"") + after;
-			i	= rep.length;
+			str = before + (curChar!=null?curChar:"") + after;
+			i   = rep.length;
 			while(i--)
 			{
-				pat = new RegExp("(?:[\\s\xA0\u2002\u2003\u2009])" + $.sceditor.regexEscape(rep[i][0]) + "(?=[\\s\xA0\u2002\u2003\u2009])");
+				pat       = new RegExp("(?:[\\s\xA0\u2002\u2003\u2009])" + $.sceditor.regexEscape(rep[i][0]) + "(?=[\\s\xA0\u2002\u2003\u2009])");
 				lookStart = before.length - 1 - rep[i][0].length;
 
 				if(requireWhiteSpace)
@@ -3014,10 +3012,10 @@
 				// then it needs fixing
 				if(node.nodeType === 1 && !base.isInline(node, true) && base.isInline(node.parentNode, true))
 				{
-					var	parent	= getLastInlineParent(node),
-						rParent	= parent.parentNode,
-						before	= base.extractContents(parent, node),
-						middle	= node;
+					var	parent  = getLastInlineParent(node),
+						rParent = parent.parentNode,
+						before  = base.extractContents(parent, node),
+						middle  = node;
 
 					// copy current styling so when moved out of the parent
 					// it still has the same styling
@@ -3082,11 +3080,11 @@
 		 * @return {DocumentFragment}
 		 */
 		extractContents: function(startNode, endNode) {
-			var	base		= this,
-				$commonAncestor	= base.findCommonAncestor(startNode, endNode),
-				commonAncestor	= !$commonAncestor?null:$commonAncestor.get(0),
-				startReached	= false,
-				endReached	= false;
+			var	base            = this,
+				$commonAncestor = base.findCommonAncestor(startNode, endNode),
+				commonAncestor  = !$commonAncestor?null:$commonAncestor.get(0),
+				startReached    = false,
+				endReached      = false;
 
 			return (function extract(root) {
 				var df = startNode.ownerDocument.createDocumentFragment();
