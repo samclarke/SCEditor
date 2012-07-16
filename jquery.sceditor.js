@@ -138,8 +138,8 @@
 		 * The editors textarea for viewing source
 		 * @private
 		 */
-		var $textEditor;
-		var textEditor;
+		var $sourceEditor;
+		var sourceEditor;
 
 		/**
 		 * The current dropdown
@@ -200,7 +200,7 @@
 			handleWindowResize,
 			initLocale,
 			updateToolBar,
-			textEditorSelectedText,
+			sourceEditorSelectedText,
 			autofocus;
 
 		/**
@@ -254,8 +254,8 @@
 
 			// force into source mode if is a browser that can't handle
 			// full editing
-			if(!$.sceditor.isWysiwygSupported())
-				base.toggleTextMode();
+			if(!$.sceditor.isWysiwygSupported)
+				base.toggleSourceMode();
 
 			if(base.options.toolbar.indexOf('emoticon') !== -1)
 				initEmoticons();
@@ -278,16 +278,16 @@
 		initEditor = function () {
 			var $doc, $body;
 
-			$textEditor    = $('<textarea></textarea>').hide();
+			$sourceEditor    = $('<textarea></textarea>').hide();
 			$wysiwygEditor = $('<iframe frameborder="0"></iframe>');
 
 			if(window.location.protocol === "https:")
 				$wysiwygEditor.attr("src", "javascript:false");
 
 			// add the editor to the HTML and store the editors element
-			$editorContainer.append($wysiwygEditor).append($textEditor);
+			$editorContainer.append($wysiwygEditor).append($sourceEditor);
 			wysiwygEditor = $wysiwygEditor[0];
-			textEditor    = $textEditor[0];
+			sourceEditor    = $sourceEditor[0];
 
 			base.width(base.options.width || $original.width());
 			base.height(base.options.height || $original.height());
@@ -325,7 +325,7 @@
 			if(base.options.rtl)
 			{
 				$body.attr('dir', 'rtl');
-				$textEditor.attr('dir', 'rtl');
+				$sourceEditor.attr('dir', 'rtl');
 			}
 
 			if(base.options.enablePasteFiltering)
@@ -436,14 +436,14 @@
 		 */
 		base.readOnly = function(readOnly) {
 			if(typeof readOnly !== 'boolean')
-				return $textEditor.attr('readonly') === 'readonly';
+				return $sourceEditor.attr('readonly') === 'readonly';
 
 			getWysiwygDoc().body.contentEditable = !readOnly;
 
 			if(!readOnly)
-				$textEditor.removeAttr('readonly');
+				$sourceEditor.removeAttr('readonly');
 			else
-				$textEditor.attr('readonly', 'readonly');
+				$sourceEditor.attr('readonly', 'readonly');
 
 			updateToolBar(readOnly);
 
@@ -510,8 +510,8 @@
 			$wysiwygEditor.width(width);
 			$wysiwygEditor.width(width + (width - $wysiwygEditor.outerWidth(true)));
 
-			$textEditor.width(width);
-			$textEditor.width(width + (width - $textEditor.outerWidth(true)));
+			$sourceEditor.width(width);
+			$sourceEditor.width(width + (width - $sourceEditor.outerWidth(true)));
 
 			return this;
 		};
@@ -547,8 +547,8 @@
 			$wysiwygEditor.height(height);
 			$wysiwygEditor.height(height + (height - $wysiwygEditor.outerHeight(true)));
 
-			$textEditor.height(height);
-			$textEditor.height(height + (height - $textEditor.outerHeight(true)));
+			$sourceEditor.height(height);
+			$sourceEditor.height(height + (height - $sourceEditor.outerHeight(true)));
 
 			return this;
 		};
@@ -648,7 +648,7 @@
 		 * @private
 		 */
 		formSubmitHandler = function(e) {
-			base.updateTextareaValue();
+			base.updateOriginal();
 			$(this).removeAttr('novalidate');
 
 			if(this.checkValidity && !this.checkValidity())
@@ -944,7 +944,7 @@
 		};
 
 		/**
-		 * <p>Inserts text into either WYSIWYG or textEditor depending on which
+		 * <p>Inserts text into either WYSIWYG or sourceEditor depending on which
 		 * mode the editor is in.</p>
 		 *
 		 * <p>If endText is specified any selected text will be placed between
@@ -960,7 +960,7 @@
 		 */
 		base.insertText = function (text, endText) {
 			if(base.inSourceMode())
-				base.textEditorInsertText(text, endText);
+				base.sourceEditorInsertText(text, endText);
 			else
 				base.wysiwygEditorInsertText(text, endText);
 
@@ -973,32 +973,33 @@
 		 *
 		 * @param {String} text
 		 * @param {String} [endText=null]
+		 * @since 1.4.0
 		 * @function
-		 * @name textEditorInsertText
+		 * @name sourceEditorInsertText
 		 * @memberOf jQuery.sceditor.prototype
 		 */
-		base.textEditorInsertText = function (text, endText) {
+		base.sourceEditorInsertText = function (text, endText) {
 			var range, start, end, txtLen;
 
-			textEditor.focus();
+			sourceEditor.focus();
 
-			if(typeof textEditor.selectionStart !== "undefined")
+			if(typeof sourceEditor.selectionStart !== "undefined")
 			{
-				start  = textEditor.selectionStart;
-				end    = textEditor.selectionEnd;
+				start  = sourceEditor.selectionStart;
+				end    = sourceEditor.selectionEnd;
 				txtLen = text.length;
 
 				if(endText)
-					text += textEditor.value.substring(start, end) + endText;
+					text += sourceEditor.value.substring(start, end) + endText;
 
-				textEditor.value = textEditor.value.substring(0, start) + text + textEditor.value.substring(end, textEditor.value.length);
+				sourceEditor.value = sourceEditor.value.substring(0, start) + text + sourceEditor.value.substring(end, sourceEditor.value.length);
 
 				if(endText)
-					textEditor.selectionStart = (start + text.length) - endText.length;
+					sourceEditor.selectionStart = (start + text.length) - endText.length;
 				else
-					textEditor.selectionStart = start + text.length;
+					sourceEditor.selectionStart = start + text.length;
 
-				textEditor.selectionEnd = textEditor.selectionStart;
+				sourceEditor.selectionEnd = sourceEditor.selectionStart;
 			}
 			else if(typeof document.selection.createRange !== "undefined")
 			{
@@ -1016,9 +1017,9 @@
 				range.select();
 			}
 			else
-				textEditor.value += text + endText;
+				sourceEditor.value += text + endText;
 
-			textEditor.focus();
+			sourceEditor.focus();
 		};
 
 		/**
@@ -1063,7 +1064,7 @@
 			if(typeof val === "string")
 			{
 				if(base.inSourceMode())
-					base.setTextareaValue(val);
+					base.setSourceEditorValue(val);
 				else
 				{
 					if(filter !== false && base.options.getTextHandler)
@@ -1076,7 +1077,7 @@
 			}
 
 			return base.inSourceMode() ?
-				base.getTextareaValue(false) :
+				base.getSourceEditorValue(false) :
 				base.getWysiwygEditorValue();
 		};
 
@@ -1099,7 +1100,7 @@
 		 */
 		base.insert = function (start, end, filter, convertEmoticons) {
 			if(base.inSourceMode())
-				base.textEditorInsertText(start, end);
+				base.sourceEditorInsertText(start, end);
 			else
 			{
 				if(end)
@@ -1157,11 +1158,12 @@
 		 * @param {bool} [filter=true]
 		 * @return {string}
 		 * @function
-		 * @name getTextareaValue
+		 * @since 1.4.0
+		 * @name getSourceEditorValue
 		 * @memberOf jQuery.sceditor.prototype
 		 */
-		base.getTextareaValue = function (filter) {
-			var val = $textEditor.val();
+		base.getSourceEditorValue = function (filter) {
+			var val = $sourceEditor.val();
 
 			if(filter !== false && base.options.getTextHandler)
 				val = base.options.getTextHandler(val);
@@ -1190,11 +1192,11 @@
 		 *
 		 * @param {string} value
 		 * @function
-		 * @name setTextareaValue
+		 * @name setSourceEditorValue
 		 * @memberOf jQuery.sceditor.prototype
 		 */
-		base.setTextareaValue = function (value) {
-			$textEditor.val(value);
+		base.setSourceEditorValue = function (value) {
+			$sourceEditor.val(value);
 		};
 
 		/**
@@ -1202,14 +1204,12 @@
 		 * with the value currently inside the editor.
 		 *
 		 * @function
-		 * @name updateTextareaValue
+		 * @name updateOriginal
+		 * @since 1.4.0
 		 * @memberOf jQuery.sceditor.prototype
 		 */
-		base.updateTextareaValue = function () {
-			if(base.inSourceMode())
-				$original.val(base.getTextareaValue(false));
-			else
-				$original.val(base.getWysiwygEditorValue());
+		base.updateOriginal = function () {
+			$original.val(base.val());
 		};
 
 		/**
@@ -1254,7 +1254,7 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.inSourceMode = function () {
-			return $textEditor.is(':visible');
+			return $sourceEditor.is(':visible');
 		};
 
 		/**
@@ -1279,30 +1279,31 @@
 				return base.inSourceMode();
 
 			if((base.inSourceMode() && !enable) || (!base.inSourceMode() && enable))
-				base.toggleTextMode();
+				base.toggleSourceMode();
 
 			return this;
 		};
 
 		/**
-		 * Switches between the WYSIWYG and plain text modes
+		 * Switches between the WYSIWYG and source modes
 		 *
 		 * @function
-		 * @name toggleTextMode
+		 * @name toggleSourceMode
+		 * @since 1.4.0
 		 * @memberOf jQuery.sceditor.prototype
 		 */
-		base.toggleTextMode = function () {
+		base.toggleSourceMode = function () {
 			// don't allow switching to WYSIWYG if doesn't support it
-			if(!$.sceditor.isWysiwygSupported() && base.inSourceMode())
+			if(!$.sceditor.isWysiwygSupported && base.inSourceMode())
 				return;
 
 			if(base.inSourceMode())
-				base.setWysiwygEditorValue(base.getTextareaValue());
+				base.setWysiwygEditorValue(base.getSourceEditorValue());
 			else
-				base.setTextareaValue(base.getWysiwygEditorValue());
+				base.setSourceEditorValue(base.getWysiwygEditorValue());
 
 			lastRange = null;
-			$textEditor.toggle();
+			$sourceEditor.toggle();
 			$wysiwygEditor.toggle();
 
 			$editorContainer.removeClass('sourceMode')
@@ -1316,11 +1317,11 @@
 			updateToolBar();
 		};
 
-		textEditorSelectedText = function () {
-			textEditor.focus();
+		sourceEditorSelectedText = function () {
+			sourceEditor.focus();
 
-			if(textEditor.selectionStart != null)
-				return textEditor.value.substring(textEditor.selectionStart, textEditor.selectionEnd);
+			if(sourceEditor.selectionStart != null)
+				return sourceEditor.value.substring(sourceEditor.selectionStart, sourceEditor.selectionEnd);
 			else if(document.selection.createRange)
 				return document.selection.createRange().text;
 		};
@@ -1336,9 +1337,9 @@
 				if(command.txtExec)
 				{
 					if($.isArray(command.txtExec))
-						base.textEditorInsertText.apply(base, command.txtExec);
+						base.sourceEditorInsertText.apply(base, command.txtExec);
 					else
-						command.txtExec.call(base, caller, textEditorSelectedText());
+						command.txtExec.call(base, caller, sourceEditorSelectedText());
 				}
 
 				return;
@@ -1377,7 +1378,7 @@
 				}
 			}
 			else
-				textEditor.focus();
+				sourceEditor.focus();
 
 			return this;
 		};
@@ -1421,7 +1422,7 @@
 		/**
 		 * Executes a command on the WYSIWYG editor
 		 *
-		 * @param {String|Function} command
+		 * @param {String} command
 		 * @param {String|Boolean} [param]
 		 * @function
 		 * @name execCommand
@@ -1493,7 +1494,7 @@
 
 			var i = keyPressFuncs.length;
 			while(i--)
-				keyPressFuncs[i].call(base, e, wysiwygEditor, $textEditor);
+				keyPressFuncs[i].call(base, e, wysiwygEditor, $sourceEditor);
 		};
 
 		/**
@@ -1578,9 +1579,9 @@
 	};
 
 	/**
-	 * Detects which version of IE is being used if any.
+	 * <p>Detects which version of IE is being used if any.</p>
 	 *
-	 * Will be the IE version number or undefined if not IE.
+	 * <p>Will be the IE version number or undefined if not IE.</p>
 	 *
 	 * Source: https://gist.github.com/527683
 	 * @type {int}
@@ -1600,12 +1601,12 @@
 	}());
 
 	/**
-	 * Detects if WYSIWYG is supported by the browser
+	 * If the browser supports WYSIWYG editing (e.g. older mobile browsers).
 	 *
-	 * @return {bool}
+	 * @type {bool}
 	 * @memberOf jQuery.sceditor
 	 */
-	$.sceditor.isWysiwygSupported = function() {
+	$.sceditor.isWysiwygSupported = (function() {
 		var	contentEditable          = $('<div contenteditable="true">')[0].contentEditable,
 			contentEditableSupported = typeof contentEditable !== 'undefined' && contentEditable !== 'inherit',
 			userAgent                = navigator.userAgent,
@@ -1660,7 +1661,7 @@
 			isUnsupported = false;
 
 		return !isUnsupported;
-	};
+	}());
 
 	/**
 	 * Escapes a string so it's safe to use in regex
@@ -2391,11 +2392,11 @@
 		// START_COMMAND: Source
 		source: {
 			exec: function () {
-				this.toggleTextMode();
+				this.toggleSourceMode();
 				this.blur();
 			},
 			txtExec: function () {
-				this.toggleTextMode();
+				this.toggleSourceMode();
 				this.blur();
 			},
 			tooltip: "View source"
@@ -2997,7 +2998,9 @@
 		},
 
 		/**
-		 * Copys the CSS from 1 node to another
+		 * <p>Copys the CSS from 1 node to another.</p>
+		 *
+		 * <p>Only copies CSS defined on the element e.g. style attr.</p>
 		 *
 		 * @param {HTMLElement} from
 		 * @param {HTMLElement} to
@@ -3367,7 +3370,7 @@
 	};
 
 	$.fn.sceditor = function (options) {
-		if((!options || !options.runWithoutWysiwygSupport) && !$.sceditor.isWysiwygSupported())
+		if((!options || !options.runWithoutWysiwygSupport) && !$.sceditor.isWysiwygSupported)
 			return;
 
 		return this.each(function () {

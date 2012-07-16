@@ -19,6 +19,7 @@
 // ==/ClosureCompiler==
 
 /*jshint smarttabs: true, jquery: true, eqnull:true, curly: false */
+/*global prompt: true*/
 
 (function($, window, document) {
 	'use strict';
@@ -51,7 +52,6 @@
 			mergeTextModeCommands;
 
 		base.bbcodes = $.sceditorBBCodePlugin.bbcodes;
-
 
 		/**
 		 * cache of all the tags pointing to their bbcodes to enable
@@ -281,7 +281,7 @@
 				elementPropVal = getStyle(element[0], property);
 
 				// if the parent has the same style use that instead of this one
-				// so you dont end up with [i]parent[i]child[/i][/i]
+				// so you don't end up with [i]parent[i]child[/i][/i]
 				if(!elementPropVal || getStyle(element.parent()[0], property) === elementPropVal)
 					return;
 
@@ -614,7 +614,7 @@
 						// If it's an empty DIV and in compatibility mode is below IE8 then
 						// we must add a non-breaking space to the div otherwise the div
 						// will be collapsed. Adding a BR works but when you press enter
-						// to make a newline it suddenly gose back to the normal IE div
+						// to make a newline it suddenly goes back to the normal IE div
 						// behaviour and creates two lines, one for the newline and one
 						// for the BR. I'm sure there must be a better fix but I've yet to
 						// find one.
@@ -1216,7 +1216,7 @@
 		},
 
 		/**
-		 * <p>Adds a BBCode to the parser or updates an exisiting
+		 * <p>Adds a BBCode to the parser or updates an existing
 		 * BBCode if a BBCode with the specified name already exists.</p>
 		 *
 		 * @param {String} name
@@ -1290,7 +1290,7 @@
 	};
 
 	$.fn.sceditorBBCodePlugin = function(options) {
-		if((!options || !options.runWithoutWysiwygSupport) && !$.sceditor.isWysiwygSupported())
+		if((!options || !options.runWithoutWysiwygSupport) && !$.sceditor.isWysiwygSupported)
 			return;
 
 		return this.each(function() {
