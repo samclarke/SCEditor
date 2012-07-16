@@ -4,15 +4,15 @@
 	"shell": true,
 	"variants": [
 		{
-			"cmd": ["./build/build.sh", "--css"],
+			"cmd": ["./build/build.sh --css"],
 			"name": "Build with CSS"
 		},
 		{
-			"cmd": ["./build/build.sh", "--docs"],
+			"cmd": ["./build/build.sh --docs"],
 			"name": "Build with Docs"
 		},
 		{
-			"cmd": ["./build/build.sh", "--css", "--docs"],
+			"cmd": ["./build/build.sh --css --docs"],
 			"name": "Build with CSS and Docs"
 		}
 	]
