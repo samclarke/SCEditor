@@ -600,10 +600,10 @@
 				var	newHeight = startHeight + (e.pageY - startY),
 					newWidth  = startWidth  + (e.pageX - startX);
 
-				if (newWidth >= minWidth && (maxWidth < 0 || newWidth <= maxWidth))
+				if (base.options.resizeWidth && newWidth >= minWidth && (maxWidth < 0 || newWidth <= maxWidth))
 					base.width(newWidth);
 
-				if (newHeight >= minHeight && (maxHeight < 0 || newHeight <= maxHeight))
+				if (base.options.resizeHeight && newHeight >= minHeight && (maxHeight < 0 || newHeight <= maxHeight))
 					base.height(newHeight);
 
 				e.preventDefault();
@@ -1029,7 +1029,13 @@
 		};
 
 		/**
-		 * Gets the value of the editor
+		 * <p>Gets the value of the editor.</p>
+		 *
+		 * <p>If the editor is in WYSIWYG mode it will return the filtered
+		 * HTML from it (converted to BBCode if using the BBCode plugin).
+		 * It it's in Source Mode it will return the unfiltered contents
+		 * of the source editor (if using the BBCode plugin this will be
+		 * BBCode again).</p>
 		 *
 		 * @since 1.3.5
 		 * @return {string}
@@ -1985,13 +1991,14 @@
 					}, true);
 
 				content.find('.button').click(function (e) {
-					var	width, height,
-						val   = content.find("#image").val(),
-						attrs = '';
+					var	val    = content.find("#image").val(),
+						width  = content.find("#width").val(),
+						height = content.find("#height").val(),
+						attrs  = '';
 
-					if((width = content.find("#width").val()))
+					if(width)
 						attrs += ' width="' + width + '"';
-					if((height = content.find("#height").val()))
+					if(height)
 						attrs += ' height="' + height + '"';
 
 					if(val && val !== "http://")
@@ -2054,7 +2061,7 @@
 					var	val         = content.find("#link").val(),
 						description = content.find("#des").val();
 
-					if(val !== "" && val !== "http://") {
+					if(val && val !== "http://") {
 						// needed for IE to reset the last range
 						editor.focus();
 
@@ -2098,9 +2105,8 @@
 				if(html)
 				{
 					author = (author ? '<cite>' + author + '</cite>' : '');
-
 					before = before + author + html + end + '<br />';
-					end = null;
+					end    = null;
 				}
 				// if not add a newline to the end of the inserted quote
 				else if(this.getRangeHelper().selectedHtml() === "")
@@ -2225,7 +2231,9 @@
 
 					if (val !== "") {
 						matches = val.match(/(?:v=|v\/|embed\/|youtu.be\/)(.{11})/);
-						if (matches) val = matches[1];
+
+						if (matches)
+							val = matches[1];
 
 						if (/^[a-zA-Z0-9_\-]{11}$/.test(val))
 							handleIdFunc(val);
@@ -3323,6 +3331,10 @@
 		resizeMaxHeight: null,
 		// Max resize to width, set to null for double textarea width or -1 for unlimited
 		resizeMaxWidth: null,
+		// If resizing by height is enabled
+		resizeHeight: true,
+		// If resizing by width is enabled
+		resizeWidth: true,
 
 		getHtmlHandler: null,
 		getTextHandler: null,

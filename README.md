@@ -46,7 +46,7 @@ The locale to use, e.g. en-GB, en-US, no-NB, ect. The language file for the spec
 The charset to use. Defaults to utf-8.
 
 **style** *string*
-The stylesheet used to style the HTML content of the WYSIWYG document, normally it should be jquery.sceditor.default.css. This dose not style the editor, the editor is styled by a seperate stylesheet which is normally jquery.sceditor.css.
+The stylesheet used to style the HTML content of the WYSIWYG document, normally it should be jquery.sceditor.default.css. This dose not style the editor, the editor is styled by a separate stylesheet which is normally jquery.sceditor.css.
 
 **fonts** *string*
 Comma separated list of fonts. There is no way to check if the fonts are installed on the users PC, so the fonts on the list should be kept to the few fonts that are included on most PC's and Macs. The default list should be adequate for most uses.
@@ -111,8 +111,14 @@ Maximum height in px that the editor can be resized to. Set to null for double t
 **resizeMaxWidth** *int*
 Maximum width in px that the editor can be resized to. Set to null for double textarea width or -1 for no maximum.
 
+**resizeWidth** *bool*
+If to allow resizing by width (resizeEnabled must be set to true). Defaults to true.
+
+**resizeHeight** *bool*
+If to allow resizing by height (resizeEnabled must be set to true). Defaults to true.
+
 **getHtmlHandler** *function*
-This is called to filter the HTML before being shown in View Source or set as the textareas value. The function should take two arguments, the first being a string containnig the HTML the second being the DOM body node.
+This is called to filter the HTML before being shown in View Source or set as the textareas value. The function should take two arguments, the first being a string containing the HTML the second being the DOM body node.
 
 **getTextHandler** *function*
 This function will be called when switching from View Source mode back to WYSIWYG mode, or when loading the value from the textarea. The function should 1 argument, a string containing the content from the textarea.
