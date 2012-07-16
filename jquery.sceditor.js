@@ -112,8 +112,8 @@
 		 * The textarea element being replaced
 		 * @private
 		 */
-		var $textarea = $(el);
-		var textarea  = el;
+		var original  = el.get ? el.get(0) : el;
+		var $original = $(el);
 
 		/**
 		 * The div which contains the editor and toolbar
@@ -171,6 +171,11 @@
 		 */
 		var preLoadCache = [];
 
+		/**
+		 * The editors rangeHelper instance
+		 * @type {$.sceditor.rangeHelper}
+		 * @private
+		 */
 		var rangeHelper;
 
 		var $blurElm;
@@ -209,7 +214,7 @@
 		 * @name sceditor.init
 		 */
 		init = function () {
-			$textarea.data("sceditor", base);
+			$original.data("sceditor", base);
 			base.options = $.extend({}, $.sceditor.defaultOptions, options);
 
 			// Load locale
@@ -222,7 +227,7 @@
 			if((h && (h + "").indexOf("%") > -1) || (w && (w + "").indexOf("%") > -1))
 				$(window).resize(handleWindowResize);
 
-			$editorContainer = $('<div class="sceditor-container" />').insertAfter($textarea);
+			$editorContainer = $('<div class="sceditor-container" />').insertAfter($original);
 
 			// create the editor
 			initToolBar();
@@ -236,13 +241,13 @@
 				$editorContainer.attr('id', base.options.id);
 
 			$(document).click(documentClickHandler);
-			$(textarea.form)
+			$(original.form)
 				.attr('novalidate','novalidate')
 				.bind("reset", handleFormReset)
 				.submit(formSubmitHandler);
 
 			// load any textarea value into the editor
-			base.val($textarea.hide().val());
+			base.val($original.hide().val());
 
 			if(base.options.autofocus)
 				autofocus();
@@ -284,8 +289,8 @@
 			wysiwygEditor = $wysiwygEditor[0];
 			textEditor    = $textEditor[0];
 
-			base.width(base.options.width || $textarea.width());
-			base.height(base.options.height || $textarea.height());
+			base.width(base.options.width || $original.width());
+			base.height(base.options.height || $original.height());
 
 			getWysiwygDoc().open();
 			getWysiwygDoc().write(_tmpl("html", {
@@ -563,7 +568,7 @@
 				currentHeight = $editorContainer.height(),
 				height        = doc.body.scrollHeight || doc.documentElement.scrollHeight,
 				padding       = (currentHeight - $wysiwygEditor.height()),
-				maxHeight     = base.options.resizeMaxHeight || ((base.options.height || $textarea.height()) * 2);
+				maxHeight     = base.options.resizeMaxHeight || ((base.options.height || $original.height()) * 2);
 
 			height += padding;
 
@@ -665,7 +670,7 @@
 			$(document).unbind('click', documentClickHandler);
 			$(window).unbind('resize', handleWindowResize);
 
-			$(textarea.form).removeAttr('novalidate')
+			$(original.form).removeAttr('novalidate')
 				.unbind('submit', formSubmitHandler)
 				.unbind("reset", handleFormReset);
 
@@ -675,7 +680,7 @@
 			$editorContainer.find('*').remove();
 			$editorContainer.remove();
 
-			$textarea.removeData("sceditor").removeData("sceditorbbcode").show();
+			$original.removeData("sceditor").removeData("sceditorbbcode").show();
 		};
 
 		/**
@@ -1202,9 +1207,9 @@
 		 */
 		base.updateTextareaValue = function () {
 			if(base.inSourceMode())
-				$textarea.val(base.getTextareaValue(false));
+				$original.val(base.getTextareaValue(false));
 			else
-				$textarea.val(base.getWysiwygEditorValue());
+				$original.val(base.getWysiwygEditorValue());
 		};
 
 		/**
@@ -1496,7 +1501,7 @@
 		 * @private
 		 */
 		handleFormReset = function() {
-			base.val($textarea.val());
+			base.val($original.val());
 		};
 
 		/**
