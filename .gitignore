@@ -7,3 +7,5 @@ jquery.sceditor.xhtml.js
 _site/*
 .c9revisions/*
 .settings*
+sceditor.sublime-project
+sceditor.sublime-workspace
