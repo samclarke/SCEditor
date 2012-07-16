@@ -732,7 +732,8 @@
 
 			var css = {
 				top: menuItem.offset().top,
-				left: menuItem.offset().left
+				left: menuItem.offset().left,
+				marginTop: menuItem.outerHeight()
 			};
 
 			$.extend(css, base.opts.dropDownCss);
@@ -742,7 +743,6 @@
 				.append(content)
 				.appendTo($('body'))
 				.click(function (e) {
-					console.log(e);
 					// stop clicks within the dropdown from being handled
 					e.stopPropagation();
 				});
