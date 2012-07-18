@@ -278,7 +278,7 @@
 		initEditor = function () {
 			var $doc, $body;
 
-			$sourceEditor    = $('<textarea></textarea>').hide();
+			$sourceEditor  = $('<textarea></textarea>').hide();
 			$wysiwygEditor = $('<iframe frameborder="0"></iframe>');
 
 			if(window.location.protocol === "https:")
