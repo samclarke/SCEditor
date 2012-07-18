@@ -501,14 +501,17 @@
 			if(!width)
 				return $editorContainer.width();
 
-			$editorContainer.width(width);
+			if(base.width() !== width)
+			{
+				$editorContainer.width(width);
 
-			// fix the height and width of the textarea/iframe
-			$wysiwygEditor.width(width);
-			$wysiwygEditor.width(width + (width - $wysiwygEditor.outerWidth(true)));
+				// fix the height and width of the textarea/iframe
+				$wysiwygEditor.width(width);
+				$wysiwygEditor.width(width + (width - $wysiwygEditor.outerWidth(true)));
 
-			$sourceEditor.width(width);
-			$sourceEditor.width(width + (width - $sourceEditor.outerWidth(true)));
+				$sourceEditor.width(width);
+				$sourceEditor.width(width + (width - $sourceEditor.outerWidth(true)));
+			}
 
 			return this;
 		};
@@ -536,16 +539,19 @@
 			if(!height)
 				return $editorContainer.height();
 
-			$editorContainer.height(height);
+			if(base.height() !== height)
+			{
+				$editorContainer.height(height);
 
-			height -= !base.opts.toolbarContainer ? $toolbar.outerHeight(true) : 0;
+				height -= !base.opts.toolbarContainer ? $toolbar.outerHeight(true) : 0;
 
-			// fix the height and width of the textarea/iframe
-			$wysiwygEditor.height(height);
-			$wysiwygEditor.height(height + (height - $wysiwygEditor.outerHeight(true)));
+				// fix the height and width of the textarea/iframe
+				$wysiwygEditor.height(height);
+				$wysiwygEditor.height(height + (height - $wysiwygEditor.outerHeight(true)));
 
-			$sourceEditor.height(height);
-			$sourceEditor.height(height + (height - $sourceEditor.outerHeight(true)));
+				$sourceEditor.height(height);
+				$sourceEditor.height(height + (height - $sourceEditor.outerHeight(true)));
+			}
 
 			return this;
 		};
@@ -601,6 +607,12 @@
 			mouseMoveFunc = function (e) {
 				var	newHeight = startHeight + (e.pageY - startY),
 					newWidth  = startWidth  + (e.pageX - startX);
+
+				if(maxWidth > 0 && newWidth > maxWidth)
+					newWidth = maxWidth;
+
+				if(maxHeight > 0 && newHeight > maxHeight)
+					newHeight = maxHeight;
 
 				if (base.opts.resizeWidth && newWidth >= minWidth && (maxWidth < 0 || newWidth <= maxWidth))
 					base.width(newWidth);
@@ -759,7 +771,8 @@
 		};
 
 		handlePasteEvt = function(e) {
-			var	elm             = getWysiwygDoc().body,
+			var	html,
+				elm             = getWysiwygDoc().body,
 				checkCount      = 0,
 				pastearea       = elm.ownerDocument.createElement('div'),
 				prePasteContent = elm.ownerDocument.createDocumentFragment();
@@ -769,23 +782,14 @@
 
 			if (e && e.clipboardData && e.clipboardData.getData)
 			{
-				var html, handled=true;
-
 				if ((html = e.clipboardData.getData('text/html')) || (html = e.clipboardData.getData('text/plain')))
-					pastearea.innerHTML = html;
-				else
-					handled = false;
-
-				if(handled)
 				{
+					pastearea.innerHTML = html;
+
 					handlePasteData(elm, pastearea);
 
-					if (e.preventDefault)
-					{
-						e.stopPropagation();
-						e.preventDefault();
-					}
-
+					e.stopPropagation();
+					e.preventDefault();
 					return false;
 				}
 			}
@@ -807,13 +811,14 @@
 				else
 				{
 					// Allow max 25 checks before giving up.
-					// Needed inscase empty input is posted or
-					// something gose wrong.
+					// Needed inscase empty input is pasted or
+					// something goes wrong.
 					if(checkCount > 25)
 					{
 						while(prePasteContent.firstChild)
 							elm.appendChild(prePasteContent.firstChild);
 
+						rangeHelper.restoreRange();
 						return;
 					}
 

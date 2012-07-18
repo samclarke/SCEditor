@@ -1,5 +1,12 @@
 Version 1.4.0:
-
+	New theme "square" added
+	Some none-backwards compatible tidying:
+		All occurrences of textEditor have been changed to sourceEditor
+		updateTextareaValue has been changed to updateOriginal
+		destory has finally been renamed to destroy
+	Added resizeWidth and resizeHeight options to allow disabling of either
+		width or height resizing while keeping the other
+	Improve resize handling
 
 Version 1.3.6:
 	Added Spanish translation
