@@ -26,8 +26,10 @@
 	overflow: hidden;
 }
 
-.sceditor-container, .sceditor-container div,
-div.sceditor-dropdown, div.sceditor-dropdown div {
+.sceditor-container,
+.sceditor-container div,
+div.sceditor-dropdown,
+div.sceditor-dropdown div {
 	padding: 0;
 	margin: 0;
 	z-index: 3;
@@ -77,6 +79,8 @@ div.sceditor-dropdown, div.sceditor-dropdown div {
 		.rounded(2px);
 		.box-shadow(1px 2px 4px rgba(0,0,0,0.2));
 	}
+		div.sceditor-dropdown a,
+		div.sceditor-dropdown a:link { color:#222; }
 		div.sceditor-dropdown form { margin: 0; }
 		div.sceditor-dropdown label {
 			display:block;
@@ -84,7 +88,8 @@ div.sceditor-dropdown, div.sceditor-dropdown div {
 			color: #3c3c3c;
 			padding: 4px 0;
 		}
-		div.sceditor-dropdown input, div.sceditor-dropdown textarea {
+		div.sceditor-dropdown input,
+		div.sceditor-dropdown textarea {
 			font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 			color: #222;
 			outline: 0;
@@ -95,7 +100,8 @@ div.sceditor-dropdown, div.sceditor-dropdown div {
 			margin: 0 0 .75em;
 		}
 		div.sceditor-dropdown textarea { padding: 6px; }
-		div.sceditor-dropdown input:focus, div.sceditor-dropdown textarea:focus {
+		div.sceditor-dropdown input:focus,
+		div.sceditor-dropdown textarea:focus {
 			border-color: #aaa;
 			border-top-color: #666;
 			.box-shadow(inset 0 1px 5px rgba(0,0,0,0.1));
@@ -114,8 +120,10 @@ div.sceditor-dropdown, div.sceditor-dropdown div {
 			background: #f3f3f3;
 			.box-shadow(0 1px 1px rgba(0,0,0,0.15));
 		}
-		div.sceditor-font-picker, div.sceditor-fontsize-picker,
-		div.sceditor-insertemoticon, div.sceditor-color-picker { padding: 0; }
+		div.sceditor-font-picker,
+		div.sceditor-fontsize-picker,
+		div.sceditor-insertemoticon,
+		div.sceditor-color-picker { padding: 0; }
 		.sceditor-pastetext textarea { border: 1px solid #bbb; width: 20em; }
 		.sceditor-insertemoticon img {
 			cursor: pointer;
@@ -140,7 +148,8 @@ div.sceditor-dropdown, div.sceditor-dropdown div {
 		}
 		.sceditor-fontsize-option { padding: 4px 13px; }
 		div.sceditor-font-picker div { padding: 6px 0; }
-		.sceditor-fontsize-option:hover, .sceditor-font-option:hover { background: #eee; }
+		.sceditor-fontsize-option:hover,
+		.sceditor-font-option:hover { background: #eee; }
 		.sceditor-color-column { float: left; }
 			.sceditor-color-option {
 				display: block;
