@@ -10,7 +10,7 @@
  *
  * @fileoverview SCEditor - A lightweight WYSIWYG BBCode and HTML editor
  * @author Sam Clarke
- * @version 1.3.6
+ * @version 1.3.7
  * @requires jQuery
  */
 
