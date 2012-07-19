@@ -740,7 +740,6 @@
 				.append(content)
 				.appendTo($('body'))
 				.click(function (e) {
-					console.log(e);
 					// stop clicks within the dropdown from being handled
 					e.stopPropagation();
 				});
