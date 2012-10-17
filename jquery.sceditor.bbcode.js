@@ -226,6 +226,9 @@
 			{
 				$elm = $(element);
 
+				if(!element.style)
+					return null;
+
 				if($elm.parent().css(property) !== $elm.css(property) &&
 					$elm.css('display') === "block" && !$elm.is('hr') && !$elm.is('th'))
 					ret = $elm.css(property);
