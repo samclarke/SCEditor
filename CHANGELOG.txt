@@ -8,6 +8,8 @@ Version 1.4.0:
 		width or height resizing while keeping the other
 	Improve resize handling
 	Updated build.php
+	Fix bug with emoticons containing backslashes.
+		- Thanks to emanuele45 for the fix.
 
 Version 1.3.6:
 	Added Spanish translation
