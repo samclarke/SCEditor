@@ -7,7 +7,7 @@
 
 		<link rel="stylesheet" href="../minified/themes/default.min.css" type="text/css" media="all" />
 
-		<script src="jquery-1.7.2.min.js"></script>
+		<script src="jquery-1.8.2.min.js"></script>
 		<script src="../minified/jquery.sceditor.min.js"></script>
 
 		<style>

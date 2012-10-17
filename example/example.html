@@ -7,7 +7,7 @@
 
 		<link rel="stylesheet" href="../minified/themes/default.min.css" type="text/css" media="all" />
 
-		<script src="jquery-1.7.2.min.js"></script>
+		<script src="jquery-1.8.2.min.js"></script>
 		<script src="../minified/jquery.sceditor.min.js"></script>
 
 		<style>
@@ -47,16 +47,16 @@
 				link.rel = 'stylesheet';
 				link.href = url;
 				link.id = 'theme-style';
-			
+
 				document.getElementsByTagName('head')[0].appendChild(link);
-			
+
 				var img = document.createElement('img');
 				img.onerror = function(){
 					if(callback) callback(link);
 				}
 				img.src = url;
 			}
-			
+
 			$(document).ready(function() {
 				var initEditor = function() {
 					$("textarea").sceditorBBCodePlugin({
@@ -70,7 +70,7 @@
 					$("textarea").data("sceditor").destory();
 					$("link:first").remove();
 					$("#theme-style").remove();
-					
+
 					loadCSS(theme, initEditor);
 				});
 

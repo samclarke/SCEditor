@@ -113,7 +113,7 @@
 		 * @private
 		 */
 		var original  = el.get ? el.get(0) : el;
-		var $original = $(el);
+		var $original = $(original);
 
 		/**
 		 * The div which contains the editor and toolbar
@@ -1370,7 +1370,8 @@
 				wysiwygEditor.contentWindow.focus();
 
 				// Needed for IE < 9
-				if(lastRange) {
+				if(lastRange)
+				{
 					rangeHelper.selectRange(lastRange);
 
 					// remove the stored range after being set.

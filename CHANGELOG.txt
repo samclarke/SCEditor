@@ -11,7 +11,7 @@ Version 1.4.0:
 	Fix bug with emoticons containing backslashes.
 		- Thanks to emanuele45 for the fix.
 	Fix bug when pasting from Word.
-		- Thanks to Spud for reporting.
+		- Thanks to Spuds for reporting.
 
 Version 1.3.6:
 	Added Spanish translation

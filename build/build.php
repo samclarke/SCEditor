@@ -279,7 +279,7 @@ if(isset($_GET['build']))
 
 		<title>SCEditor Build</title>
 
-		<script src="../example/jquery-1.7.2.min.js"></script>
+		<script src="../example/jquery-1.8.2.min.js"></script>
 		<script>
 		$(function() {
 			var updateBookmark = function() {
