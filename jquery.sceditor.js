@@ -310,7 +310,7 @@
 				$doc.find("html").addClass('ie' + $.sceditor.ie);
 
 			// iframe overflow fix
-			if(/iPhone|iPod|iPad| wosbrowser\//i.test(navigator.userAgent))
+			if(/iPhone|iPod|iPad| wosbrowser\//i.test(navigator.userAgent) || $.sceditor.ie)
 				$body.height('100%');
 
 			// set the key press event
@@ -981,8 +981,9 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.sourceEditorInsertText = function (text, endText) {
-			var range, start, end, txtLen;
+			var range, start, end, txtLen, scrollTop;
 
+			scrollTop = sourceEditor.scrollTop;
 			sourceEditor.focus();
 
 			if(typeof sourceEditor.selectionStart !== "undefined")
@@ -1021,6 +1022,7 @@
 			else
 				sourceEditor.value += text + endText;
 
+			sourceEditor.scrollTop = scrollTop;
 			sourceEditor.focus();
 		};
 
@@ -1144,12 +1146,20 @@
 			var	$body = $wysiwygEditor.contents().find("body"),
 				html;
 
+			// save the range before the DOM gets messed with
+			rangeHelper.saveRange();
+
 			// fix any invalid nesting
 			$.sceditor.dom.fixNesting($body.get(0));
 			html = $body.html();
 
 			if(filter !== false && base.opts.getHtmlHandler)
 				html = base.opts.getHtmlHandler(html, $body);
+
+			// restore the range.
+			rangeHelper.restoreRange();
+			// remove the last stored range for IE as it no longer applies
+			lastRange = null;
 
 			return html;
 		};
@@ -2419,10 +2429,11 @@
 	 */
 	$.sceditor.rangeHelper = function(w, d) {
 		var	win, doc, init, _createMarker, _getOuterText, _selectOuterText,
-			isW3C       = true,
-			startMarker = "sceditor-start-marker",
-			endMarker   = "sceditor-end-marker",
-			base        = this;
+			isW3C        = true,
+			startMarker  = "sceditor-start-marker",
+			endMarker    = "sceditor-end-marker",
+			characterStr = 'character', // Used to improve minification
+			base         = this;
 
 		/**
 		 * @constructor
@@ -2764,22 +2775,23 @@
 
 			if(!isW3C)
 			{
-				range = doc.body.createTextRange();
+				range  = doc.body.createTextRange();
 				marker = doc.body.createTextRange();
 
 				marker.moveToElementText(start);
 				range.setEndPoint('StartToStart', marker);
-				range.moveStart('character', 0);
+				range.moveStart(characterStr, 0);
 
 				marker.moveToElementText(end);
 				range.setEndPoint('EndToStart', marker);
-				range.moveEnd('character', 0);
+				range.moveEnd(characterStr, 0);
 
 				base.selectRange(range);
 			}
 			else
 			{
 				range = doc.createRange();
+
 				range.setStartBefore(start);
 				range.setEndAfter(end);
 
@@ -2802,8 +2814,8 @@
 
 			if(!isW3C)
 			{
-				range.moveStart('character', 0-left);
-				range.moveEnd('character', right);
+				range.moveStart(characterStr, 0-left);
+				range.moveEnd(characterStr, right);
 			}
 			else
 			{
@@ -2830,7 +2842,7 @@
 			{
 				if(!isW3C)
 				{
-					range.moveStart('character', 0-length);
+					range.moveStart(characterStr, 0-length);
 					ret = range.text;
 				}
 				else
@@ -2843,7 +2855,7 @@
 			{
 				if(!isW3C)
 				{
-					range.moveEnd('character', length);
+					range.moveEnd(characterStr, length);
 					ret = range.text;
 				}
 				else
