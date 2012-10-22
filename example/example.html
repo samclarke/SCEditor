@@ -67,7 +67,7 @@
 				$("#theme").change(function() {
 					var theme = "../minified/themes/" + $(this).val() + ".min.css";
 
-					$("textarea").data("sceditor").destory();
+					$("textarea").data("sceditor").destroy();
 					$("link:first").remove();
 					$("#theme-style").remove();
 
@@ -101,6 +101,7 @@ If you are using IE9+ or any non-IE browser just type [b]:[/b]) and it should be
 					<option value="modern">Modern</option>
 					<option value="office-toolbar">Office Toolbar</option>
 					<option value="office">Office</option>
+					<option value="square">Square</option>
 				</select>
 			</div>
 		</form>
