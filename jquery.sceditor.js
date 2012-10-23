@@ -2553,7 +2553,7 @@
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.selectedRange = function() {
-			var sel;
+			var sel, r;
 
 			if(win.getSelection)
 				sel = win.getSelection();
@@ -2562,8 +2562,8 @@
 
 			if(sel.getRangeAt && sel.rangeCount <= 0)
 			{
-				var r = doc.createRange();
-				r.setStart(doc.body, 0)
+				r = doc.createRange();
+				r.setStart(doc.body, 0);
 				sel.addRange(r);
 			}
 
