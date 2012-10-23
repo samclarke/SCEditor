@@ -287,7 +287,7 @@
 			// add the editor to the HTML and store the editors element
 			$editorContainer.append($wysiwygEditor).append($sourceEditor);
 			wysiwygEditor = $wysiwygEditor[0];
-			sourceEditor    = $sourceEditor[0];
+			sourceEditor  = $sourceEditor[0];
 
 			base.width(base.opts.width || $original.width());
 			base.height(base.opts.height || $original.height());
@@ -2561,7 +2561,11 @@
 				sel = doc.selection;
 
 			if(sel.getRangeAt && sel.rangeCount <= 0)
-				sel.addRange(doc.createRange());
+			{
+				var r = doc.createRange();
+				r.setStart(doc.body, 0)
+				sel.addRange(r);
+			}
 
 			if(!isW3C)
 				return sel.createRange();
