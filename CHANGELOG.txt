@@ -17,6 +17,8 @@ Version 1.4.0:
 	Fixed bug causing cursor position to be lost in FF when getting the editors value.
 		- Thanks to Spuds for reporting
 	Improve IE support
+	Moved roadmap from GitHub wiki to source directory
+		for easier editing.
 
 Version 1.3.6:
 	Added Spanish translation
