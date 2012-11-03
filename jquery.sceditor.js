@@ -1666,7 +1666,7 @@
 
 		// iOS 5+ supports content editable
 		if(/iPhone|iPod|iPad/i.test(userAgent))
-			isUnsupported = !/OS 5(_\d)+ like Mac OS X/i.test(userAgent);
+			isUnsupported = !/OS [5-9](_\d)+ like Mac OS X/i.test(userAgent);
 
 		// FireFox dose support WYSIWYG on mobiles so override
 		// any previous value if using FF
@@ -2560,6 +2560,8 @@
 			else
 				sel = doc.selection;
 
+			// When creating a new range, set the start to the body
+			// element to avoid errors in FF.
 			if(sel.getRangeAt && sel.rangeCount <= 0)
 			{
 				r = doc.createRange();
