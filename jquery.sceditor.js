@@ -3275,23 +3275,45 @@
 	};
 
 	$.sceditor.defaultOptions = {
-		// Toolbar buttons order and groups. Should be comma seperated and have a bar | to seperate groups
+		/**
+		 * Toolbar buttons order and groups. Should be comma seperated and have a bar | to seperate groups
+		 * @type {String}
+		 */
 		toolbar:	"bold,italic,underline,strike,subscript,superscript|left,center,right,justify|" +
 				"font,size,color,removeformat|cut,copy,paste,pastetext|bulletlist,orderedlist|" +
 				"table|code,quote|horizontalrule,image,email,link,unlink|emoticon,youtube,date,time|" +
 				"ltr,rtl|print,source",
 
-		// Stylesheet to include in the WYSIWYG editor. Will style the WYSIWYG elements
+		/**
+		 * Stylesheet to include in the WYSIWYG editor. Will style the WYSIWYG elements
+		 * @type {String}
+		 */
 		style: "jquery.sceditor.default.css",
 
-		// Comma seperated list of fonts for the font selector
+		/**
+		 * Comma seperated list of fonts for the font selector
+		 * @type {String}
+		 */
 		fonts: "Arial,Arial Black,Comic Sans MS,Courier New,Georgia,Impact,Sans-serif,Serif,Times New Roman,Trebuchet MS,Verdana",
 
-		// Colors should be comma seperated and have a bar | to signal a new column. If null the colors will be auto generated.
+		/**
+		 * Colors should be comma seperated and have a bar | to signal a new column.
+		 *
+		 * If null the colors will be auto generated.
+		 * @type {string}
+		 */
 		colors: null,
 
+		/**
+		 * The locale to use.
+		 * @type {String}
+		 */
 		locale: "en",
 
+		/**
+		 * The Charset to use
+		 * @type {String}
+		 */
 		charset: "utf-8",
 
 		// compatibility mode for if you have emoticons such as :/ This mode requires
@@ -3300,88 +3322,150 @@
 		// are not accepted as whitespace so only emoticons surrounded by whitespace
 		// will work
 		emoticonsCompat: false,
-		emoticonsRoot: '',
-		emoticons:	{
-					dropdown: {
-						":)": "emoticons/smile.png",
-						":angel:": "emoticons/angel.png",
-						":angry:": "emoticons/angry.png",
-						"8-)": "emoticons/cool.png",
-						":'(": "emoticons/cwy.png",
-						":ermm:": "emoticons/ermm.png",
-						":D": "emoticons/grin.png",
-						"<3": "emoticons/heart.png",
-						":(": "emoticons/sad.png",
-						":O": "emoticons/shocked.png",
-						":P": "emoticons/tongue.png",
-						";)": "emoticons/wink.png"
-					},
-					more: {
-						":alien:": "emoticons/alien.png",
-						":blink:": "emoticons/blink.png",
-						":blush:": "emoticons/blush.png",
-						":cheerful:": "emoticons/cheerful.png",
-						":devil:": "emoticons/devil.png",
-						":dizzy:": "emoticons/dizzy.png",
-						":getlost:": "emoticons/getlost.png",
-						":happy:": "emoticons/happy.png",
-						":kissing:": "emoticons/kissing.png",
-						":ninja:": "emoticons/ninja.png",
-						":pinch:": "emoticons/pinch.png",
-						":pouty:": "emoticons/pouty.png",
-						":sick:": "emoticons/sick.png",
-						":sideways:": "emoticons/sideways.png",
-						":silly:": "emoticons/silly.png",
-						":sleeping:": "emoticons/sleeping.png",
-						":unsure:": "emoticons/unsure.png",
-						":woot:": "emoticons/w00t.png",
-						":wassat:": "emoticons/wassat.png"
-					},
-					hidden: {
-						":whistling:": "emoticons/whistling.png",
-						":love:": "emoticons/wub.png"
-					}
-				},
 
-		// Width of the editor. Set to null for automatic with
+		/**
+		 * Emoticon root URL
+		 * @type {String}
+		 */
+		emoticonsRoot: '',
+		emoticons: {
+			dropdown: {
+				":)": "emoticons/smile.png",
+				":angel:": "emoticons/angel.png",
+				":angry:": "emoticons/angry.png",
+				"8-)": "emoticons/cool.png",
+				":'(": "emoticons/cwy.png",
+				":ermm:": "emoticons/ermm.png",
+				":D": "emoticons/grin.png",
+				"<3": "emoticons/heart.png",
+				":(": "emoticons/sad.png",
+				":O": "emoticons/shocked.png",
+				":P": "emoticons/tongue.png",
+				";)": "emoticons/wink.png"
+			},
+			more: {
+				":alien:": "emoticons/alien.png",
+				":blink:": "emoticons/blink.png",
+				":blush:": "emoticons/blush.png",
+				":cheerful:": "emoticons/cheerful.png",
+				":devil:": "emoticons/devil.png",
+				":dizzy:": "emoticons/dizzy.png",
+				":getlost:": "emoticons/getlost.png",
+				":happy:": "emoticons/happy.png",
+				":kissing:": "emoticons/kissing.png",
+				":ninja:": "emoticons/ninja.png",
+				":pinch:": "emoticons/pinch.png",
+				":pouty:": "emoticons/pouty.png",
+				":sick:": "emoticons/sick.png",
+				":sideways:": "emoticons/sideways.png",
+				":silly:": "emoticons/silly.png",
+				":sleeping:": "emoticons/sleeping.png",
+				":unsure:": "emoticons/unsure.png",
+				":woot:": "emoticons/w00t.png",
+				":wassat:": "emoticons/wassat.png"
+			},
+			hidden: {
+				":whistling:": "emoticons/whistling.png",
+				":love:": "emoticons/wub.png"
+			}
+		},
+
+		/**
+		 * Width of the editor. Set to null for automatic with
+		 * @type {int}
+		 */
 		width: null,
 
-		// Height of the editor including toolbat. Set to null for automatic height
+		/**
+		 * Height of the editor including toolbar. Set to null for automatic height
+		 * @type {int}
+		 */
 		height: null,
 
-		// If to allow the editor to be resized
+		/**
+		 * If to allow the editor to be resized
+		 * @type {Boolean}
+		 */
 		resizeEnabled: true,
 
-		// Min resize to width, set to null for half textarea width or -1 for unlimited
+		/**
+		 * Min resize to width, set to null for half textarea width or -1 for unlimited
+		 * @type {int}
+		 */
 		resizeMinWidth: null,
-		// Min resize to height, set to null for half textarea height or -1 for unlimited
+		/**
+		 * Min resize to height, set to null for half textarea height or -1 for unlimited
+		 * @type {int}
+		 */
 		resizeMinHeight: null,
-		// Max resize to height, set to null for double textarea height or -1 for unlimited
+		/**
+		 * Max resize to height, set to null for double textarea height or -1 for unlimited
+		 * @type {int}
+		 */
 		resizeMaxHeight: null,
-		// Max resize to width, set to null for double textarea width or -1 for unlimited
+		/**
+		 * Max resize to width, set to null for double textarea width or -1 for unlimited
+		 * @type {int}
+		 */
 		resizeMaxWidth: null,
-		// If resizing by height is enabled
+		/**
+		 * If resizing by height is enabled
+		 * @type {Boolean}
+		 */
 		resizeHeight: true,
-		// If resizing by width is enabled
+		/**
+		 * If resizing by width is enabled
+		 * @type {Boolean}
+		 */
 		resizeWidth: true,
 
 		getHtmlHandler: null,
 		getTextHandler: null,
 
-		// date format. year, month and day will be replaced with the users current year, month and day.
+		/**
+		 * Date format, will be overriden if locale specifies one.
+		 *
+		 * The words year, month and day will be replaced with the users current year, month and day.
+		 * @type {String}
+		 */
 		dateFormat: "year-month-day",
 
 		toolbarContainer: null,
 
-		// Curently experimental
+		/**
+		 * If to enable paste filtering. This is curently experimental, please report any issues.
+		 * @type {Boolean}
+		 */
 		enablePasteFiltering: false,
 
+		/**
+		 * If the editor is read only.
+		 * @type {Boolean}
+		 */
 		readOnly: false,
+
+		/**
+		 * If to set the editor to right-to-left mode.
+		 * @type {Boolean}
+		 */
 		rtl: false,
+
+		/**
+		 * If to auto focus the editor on page laod
+		 * @type {Boolean}
+		 */
 		autofocus: false,
+
+		/**
+		 * If to auto expand the editor to fix the content
+		 * @type {Boolean}
+		 */
 		autoExpand: false,
 
-		// If to run the editor without WYSIWYG support
+		/**
+		 * If to run the source editor when there is no WYSIWYG support. Only really applies to mobile OS's.
+		 * @type {Boolean}
+		 */
 		runWithoutWysiwygSupport: false,
 
 		id: null,
