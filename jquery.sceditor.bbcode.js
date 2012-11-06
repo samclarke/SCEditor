@@ -1232,11 +1232,11 @@
 				return false;
 
 			// merge any existing command properties
-			bbcode = $.extend($.sceditorBBCodePlugin.bbcodes[name] || {}, bbcode);
-
+			bbcode        = $.extend($.sceditorBBCodePlugin.bbcodes[name] || {}, bbcode);
 			bbcode.remove = function() { $.sceditorBBCodePlugin.bbcode.remove(name); };
 
 			$.sceditorBBCodePlugin.bbcodes[name] = bbcode;
+
 			return this;
 		},
 
