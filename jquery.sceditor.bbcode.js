@@ -1827,7 +1827,7 @@
 						' height="' + (parts.length === 2 ? parts[1] : parts[0]) + '"';
 				}
 
-				return '<img ' + attribs + ' src="' + content + '" />';
+				return '<img' + attribs + ' src="' + content + '" />';
 			}
 		},
 		// END_COMMAND
@@ -1995,6 +1995,18 @@
 			},
 			format: "[ltr]{0}[/ltr]",
 			html: '<div style="direction: ltr">{0}</div>'
+		},
+		// END_COMMAND
+
+		// START_COMMAND: Hr
+		hr: {
+			tags: {
+				hr: null
+			},
+			isSelfClosing: true,
+			isInline: false,
+			format: "[hr]",
+			html: '<hr />'
 		},
 		// END_COMMAND
 
