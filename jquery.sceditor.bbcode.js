@@ -1730,6 +1730,8 @@
 			tags: {
 				table: null
 			},
+			isInline: false,
+			isHtmlInline: true,
 			format: "[table]{0}[/table]",
 			html: '<table>{0}</table>'
 		},
@@ -1737,6 +1739,7 @@
 			tags: {
 				tr: null
 			},
+			isInline: false,
 			format: "[tr]{0}[/tr]",
 			html: '<tr>{0}</tr>'
 		},

@@ -341,7 +341,7 @@ test("Table", function() {
 
 	equal(
 		this.sb.getHtmlHandler("", html2dom("<table><tr><th>test</th></tr><tr><td>data1</td></tr></table>", true)),
-		"[table][tr][th]test[/th][/tr][tr][td]data1[/td][/tr][/table]",
+		"[table][tr][th]test[/th]\n[/tr]\n[tr][td]data1[/td]\n[/tr]\n[/table]",
 		"Table tag"
 	);
 });
@@ -437,7 +437,7 @@ test("Quote", function() {
 
 	equal(
 		this.sb.getHtmlHandler("", html2dom("<blockquote><cite>admin</cite>Testing 1.2.3....<blockquote><cite>admin</cite>Testing 1.2.3....</blockquote></blockquote>", true)),
-		"[quote=admin]Testing 1.2.3....[quote=admin]Testing 1.2.3....[/quote][/quote]",
+		"[quote=admin]Testing 1.2.3....\n[quote=admin]Testing 1.2.3....[/quote]\n[/quote]",
 		"Nested quote with cite (author)"
 	);
 
@@ -706,7 +706,7 @@ test("Table", function() {
 
 	equal(
 		this.sb.getTextHandler("[table][tr][th]test[/th][/tr][tr][td]data1[/td][/tr][/table]"),
-		html2dom("<table><tr><th>test</th></tr><tr><td>data1<br class=\"sceditor-ignore\"></td></tr></table>").innerHTML,
+		"<div><table><tr><th>test</th></tr><tr><td>data1<br class=\"sceditor-ignore\" /></td></tr></table></div>\n",
 		"Normal"
 	);
 });
