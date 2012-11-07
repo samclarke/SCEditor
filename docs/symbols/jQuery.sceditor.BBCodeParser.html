@@ -4,7 +4,7 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
-		<title>jQuery.sceditorBBCodePlugin.bbcode | SCEditor</title>
+		<title>jQuery.sceditor.BBCodeParser | SCEditor</title>
 
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 		<meta name="mobileoptimized" content="0" />
@@ -74,12 +74,12 @@
 			<header>
 				<h1 class="classTitle">
 					
-					Class <span>jQuery.sceditorBBCodePlugin.bbcode</span>
+					Class <span>jQuery.sceditor.BBCodeParser</span>
 				</h1>
 				
 				<div class="intro">
 					<p class="description summary">
-						command
+						BBCodeParser
 					</p>
 						
 					
@@ -98,7 +98,7 @@
 			
 				<section>
 					<div class="props">
-						<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class jQuery.sceditorBBCodePlugin.bbcode.">
+						<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class jQuery.sceditor.BBCodeParser.">
 							<caption class="sectionTitle">Class Summary</caption>
 							<thead>
 								<tr>
@@ -111,9 +111,9 @@
 									<td class="attributes">&nbsp;</td>
 									<td class="nameDescription" >
 										<div class="fixedFont">
-											<b><a href="../symbols/jQuery.sceditorBBCodePlugin.bbcode.html#constructor">jQuery.sceditorBBCodePlugin.bbcode</a></b>()
+											<b><a href="../symbols/jQuery.sceditor.BBCodeParser.html#constructor">jQuery.sceditor.BBCodeParser</a></b>(options)
 										</div>
-										<div class="description">Static BBCode helper class</div>
+										<div class="description">SCEditor BBCode parser class</div>
 									</td>
 								</tr>
 							</tbody>
@@ -135,7 +135,7 @@
 						
 						
 							<nav>
-								<table class="summaryTable" id="MethodsList" cellspacing="0" summary="A summary of the methods documented in the class jQuery.sceditorBBCodePlugin.bbcode.">
+								<table class="summaryTable" id="MethodsList" cellspacing="0" summary="A summary of the methods documented in the class jQuery.sceditor.BBCodeParser.">
 									<thead>
 										<tr>
 											<th scope="col">Method Attributes</th>
@@ -149,48 +149,44 @@
 											<tr
 												 class='item0'
 											>
-												<td class="attributes">&lt;static&gt; &nbsp;</td>
+												<td class="attributes">&nbsp;</td>
 												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditorBBCodePlugin.bbcode.<b><a href="../symbols/jQuery.sceditorBBCodePlugin.bbcode.html#.get">get</a></b>(name)
+													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.BBCodeParser.html#base.parse">base.parse</a></b>(str, preserveNewLines)
 													</div>
-													<div class="description">Gets a BBCode</div>
+													<div class="description">Parses a string into an array of BBCodes</div>
 												</td>
 											</tr>
 										
 											<tr
 												 class='item1'
 											>
-												<td class="attributes">&lt;static&gt; &nbsp;</td>
+												<td class="attributes">&nbsp;</td>
 												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditorBBCodePlugin.bbcode.<b><a href="../symbols/jQuery.sceditorBBCodePlugin.bbcode.html#.remove">remove</a></b>(name)
+													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.BBCodeParser.html#base.toBBCode">base.toBBCode</a></b>(str, preserveNewLines)
 													</div>
-													<div class="description">Removes a BBCode</div>
+													<div class="description">Takes a BBCode string, parses it then converts it back to BBCode.</div>
 												</td>
 											</tr>
 										
 											<tr
 												 class='item2'
 											>
-												<td class="attributes">&lt;static&gt; &nbsp;</td>
+												<td class="attributes">&nbsp;</td>
 												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditorBBCodePlugin.bbcode.<b><a href="../symbols/jQuery.sceditorBBCodePlugin.bbcode.html#.rename">rename</a></b>(name, newName)
+													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.BBCodeParser.html#base.toHTML">base.toHTML</a></b>(str, preserveNewLines)
 													</div>
-													<div class="description">Renames a BBCode
-
-This does not change the format or HTML handling, those must be
-changed manually.</div>
+													<div class="description">Converts a BBCode string to HTML</div>
 												</td>
 											</tr>
 										
 											<tr
 												 class='item3'
 											>
-												<td class="attributes">&lt;static&gt; &nbsp;</td>
+												<td class="attributes">&nbsp;</td>
 												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditorBBCodePlugin.bbcode.<b><a href="../symbols/jQuery.sceditorBBCodePlugin.bbcode.html#.set">set</a></b>(name, bbcode)
+													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.BBCodeParser.html#base.tokenize">base.tokenize</a></b>(str)
 													</div>
-													<div class="description"><p>Adds a BBCode to the parser or updates an existing
-BBCode if a BBCode with the specified name already exists.</div>
+													<div class="description">Takes a BBCode string and splits it into open, content and close tags.</div>
 												</td>
 											</tr>
 										
@@ -220,18 +216,46 @@ BBCode if a BBCode with the specified name already exists.</div>
 							</h2>
 							
 							<div class="fixedFont">
-								<b>jQuery.sceditorBBCodePlugin.bbcode</b>()
+								<b>jQuery.sceditor.BBCodeParser</b>(options)
 							</div>
 							
 							<div class="description">
-								Static BBCode helper class
+								SCEditor BBCode parser class
 								
 							</div>
 							
 							
 						
 							
+								<dl class="detailList params">
+									<dt class="heading">Parameters:</dt>
+									
+										<dt>
+											<span class="light fixedFont">{Object}</span>  <b>options</b>
+											
+										</dt>
+										<dd></dd>
+									
+								</dl>
 							
+							
+							
+								<dl class="detailList nomargin">
+									
+									
+									
+										<dt class="heading">Since:</dt>
+										<dd>v1.4.0</dd>
+									
+									
+									
+									
+									
+									
+									
+									
+									
+								</dl>
 							
 						</div>
 					</div>
@@ -258,18 +282,18 @@ BBCode if a BBCode with the specified name already exists.</div>
 									<li 
 										 class='item0'
 									>
-										<div class="fixedFont heading" id=".get">
+										<div class="fixedFont heading" id="base.parse">
 											<span class='lighter'>
-											&lt;static&gt; 
+											
 											</span>
 											
-											<span class="light">{Object|null}</span>
+											<span class="light">{Array}</span>
 											
-											<span class="light">jQuery.sceditorBBCodePlugin.bbcode.</span><b>get</b>(name)
+											<b>base.parse</b>(str, preserveNewLines)
 										</div>
 										
 										<div class="description">
-											Gets a BBCode
+											Parses a string into an array of BBCodes
 											
 											
 											
@@ -283,10 +307,16 @@ BBCode if a BBCode with the specified name already exists.</div>
 												<dt class="heading">Parameters:</dt>
 												
 													<dt>
-														<span class="light fixedFont">{String}</span> <b>name</b>
+														<span class="light fixedFont">{String}</span> <b>str</b>
 														
 													</dt>
 													<dd></dd>
+												
+													<dt>
+														<span class="light fixedFont">{Bool}</span> <b>preserveNewLines</b>
+														
+													</dt>
+													<dd>If to preserve all new lines, not strip any based on the passed formatting options</dd>
 												
 											</dl>
 										
@@ -297,16 +327,13 @@ BBCode if a BBCode with the specified name already exists.</div>
 												
 												
 												
-													<dt class="heading">Since:</dt>
-													<dd>v1.3.5</dd>
-												
 												
 												
 												
 												
 													<dt class="heading">Returns:</dt>
 													
-														<dd><span class="light fixedFont">{Object|null}</span> </dd>
+														<dd><span class="light fixedFont">{Array}</span> Array of BBCode objects</dd>
 													
 												
 												
@@ -322,18 +349,20 @@ BBCode if a BBCode with the specified name already exists.</div>
 									<li 
 										 class='item1'
 									>
-										<div class="fixedFont heading" id=".remove">
+										<div class="fixedFont heading" id="base.toBBCode">
 											<span class='lighter'>
-											&lt;static&gt; 
+											
 											</span>
 											
-											<span class="light">{this}</span>
+											<span class="light">{String}</span>
 											
-											<span class="light">jQuery.sceditorBBCodePlugin.bbcode.</span><b>remove</b>(name)
+											<b>base.toBBCode</b>(str, preserveNewLines)
 										</div>
 										
 										<div class="description">
-											Removes a BBCode
+											Takes a BBCode string, parses it then converts it back to BBCode.
+
+This will auto fix the BBCode and format it with the specified options.
 											
 											
 											
@@ -347,10 +376,16 @@ BBCode if a BBCode with the specified name already exists.</div>
 												<dt class="heading">Parameters:</dt>
 												
 													<dt>
-														<span class="light fixedFont">{String}</span> <b>name</b>
+														<span class="light fixedFont">{String}</span> <b>str</b>
 														
 													</dt>
 													<dd></dd>
+												
+													<dt>
+														<span class="light fixedFont">{Bool}</span> <b>preserveNewLines</b>
+														
+													</dt>
+													<dd>If to preserve all new lines, not strip any based on the passed formatting options</dd>
 												
 											</dl>
 										
@@ -361,16 +396,13 @@ BBCode if a BBCode with the specified name already exists.</div>
 												
 												
 												
-													<dt class="heading">Since:</dt>
-													<dd>v1.3.5</dd>
-												
 												
 												
 												
 												
 													<dt class="heading">Returns:</dt>
 													
-														<dd><span class="light fixedFont">{this}</span> </dd>
+														<dd><span class="light fixedFont">{String}</span> </dd>
 													
 												
 												
@@ -386,21 +418,18 @@ BBCode if a BBCode with the specified name already exists.</div>
 									<li 
 										 class='item2'
 									>
-										<div class="fixedFont heading" id=".rename">
+										<div class="fixedFont heading" id="base.toHTML">
 											<span class='lighter'>
-											&lt;static&gt; 
+											
 											</span>
 											
-											<span class="light">{this|false}</span>
+											<span class="light">{String}</span>
 											
-											<span class="light">jQuery.sceditorBBCodePlugin.bbcode.</span><b>rename</b>(name, newName)
+											<b>base.toHTML</b>(str, preserveNewLines)
 										</div>
 										
 										<div class="description">
-											Renames a BBCode
-
-This does not change the format or HTML handling, those must be
-changed manually.
+											Converts a BBCode string to HTML
 											
 											
 											
@@ -414,16 +443,16 @@ changed manually.
 												<dt class="heading">Parameters:</dt>
 												
 													<dt>
-														<span class="light fixedFont">{String}</span> <b>name</b>
+														<span class="light fixedFont">{String}</span> <b>str</b>
 														
 													</dt>
-													<dd>[description]</dd>
+													<dd></dd>
 												
 													<dt>
-														<span class="light fixedFont">{String}</span> <b>newName</b>
+														<span class="light fixedFont">{Bool}</span> <b>preserveNewLines</b>
 														
 													</dt>
-													<dd>[description]</dd>
+													<dd>If to preserve all new lines, not strip any based on the passed formatting options</dd>
 												
 											</dl>
 										
@@ -434,16 +463,13 @@ changed manually.
 												
 												
 												
-													<dt class="heading">Since:</dt>
-													<dd>v1.4.0</dd>
-												
 												
 												
 												
 												
 													<dt class="heading">Returns:</dt>
 													
-														<dd><span class="light fixedFont">{this|false}</span> </dd>
+														<dd><span class="light fixedFont">{String}</span> </dd>
 													
 												
 												
@@ -459,19 +485,22 @@ changed manually.
 									<li 
 										 class='item3'
 									>
-										<div class="fixedFont heading" id=".set">
+										<div class="fixedFont heading" id="base.tokenize">
 											<span class='lighter'>
-											&lt;static&gt; 
+											
 											</span>
 											
-											<span class="light">{this|false}</span>
+											<span class="light">{Array}</span>
 											
-											<span class="light">jQuery.sceditorBBCodePlugin.bbcode.</span><b>set</b>(name, bbcode)
+											<b>base.tokenize</b>(str)
 										</div>
 										
 										<div class="description">
-											<p>Adds a BBCode to the parser or updates an existing
-BBCode if a BBCode with the specified name already exists.</p>
+											Takes a BBCode string and splits it into open, content and close tags.
+
+It dose no checking to verify a tag has a matching open or closing tag
+or if the tag is valid child of any tag before it. For that the tokens
+should be passed to the parse function.
 											
 											
 											
@@ -485,13 +514,7 @@ BBCode if a BBCode with the specified name already exists.</p>
 												<dt class="heading">Parameters:</dt>
 												
 													<dt>
-														<span class="light fixedFont">{String}</span> <b>name</b>
-														
-													</dt>
-													<dd></dd>
-												
-													<dt>
-														<span class="light fixedFont">{Object}</span> <b>bbcode</b>
+														<span class="light fixedFont">{String}</span> <b>str</b>
 														
 													</dt>
 													<dd></dd>
@@ -505,16 +528,13 @@ BBCode if a BBCode with the specified name already exists.</p>
 												
 												
 												
-													<dt class="heading">Since:</dt>
-													<dd>v1.3.5</dd>
-												
 												
 												
 												
 												
 													<dt class="heading">Returns:</dt>
 													
-														<dd><span class="light fixedFont">{this|false}</span> Returns false if name or bbcode is false</dd>
+														<dd><span class="light fixedFont">{Array}</span> </dd>
 													
 												
 												

@@ -11,7 +11,7 @@
  * @fileoverview SCEditor - A lightweight WYSIWYG BBCode and HTML editor
  * @author Sam Clarke
  * @version 1.4.0
- * @requires jQuerya
+ * @requires jQuery
  */
 
 // ==ClosureCompiler==
@@ -3238,6 +3238,10 @@
 		}
 	};
 
+	/**
+	 * Default options for SCEditor
+	 * @type {Object}
+	 */
 	$.sceditor.defaultOptions = {
 		/**
 		 * Toolbar buttons order and groups. Should be comma seperated and have a bar | to seperate groups
@@ -3433,6 +3437,14 @@
 		runWithoutWysiwygSupport: false,
 
 		id: null,
+
+		/**
+		 * BBCode parser options, only applies if using the editor in BBCode mode.
+		 *
+		 * See $.sceditor.BBCodeParser.defaults for list of valid options
+		 * @type {Object}
+		 */
+		parserOptions: { },
 
 		//add css to dropdown menu (eg. z-index)
 		dropDownCss: { }

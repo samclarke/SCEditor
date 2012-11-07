@@ -38,6 +38,10 @@
 				
 					<li><a href="../symbols/jQuery.sceditor.html">jQuery<span class='break'> </span>.<span class='break'> </span>sceditor</a></li>
 				
+					<li><a href="../symbols/jQuery.sceditor.BBCodeParser.html">jQuery<span class='break'> </span>.<span class='break'> </span>sceditor<span class='break'> </span>.<span class='break'> </span>BBCodeParser</a></li>
+				
+					<li><a href="../symbols/jQuery.sceditor.BBCodeParser%23TokenizeToken.html">jQuery<span class='break'> </span>.<span class='break'> </span>sceditor<span class='break'> </span>.<span class='break'> </span>BBCodeParser#TokenizeToken</a></li>
+				
 					<li><a href="../symbols/jQuery.sceditor.command.html">jQuery<span class='break'> </span>.<span class='break'> </span>sceditor<span class='break'> </span>.<span class='break'> </span>command</a></li>
 				
 					<li><a href="../symbols/jQuery.sceditor.dom.html">jQuery<span class='break'> </span>.<span class='break'> </span>sceditor<span class='break'> </span>.<span class='break'> </span>dom</a></li>
@@ -57,7 +61,7 @@
 			Documentation generator: <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0<br />
 			Template: <a href="http://www.thebrightlines.com/2010/05/06/new-template-for-jsdoctoolkit-codeview/" target="_blank">Codeview</a> 1.2<br />
 			Generated on:
-			<time datetime='2012-5-28' pubdate>2012-5-28 15:38</time>
+			<time datetime='2012-10-7' pubdate>2012-10-7 18:16</time>
 		</footer>
 	</div>
 </div>
@@ -107,7 +111,7 @@
 									<td class="attributes">&nbsp;</td>
 									<td class="nameDescription" >
 										<div class="fixedFont">
-											<b><a href="../symbols/jQuery.sceditorBBCodePlugin.html#constructor">jQuery.sceditorBBCodePlugin</a></b>(el)
+											<b><a href="../symbols/jQuery.sceditorBBCodePlugin.html#constructor">jQuery.sceditorBBCodePlugin</a></b>(element)
 										</div>
 										<div class="description">BBCode plugin for SCEditor</div>
 									</td>
@@ -145,28 +149,6 @@
 											<tr
 												 class='item0'
 											>
-												<td class="attributes">&lt;static&gt; &nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditorBBCodePlugin.<b><a href="../symbols/jQuery.sceditorBBCodePlugin.html#.$.sceditorBBCodePlugin.commandExists">$.sceditorBBCodePlugin.commandExists</a></b>(string)
-													</div>
-													<div class="description">Checks if a command with the specified name exists</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item1'
-											>
-												<td class="attributes">&lt;static&gt; &nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditorBBCodePlugin.<b><a href="../symbols/jQuery.sceditorBBCodePlugin.html#.$.sceditorBBCodePlugin.setCommand">$.sceditorBBCodePlugin.setCommand</a></b>(String, Object, Object, String|Function, String|Function, bool, isBlock)
-													</div>
-													<div class="description">Adds/updates a BBCode.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item2'
-											>
 												<td class="attributes">&nbsp;</td>
 												<td class="nameDescription">
 													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditorBBCodePlugin.html#base.getHtmlHandler">base.getHtmlHandler</a></b>(string, HtmlElement)
@@ -176,24 +158,13 @@
 											</tr>
 										
 											<tr
-												 class='item3'
+												 class='item1'
 											>
 												<td class="attributes">&nbsp;</td>
 												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditorBBCodePlugin.html#base.getTextHandler">base.getTextHandler</a></b>(text, isFragment)
+													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditorBBCodePlugin.html#base.getTextHandler">base.getTextHandler</a></b>(text, asFragment)
 													</div>
 													<div class="description">Converts BBCode to HTML</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item4'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditorBBCodePlugin.html#base.stripQuotes">base.stripQuotes</a></b>(str)
-													</div>
-													<div class="description">Removes any leading or trailing quotes ('")</div>
 												</td>
 											</tr>
 										
@@ -223,7 +194,7 @@
 							</h2>
 							
 							<div class="fixedFont">
-								<b>jQuery.sceditorBBCodePlugin</b>(el)
+								<b>jQuery.sceditorBBCodePlugin</b>(element)
 							</div>
 							
 							<div class="description">
@@ -238,7 +209,7 @@
 									<dt class="heading">Parameters:</dt>
 									
 										<dt>
-											<span class="light fixedFont">{Element}</span>  <b>el</b>
+											<span class="light fixedFont">{Element}</span>  <b>element</b>
 											
 										</dt>
 										<dd>The textarea to be converted</dd>
@@ -290,174 +261,6 @@
 								
 									<li 
 										 class='item0'
-									>
-										<div class="fixedFont heading" id=".$.sceditorBBCodePlugin.commandExists">
-											<span class='lighter'>
-											&lt;static&gt; 
-											</span>
-											
-											
-											
-											<span class="light">jQuery.sceditorBBCodePlugin.</span><b>$.sceditorBBCodePlugin.commandExists</b>(string)
-										</div>
-										
-										<div class="description">
-											Checks if a command with the specified name exists
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<b>string</b>
-														
-													</dt>
-													<dd>name</dd>
-												
-											</dl>
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-													<dt class="heading">Deprecated:</dt>
-													<dt>
-														Since v1.3.5
-													</dt>
-												
-												
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd>bool</dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item1'
-									>
-										<div class="fixedFont heading" id=".$.sceditorBBCodePlugin.setCommand">
-											<span class='lighter'>
-											&lt;static&gt; 
-											</span>
-											
-											
-											
-											<span class="light">jQuery.sceditorBBCodePlugin.</span><b>$.sceditorBBCodePlugin.setCommand</b>(String, Object, Object, String|Function, String|Function, bool, isBlock)
-										</div>
-										
-										<div class="description">
-											Adds/updates a BBCode.
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<b>String</b>
-														
-													</dt>
-													<dd>name		The BBCode name</dd>
-												
-													<dt>
-														<b>Object</b>
-														
-													</dt>
-													<dd>tags		Any html tags this bbcode applies to, i.e. strong for [b]</dd>
-												
-													<dt>
-														<b>Object</b>
-														
-													</dt>
-													<dd>styles		Any style properties this applies to, i.e. font-weight for [b]</dd>
-												
-													<dt>
-														<b>String|Function</b>
-														
-													</dt>
-													<dd>format		Function or string to convert the element into BBCode</dd>
-												
-													<dt>
-														<b>String|Function</b>
-														
-													</dt>
-													<dd>html		String or function to format the BBCode back into HTML.</dd>
-												
-													<dt>
-														<b>bool</b>
-														
-													</dt>
-													<dd>allowsEmpty	If this BBCodes is allowed to be empty, e.g. [b][/b]</dd>
-												
-													<dt>
-														<b>isBlock</b>
-														
-													</dt>
-													<dd></dd>
-												
-											</dl>
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-													<dt class="heading">Deprecated:</dt>
-													<dt>
-														Since v1.3.5
-													</dt>
-												
-												
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd>Bool</dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item2'
 									>
 										<div class="fixedFont heading" id="base.getHtmlHandler">
 											<span class='lighter'>
@@ -524,7 +327,7 @@
 									</li>
 								
 									<li 
-										 class='item3'
+										 class='item1'
 									>
 										<div class="fixedFont heading" id="base.getTextHandler">
 											<span class='lighter'>
@@ -533,7 +336,7 @@
 											
 											<span class="light">{String}</span>
 											
-											<b>base.getTextHandler</b>(text, isFragment)
+											<b>base.getTextHandler</b>(text, asFragment)
 										</div>
 										
 										<div class="description">
@@ -557,7 +360,7 @@
 													<dd></dd>
 												
 													<dt>
-														<span class="light fixedFont">{Bool}</span> <b>isFragment</b>
+														<span class="light fixedFont">{Bool}</span> <b>asFragment</b>
 														
 													</dt>
 													<dd></dd>
@@ -578,67 +381,6 @@
 													<dt class="heading">Returns:</dt>
 													
 														<dd><span class="light fixedFont">{String}</span> HTML</dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item4'
-									>
-										<div class="fixedFont heading" id="base.stripQuotes">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>base.stripQuotes</b>(str)
-										</div>
-										
-										<div class="description">
-											Removes any leading or trailing quotes ('")
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<b>str</b>
-														
-													</dt>
-													<dd></dd>
-												
-											</dl>
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd>string</dd>
 													
 												
 												

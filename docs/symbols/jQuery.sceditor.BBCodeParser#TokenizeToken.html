@@ -4,7 +4,7 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
-		<title>jQuery.sceditorBBCodePlugin.bbcode | SCEditor</title>
+		<title>jQuery.sceditor.BBCodeParser#TokenizeToken | SCEditor</title>
 
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 		<meta name="mobileoptimized" content="0" />
@@ -74,12 +74,12 @@
 			<header>
 				<h1 class="classTitle">
 					
-					Class <span>jQuery.sceditorBBCodePlugin.bbcode</span>
+					Class <span>jQuery.sceditor.BBCodeParser#TokenizeToken</span>
 				</h1>
 				
 				<div class="intro">
 					<p class="description summary">
-						command
+						TokenizeToken
 					</p>
 						
 					
@@ -98,7 +98,7 @@
 			
 				<section>
 					<div class="props">
-						<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class jQuery.sceditorBBCodePlugin.bbcode.">
+						<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class jQuery.sceditor.BBCodeParser#TokenizeToken.">
 							<caption class="sectionTitle">Class Summary</caption>
 							<thead>
 								<tr>
@@ -111,9 +111,9 @@
 									<td class="attributes">&nbsp;</td>
 									<td class="nameDescription" >
 										<div class="fixedFont">
-											<b><a href="../symbols/jQuery.sceditorBBCodePlugin.bbcode.html#constructor">jQuery.sceditorBBCodePlugin.bbcode</a></b>()
+											<b><a href="../symbols/jQuery.sceditor.BBCodeParser%23TokenizeToken.html#constructor">jQuery.sceditor.BBCodeParser#TokenizeToken</a></b>(type, name, val, attrs, children, closing)
 										</div>
-										<div class="description">Static BBCode helper class</div>
+										<div class="description">Tokenize token class</div>
 									</td>
 								</tr>
 							</tbody>
@@ -135,7 +135,7 @@
 						
 						
 							<nav>
-								<table class="summaryTable" id="MethodsList" cellspacing="0" summary="A summary of the methods documented in the class jQuery.sceditorBBCodePlugin.bbcode.">
+								<table class="summaryTable" id="MethodsList" cellspacing="0" summary="A summary of the methods documented in the class jQuery.sceditor.BBCodeParser#TokenizeToken.">
 									<thead>
 										<tr>
 											<th scope="col">Method Attributes</th>
@@ -151,9 +151,9 @@
 											>
 												<td class="attributes">&lt;static&gt; &nbsp;</td>
 												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditorBBCodePlugin.bbcode.<b><a href="../symbols/jQuery.sceditorBBCodePlugin.bbcode.html#.get">get</a></b>(name)
+													<div class="fixedFont">jQuery.sceditor.BBCodeParser#TokenizeToken.<b><a href="../symbols/jQuery.sceditor.BBCodeParser%23TokenizeToken.html#.clone">clone</a></b>(includeChildren)
 													</div>
-													<div class="description">Gets a BBCode</div>
+													<div class="description">Clones this token</div>
 												</td>
 											</tr>
 										
@@ -162,35 +162,9 @@
 											>
 												<td class="attributes">&lt;static&gt; &nbsp;</td>
 												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditorBBCodePlugin.bbcode.<b><a href="../symbols/jQuery.sceditorBBCodePlugin.bbcode.html#.remove">remove</a></b>(name)
+													<div class="fixedFont">jQuery.sceditor.BBCodeParser#TokenizeToken.<b><a href="../symbols/jQuery.sceditor.BBCodeParser%23TokenizeToken.html#.splitAt">splitAt</a></b>(splitAt)
 													</div>
-													<div class="description">Removes a BBCode</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item2'
-											>
-												<td class="attributes">&lt;static&gt; &nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditorBBCodePlugin.bbcode.<b><a href="../symbols/jQuery.sceditorBBCodePlugin.bbcode.html#.rename">rename</a></b>(name, newName)
-													</div>
-													<div class="description">Renames a BBCode
-
-This does not change the format or HTML handling, those must be
-changed manually.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item3'
-											>
-												<td class="attributes">&lt;static&gt; &nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditorBBCodePlugin.bbcode.<b><a href="../symbols/jQuery.sceditorBBCodePlugin.bbcode.html#.set">set</a></b>(name, bbcode)
-													</div>
-													<div class="description"><p>Adds a BBCode to the parser or updates an existing
-BBCode if a BBCode with the specified name already exists.</div>
+													<div class="description">Splits this token at the specified child</div>
 												</td>
 											</tr>
 										
@@ -220,16 +194,57 @@ BBCode if a BBCode with the specified name already exists.</div>
 							</h2>
 							
 							<div class="fixedFont">
-								<b>jQuery.sceditorBBCodePlugin.bbcode</b>()
+								<b>jQuery.sceditor.BBCodeParser#TokenizeToken</b>(type, name, val, attrs, children, closing)
 							</div>
 							
 							<div class="description">
-								Static BBCode helper class
+								Tokenize token class
 								
 							</div>
 							
 							
 						
+							
+								<dl class="detailList params">
+									<dt class="heading">Parameters:</dt>
+									
+										<dt>
+											<span class="light fixedFont">{String}</span>  <b>type</b>
+											
+										</dt>
+										<dd>The type of token this is, should be one of tokenType</dd>
+									
+										<dt>
+											<span class="light fixedFont">{String}</span>  <b>name</b>
+											
+										</dt>
+										<dd>The name of this token</dd>
+									
+										<dt>
+											<span class="light fixedFont">{String}</span>  <b>val</b>
+											
+										</dt>
+										<dd>The originaly matched string</dd>
+									
+										<dt>
+											<span class="light fixedFont">{Array}</span>  <b>attrs</b>
+											
+										</dt>
+										<dd>Any attributes. Only set on tokenType.open tokens</dd>
+									
+										<dt>
+											<span class="light fixedFont">{Array}</span>  <b>children</b>
+											
+										</dt>
+										<dd>Any children of this token</dd>
+									
+										<dt>
+											<span class="light fixedFont">{TokenizeToken}</span>  <b>closing</b>
+											
+										</dt>
+										<dd>This tokens closing tag. Only set on tokenType.open tokens</dd>
+									
+								</dl>
 							
 							
 							
@@ -258,18 +273,18 @@ BBCode if a BBCode with the specified name already exists.</div>
 									<li 
 										 class='item0'
 									>
-										<div class="fixedFont heading" id=".get">
+										<div class="fixedFont heading" id=".clone">
 											<span class='lighter'>
 											&lt;static&gt; 
 											</span>
 											
-											<span class="light">{Object|null}</span>
+											<span class="light">{TokenizeToken}</span>
 											
-											<span class="light">jQuery.sceditorBBCodePlugin.bbcode.</span><b>get</b>(name)
+											<span class="light">jQuery.sceditor.BBCodeParser#TokenizeToken.</span><b>clone</b>(includeChildren)
 										</div>
 										
 										<div class="description">
-											Gets a BBCode
+											Clones this token
 											
 											
 											
@@ -283,10 +298,10 @@ BBCode if a BBCode with the specified name already exists.</div>
 												<dt class="heading">Parameters:</dt>
 												
 													<dt>
-														<span class="light fixedFont">{String}</span> <b>name</b>
+														<span class="light fixedFont">{Bool}</span> <b>includeChildren</b>
 														
 													</dt>
-													<dd></dd>
+													<dd>If to include the children in the clone. Defaults to false.</dd>
 												
 											</dl>
 										
@@ -297,16 +312,13 @@ BBCode if a BBCode with the specified name already exists.</div>
 												
 												
 												
-													<dt class="heading">Since:</dt>
-													<dd>v1.3.5</dd>
-												
 												
 												
 												
 												
 													<dt class="heading">Returns:</dt>
 													
-														<dd><span class="light fixedFont">{Object|null}</span> </dd>
+														<dd><span class="light fixedFont">{TokenizeToken}</span> </dd>
 													
 												
 												
@@ -322,18 +334,18 @@ BBCode if a BBCode with the specified name already exists.</div>
 									<li 
 										 class='item1'
 									>
-										<div class="fixedFont heading" id=".remove">
+										<div class="fixedFont heading" id=".splitAt">
 											<span class='lighter'>
 											&lt;static&gt; 
 											</span>
 											
-											<span class="light">{this}</span>
+											<span class="light">{TokenizeToken}</span>
 											
-											<span class="light">jQuery.sceditorBBCodePlugin.bbcode.</span><b>remove</b>(name)
+											<span class="light">jQuery.sceditor.BBCodeParser#TokenizeToken.</span><b>splitAt</b>(splitAt)
 										</div>
 										
 										<div class="description">
-											Removes a BBCode
+											Splits this token at the specified child
 											
 											
 											
@@ -347,10 +359,10 @@ BBCode if a BBCode with the specified name already exists.</div>
 												<dt class="heading">Parameters:</dt>
 												
 													<dt>
-														<span class="light fixedFont">{String}</span> <b>name</b>
+														<span class="light fixedFont">{TokenizeToken|Int}</span> <b>splitAt</b>
 														
 													</dt>
-													<dd></dd>
+													<dd>The child to split at or the index of the child</dd>
 												
 											</dl>
 										
@@ -361,160 +373,13 @@ BBCode if a BBCode with the specified name already exists.</div>
 												
 												
 												
-													<dt class="heading">Since:</dt>
-													<dd>v1.3.5</dd>
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{this}</span> </dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item2'
-									>
-										<div class="fixedFont heading" id=".rename">
-											<span class='lighter'>
-											&lt;static&gt; 
-											</span>
-											
-											<span class="light">{this|false}</span>
-											
-											<span class="light">jQuery.sceditorBBCodePlugin.bbcode.</span><b>rename</b>(name, newName)
-										</div>
-										
-										<div class="description">
-											Renames a BBCode
-
-This does not change the format or HTML handling, those must be
-changed manually.
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{String}</span> <b>name</b>
-														
-													</dt>
-													<dd>[description]</dd>
-												
-													<dt>
-														<span class="light fixedFont">{String}</span> <b>newName</b>
-														
-													</dt>
-													<dd>[description]</dd>
-												
-											</dl>
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-													<dt class="heading">Since:</dt>
-													<dd>v1.4.0</dd>
-												
 												
 												
 												
 												
 													<dt class="heading">Returns:</dt>
 													
-														<dd><span class="light fixedFont">{this|false}</span> </dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item3'
-									>
-										<div class="fixedFont heading" id=".set">
-											<span class='lighter'>
-											&lt;static&gt; 
-											</span>
-											
-											<span class="light">{this|false}</span>
-											
-											<span class="light">jQuery.sceditorBBCodePlugin.bbcode.</span><b>set</b>(name, bbcode)
-										</div>
-										
-										<div class="description">
-											<p>Adds a BBCode to the parser or updates an existing
-BBCode if a BBCode with the specified name already exists.</p>
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{String}</span> <b>name</b>
-														
-													</dt>
-													<dd></dd>
-												
-													<dt>
-														<span class="light fixedFont">{Object}</span> <b>bbcode</b>
-														
-													</dt>
-													<dd></dd>
-												
-											</dl>
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-													<dt class="heading">Since:</dt>
-													<dd>v1.3.5</dd>
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{this|false}</span> Returns false if name or bbcode is false</dd>
+														<dd><span class="light fixedFont">{TokenizeToken}</span> The right half of the split token or null if failed</dd>
 													
 												
 												

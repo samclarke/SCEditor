@@ -25,6 +25,940 @@
 	'use strict';
 
 	/**
+	 * SCEditor BBCode parser class
+	 *
+	 * @param {Object} options
+	 * @class BBCodeParser
+	 * @name jQuery.sceditor.BBCodeParser
+	 * @since v1.4.0
+	 */
+	$.sceditor.BBCodeParser = function(options) {
+		// make sure this is not being called as a function
+		if(!(this instanceof $.sceditor.BBCodeParser))
+			return new $.sceditor.BBCodeParser(options);
+
+		var base = this;
+
+		// Private methods
+		var	init,
+			tokenizeTag,
+			tokenizeAttrs,
+			parseTokens,
+			fixNesting,
+			isChildAllowed,
+			removeEmpty,
+			fixChildren,
+			convertToHTML,
+			convertToBBCode,
+			hasTag,
+			lower,
+			last;
+
+		/**
+		 * Enum of valid token types
+		 * @type {Object}
+		 * @private
+		 */
+		var tokenType = {
+			open:    'open',
+			content: 'content',
+			newline: 'newline',
+			close:   'close'
+		};
+
+		// Make tokenType enum read-only in browsers that support it.
+		if(Object.freeze)
+			Object.freeze(tokenType);
+
+		/**
+		 * Tokenize token class
+		 *
+		 * @param  {String} type The type of token this is, should be one of tokenType
+		 * @param  {String} name The name of this token
+		 * @param  {String} val The originaly matched string
+		 * @param  {Array} attrs Any attributes. Only set on tokenType.open tokens
+		 * @param  {Array} children Any children of this token
+		 * @param  {TokenizeToken} closing This tokens closing tag. Only set on tokenType.open tokens
+		 * @class TokenizeToken
+		 * @name TokenizeToken
+		 * @memberOf jQuery.sceditor.BBCodeParser.prototype
+		 */
+		var TokenizeToken = function(type, name, val, attrs, children, closing) {
+			var base      = this;
+			base.type     = type;
+			base.name     = name;
+			base.val      = val;
+			base.attrs    = attrs || {};
+			base.children = children || [];
+			base.closing  = closing || null;
+		};
+
+		// Declaring mthods via prototype instead of in the constructor
+		// to reduce memory usage as there could be a lot or these
+		// objects created.
+		TokenizeToken.prototype = {
+			/** @lends jQuery.sceditor.BBCodeParser.prototype.TokenizeToken */
+			/**
+			 * Clones this token
+			 * @param  {Bool} includeChildren If to include the children in the clone. Defaults to false.
+			 * @return {TokenizeToken}
+			 */
+			clone: function(includeChildren) {
+				var base = this;
+				return new TokenizeToken(
+					base.type,
+					base.name,
+					base.val,
+					base.attrs,
+					includeChildren ? base.children : [],
+					base.closing ? base.closing.clone() : null
+				);
+			},
+			/**
+			 * Splits this token at the specified child
+			 * @param  {TokenizeToken|Int} splitAt The child to split at or the index of the child
+			 * @return {TokenizeToken} The right half of the split token or null if failed
+			 */
+			splitAt: function(splitAt) {
+				var	clone,
+					base          = this,
+					splitAtLength = 0,
+					i             = base.children.length;
+
+				if(typeof object !== "number")
+					splitAt = $.inArray(splitAt, base.children);
+
+				if(splitAt < 0 || splitAt > i)
+					return null;
+
+				// Work out how many items are on the right side of the split
+				// to pass to splice()
+				while(i--)
+				{
+					if(i >= splitAt)
+						splitAtLength++;
+					else
+						i = false;
+				}
+
+				clone          = base.clone();
+				clone.children = base.children.splice(splitAt, splitAtLength);
+				return clone;
+			}
+		};
+
+
+		init = function() {
+			base.opts    = $.extend({}, $.sceditor.BBCodeParser.defaults, options);
+			base.bbcodes = $.sceditorBBCodePlugin.bbcodes;
+		};
+
+		/**
+		 * Takes a BBCode string and splits it into open, content and close tags.
+		 *
+		 * It dose no checking to verify a tag has a matching open or closing tag
+		 * or if the tag is valid child of any tag before it. For that the tokens
+		 * should be passed to the parse function.
+		 *
+		 * @param {String} str
+		 * @return {Array}
+		 * @memberOf jQuery.sceditor.BBCodeParser.prototype
+		 */
+		base.tokenize = function(str) {
+			var	matches, type, i,
+				toks   = [],
+				tokens = [
+					// Close must come before open as they are
+					// the same except close has a / at the start.
+					{
+						type: 'close',
+						regex: /^\[\/[^\[\]]+\]/
+					},
+					{
+						type: 'open',
+						regex: /^\[[^\[\]]+\]/
+					},
+					{
+						type: 'newline',
+						regex: /^(\r\n|\r|\n)/
+					},
+					{
+						type: 'content',
+						regex: /^([^\[\r\n]+|\[)/
+					}
+				];
+
+			tokens.reverse();
+
+			strloop:
+			while(str.length)
+			{
+				i = tokens.length;
+				while(i--)
+				{
+					type = tokens[i].type;
+
+					// Check if the string matches any of the tokens
+					if(!(matches = str.match(tokens[i].regex)) || !matches[0])
+						continue;
+
+					// Add the match to the tokens list
+					toks.push(tokenizeTag(type, matches[0]));
+
+					// Remove the match from the string
+					str = str.substr(matches[0].length);
+
+					// The token has been added so start again
+					continue strloop;
+				}
+
+				// If there is anything left in the string which doesn't match
+				// any of the tokens then just assume it's content and add it.
+				if(str.length)
+					toks.push(tokenizeTag(tokenType.content, str));
+
+				str = "";
+			}
+
+			return toks;
+		};
+
+		/**
+		 * Extracts the name an params from a tag
+		 *
+		 * @param {Object} token
+		 * @return {Object}
+		 * @private
+		 */
+		tokenizeTag = function(type, val) {
+			var matches, attrs, name;
+
+			// Extract the name and attributes from opening tags and
+			// just the name from closing tags.
+			if(type === "open")
+			{
+				matches = val.match(/\[([^\]\s=]+)(?:([^\]]+))?\]/);
+				name    = lower(matches[1]);
+
+				if(matches[2] && (matches[2] = $.trim(matches[2])))
+					attrs = tokenizeAttrs(matches[2]);
+			}
+			else if(type === "close")
+			{
+				matches = val.match(/\[\/([^\[\]]+)\]/);
+				name    = lower(matches[1]);
+			}
+
+			return new TokenizeToken(type, name, val, attrs);
+		};
+
+		/**
+		 * Extracts the individual attributes from a string containing
+		 * all the attributes.
+		 *
+		 * @param {String} attrs
+		 * @return {Array} Assoc array of attributes
+		 * @private
+		 */
+		tokenizeAttrs = function(attrs) {
+			var	matches,
+				atribsRegex = /(\S+)=(?:(?:(["'])((?:\\\2|[^\2])*?)\2)|([^'"\s]+))/g,
+				ret         = {};
+
+			// if only one attribute then remove the = from the start and strip any quotes
+			if(attrs.charAt(0) === "=" && attrs.split("=").length <= 2)
+				ret.defaultAttr = $.sceditorBBCodePlugin.stripQuotes(attrs.substr(1));
+			else
+			{
+				if(attrs.charAt(0) === "=")
+					attrs = "defaultAttr" + attrs;
+
+				// No need to strip quotes here, the regex will do that.
+				while((matches = atribsRegex.exec(attrs)))
+					ret[lower(matches[1])] = matches[3] || matches[4];
+			}
+
+			return ret;
+		};
+
+		/**
+		 * Parses a string into an array of BBCodes
+		 *
+		 * @param {String} str
+		 * @param {Bool} preserveNewLines If to preserve all new lines, not strip any based on the passed formatting options
+		 * @return {Array} Array of BBCode objects
+		 * @memberOf jQuery.sceditor.BBCodeParser.prototype
+		 */
+		base.parse = function(str, preserveNewLines) {
+			var ret = parseTokens(base.tokenize(str), preserveNewLines);
+
+			if(base.opts.fixInvalidChildren)
+				fixChildren(ret);
+
+			if(base.opts.removeEmptyTags)
+				removeEmpty(ret);
+
+			if(base.opts.fixInvalidNesting)
+				fixNesting(ret);
+
+			if(base.opts.removeEmptyTags)
+				removeEmpty(ret);
+
+			return ret;
+		};
+
+		/**
+		 * Checks if an array of TokenizeToken's contains the
+		 * specified token.
+		 *
+		 * Checks the tokens name and type match another tokens
+		 * name and type in the array.
+		 *
+		 * @param  {string}    name
+		 * @param  {tokenType} type
+		 * @param  {Array}     arr
+		 * @return {Boolean}
+		 * @private
+		 */
+		hasTag = function(name, type, arr) {
+			var i = arr.length;
+
+			while(i--)
+				if(arr[i].type === type && arr[i].name === name)
+					return true;
+
+			return false;
+		};
+
+		/**
+		 * Checks if the child tag is allowed as one
+		 * of the parent tags children.
+		 *
+		 * @param  {TokenizeToken}  parent
+		 * @param  {TokenizeToken}  child
+		 * @return {Boolean}
+		 * @private
+		 */
+		isChildAllowed = function(parent, child) {
+			var	bbcode          = parent ? base.bbcodes[parent.name] : null,
+				allowedChildren = bbcode ? bbcode.allowedChildren : null;
+
+			if(!base.opts.fixInvalidChildren || !allowedChildren)
+				return true;
+
+			if(allowedChildren && $.inArray(child.name || '#', allowedChildren) < 0)
+				return false;
+
+			return true;
+		};
+
+		// TODO: Tidy this parseTokens() function up a bit.
+		/**
+		 * Parses an array of tokens created by tokenize()
+		 *
+		 * @param  {Array} toks
+		 * @param {Bool} preserveNewLines If to preserve all new lines, not strip any based on the passed formatting options
+		 * @return {Array} Parsed tokens
+		 * @see tokenize()
+		 * @private
+		 */
+		parseTokens = function(toks, preserveNewLines) {
+			var	token, bbcode, curTok, clone, i, previous, next,
+				cloned     = [],
+				output     = [],
+				openTags   = [],
+				/**
+				 * Returns the currently open tag or undefined
+				 * @return {TokenizeToken}
+				 */
+				currentOpenTag = function() {
+					return last(openTags);
+				},
+				/**
+				 * Adds a tag to either the current tags children
+				 * or to the output array.
+				 * @param {TokenizeToken} token
+				 * @private
+				 */
+				addTag = function(token) {
+					if(currentOpenTag())
+						currentOpenTag().children.push(token);
+					else
+						output.push(token);
+				},
+				/**
+				 * Checks if this tag closes the current tag, if it does
+				 * then this will close the current tag.
+				 * @param  {String} name
+				 * @return {Void}
+				 */
+				checkIfClosesCurrent = function(name) {
+					if(currentOpenTag() && (bbcode = base.bbcodes[currentOpenTag().name]) &&
+						bbcode.closedBy && $.inArray(name, bbcode.closedBy) > -1)
+					{
+						openTags.pop();
+					}
+				};
+
+			while((token = toks.shift()))
+			{
+				next = toks[0];
+
+				switch(token.type)
+				{
+					case tokenType.open:
+						// Check it this closes a parent, i.e. for lists [*]one [*]two
+						checkIfClosesCurrent(token.name);
+
+						addTag(token);
+						bbcode = base.bbcodes[token.name];
+
+						// If this tag is not self closing and it has a closing tag then it is open and has children so
+						// add it to the list of open tags. If it is a valid BBCode, e.g. in the BBCode list but is missing
+						// an end tag then just assume it's misisng and include everything as it's children.
+						if((!bbcode || !bbcode.isSelfClosing) && (bbcode || hasTag(token.name, tokenType.close, toks)))
+							openTags.push(token);
+
+						break;
+
+					case tokenType.close:
+						// check if this closes the current tag, e.g. [/list] would close an open [*]
+						if(currentOpenTag() && token.name !== currentOpenTag().name)
+							checkIfClosesCurrent(token.name);
+
+						// If this is closing the currently open tag just pop the
+						// tage off the open tags array
+						if(currentOpenTag() && token.name === currentOpenTag().name)
+						{
+							currentOpenTag().closing = token;
+							openTags.pop();
+						}
+						// If this is closing an open tag that is the parent of the current
+						// tag then clone all the tags including the current one until
+						// reaching the parent that is being closed. Close the parent and then
+						// add the clones back in.
+						else if(hasTag(token.name, tokenType.open, openTags))
+						{
+							// Remove the tag from the open tags
+							while((curTok = openTags.pop()))
+							{
+								// If it's the tag that is being closed then
+								// discard it and break the loop.
+								if(curTok.name === token.name)
+								{
+									curTok.closing = token;
+									break;
+								}
+
+								// Otherwise clone this tag and then add any
+								// previously cloned tags as it's children
+								clone = curTok.clone();
+
+								if(cloned.length > 1)
+									clone.children.push(last(cloned));
+
+								cloned.push(clone);
+							}
+
+							// Add the last cloned child to the now current tag
+							// (the parent of the tag which was being closed)
+							addTag(last(cloned));
+
+							// Add all the cloned tags to the open tags list
+							i = cloned.length;
+							while(i--)
+								openTags.push(cloned[i]);
+
+							cloned.length = 0;
+						}
+						// This tag is closing nothing so treat it as content
+						else
+						{
+							token.type = tokenType.content;
+							addTag(token);
+						}
+						break;
+
+					case tokenType.newline:
+
+
+						// Remove any newlines which are not part of the content, this will
+						// normalise all BBCode newline handling options
+						if(previous && (bbcode = base.bbcodes[previous.name]))
+						{
+							if(!preserveNewLines && previous.type === tokenType.open && bbcode.isSelfClosing !== true)
+							{
+								if((bbcode.isInline === false && base.opts.breakStartBlock) || bbcode.breakStart)
+									break;
+							}
+							else if(previous.type === tokenType.close)
+							{
+								if((bbcode.isInline === false && (preserveNewLines || base.opts.breakAfterBlock)) || bbcode.breakAfter)
+									break;
+							}
+						}
+
+						if(preserveNewLines)
+						{
+							addTag(token);
+							break;
+						}
+
+						if(next && (bbcode = base.bbcodes[next.name]))
+						{
+
+							if(next.type === tokenType.open)
+							{
+								if((bbcode.isInline === false && base.opts.breakBeforeBlock) || bbcode.breakBefore)
+									break;
+							}
+							else if(next.type === tokenType.close && bbcode.isSelfClosing !== true)
+							{
+								if((bbcode.isInline === false && base.opts.breakEndBlock) || bbcode.breakEnd)
+									break;
+							}
+						}
+
+						addTag(token);
+						break;
+
+					default: // content
+						addTag(token);
+						break;
+				}
+
+				previous = token;
+			}
+
+			return output;
+		};
+
+		/**
+		 * Fixes any invalid nesting.
+		 *
+		 * If it is a block level element inside 1 or more inline elements
+		 * then those inline elements will be split at the point where the
+		 * block level is and the block level element placed between the split
+		 * parts. i.e.
+		 *     [inline]textA[blocklevel]textB[/blocklevel]textC[/inline]
+		 * Will become:
+		 *     [inline]textA[/inline][blocklevel]textB[/blocklevel][inline]textC[/inline]
+		 *
+		 * @param {Array} children
+		 * @param {Array} [parents] Null if there is no parents
+		 * @param {Array} [insideInline] Boolean, if insdie an inline element
+		 * @param {Array} [rootArr] Root array if there is one
+		 * @return {Array}
+		 * @private
+		 */
+		fixNesting = function(children, parents, insideInline, rootArr) {
+			var	token, i, parent, parentIndex, parentParentChildren, right,
+				isInline = function(token) {
+					var bbcode = base.bbcodes[token.name];
+
+					return !bbcode || bbcode.isInline !== false;
+				};
+
+			parents = parents || [];
+			rootArr = rootArr || children;
+
+			// this must check length each time as the length
+			// can change as tokens are moved around to fix the nesting.
+			for(i=0; i<children.length; i++)
+			{
+				if(!(token = children[i]) || token.type !== tokenType.open)
+					continue;
+
+				if(!isInline(token) && insideInline)
+				{
+					// if this is a blocklevel element inside an inline one then split
+					// the parent at the block level element
+					parent               = last(parents);
+					right                = parent.splitAt(token);
+					parentParentChildren = parents.length > 1 ? parents[parents.length - 2].children : rootArr;
+
+					if((parentIndex = $.inArray(parent, parentParentChildren)) > -1)
+					{
+						// remove the block level token from the right side of the split
+						// inlnie element
+						right.children.splice($.inArray(token, right.children), 1);
+
+						// insert the block level token and the right side after the left
+						// side of the inline token
+						parentParentChildren.splice(parentIndex+1, 0, token, right);
+
+						// return to parents loop as the children have now increased
+						return;
+					}
+
+				}
+
+				parents.push(token);
+				fixNesting(token.children, parents, insideInline || isInline(token), rootArr);
+				parents.pop(token);
+			}
+		};
+
+		/**
+		 * Fixes any invalid children.
+		 *
+		 * If it is an element which isn't allowed as a child of it's parent
+		 * then it will be converted to content of the parent element. i.e.
+		 *     [code]Code [b]only[/b] allows text.[/code]
+		 * Will become:
+		 *     <code>Code [b]only[/b] allows text.</code>
+		 * Instead of:
+		 *     <code>Code <b>only</b> allows text.</code>
+		 *
+		 * @param {Array} children
+		 * @param {Array} [parent] Null if there is no parents
+		 * @private
+		 */
+		fixChildren = function(children, parent) {
+			var	token, args,
+				i = children.length;
+
+			while(i--)
+			{
+				if(!(token = children[i]))
+					continue;
+
+				if(!isChildAllowed(parent, token))
+				{
+					// if it is not then convert it to text and see if it
+					// is allowed
+					token.name = null;
+					token.type = tokenType.content;
+
+					if(isChildAllowed(parent, token))
+					{
+						args = [i+1, 0].concat(token.children);
+
+						if(token.closing)
+						{
+							token.closing.name = null;
+							token.closing.type = tokenType.content;
+							args.push(token.closing);
+						}
+
+						i += args.length - 1;
+						Array.prototype.splice.apply(children, args);
+					}
+					else
+						parent.children.splice(i, 1);
+				}
+
+				if(token.type === tokenType.open)
+					fixChildren(token.children, token);
+			}
+		};
+
+		/**
+		 * Removes any empty BBCodes which are not allowed to be empty.
+		 *
+		 * @param {Array} tokens
+		 * @private
+		 */
+		removeEmpty = function(tokens) {
+			var	token, bbcode,
+				i = tokens.length;
+
+			while(i--)
+			{
+				// only tags can be empty, content can't be empty. So skip anything that isn't a tag.
+				if(!(token = tokens[i]) || token.type !== tokenType.open)
+					continue;
+
+				bbcode = base.bbcodes[token.name];
+
+				// remove any empty children of this tag first so that if they are all
+				// removed this one doesn't think it's not empty.
+				removeEmpty(token.children);
+
+				if(token.children.length < 1 && (!bbcode || (!bbcode.isSelfClosing && !bbcode.allowsEmpty)))
+					tokens.splice(i, 1);
+			}
+		};
+
+		/**
+		 * Converts a BBCode string to HTML
+		 * @param  {String} str
+		 * @param {Bool} preserveNewLines If to preserve all new lines, not strip any based on the passed formatting options
+		 * @return {String}
+		 * @memberOf jQuery.sceditor.BBCodeParser.prototype
+		 */
+		base.toHTML = function(str, preserveNewLines) {
+			return convertToHTML(base.parse(str, preserveNewLines), true);
+		};
+
+		convertToHTML = function(tokens, isRoot) {
+			var	token, bbcode, content, html, needsBlockWrap,
+				blockWrapOpen, isInline,
+				ret    = [];
+
+			while(tokens.length > 0)
+			{
+				if(!(token = tokens.shift()))
+					continue;
+
+				if(token.type === tokenType.open)
+				{
+					bbcode         = base.bbcodes[token.name];
+					isInline       = !bbcode || (typeof bbcode.isHtmlInline !== "undefined" ? bbcode.isHtmlInline : bbcode.isInline);
+					needsBlockWrap = isRoot && (!bbcode || isInline !== false);
+					content        = convertToHTML(token.children, false);
+
+					if(bbcode && bbcode.html)
+					{
+						if($.isFunction(bbcode.html))
+							html = bbcode.html.call(base, token, token.attrs, content);
+						else
+							html = $.sceditorBBCodePlugin.formatString(bbcode.html, content);
+					}
+					else
+						html = token.val + content + (token.closing ? token.closing.val : '');
+				}
+				else if(token.type === tokenType.newline)
+				{
+					if(!isRoot)
+					{
+						ret.push('<br />\n');
+						continue;
+					}
+
+					// if already in a block wrap then just closing it
+					// will act as a line-break.
+					if(blockWrapOpen)
+					{
+						ret.push('</div>\n');
+						blockWrapOpen = false;
+						continue;
+					}
+
+					ret.push('<div>');
+
+					// Putting BR in a div in IE9 causes it to do a double line break,
+					// as much as I hate browser UA sniffing, to do feature detection would
+					// be more code than it's worth for this specific bug.
+					if(!$.sceditor.ie)
+						ret.push('<br />');
+
+					// If it's an empty DIV and in compatibility mode is below IE8 then
+					// we must add a non-breaking space to the div otherwise the div
+					// will be collapsed. Adding a BR works but when you press enter
+					// to make a newline it suddenly goes back to the normal IE div
+					// behaviour and creates two lines, one for the newline and one
+					// for the BR. I'm sure there must be a better fix but I've yet to
+					// find one.
+					// Cannot do zoom: 1; or set a height on the div to fix it as that
+					// causes resize handles to be added to the div when it's clicked on/
+					if((document.documentMode && document.documentMode < 8) || $.sceditor.ie < 8)
+						ret.push('\u00a0');
+
+					ret.push('</div>\n');
+					continue;
+				}
+				else // content
+				{
+					needsBlockWrap = isRoot;
+					html           = token.val.replace(/&/g, "&amp;")
+								.replace(/>/g, "&gt;")
+								.replace(/</g, "&lt;");
+				}
+
+				if(needsBlockWrap && !blockWrapOpen)
+				{
+					ret.push('<div>');
+					blockWrapOpen = true;
+				}
+				else if(!needsBlockWrap && blockWrapOpen)
+				{
+					ret.push('</div>\n');
+					blockWrapOpen = false;
+				}
+
+				ret.push(html);
+			}
+
+			if(blockWrapOpen)
+				ret.push('</div>\n');
+
+			return ret.join('');
+		};
+
+		/**
+		 * Takes a BBCode string, parses it then converts it back to BBCode.
+		 *
+		 * This will auto fix the BBCode and format it with the specified options.
+		 *
+		 * @param {String} str
+		 * @param {Bool} preserveNewLines If to preserve all new lines, not strip any based on the passed formatting options
+		 * @return {String}
+		 * @memberOf jQuery.sceditor.BBCodeParser.prototype
+		 */
+		base.toBBCode = function(str, preserveNewLines) {
+			return convertToBBCode(base.parse(str, preserveNewLines));
+		};
+
+		/**
+		 * Converts parsed tokens back into BBCode with the
+		 * formatting specified in the options and with any
+		 * fixes specified.
+		 *
+		 * @param  {Array} toks Array of parsed tokens from base.parse()
+		 * @return {String}
+		 * @private
+		 */
+		convertToBBCode = function(toks) {
+			var	token, attr, bbcode, isBlock, isSelfClosing,
+				breakBefore, breakStart, breakEnd, breakAfter,
+				// Create an array of strings which are joined together
+				// before being returned as this is faster in slow browsers.
+				// (Old versions of IE).
+				ret = [];
+
+			while(toks.length > 0)
+			{
+				if(!(token = toks.shift()))
+					continue;
+
+				bbcode        = base.bbcodes[token.name];
+				isBlock       = !(!bbcode || bbcode.isInline !== false);
+				isSelfClosing = bbcode && bbcode.isSelfClosing;
+				breakBefore   = ((isBlock && base.opts.breakBeforeBlock) || (bbcode && bbcode.breakBefore));
+				breakStart    = ((isBlock && !isSelfClosing && base.opts.breakStartBlock) || (bbcode && bbcode.breakStart));
+				breakEnd      = ((isBlock && base.opts.breakEndBlock) || (bbcode && bbcode.breakEnd));
+				breakAfter    = ((isBlock && base.opts.breakAfterBlock) || (bbcode && bbcode.breakAfter));
+
+				if(token.type === tokenType.open)
+				{
+					if(breakBefore)
+						ret.push('\n');
+
+					// Convert the tag and it's attributes to BBCode
+					ret.push('[' + token.name);
+					if(token.attrs)
+					{
+						if(token.attrs.defaultAttr)
+						{
+							ret.push('=' + token.attrs.defaultAttr);
+							delete token.attrs.defaultAttr;
+						}
+
+						for(attr in token.attrs)
+							if(token.attrs.hasOwnProperty(attr))
+								ret.push(' ' + attr + '="' + token.attrs[attr] + '"');
+					}
+					ret.push(']');
+
+					if(breakStart)
+						ret.push('\n');
+
+					// Convert the tags children to BBCode
+					if(token.children)
+						ret.push(convertToBBCode(token.children));
+
+					// add closing tag if not self closing
+					if(!bbcode || (!isSelfClosing && !bbcode.excludeClosing))
+					{
+						if(breakEnd)
+							ret.push('\n');
+
+						ret.push('[/' + token.name + ']');
+					}
+
+					if(breakAfter)
+						ret.push('\n');
+
+					// preserve whatever was recognised as the closing tag if
+					// it is a self closing tag
+					if(token.closing && isSelfClosing)
+						ret.push(token.closing.val);
+				}
+				else
+					ret.push(token.val);
+			}
+
+			return ret.join('');
+		};
+
+		/**
+		 * Returns the last element of an array or null
+		 *
+		 * @param {Array} arr
+		 * @return {Object} Last element
+		 * @private
+		 */
+		last = function(arr) {
+			if(arr.length)
+				return arr[arr.length - 1];
+
+			return null;
+		};
+
+		/**
+		 * Converts a string to lowercase.
+		 *
+		 * @param {String} str
+		 * @return {String} Lowercase version of str
+		 * @private
+		 */
+		lower = function(str) {
+			return str.toLowerCase();
+		};
+
+		init();
+	};
+
+	/**
+	 * Default BBCode parser options
+	 * @type {Object}
+	 */
+	$.sceditor.BBCodeParser.defaults = {
+		/**
+		 * If to add a new line before block level elements
+		 * @type {Boolean}
+		 */
+		breakBeforeBlock: false,
+
+		/**
+		 * If to add a new line after the start of block level elements
+		 * @type {Boolean}
+		 */
+		breakStartBlock: false,
+
+		/**
+		 * If to add a new line before the end of block level elements
+		 * @type {Boolean}
+		 */
+		breakEndBlock: false,
+
+		/**
+		 * If to add a new line after block level elements
+		 * @type {Boolean}
+		 */
+		breakAfterBlock: true,
+
+		/**
+		 * If to remove empty tags
+		 * @type {Boolean}
+		 */
+		removeEmptyTags: true,
+
+		/**
+		 * If to fix invalid nesting, i.e. block level elements inside inline elements.
+		 * @type {Boolean}
+		 */
+		fixInvalidNesting: true,
+
+		/**
+		 * If to fix invalid children. i.e. A tag which is inside a parent that doesn't allow that type of tag.
+		 * @type {Boolean}
+		 */
+		fixInvalidChildren: true
+	};
+
+	/**
 	 * BBCode plugin for SCEditor
 	 *
 	 * @param {Element} element The textarea to be converted
@@ -45,13 +979,13 @@
 			handleTags,
 			formatString,
 			getStyle,
-			fixBlockNewLines,
-			wrapInDivs,
-			removeFirstLastDiv,
 			isEmpty,
-			mergeTextModeCommands;
+			mergeTextModeCommands,
+			removeFirstLastDiv;
 
-		base.bbcodes = $.sceditorBBCodePlugin.bbcodes;
+		formatString     = $.sceditorBBCodePlugin.formatString;
+		base.bbcodes     = $.sceditorBBCodePlugin.bbcodes;
+		base.stripQuotes = $.sceditorBBCodePlugin.stripQuotes;
 
 		/**
 		 * cache of all the tags pointing to their bbcodes to enable
@@ -87,13 +1021,13 @@
 		init = function() {
 			$.data(element, "sceditorbbcode", base);
 
-			base.options = $.extend({}, $.sceditor.defaultOptions, options);
+			base.opts = $.extend({}, $.sceditor.defaultOptions, options);
 
 			// build the BBCode cache
 			buildBbcodeCache();
 
 			(new $.sceditor(element,
-				$.extend({}, base.options, {
+				$.extend({}, base.opts, {
 					getHtmlHandler: base.getHtmlHandler,
 					getTextHandler: base.getTextHandler,
 					commands: mergeTextModeCommands()
@@ -198,10 +1132,10 @@
 		 * @private
 		 */
 		buildBbcodeCache = function() {
-			$.each(base.bbcodes, function(bbcode, info) {
+			$.each(base.bbcodes, function(bbcode) {
 				if(typeof base.bbcodes[bbcode].tags !== "undefined")
 					$.each(base.bbcodes[bbcode].tags, function(tag, values) {
-						var isBlock = !!base.bbcodes[bbcode].isBlock;
+						var isBlock = base.bbcodes[bbcode].isInline === false;
 						tagsToBbcodes[tag] = (tagsToBbcodes[tag] || {});
 						tagsToBbcodes[tag][isBlock] = (tagsToBbcodes[tag][isBlock] || {});
 						tagsToBbcodes[tag][isBlock][bbcode] = values;
@@ -209,7 +1143,7 @@
 
 				if(typeof base.bbcodes[bbcode].styles !== "undefined")
 					$.each(base.bbcodes[bbcode].styles, function(style, values) {
-						var isBlock = !!base.bbcodes[bbcode].isBlock;
+						var isBlock = base.bbcodes[bbcode].isInline === false;
 						stylesToBbcodes[isBlock] = (stylesToBbcodes[isBlock] || {});
 						stylesToBbcodes[isBlock][style] = (stylesToBbcodes[isBlock][style] || {});
 						stylesToBbcodes[isBlock][style][bbcode] = values;
@@ -358,48 +1292,22 @@
 			if(blockLevel && (!$.sceditor.dom.isInline(element[0], true) || tag === "br"))
 			{
 				var	parent		= element[0].parentNode,
+					previousSibling = element[0].previousSibling,
 					parentIsInline	= $.sceditor.dom.isInline(parent, true) || parent.nodeName.toLowerCase() === "body";
 
-				// Ignore last br in a blocklevel element as it's collapsed &&
-				// Do not add a newline after a block level element if it is the last child of another
-				// lock level element
-				if(!(tag === "br" && !parentIsInline && parent.lastChild === element[0]) &&
-					!(!parentIsInline && parent.lastChild === element[0]))
+				// If this br/block element is the last child of another block level element
+				// then ignore it as it will be collapsed
+				if(parentIsInline || parent.lastChild !== element[0])
 					content += "\n";
 // TODO: pre-pend br to ul ol elements ?
-				// needed for browsers that enter textnode then when return is pressed put the rest in a div, i.e.:
+				// needed for browsers which when inside a textnode, if return is pressed they put the right half
+				// in a div instead of just inserting a br i.e.:
 				// text<div>line 2</div>
-				if("br" !== tag && !parentIsInline && element[0].previousSibling && element[0].previousSibling.nodeType === 3)
+				if("br" !== tag && !parentIsInline && previousSibling && previousSibling.nodeType === 3)
 					content = "\n" + content;
 			}
 
 			return content;
-		};
-
-		/**
-		 * Formats a string in the format
-		 * {0}, {1}, {2}, ect. with the params provided
-		 * @private
-		 * @return string
-		 * @Private
-		 */
-		formatString = function() {
-			var args = arguments;
-			return args[0].replace(/\{(\d+)\}/g, function(str, p1) {
-				return typeof args[p1-0+1] !== "undefined" ?
-					args[p1-0+1] :
-					'{' + p1 + '}';
-			});
-		};
-
-		/**
-		 * Removes any leading or trailing quotes ('")
-		 *
-		 * @return string
-		 * @memberOf jQuery.sceditorBBCodePlugin.prototype
-		 */
-		base.stripQuotes = function(str) {
-			return str.replace(/^(["'])(.*?)\1$/, "$2");
 		};
 
 		/**
@@ -410,9 +1318,11 @@
 		 * @memberOf jQuery.sceditorBBCodePlugin.prototype
 		 */
 		base.getHtmlHandler = function(html, domBody) {
+			var parser = new $.sceditor.BBCodeParser(base.opts.parserOptions);
+
 			$.sceditor.dom.removeWhiteSpace(domBody[0]);
 
-			return $.trim(base.elementToBbcode(domBody));
+			return $.trim(parser.toBBCode(base.elementToBbcode(domBody), true));
 		};
 
 		/**
@@ -495,200 +1405,91 @@
 		 * Converts BBCode to HTML
 		 *
 		 * @param {String} text
-		 * @param {Bool} isFragment
+		 * @param {Bool} asFragment
 		 * @return {String} HTML
 		 * @memberOf jQuery.sceditorBBCodePlugin.prototype
 		 */
-		base.getTextHandler = function(text, isFragment) {
+		base.getTextHandler = function(text, asFragment) {
+			var	parser = new $.sceditor.BBCodeParser(base.opts.parserOptions),
+				html   = parser.toHTML(text);
 
-			var	oldText, replaceBBCodeFunc,
-				bbcodeRegex = /\[([^\[\s=]+)(?:([^\[\]]+))?\]((?:[\s\S](?!\[\1))*?)\[\/(\1)\]/g,
-				atribsRegex = /(\S+)=((?:(?:(["'])(?:\\\3|[^\3])*?\3))|(?:[^'"\s]+))/g;
-
-			replaceBBCodeFunc = function(str, bbcode, attrs, content)
-			{
-				var	attrsMap = {},
-					matches;
-
-				bbcode = bbcode.toLowerCase();
-
-				if(attrs)
-				{
-					attrs = $.trim(attrs);
-
-					// if only one attribute then remove the = from the start and strip any quotes
-					if((attrs.charAt(0) === "=" && (attrs.split("=").length - 1) <= 1) || bbcode === 'url')
-						attrsMap.defaultattr = base.stripQuotes(attrs.substr(1));
-					else
-					{
-						if(attrs.charAt(0) === "=")
-							attrs = "defaultattr" + attrs;
-
-						while((matches = atribsRegex.exec(attrs)))
-							attrsMap[matches[1].toLowerCase()] = base.stripQuotes(matches[2]);
-					}
-				}
-
-				if(!base.bbcodes[bbcode])
-					return str;
-
-				if($.isFunction(base.bbcodes[bbcode].html))
-					return base.bbcodes[bbcode].html.call(base, bbcode, attrsMap, content);
-				else
-					return formatString(base.bbcodes[bbcode].html, content);
-			};
-
-			text = text.replace(/&/g, "&amp;")
-					.replace(/</g, "&lt;")
-					.replace(/>/g, "&gt;")
-					.replace(/\r/g, "")
-					.replace(/\n/g, "<br />");
-
-			while(text !== oldText)
-			{
-				oldText = text;
-				text    = text.replace(bbcodeRegex, replaceBBCodeFunc);
-			}
-
-			// As hr is the only bbcode not to have a start and end tag it's
-			// just being replace here instead of adding support for it above.
-			text = text.replace(/\[hr\]/gi, "<hr>")
-					.replace(/\[\*\]/gi, "<li>");
-
-			// replace multi-spaces which are not inside tags with a non-breaking space
-			// to preserve them. Otherwise they will just be converted to 1!
-			text = text.replace(/ {2}(?=([^<\>]*?<|[^<\>]*?$))/g, " &nbsp;");
-
-			return wrapInDivs(text, isFragment);
-		};
-
-		fixBlockNewLines = function(node)
-		{
-			$.sceditor.dom.rTraverse(node, function(node) {
-				if(node.nodeName.toLowerCase() === "br" && node.previousSibling && !$.sceditor.dom.isInline(node.previousSibling, true))
-					node.parentNode.removeChild(node);
-				else if(node.nodeType === 1 && !$.sceditor.dom.isInline(node, true))
-				{
-					if(!$.sceditor.ie)
-						node.appendChild(document.createElement('br'));
-				}
-			});
+			return asFragment ? removeFirstLastDiv(html) : html;
 		};
 
 		/**
-		 * Wraps divs around inline HTML. Needed for IE
+		 * Removes the first and last divs from the HTML.
 		 *
-		 * @param {String} html
-		 * @return {String} HTML
+		 * This is needed for pasting
+		 * @param  {String} html
+		 * @return {String}
 		 * @private
 		 */
-		wrapInDivs = function(html, excludeFirstLast)
+		removeFirstLastDiv = function(html)
 		{
-			var	div, node, next, nodeName,
-				d		= document,
-				inlineFrag	= d.createDocumentFragment(),
-				outputDiv	= d.createElement('div'),
-				tmpDiv		= d.createElement('div');
+			var	node, next, ret,
+				$output = $('<div />').hide().appendTo(document.body),
+				output  = $output[0];
 
-			$(tmpDiv).hide().appendTo(d.body);
-			tmpDiv.innerHTML = html;
-
-			fixBlockNewLines(tmpDiv);
-
-			node = tmpDiv.firstChild;
-			while(node)
-			{
-				next = node.nextSibling;
-				nodeName = node.nodeName.toLowerCase();
-
-				if((node.nodeType === 1 && !$.sceditor.dom.isInline(node)) || nodeName === "br")
-				{
-					if(inlineFrag.childNodes.length > 0 || nodeName === "br")
-					{
-						div = d.createElement('div');
-						div.appendChild(inlineFrag);
-
-						// Putting BR in a div in IE9 causes it to do a double line break,
-						// as much as I hate browser UA sniffing, to do feature detection would
-						// be more code than it's worth for this specific bug.
-						if(nodeName === "br" && !$.sceditor.ie)
-							div.appendChild(d.createElement('br'));
-
-						// If it's an empty DIV and in compatibility mode is below IE8 then
-						// we must add a non-breaking space to the div otherwise the div
-						// will be collapsed. Adding a BR works but when you press enter
-						// to make a newline it suddenly goes back to the normal IE div
-						// behaviour and creates two lines, one for the newline and one
-						// for the BR. I'm sure there must be a better fix but I've yet to
-						// find one.
-						// Cannot do zoom: 1; or set a height on the div to fix it as that
-						// causes resize handles to be added to the div when it's clicked on/
-						if(!div.childNodes.length && (d.documentMode && d.documentMode < 8 || $.sceditor.ie < 8))
-							div.appendChild(d.createTextNode('\u00a0'));
-
-						outputDiv.appendChild(div);
-						inlineFrag = d.createDocumentFragment();
-					}
-
-					if(nodeName !== "br")
-						outputDiv.appendChild(node);
-				}
-				else
-					inlineFrag.appendChild(node);
-
-				node = next;
-			}
-
-			if(inlineFrag.childNodes.length > 0)
-			{
-				div = d.createElement('div');
-				div.appendChild(inlineFrag);
-				outputDiv.appendChild(div);
-			}
-
-			// needed for paste, the first shouldn't be wrapped in a div
-			if(excludeFirstLast)
-				removeFirstLastDiv(outputDiv);
-
-			$(tmpDiv).remove();
-			return outputDiv.innerHTML;
-		};
-
-		/**
-		 * This should really be worked into the wrapInDivs function.
-		 * Ignore adding to the first div and undo adding to last.
-		 * @private
-		 */
-		removeFirstLastDiv = function(outputDiv)
-		{
-			var node, next;
-
-			node = outputDiv.firstChild;
+			output.innerHTML = html;
+			node             = output.firstChild;
 			if(node && node.nodeName.toLowerCase() === "div")
 			{
 				while((next = node.firstChild))
-					outputDiv.insertBefore(next, node);
+					output.insertBefore(next, node);
 
 				if($.sceditor.ie >= 9)
-					outputDiv.insertBefore(document.createElement('br'), node);
+					output.insertBefore(document.createElement('br'), node);
 
-				outputDiv.removeChild(node);
+				output.removeChild(node);
 			}
 
-			node = outputDiv.lastChild;
+			node = output.lastChild;
 			if(node && node.nodeName.toLowerCase() === "div")
 			{
 				while((next = node.firstChild))
-					outputDiv.insertBefore(next, node);
+					output.insertBefore(next, node);
 
 				if($.sceditor.ie >= 9)
-					outputDiv.insertBefore(document.createElement('br'), node);
+					output.insertBefore(document.createElement('br'), node);
 
-				outputDiv.removeChild(node);
+				output.removeChild(node);
 			}
+
+			ret = output.innerHTML;
+			$output.remove();
+
+			return ret;
 		};
 
 		init();
+	};
+
+	/**
+	 * Removes any leading or trailing quotes ('")
+	 *
+	 * @return string
+	 * @since v1.4.0
+	 */
+	$.sceditorBBCodePlugin.stripQuotes = function(str) {
+		return str.replace(/^(["'])(.*?)\1$/, "$2");
+	};
+
+	/**
+	 * Formats a string replacing {0}, {1}, {2}, ect. with
+	 * the params provided
+	 *
+	 * @param {String} str The string to format
+	 * @param {string} args... The strings to replace
+	 * @return {String}
+	 * @since v1.4.0
+	 */
+	$.sceditorBBCodePlugin.formatString = function() {
+		var args = arguments;
+		return args[0].replace(/\{(\d+)\}/g, function(str, p1) {
+			return typeof args[p1-0+1] !== "undefined" ?
+				args[p1-0+1] :
+				'{' + p1 + '}';
+		});
 	};
 
 	$.sceditorBBCodePlugin.bbcodes = {
@@ -784,8 +1585,8 @@
 
 				return '[font=' + this.stripQuotes(element.css('font-family')) + ']' + content + '[/font]';
 			},
-			html: function(element, attrs, content) {
-				return '<font face="' + attrs.defaultattr + '">' + content + '</font>';
+			html: function(token, attrs, content) {
+				return '<font face="' + attrs.defaultAttr + '">' + content + '</font>';
 			}
 		},
 		// END_COMMAND
@@ -829,8 +1630,8 @@
 
 				return '[size=' + size + ']' + content + '[/size]';
 			},
-			html: function(element, attrs, content) {
-				return '<font size="' + attrs.defaultattr + '">' + content + '</font>';
+			html: function(token, attrs, content) {
+				return '<font size="' + attrs.defaultAttr + '">' + content + '</font>';
 			}
 		},
 		// END_COMMAND
@@ -883,8 +1684,8 @@
 
 				return '[color=' + color + ']' + content + '[/color]';
 			},
-			html: function(element, attrs, content) {
-				return '<font color="' + attrs.defaultattr + '">' + content + '</font>';
+			html: function(token, attrs, content) {
+				return '<font color="' + attrs.defaultAttr + '">' + content + '</font>';
 			}
 		},
 		// END_COMMAND
@@ -894,18 +1695,19 @@
 			tags: {
 				ul: null
 			},
-			isBlock: true,
+			isInline: false,
 			format: "[ul]{0}[/ul]",
 			html: '<ul>{0}</ul>'
 		},
 		list: {
+			isInline: false,
 			html: '<ul>{0}</ul>'
 		},
 		ol: {
 			tags: {
 				ol: null
 			},
-			isBlock: true,
+			isInline: false,
 			format: "[ol]{0}[/ol]",
 			html: '<ol>{0}</ol>'
 		},
@@ -913,10 +1715,12 @@
 			tags: {
 				li: null
 			},
+			closedBy: ['ul', 'ol', 'list', '*', 'li'],
 			format: "[li]{0}[/li]",
 			html: '<li>{0}</li>'
 		},
 		"*": {
+			closedBy: ['ul', 'ol', 'list', '*', 'li'],
 			html: '<li>{0}</li>'
 		},
 		// END_COMMAND
@@ -940,7 +1744,7 @@
 			tags: {
 				th: null
 			},
-			isBlock: true,
+			isInline: false,
 			format: "[th]{0}[/th]",
 			html: '<th>{0}</th>'
 		},
@@ -948,7 +1752,7 @@
 			tags: {
 				td: null
 			},
-			isBlock: true,
+			isInline: false,
 			format: "[td]{0}[/td]",
 			html: '<td>{0}<br class="sceditor-ignore" /></td>'
 		},
@@ -1005,8 +1809,9 @@
 
 				return '[img' + attribs + ']' + element.attr('src') + '[/img]';
 			},
-			html: function(element, attrs, content) {
-				var attribs = "", parts;
+			html: function(token, attrs, content) {
+				var	parts,
+					attribs = '';
 
 				// handle [img width=340 height=240]url[/img]
 				if(typeof attrs.width !== "undefined")
@@ -1015,8 +1820,8 @@
 					attribs += ' height="' + attrs.height + '"';
 
 				// handle [img=340x240]url[/img]
-				if(typeof attrs.defaultattr !== "undefined") {
-					parts = attrs.defaultattr.split(/x/i);
+				if(typeof attrs.defaultAttr !== "undefined") {
+					parts = attrs.defaultAttr.split(/x/i);
 
 					attribs = ' width="' + parts[0] + '"' +
 						' height="' + (parts.length === 2 ? parts[1] : parts[0]) + '"';
@@ -1042,22 +1847,22 @@
 
 				return '[url=' + decodeURI(element.attr('href')) + ']' + content + '[/url]';
 			},
-			html: function(element, attrs, content) {
-				if(typeof attrs.defaultattr === "undefined" || attrs.defaultattr.length === 0)
-					attrs.defaultattr = content;
+			html: function(token, attrs, content) {
+				if(typeof attrs.defaultAttr === "undefined" || attrs.defaultAttr.length === 0)
+					attrs.defaultAttr = content;
 
-				return '<a href="' + encodeURI(attrs.defaultattr) + '">' + content + '</a>';
+				return '<a href="' + encodeURI(attrs.defaultAttr) + '">' + content + '</a>';
 			}
 		},
 		// END_COMMAND
 
 		// START_COMMAND: E-mail
 		email: {
-			html: function(element, attrs, content) {
-				if(typeof attrs.defaultattr === "undefined")
-					attrs.defaultattr = content;
+			html: function(token, attrs, content) {
+				if(typeof attrs.defaultAttr === "undefined")
+					attrs.defaultAttr = content;
 
-				return '<a href="mailto:' + attrs.defaultattr + '">' + content + '</a>';
+				return '<a href="mailto:' + attrs.defaultAttr + '">' + content + '</a>';
 			}
 		},
 		// END_COMMAND
@@ -1067,7 +1872,7 @@
 			tags: {
 				blockquote: null
 			},
-			isBlock: true,
+			isInline: false,
 			format: function(element, content) {
 				var	author,
 					attr = '',
@@ -1087,9 +1892,9 @@
 
 				return '[quote' + attr + ']' + content + '[/quote]';
 			},
-			html: function(element, attrs, content) {
-				if(typeof attrs.defaultattr !== "undefined")
-					content = '<cite>' + attrs.defaultattr + '</cite>' + content;
+			html: function(token, attrs, content) {
+				if(typeof attrs.defaultAttr !== "undefined")
+					content = '<cite>' + attrs.defaultAttr + '</cite>' + content;
 
 				return '<blockquote>' + content + '</blockquote>';
 			}
@@ -1101,7 +1906,8 @@
 			tags: {
 				code: null
 			},
-			isBlock: true,
+			isInline: false,
+			allowedChildren: ['#'],
 			format: "[code]{0}[/code]",
 			html: '<code>{0}</code>'
 		},
@@ -1113,7 +1919,7 @@
 			styles: {
 				"text-align": ["left", "-webkit-left", "-moz-left", "-khtml-left"]
 			},
-			isBlock: true,
+			isInline: false,
 			format: "[left]{0}[/left]",
 			html: '<div align="left">{0}</div>'
 		},
@@ -1124,7 +1930,7 @@
 			styles: {
 				"text-align": ["center", "-webkit-center", "-moz-center", "-khtml-center"]
 			},
-			isBlock: true,
+			isInline: false,
 			format: "[center]{0}[/center]",
 			html: '<div align="center">{0}</div>'
 		},
@@ -1135,7 +1941,7 @@
 			styles: {
 				"text-align": ["right", "-webkit-right", "-moz-right", "-khtml-right"]
 			},
-			isBlock: true,
+			isInline: false,
 			format: "[right]{0}[/right]",
 			html: '<div align="right">{0}</div>'
 		},
@@ -1146,7 +1952,7 @@
 			styles: {
 				"text-align": ["justify", "-webkit-justify", "-moz-justify", "-khtml-justify"]
 			},
-			isBlock: true,
+			isInline: false,
 			format: "[justify]{0}[/justify]",
 			html: '<div align="justify">{0}</div>'
 		},
@@ -1241,6 +2047,29 @@
 		},
 
 		/**
+		 * Renames a BBCode
+		 *
+		 * This does not change the format or HTML handling, those must be
+		 * changed manually.
+		 *
+		 * @param  {String} name    [description]
+		 * @param  {String} newName [description]
+		 * @return {this|false}
+		 * @since v1.4.0
+		 */
+		rename: function(name, newName) {
+			if (this.hasOwnProperty(name))
+			{
+				this[newName] = this[name];
+				delete this[name];
+			}
+			else
+				return false;
+
+			return this;
+		},
+
+		/**
 		 * Removes a BBCode
 		 *
 		 * @param {String} name
@@ -1253,43 +2082,6 @@
 
 			return this;
 		}
-	};
-
-	/**
-	 * Checks if a command with the specified name exists
-	 *
-	 * @param string name
-	 * @return bool
-	 * @deprecated Since v1.3.5
-	 * @memberOf jQuery.sceditorBBCodePlugin
-	 */
-	$.sceditorBBCodePlugin.commandExists = function(name) {
-		return !!$.sceditorBBCodePlugin.bbcode.get(name);
-	};
-
-	/**
-	 * Adds/updates a BBCode.
-	 *
-	 * @param String		name		The BBCode name
-	 * @param Object		tags		Any html tags this bbcode applies to, i.e. strong for [b]
-	 * @param Object		styles		Any style properties this applies to, i.e. font-weight for [b]
-	 * @param String|Function	format		Function or string to convert the element into BBCode
-	 * @param String|Function	html		String or function to format the BBCode back into HTML.
-	 * @param bool			allowsEmpty	If this BBCodes is allowed to be empty, e.g. [b][/b]
-	 * @return Bool
-	 * @deprecated Since v1.3.5
-	 * @memberOf jQuery.sceditorBBCodePlugin
-	 */
-	$.sceditorBBCodePlugin.setCommand = function(name, tags, styles, format, html, allowsEmpty, isBlock) {
-		return $.sceditorBBCodePlugin.bbcode.set(name,
-		{
-			tags: tags || {},
-			styles: styles || {},
-			allowsEmpty: allowsEmpty,
-			isBlock: isBlock,
-			format: format,
-			html: html
-		});
 	};
 
 	$.fn.sceditorBBCodePlugin = function(options) {
