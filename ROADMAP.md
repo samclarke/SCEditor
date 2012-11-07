@@ -8,6 +8,8 @@
    * Add button state support
    * Add helper functions. Blur, focus, keypress, keyup, keydown
    * Add helpers for adding commands/bbcodes.
+   * Add disable emoticons option
+   * Update sceditor() to return the current instance of sceditor instead of requiring the use of .data('sceditor')
 
 
 ## 1.4.2
@@ -45,7 +47,7 @@ It should:
    * Have option for AYT spell checking with x seconds delay.
    * Grab previous words around range and also have manual spell check button.
    * Wrap the wrong words in a span with a class so it can have custom styling.
-   * When the span is clicked/right clicked it should show a menu with suggestions, might want to preload them incase it's being done via AJAX.
+   * When the span is clicked/right clicked it should show a menu with suggestions, might want to preload them in case it's being done via AJAX.
    * Have an option to allow adding words so backends that support adding words can add them.
    * Have an ingore word option which adds the word to the cache.
    * Have options to ignore capitalised words, split words with hyphens.
