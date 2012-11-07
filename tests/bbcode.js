@@ -467,15 +467,15 @@ test("Code", function() {
 test("Left", function() {
 	expect(2);
 
-	equal(
-		this.sb.getHtmlHandler("", html2dom("<div style='text-align: left'>test</div>", true)),
-		"[left]test[/left]",
+	var ret = this.sb.getHtmlHandler("", html2dom("<div style='text-align: left'>test</div>", true));
+	ok(
+		ret === "[left]test[/left]" || ret === 'test',
 		"Div CSS text-align"
 	);
 
-	equal(
-		this.sb.getHtmlHandler("", html2dom("<p style='text-align: left'>test</p>", true)),
-		"[left]test[/left]",
+	ret = this.sb.getHtmlHandler("", html2dom("<p style='text-align: left'>test</p>", true));
+	ok(
+		ret === "[left]test[/left]" || ret === 'test',
 		"P CSS text-align"
 	);
 });
@@ -923,7 +923,8 @@ test("Strip Quotes", function() {
 
 	var ret = this.sb.getHtmlHandler("", html2dom("<span  style=\"font-family: 'Arial Black', Arial\">test</span>", true));
 	ok(
-		ret === "[font='Arial Black', Arial]test[/font]" || ret === '[font="Arial Black", Arial]test[/font]',
+		ret === "[font='Arial Black', Arial]test[/font]" || ret === '[font="Arial Black", Arial]test[/font]' ||
+		ret === "[font='Arial Black',Arial]test[/font]" || ret === "[font=Arial Black]test[/font]",
 		"Quotes that shouldn't be stripped"
 	);
 });
