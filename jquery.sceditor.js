@@ -3238,42 +3238,6 @@
 		}
 	};
 
-	/**
-	 * Checks if a command with the specified name exists
-	 *
-	 * @param {String} name
-	 * @return {Bool}
-	 * @deprecated Since v1.3.5
-	 * @memberOf jQuery.sceditor
-	 */
-	$.sceditor.commandExists = function(name) {
-		return !!$.sceditor.command.get(name);
-	};
-
-	/**
-	 * Adds/updates a command.
-	 *
-	 * Only name and exec are required. Exec is only required if
-	 * the command dose not already exist.
-	 *
-	 * @param {String}		name		The commands name
-	 * @param {String|Function}	exec		The commands exec function or string for the native execCommand
-	 * @param {String}		tooltip		The commands tooltip text
-	 * @param {Function}		keypress	Function that gets called every time a key is pressed
-	 * @param {Function|Array}	txtExec		Called when the command is executed in source mode or array containing prepend and optional append
-	 * @return {Bool}
-	 * @deprecated Since v1.3.5
-	 * @memberOf jQuery.sceditor
-	 */
-	$.sceditor.setCommand = function(name, exec, tooltip, keypress, txtExec) {
-		return !!$.sceditor.command.set(name, {
-			exec: exec,
-			tooltip: tooltip,
-			keypress: keypress,
-			txtExec: txtExec
-		});
-	};
-
 	$.sceditor.defaultOptions = {
 		/**
 		 * Toolbar buttons order and groups. Should be comma seperated and have a bar | to seperate groups
