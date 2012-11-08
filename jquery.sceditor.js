@@ -320,7 +320,7 @@
 				.bind("beforedeactivate keyup", saveRange)
 				.focus(function() {
 					lastRange = null;
-				})
+				});
 				
 			// auto-update original textbox on blur if option set to true
 			if(base.opts.autoUpdate){
@@ -3470,3 +3470,4 @@
 		});
 	};
 })(jQuery, window, document);
+
