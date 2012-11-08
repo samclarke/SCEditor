@@ -321,6 +321,12 @@
 				.focus(function() {
 					lastRange = null;
 				});
+				
+			// auto-update original textbox on blur if option set to true
+			if(base.opts.autoUpdate){
+				$body.bind("blur", base.updateOriginal);
+				$doc.bind("blur", base.updateOriginal);
+			}
 
 			if(base.opts.rtl)
 			{
@@ -3429,6 +3435,11 @@
 		 * @type {Boolean}
 		 */
 		autoExpand: false,
+		/**
+		 * If to auto update original textbox on blur
+		 * @type {Boolean}
+		 */		
+		autoUpdate: false,
 
 		/**
 		 * If to run the source editor when there is no WYSIWYG support. Only really applies to mobile OS's.
@@ -3459,3 +3470,4 @@
 		});
 	};
 })(jQuery, window, document);
+
