@@ -21,6 +21,8 @@ Version 1.4.0:
 	Moved roadmap from GitHub wiki to source directory
 		for easier editing.
 	Added a new much more flexible BBCode parser
+	Added new option to auto-update original textbox on blur event occurring on SCEditor.
+		- Thanks to @maiiku for adding this feature
 
 Version 1.3.6:
 	Added Spanish translation
