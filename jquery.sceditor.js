@@ -287,7 +287,7 @@
 			// add the editor to the HTML and store the editors element
 			$editorContainer.append($wysiwygEditor).append($sourceEditor);
 			wysiwygEditor = $wysiwygEditor[0];
-			sourceEditor  = $sourceEditor[0];
+			sourceEditor    = $sourceEditor[0];
 
 			base.width(base.opts.width || $original.width());
 			base.height(base.opts.height || $original.height());
@@ -320,7 +320,12 @@
 				.bind("beforedeactivate keyup", saveRange)
 				.focus(function() {
 					lastRange = null;
-				});
+				})
+				
+			// auto-update original textbox on blur if option set to true
+			if(base.opts.autoUpdate)
+				$body.bind("blur", base.updateOriginal);
+				$doc.bind("blur", base.updateOriginal);
 
 			if(base.opts.rtl)
 			{
@@ -3429,6 +3434,11 @@
 		 * @type {Boolean}
 		 */
 		autoExpand: false,
+		/**
+		 * If to auto update original textbox on blur
+		 * @type {Boolean}
+		 */		
+		autoUpdate: false,
 
 		/**
 		 * If to run the source editor when there is no WYSIWYG support. Only really applies to mobile OS's.
