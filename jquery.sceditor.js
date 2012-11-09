@@ -206,6 +206,7 @@
 		/**
 		 * All the commands supported by the editor
 		 */
+	    options = options || {};
 		base.commands = $.extend({}, (options.commands || $.sceditor.commands));
 
 		/**
@@ -3473,6 +3474,10 @@
 
 			if($this.parents('.sceditor-container').length > 0)
 				return;
+			
+			if(options && options == "state"){
+				return  !$this.data('sceditor');
+			}  
 
 			if(!$this.data('sceditor'))
 				(new $.sceditor(this, options));
