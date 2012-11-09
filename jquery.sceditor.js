@@ -3004,7 +3004,7 @@
 		},
 
 		/**
-		 * List of block level elements seperated by bars (|)
+		 * List of block level elements separated by bars (|)
 		 * @type {string}
 		 */
 		blockLevelList: "|body|hr|p|div|h1|h2|h3|h4|h5|h6|address|pre|form|table|tbody|thead|tfoot|th|tr|td|li|ol|ul|blockquote|center|",
@@ -3250,7 +3250,7 @@
 	 */
 	$.sceditor.defaultOptions = {
 		/**
-		 * Toolbar buttons order and groups. Should be comma seperated and have a bar | to seperate groups
+		 * Toolbar buttons order and groups. Should be comma separated and have a bar | to separate groups
 		 * @type {String}
 		 */
 		toolbar:	"bold,italic,underline,strike,subscript,superscript|left,center,right,justify|" +
@@ -3265,13 +3265,13 @@
 		style: "jquery.sceditor.default.css",
 
 		/**
-		 * Comma seperated list of fonts for the font selector
+		 * Comma separated list of fonts for the font selector
 		 * @type {String}
 		 */
 		fonts: "Arial,Arial Black,Comic Sans MS,Courier New,Georgia,Impact,Sans-serif,Serif,Times New Roman,Trebuchet MS,Verdana",
 
 		/**
-		 * Colors should be comma seperated and have a bar | to signal a new column.
+		 * Colors should be comma separated and have a bar | to signal a new column.
 		 *
 		 * If null the colors will be auto generated.
 		 * @type {string}
@@ -3290,11 +3290,17 @@
 		 */
 		charset: "utf-8",
 
-		// compatibility mode for if you have emoticons such as :/ This mode requires
-		// emoticons to be surrounded by whitespace or end of line chars. This mode
-		// has limited As You Type emoticon converstion support (end of line chars)
-		// are not accepted as whitespace so only emoticons surrounded by whitespace
-		// will work
+		/**
+		 * Compatibility mode for emoticons.
+		 *
+		 * Helps if you have emoticons such as :/ which would put an emoticon inside http://
+		 *
+		 * This mode requires emoticons to be surrounded by whitespace or end of line chars.
+		 * This mode has limited As You Type emoticon conversion support. It will not replace
+		 * AYT for end of line chars, only emoticons surrounded by whitespace. They will still
+		 * be replaced correctly when loaded just not AYT.
+		 * @type {Boolean}
+		 */
 		emoticonsCompat: false,
 
 		/**
@@ -3397,17 +3403,21 @@
 		getTextHandler: null,
 
 		/**
-		 * Date format, will be overriden if locale specifies one.
+		 * Date format, will be overridden if locale specifies one.
 		 *
 		 * The words year, month and day will be replaced with the users current year, month and day.
 		 * @type {String}
 		 */
 		dateFormat: "year-month-day",
 
+		/**
+		 * Element to inset the toobar into.
+		 * @type {HTMLElement}
+		 */
 		toolbarContainer: null,
 
 		/**
-		 * If to enable paste filtering. This is curently experimental, please report any issues.
+		 * If to enable paste filtering. This is currently experimental, please report any issues.
 		 * @type {Boolean}
 		 */
 		enablePasteFiltering: false,
@@ -3425,7 +3435,7 @@
 		rtl: false,
 
 		/**
-		 * If to auto focus the editor on page laod
+		 * If to auto focus the editor on page load
 		 * @type {Boolean}
 		 */
 		autofocus: false,
@@ -3435,6 +3445,7 @@
 		 * @type {Boolean}
 		 */
 		autoExpand: false,
+
 		/**
 		 * If to auto update original textbox on blur
 		 * @type {Boolean}
@@ -3447,6 +3458,10 @@
 		 */
 		runWithoutWysiwygSupport: false,
 
+		/**
+		 * Optional ID to give the editor.
+		 * @type {String}
+		 */
 		id: null,
 
 		/**
@@ -3457,7 +3472,10 @@
 		 */
 		parserOptions: { },
 
-		//add css to dropdown menu (eg. z-index)
+		/**
+		 * CSS that will be added to the to dropdown menu (eg. z-index)
+		 * @type {Object}
+		 */
 		dropDownCss: { }
 	};
 
@@ -3471,6 +3489,7 @@
 		this.each(function () {
 			$this = this.jquery ? this : $(this);
 
+			// Don't allow the editor to be initilised on it's own source editor
 			if($this.parents('.sceditor-container').length > 0)
 				return;
 
