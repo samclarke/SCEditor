@@ -321,7 +321,7 @@
 				.focus(function() {
 					lastRange = null;
 				});
-				
+
 			// auto-update original textbox on blur if option set to true
 			if(base.opts.autoUpdate){
 				$body.bind("blur", base.updateOriginal);
@@ -3438,7 +3438,7 @@
 		/**
 		 * If to auto update original textbox on blur
 		 * @type {Boolean}
-		 */		
+		 */
 		autoUpdate: false,
 
 		/**
@@ -3462,12 +3462,25 @@
 	};
 
 	$.fn.sceditor = function (options) {
+		var	$this,
+			ret = [];
+
 		if((!options || !options.runWithoutWysiwygSupport) && !$.sceditor.isWysiwygSupported)
 			return;
 
-		return this.each(function () {
-			(new $.sceditor(this, options));
+		this.each(function () {
+			$this = this.jquery ? this : $(this);
+
+			if($this.parents('.sceditor-container').length > 0)
+				return;
+
+			if(!$this.data('sceditor'))
+				(new $.sceditor(this, options));
+
+			ret.push($this.data('sceditor'));
 		});
+
+		return ret.length === 1 ? ret[0] : $(ret);
 	};
 })(jQuery, window, document);
 

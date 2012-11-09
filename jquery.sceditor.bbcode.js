@@ -961,12 +961,12 @@
 	/**
 	 * BBCode plugin for SCEditor
 	 *
-	 * @param {Element} element The textarea to be converted
+	 * @param {Element} $element The textarea to be converted
 	 * @return {Object} options
 	 * @class sceditorBBCodePlugin
 	 * @name jQuery.sceditorBBCodePlugin
 	 */
-	$.sceditorBBCodePlugin = function(element, options) {
+	$.sceditorBBCodePlugin = function($element, options) {
 		var base = this;
 
 		/**
@@ -1019,14 +1019,14 @@
 		 * @private
 		 */
 		init = function() {
-			$.data(element, "sceditorbbcode", base);
+			$.data($element, "sceditorbbcode", base);
 
 			base.opts = $.extend({}, $.sceditor.defaultOptions, options);
 
 			// build the BBCode cache
 			buildBbcodeCache();
 
-			(new $.sceditor(element,
+			(new $.sceditor($element,
 				$.extend({}, base.opts, {
 					getHtmlHandler: base.getHtmlHandler,
 					getTextHandler: base.getTextHandler,
@@ -2100,11 +2100,24 @@
 	};
 
 	$.fn.sceditorBBCodePlugin = function(options) {
+		var	$this,
+			ret = [];
+
 		if((!options || !options.runWithoutWysiwygSupport) && !$.sceditor.isWysiwygSupported)
 			return;
 
-		return this.each(function() {
-			(new $.sceditorBBCodePlugin(this, options));
+		this.each(function () {
+			$this = this.jquery ? this : $(this);
+
+			if($this.parents('.sceditor-container').length > 0)
+				return;
+
+			if(!$this.data('sceditorbbcode'))
+				(new $.sceditorBBCodePlugin($this, options));
+
+			ret.push($this.data('sceditorbbcode'));
 		});
+
+		return ret.length === 1 ? ret[0] : $(ret);
 	};
 })(jQuery, window, document);

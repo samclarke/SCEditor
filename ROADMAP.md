@@ -9,7 +9,6 @@
    * Add helper functions. Blur, focus, keypress, keyup, keydown
    * Add helpers for adding commands/bbcodes.
    * Add disable emoticons option
-   * Update sceditor() to return the current instance of sceditor instead of requiring the use of .data('sceditor')
 
 
 ## 1.4.2
