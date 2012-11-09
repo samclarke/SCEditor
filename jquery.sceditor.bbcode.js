@@ -1019,7 +1019,7 @@
 		 * @private
 		 */
 		init = function() {
-			$.data($element, "sceditorbbcode", base);
+			$element.data("sceditorbbcode", base);
 
 			base.opts = $.extend({}, $.sceditor.defaultOptions, options);
 

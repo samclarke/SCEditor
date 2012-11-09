@@ -351,7 +351,7 @@
 			var	$group, $button, buttons, i, x, buttonClick,
 				groups = base.opts.toolbar.split("|");
 
-			buttonClick = function (e) {
+			buttonClick = function () {
 				var $this = $(this);
 				if(!$this.hasClass('disabled'))
 					handleCommand($this, base.commands[$this.data("sceditor-command")]);
