@@ -206,6 +206,7 @@
 		/**
 		 * All the commands supported by the editor
 		 */
+	    options = options || {};
 		base.commands = $.extend({}, (options.commands || $.sceditor.commands));
 
 		/**
@@ -3489,6 +3490,10 @@
 			// Don't allow the editor to be initilised on it's own source editor
 			if($this.parents('.sceditor-container').length > 0)
 				return;
+			
+			if(options && options == "state"){
+				return  !$this.data('sceditor');
+			}  
 
 			// If options set to state then return current state. True for initilised and false otherwise
 			if(options && options == "state")
