@@ -1015,6 +1015,13 @@
 		};
 
 		/**
+		 * Cache of CamelCase versions of CSS properties
+		 * @type {Object}
+		 */
+		var propertyCache = {};
+
+
+		/**
 		 * Initializer
 		 * @private
 		 */
@@ -1152,38 +1159,41 @@
 		};
 
 		getStyle = function(element, property) {
-			var	name = $.camelCase(property),
-				$elm, ret, dir;
+			var	$elm, ret, dir, textAlign, name,
+				style = element.style;
+
+			if(!style)
+				return null;
+
+			if(!propertyCache[property])
+				propertyCache[property] = $.camelCase(property);
+
+			name = propertyCache[property];
 
 			// add exception for align
 			if("text-align" === property)
 			{
-				$elm = $(element);
+				$elm      = $(element);
+				dir       = style.direction;
+				textAlign = style[name] || $elm.css(property);
 
-				if(!element.style)
-					return null;
-
-				if($elm.parent().css(property) !== $elm.css(property) &&
+				if($elm.parent().css(property) !== textAlign &&
 					$elm.css('display') === "block" && !$elm.is('hr') && !$elm.is('th'))
-					ret = $elm.css(property);
+					ret = textAlign;
 
-				// IE changes text-align to the same as direction so skip unless overried by user
-				dir = element.style.direction;
-				if(dir && ((/right/i.test(ret) && dir === 'rtl') || (/left/i.test(ret) && dir === 'ltr')))
+				// IE changes text-align to the same as the current direction so skip unless overridden by user
+				if(dir && ret && ((/right/i.test(ret) && dir === 'rtl') || (/left/i.test(ret) && dir === 'ltr')))
 					return null;
 
 				return ret;
 			}
 
-			if(element.style)
-				return element.style[name];
-
-			return null;
+			return style[name];
 		};
 
 		isEmpty = function(element) {
 			var	childNodes = element.childNodes,
-				i = childNodes.length;
+				i          = childNodes.length;
 
 			if(element.nodeValue && /\S|\u00A0/.test(element.nodeValue))
 				return false;
@@ -1371,7 +1381,7 @@
 						if(isValidChild)
 						{
 							// code tags should skip most styles
-							if(!$node.is('code'))
+							if(tag !== "code")
 							{
 								// handle inline bbcodes
 								curTag = handleStyles($node, curTag);
@@ -1388,7 +1398,8 @@
 					}
 					else if(node.wholeText && (!node.previousSibling || node.previousSibling.nodeType !== 3))
 					{
-						if($(node).parents('code').length === 0)
+// TODO:This should check for CSS white-space
+						if($node.parents('code').length === 0)
 							ret += node.wholeText.replace(/ +/g, " ");
 						else
 							ret += node.wholeText;
@@ -1492,6 +1503,38 @@
 		});
 	};
 
+	/**
+	 * Converts CSS RGB and hex shorthand into hex
+	 *
+	 * @since v1.4.0
+	 * @param {String} color
+	 * @return {String}
+	 */
+	$.sceditorBBCodePlugin.normaliseColour = function(color) {
+		var m;
+
+		function toHex(n) {
+			n = parseInt(n, 10);
+
+			if(isNaN(n))
+				return "00";
+
+			n = Math.max(0,Math.min(n,255)).toString(16);
+
+			return n.length<2 ? '0'+n : n;
+		}
+
+		// rgb(n,n,n);
+		if((m = color.match(/rgb\((\d{1,3}),\s*?(\d{1,3}),\s*?(\d{1,3})\)/i)))
+			return '#' + toHex(m[1]) + toHex(m[2]-0) + toHex(m[3]-0);
+
+		// expand shorthand
+		if((m = color.match(/#([0-f])([0-f])([0-f])\s*?$/i)))
+			return '#' + m[1] + m[1] + m[2] + m[2] + m[3] + m[3];
+
+		return color;
+	};
+
 	$.sceditorBBCodePlugin.bbcodes = {
 		// START_COMMAND: Bold
 		b: {
@@ -1580,10 +1623,12 @@
 				"font-family": null
 			},
 			format: function(element, content) {
-				if(element[0].nodeName.toLowerCase() === "font" && element.attr('face'))
-					return '[font=' + this.stripQuotes(element.attr('face')) + ']' + content + '[/font]';
+				var font;
 
-				return '[font=' + this.stripQuotes(element.css('font-family')) + ']' + content + '[/font]';
+				if(element[0].nodeName.toLowerCase() !== "font" || !(font = element.attr('face')))
+					font = element.css('font-family');
+
+				return '[font=' + this.stripQuotes(font) + ']' + content + '[/font]';
 			},
 			html: function(token, attrs, content) {
 				return '<font face="' + attrs.defaultAttr + '">' + content + '</font>';
@@ -1602,13 +1647,14 @@
 				"font-size": null
 			},
 			format: function(element, content) {
-				var	fontSize = element.css('fontSize'),
+				var	fontSize = element.attr('size'),
 					size     = 1;
 
-				if(element.attr('size'))
-					size = element.attr('size');
+				if(!fontSize)
+					fontSize = element.css('fontSize');
+
 				// Most browsers return px value but IE returns 1-7
-				else if(fontSize.indexOf("px") > -1) {
+				if(fontSize.indexOf("px") > -1) {
 					// convert size to an int
 					fontSize = fontSize.replace("px", "") - 0;
 
@@ -1646,43 +1692,14 @@
 			styles: {
 				color: null
 			},
-			format: function(element, content) {
-				/**
-				 * Converts CSS rgb value into hex
-				 * @private
-				 * @return string Hex color
-				 */
-				var rgbToHex = function(rgbStr) {
-					var m;
+			format: function($element, content) {
+				var	color,
+					element = $element[0];
 
-					function toHex(n) {
-						n = parseInt(n,10);
-						if(isNaN(n))
-							return "00";
-						n = Math.max(0,Math.min(n,255)).toString(16);
+				if(element.nodeName.toLowerCase() !== "font" || !(color = $element.attr('color')))
+					color = element.style.color || $element.css('color');
 
-						return n.length<2 ? '0'+n : n;
-					}
-
-					// rgb(n,n,n);
-					if((m = rgbStr.match(/rgb\((\d+),\s*?(\d+),\s*?(\d+)\)/i)))
-						return '#' + toHex(m[1]) + toHex(m[2]-0) + toHex(m[3]-0);
-
-					// expand shorthand
-					if((m = rgbStr.match(/#([0-f])([0-f])([0-f])\s*?$/i)))
-						return '#' + m[1] + m[1] + m[2] + m[2] + m[3] + m[3];
-
-					return rgbStr;
-				};
-
-				var color = element.css('color');
-
-				if(element[0].nodeName.toLowerCase() === "font" && element.attr('color'))
-					color = element.attr('color');
-
-				color = rgbToHex(color);
-
-				return '[color=' + color + ']' + content + '[/color]';
+				return '[color=' + $.sceditorBBCodePlugin.normaliseColour(color) + ']' + content + '[/color]';
 			},
 			html: function(token, attrs, content) {
 				return '<font color="' + attrs.defaultAttr + '">' + content + '</font>';
@@ -1844,11 +1861,13 @@
 				}
 			},
 			format: function(element, content) {
-				// make sure this link is not an e-mail, if it is return e-mail BBCode
-				if(element.attr('href').substr(0, 7) === 'mailto:')
-					return '[email=' + element.attr('href').substr(7) + ']' + content + '[/email]';
+				var url = element.attr('href');
 
-				return '[url=' + decodeURI(element.attr('href')) + ']' + content + '[/url]';
+				// make sure this link is not an e-mail, if it is return e-mail BBCode
+				if(url.substr(0, 7) === 'mailto:')
+					return '[email=' + url.substr(7) + ']' + content + '[/email]';
+
+				return '[url=' + decodeURI(url) + ']' + content + '[/url]';
 			},
 			html: function(token, attrs, content) {
 				if(typeof attrs.defaultAttr === "undefined" || attrs.defaultAttr.length === 0)
@@ -1878,22 +1897,20 @@
 			isInline: false,
 			format: function(element, content) {
 				var	author,
-					attr = '',
-					$elm = $(element);
+					$elm  = $(element),
+					$cite = $elm.children("cite:first");
 
-				if($elm.children("cite:first").length === 1 || $elm.data("author")) {
-					author = $(element).children("cite:first").text() || $elm.data("author");
-
+				if($cite.length === 1 || $elm.data("author")) {
+					author = $cite.text() || $elm.data("author");
 
 					$elm.data("author", author);
-					$(element).children("cite:first").remove();
+					$cite.remove();
 
-					content	= '';
 					content	= this.elementToBbcode($(element));
-					attr	= '=' + author;
+					author  = '=' + author;
 				}
 
-				return '[quote' + attr + ']' + content + '[/quote]';
+				return '[quote' + author + ']' + content + '[/quote]';
 			},
 			html: function(token, attrs, content) {
 				if(typeof attrs.defaultAttr !== "undefined")
@@ -1970,10 +1987,10 @@
 				}
 			},
 			format: function(element, content) {
-				if(!element.attr('data-youtube-id'))
+				if(!(element = element.attr('data-youtube-id')))
 					return content;
 
-				return '[youtube]' + element.attr('data-youtube-id') + '[/youtube]';
+				return '[youtube]' + element + '[/youtube]';
 			},
 			html: '<iframe width="560" height="315" src="http://www.youtube.com/embed/{0}?wmode=opaque' +
 				'" data-youtube-id="{0}" frameborder="0" allowfullscreen></iframe>'
@@ -2076,7 +2093,7 @@
 			if (this.hasOwnProperty(name))
 			{
 				this[newName] = this[name];
-				delete this[name];
+				this.remove(name);
 			}
 			else
 				return false;
@@ -2113,7 +2130,7 @@
 				return;
 
 			if(!$this.data('sceditorbbcode'))
-				(new $.sceditorBBCodePlugin($this, options));
+				(new $.sceditorBBCodePlugin($this, options || {}));
 
 			ret.push($this.data('sceditorbbcode'));
 		});

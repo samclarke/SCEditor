@@ -458,16 +458,14 @@
 		 * @private
 		 */
 		updateToolBar = function(disable) {
-			$toolbar.find('.sceditor-button').removeClass('disabled');
+			var inSourceMode = base.inSourceMode();
 
-			$toolbar.find('.sceditor-button').each(function () {
+			$toolbar.find('.sceditor-button').removeClass('disabled').each(function () {
 				var button = $(this);
 
-				if(disable === true)
+				if(disable === true || (inSourceMode && !button.data('sceditor-txtmode')))
 					button.addClass('disabled');
-				else if(base.inSourceMode() && !button.data('sceditor-txtmode'))
-					button.addClass('disabled');
-				else if (!base.inSourceMode() && !button.data('sceditor-wysiwygmode'))
+				else if (!inSourceMode && !button.data('sceditor-wysiwygmode'))
 					button.addClass('disabled');
 			});
 		};
@@ -1272,7 +1270,7 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.inSourceMode = function () {
-			return $sourceEditor.is(':visible');
+			return $editorContainer.hasClass('sourceMode');
 		};
 
 		/**
@@ -1324,13 +1322,10 @@
 			$sourceEditor.toggle();
 			$wysiwygEditor.toggle();
 
-			$editorContainer.removeClass('sourceMode')
-					.removeClass('wysiwygMode');
-
-			if(base.inSourceMode())
-				$editorContainer.addClass('sourceMode');
+			if(!base.inSourceMode())
+				$editorContainer.removeClass('wysiwygMode').addClass('sourceMode');
 			else
-				$editorContainer.addClass('wysiwygMode');
+				$editorContainer.removeClass('sourceMode').addClass('wysiwygMode');
 
 			updateToolBar();
 		};
@@ -3018,10 +3013,12 @@
 			if(!elm || elm.nodeType !== 1)
 				return true;
 
-			if(elm.tagName.toLowerCase() === 'code')
+			elm = elm.tagName.toLowerCase();
+
+			if(elm === 'code')
 				return !includeCodeAsBlock;
 
-			return $.sceditor.dom.blockLevelList.indexOf("|" + elm.tagName.toLowerCase() + "|") < 0;
+			return $.sceditor.dom.blockLevelList.indexOf("|" + elm + "|") < 0;
 		},
 
 		/**
@@ -3493,8 +3490,15 @@
 			if($this.parents('.sceditor-container').length > 0)
 				return;
 
+			// If options set to state then return current state. True for initilised and false otherwise
+			if(options && options == "state")
+			{
+				ret.push(!!$this.data('sceditor'));
+				return;
+			}
+
 			if(!$this.data('sceditor'))
-				(new $.sceditor(this, options));
+				(new $.sceditor(this, options || {}));
 
 			ret.push($this.data('sceditor'));
 		});
