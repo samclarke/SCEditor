@@ -50,7 +50,6 @@
 
 		base.bbcodes = $.sceditorBBCodePlugin.bbcodes;
 
-
 		/**
 		 * cache of all the tags pointing to their bbcodes to enable
 		 * faster lookup of which bbcode a tag should have
@@ -86,12 +85,9 @@
 		 */
 		init = function() {
 			$.data(element, "sceditorbbcode", base);
-
 			base.options = $.extend({}, $.sceditor.defaultOptions, options);
-
 			// build the BBCode cache
 			buildBbcodeCache();
-
 			(new $.sceditor(element,
 				$.extend({}, base.options, {
 					getHtmlHandler: base.getHtmlHandler,
@@ -115,7 +111,6 @@
 				justify: { txtExec: ["[justify]", "[/justify]"] },
 				font: { txtExec: function(caller) {
 					var editor = this;
-
 					$.sceditor.command.get('font')._dropDown(
 						editor,
 						caller,
@@ -126,7 +121,6 @@
 				} },
 				size: { txtExec: function(caller) {
 					var editor = this;
-
 					$.sceditor.command.get('size')._dropDown(
 						editor,
 						caller,
@@ -137,7 +131,6 @@
 				} },
 				color: { txtExec: function(caller) {
 					var editor = this;
-
 					$.sceditor.command.get('color')._dropDown(
 						editor,
 						caller,
@@ -146,37 +139,33 @@
 						}
 					);
 				} },
-				bulletlist: { txtExec: ["[ul][li]", "[/li][/ul]"] },
-				orderedlist: { txtExec: ["[ol][li]", "[/li][/ol]"] },
+				bulletlist: { txtExec: ["[list][*]", "[/list]"] },
+				orderedlist: { txtExec: ["[list=1][*]", "[/list]"] },
 				table: { txtExec: ["[table][tr][td]", "[/td][/tr][/table]"] },
 				horizontalrule: { txtExec: ["[hr]"] },
 				code: { txtExec: ["[code]", "[/code]"] },
 				image: { txtExec: function(caller, selected) {
 					var url = prompt(this._("Enter the image URL:"), selected);
-
-					if(url)
+					if (url)
 						this.insertText("[img]" + url + "[/img]");
 				} },
 				email: { txtExec: function(caller, selected) {
 					var	display = selected && selected.indexOf('@') > -1 ? null : selected,
 						email	= prompt(this._("Enter the e-mail address:"), (display ? '' : selected)),
 						text	= prompt(this._("Enter the displayed text:"), display || email) || email;
-
-					if(email)
+					if (email)
 						this.insertText("[email=" + email + "]" + text + "[/email]");
 				} },
 				link: { txtExec: function(caller, selected) {
 					var	display = selected && selected.indexOf('http://') > -1 ? null : selected,
 						url	= prompt(this._("Enter URL:"), (display ? 'http://' : selected)),
 						text	= prompt(this._("Enter the displayed text:"), display || url) || url;
-
-					if(url)
+					if (url)
 						this.insertText("[url=" + url + "]" + text + "[/url]");
 				} },
 				quote: { txtExec: ["[quote]", "[/quote]"] },
 				youtube: { txtExec: function(caller) {
 					var editor = this;
-
 					$.sceditor.command.get('youtube')._dropDown(
 						editor,
 						caller,
@@ -188,7 +177,6 @@
 				rtl: { txtExec: ["[rtl]", "[/rtl]"] },
 				ltr: { txtExec: ["[ltr]", "[/ltr]"] }
 			};
-
 			return $.extend(true, {}, merge, $.sceditor.commands);
 		};
 
@@ -199,7 +187,7 @@
 		 */
 		buildBbcodeCache = function() {
 			$.each(base.bbcodes, function(bbcode, info) {
-				if(typeof base.bbcodes[bbcode].tags !== "undefined")
+				if (typeof base.bbcodes[bbcode].tags !== "undefined")
 					$.each(base.bbcodes[bbcode].tags, function(tag, values) {
 						var isBlock = !!base.bbcodes[bbcode].isBlock;
 						tagsToBbcodes[tag] = (tagsToBbcodes[tag] || {});
@@ -207,7 +195,7 @@
 						tagsToBbcodes[tag][isBlock][bbcode] = values;
 					});
 
-				if(typeof base.bbcodes[bbcode].styles !== "undefined")
+				if (typeof base.bbcodes[bbcode].styles !== "undefined")
 					$.each(base.bbcodes[bbcode].styles, function(style, values) {
 						var isBlock = !!base.bbcodes[bbcode].isBlock;
 						stylesToBbcodes[isBlock] = (stylesToBbcodes[isBlock] || {});
@@ -222,23 +210,23 @@
 				$elm, ret, dir;
 
 			// add exception for align
-			if("text-align" === property)
+			if ("text-align" === property)
 			{
 				$elm = $(element);
 
-				if($elm.parent().css(property) !== $elm.css(property) &&
+				if ($elm.parent().css(property) !== $elm.css(property) &&
 					$elm.css('display') === "block" && !$elm.is('hr') && !$elm.is('th'))
 					ret = $elm.css(property);
 
 				// IE changes text-align to the same as direction so skip unless overried by user
 				dir = element.style.direction;
-				if(dir && ((/right/i.test(ret) && dir === 'rtl') || (/left/i.test(ret) && dir === 'ltr')))
+				if (dir && ((/right/i.test(ret) && dir === 'rtl') || (/left/i.test(ret) && dir === 'ltr')))
 					return null;
 
 				return ret;
 			}
 
-			if(element.style)
+			if (element.style)
 				return element.style[name];
 
 			return null;
@@ -248,14 +236,14 @@
 			var	childNodes = element.childNodes,
 				i = childNodes.length;
 
-			if(element.nodeValue)
+			if (element.nodeValue)
 				return false;
 
-			if(childNodes.length === 0 || (childNodes.length === 1 && (/br/i.test(childNodes[0].nodeName) || isEmpty(childNodes[0]))))
+			if (childNodes.length === 0 || (childNodes.length === 1 && (/br/i.test(childNodes[0].nodeName) || isEmpty(childNodes[0]))))
 				return true;
 
 			while(i--)
-				if(!isEmpty(childNodes[i]))
+				if (!isEmpty(childNodes[i]))
 					return false;
 
 			return true;
@@ -274,7 +262,7 @@
 			// convert blockLevel to boolean
 			blockLevel = !!blockLevel;
 
-			if(!stylesToBbcodes[blockLevel])
+			if (!stylesToBbcodes[blockLevel])
 				return content;
 
 			$.each(stylesToBbcodes[blockLevel], function(property, bbcodes) {
@@ -282,15 +270,15 @@
 
 				// if the parent has the same style use that instead of this one
 				// so you dont end up with [i]parent[i]child[/i][/i]
-				if(!elementPropVal || getStyle(element.parent()[0], property) === elementPropVal)
+				if (!elementPropVal || getStyle(element.parent()[0], property) === elementPropVal)
 					return;
 
 				$.each(bbcodes, function(bbcode, values) {
-					if(!/\S|\u00A0/.test(content) && !base.bbcodes[bbcode].allowsEmpty && isEmpty(element[0]))
+					if (!/\S|\u00A0/.test(content) && !base.bbcodes[bbcode].allowsEmpty && isEmpty(element[0]))
 						return;
 
-					if(!values || $.inArray(elementPropVal.toString(), values) > -1) {
-						if($.isFunction(base.bbcodes[bbcode].format))
+					if (!values || $.inArray(elementPropVal.toString(), values) > -1) {
+						if ($.isFunction(base.bbcodes[bbcode].format))
 							content = base.bbcodes[bbcode].format.call(base, element, content);
 						else
 							content = formatString(base.bbcodes[bbcode].format, content);
@@ -317,15 +305,15 @@
 			// convert blockLevel to boolean
 			blockLevel = !!blockLevel;
 
-			if(tagsToBbcodes[tag] && tagsToBbcodes[tag][blockLevel]) {
+			if (tagsToBbcodes[tag] && tagsToBbcodes[tag][blockLevel]) {
 				// loop all bbcodes for this tag
 				$.each(tagsToBbcodes[tag][blockLevel], function(bbcode, bbcodeAttribs) {
-					if(!/\S|\u00A0/.test(content) && !base.bbcodes[bbcode].allowsEmpty && isEmpty(element[0]))
+					if (!/\S|\u00A0/.test(content) && !base.bbcodes[bbcode].allowsEmpty && isEmpty(element[0]))
 						return;
 
 					// if the bbcode requires any attributes then check this has
 					// all needed
-					if(bbcodeAttribs) {
+					if (bbcodeAttribs) {
 						var runBbcode = false;
 
 						// loop all the bbcode attribs
@@ -333,7 +321,7 @@
 						{
 							// if the element has the bbcodes attribute and the bbcode attribute
 							// has values check one of the values matches
-							if(!element.attr(attrib) || (values && $.inArray(element.attr(attrib), values) < 0))
+							if (!element.attr(attrib) || (values && $.inArray(element.attr(attrib), values) < 0))
 								return;
 
 							// break this loop as we have matched this bbcode
@@ -341,11 +329,11 @@
 							return false;
 						});
 
-						if(!runBbcode)
+						if (!runBbcode)
 							return;
 					}
 
-					if($.isFunction(base.bbcodes[bbcode].format))
+					if ($.isFunction(base.bbcodes[bbcode].format))
 						content = base.bbcodes[bbcode].format.call(base, element, content);
 					else
 						content = formatString(base.bbcodes[bbcode].format, content);
@@ -353,15 +341,15 @@
 			}
 
 			// add newline after paragraph elements p and div (WebKit uses divs) and br tags
-			if(blockLevel && /^(br|div|p)$/.test(tag))
+			if (blockLevel && /^(br|div|p)$/.test(tag))
 			{
 				// Only treat divs/p as a newline if their last child was not a new line.
-				if(!(/^(div|p)$/i.test(tag) && element[0].lastChild && element[0].lastChild.nodeName.toLowerCase() === "br"))
+				if (!(/^(div|p)$/i.test(tag) && element[0].lastChild && element[0].lastChild.nodeName.toLowerCase() === "br"))
 					content += "\n";
 
 				// needed for browsers that enter textnode then when return is pressed put the rest in a div, i.e.:
 				// text<div>line 2</div>
-				if("br" !== tag && !$.sceditor.dom.isInline(element[0].parentNode) && element[0].previousSibling &&
+				if ("br" !== tag && !$.sceditor.dom.isInline(element[0].parentNode) && element[0].previousSibling &&
 					element[0].previousSibling.nodeType === 3) {
 					content = "\n" + content;
 				}
@@ -405,7 +393,6 @@
 		 */
 		base.getHtmlHandler = function(html, domBody) {
 			$.sceditor.dom.removeWhiteSpace(domBody[0]);
-
 			return $.trim(base.elementToBbcode(domBody));
 		};
 
@@ -430,32 +417,32 @@
 						vChild		= validChildren[tag],
 						isValidChild	= true;
 
-					if(typeof vChildren === 'object')
+					if (typeof vChildren === 'object')
 					{
 						isValidChild = $.inArray(tag, vChildren) > -1;
 
 						// if this tag is one of the parents allowed children
 						// then set this tags allowed children to whatever it allows,
 						// otherwise set to what the parent allows
-						if(!isValidChild)
+						if (!isValidChild)
 							vChild = vChildren;
 					}
 
 					// 3 is text element
-					if(node.nodeType !== 3)
+					if (node.nodeType !== 3)
 					{
 						// skip ignored elments
-						if($node.hasClass("sceditor-ignore"))
+						if ($node.hasClass("sceditor-ignore"))
 							return;
 
 						// don't loop inside iframes
-						if(tag !== 'iframe')
+						if (tag !== 'iframe')
 							curTag = toBBCode(node, vChild);
 
-						if(isValidChild)
+						if (isValidChild)
 						{
 							// code tags should skip most styles
-							if(!$node.is('code'))
+							if (!$node.is('code'))
 							{
 								// handle inline bbcodes
 								curTag = handleStyles($node, curTag);
@@ -470,14 +457,14 @@
 						else
 							ret += curTag;
 					}
-					else if(node.wholeText && (!node.previousSibling || node.previousSibling.nodeType !== 3))
+					else if (node.wholeText && (!node.previousSibling || node.previousSibling.nodeType !== 3))
 					{
-						if($(node).parents('code').length === 0)
+						if ($(node).parents('code').length === 0)
 							ret += node.wholeText.replace(/ +/g, " ");
 						else
 							ret += node.wholeText;
 					}
-					else if(!node.wholeText)
+					else if (!node.wholeText)
 						ret += node.nodeValue;
 				}, false, true);
 
@@ -506,16 +493,16 @@
 
 				bbcode = bbcode.toLowerCase();
 
-				if(attrs)
+				if (attrs)
 				{
 					attrs = $.trim(attrs);
 
 					// if only one attribute then remove the = from the start and strip any quotes
-					if((attrs.charAt(0) === "=" && (attrs.split("=").length - 1) <= 1) || bbcode === 'url')
+					if ((attrs.charAt(0) === "=" && (attrs.split("=").length - 1) <= 1) || bbcode === 'url')
 						attrsMap.defaultattr = base.stripQuotes(attrs.substr(1));
 					else
 					{
-						if(attrs.charAt(0) === "=")
+						if (attrs.charAt(0) === "=")
 							attrs = "defaultattr" + attrs;
 
 						while((matches = atribsRegex.exec(attrs)))
@@ -523,10 +510,10 @@
 					}
 				}
 
-				if(!base.bbcodes[bbcode])
+				if (!base.bbcodes[bbcode])
 					return str;
 
-				if($.isFunction(base.bbcodes[bbcode].html))
+				if ($.isFunction(base.bbcodes[bbcode].html))
 					return base.bbcodes[bbcode].html.call(base, bbcode, attrsMap, content);
 				else
 					return formatString(base.bbcodes[bbcode].html, content);
@@ -581,9 +568,9 @@
 				next = node.nextSibling;
 				nodeName = node.nodeName.toLowerCase();
 
-				if((node.nodeType === 1 && !$.sceditor.dom.isInline(node)) || nodeName === "br")
+				if ((node.nodeType === 1 && !$.sceditor.dom.isInline(node)) || nodeName === "br")
 				{
-					if(inlineFrag.childNodes.length > 0 || nodeName === "br")
+					if (inlineFrag.childNodes.length > 0 || nodeName === "br")
 					{
 						div = d.createElement('div');
 						div.appendChild(inlineFrag);
@@ -591,7 +578,7 @@
 						// Putting BR in a div in IE9 causes it to do a double line break,
 						// as much as I hate browser UA sniffing, to do feature detection would
 						// be more code than it's worth for this specific bug.
-						if(nodeName === "br" && !$.sceditor.ie)
+						if (nodeName === "br" && !$.sceditor.ie)
 							div.appendChild(d.createElement('br'));
 
 						// If it's an empty DIV and in compatibility mode is below IE8 then
@@ -603,14 +590,14 @@
 						// find one.
 						// Cannot do zoom: 1; or set a height on the div to fix it as that
 						// causes resize handles to be added to the div when it's clicked on/
-						if(!div.childNodes.length && (d.documentMode && d.documentMode < 8 || $.sceditor.ie < 8))
+						if (!div.childNodes.length && (d.documentMode && d.documentMode < 8 || $.sceditor.ie < 8))
 							div.appendChild(d.createTextNode('\u00a0'));
 
 						outputDiv.appendChild(div);
 						inlineFrag = d.createDocumentFragment();
 					}
 
-					if(nodeName !== "br")
+					if (nodeName !== "br")
 						outputDiv.appendChild(node);
 				}
 				else
@@ -619,7 +606,7 @@
 				node = next;
 			}
 
-			if(inlineFrag.childNodes.length > 0)
+			if (inlineFrag.childNodes.length > 0)
 			{
 				div = d.createElement('div');
 				div.appendChild(inlineFrag);
@@ -627,27 +614,27 @@
 			}
 
 			// needed for paste, the first shouldn't be wrapped in a div
-			if(excludeFirstLast)
+			if (excludeFirstLast)
 			{
 				node = outputDiv.firstChild;
-				if(node && node.nodeName.toLowerCase() === "div")
+				if (node && node.nodeName.toLowerCase() === "div")
 				{
 					while((next = node.firstChild))
 						outputDiv.insertBefore(next, node);
 
-					if($.sceditor.ie >= 9)
+					if ($.sceditor.ie >= 9)
 						outputDiv.insertBefore(d.createElement('br'), node);
 
 					outputDiv.removeChild(node);
 				}
 
 				node = outputDiv.lastChild;
-				if(node && node.nodeName.toLowerCase() === "div")
+				if (node && node.nodeName.toLowerCase() === "div")
 				{
 					while((next = node.firstChild))
 						outputDiv.insertBefore(next, node);
 
-					if($.sceditor.ie >= 9)
+					if ($.sceditor.ie >= 9)
 						outputDiv.insertBefore(d.createElement('br'), node);
 
 					outputDiv.removeChild(node);
@@ -749,7 +736,7 @@
 				"font-family": null
 			},
 			format: function(element, content) {
-				if(element[0].nodeName.toLowerCase() === "font" && element.attr('face'))
+				if (element[0].nodeName.toLowerCase() === "font" && element.attr('face'))
 					return '[font=' + this.stripQuotes(element.attr('face')) + ']' + content + '[/font]';
 
 				return '[font=' + this.stripQuotes(element.css('font-family')) + ']' + content + '[/font]';
@@ -774,24 +761,24 @@
 				var	fontSize = element.css('fontSize'),
 					size     = 1;
 
-				if(element.attr('size'))
+				if (element.attr('size'))
 					size = element.attr('size');
 				// Most browsers return px value but IE returns 1-7
-				else if(fontSize.indexOf("px") > -1) {
+				else if (fontSize.indexOf("px") > -1) {
 					// convert size to an int
 					fontSize = fontSize.replace("px", "") - 0;
 
-					if(fontSize > 12)
+					if (fontSize > 12)
 						size = 2;
-					if(fontSize > 15)
+					if (fontSize > 15)
 						size = 3;
-					if(fontSize > 17)
+					if (fontSize > 17)
 						size = 4;
-					if(fontSize > 23)
+					if (fontSize > 23)
 						size = 5;
-					if(fontSize > 31)
+					if (fontSize > 31)
 						size = 6;
-					if(fontSize > 47)
+					if (fontSize > 47)
 						size = 7;
 				}
 				else
@@ -826,7 +813,7 @@
 
 					function toHex(n) {
 						n = parseInt(n,10);
-						if(isNaN(n))
+						if (isNaN(n))
 							return "00";
 						n = Math.max(0,Math.min(n,255)).toString(16);
 
@@ -834,11 +821,11 @@
 					}
 
 					// rgb(n,n,n);
-					if((m = rgbStr.match(/rgb\((\d+),\s*?(\d+),\s*?(\d+)\)/i)))
+					if ((m = rgbStr.match(/rgb\((\d+),\s*?(\d+),\s*?(\d+)\)/i)))
 						return '#' + toHex(m[1]) + toHex(m[2]-0) + toHex(m[3]-0);
 
 					// expand shorthand
-					if((m = rgbStr.match(/#([0-f])([0-f])([0-f])\s*?$/i)))
+					if ((m = rgbStr.match(/#([0-f])([0-f])([0-f])\s*?$/i)))
 						return '#' + m[1] + m[1] + m[2] + m[2] + m[3] + m[3];
 
 					return rgbStr;
@@ -846,7 +833,7 @@
 
 				var color = element.css('color');
 
-				if(element[0].nodeName.toLowerCase() === "font" && element.attr('color'))
+				if (element[0].nodeName.toLowerCase() === "font" && element.attr('color'))
 					color = element.attr('color');
 
 				color = rgbToHex(color);
@@ -865,7 +852,7 @@
 				ul: null
 			},
 			isBlock: true,
-			format: "[ul]{0}[/ul]",
+			format: "[list]{0}[/list]",
 			html: '<ul>{0}</ul>'
 		},
 		list: {
@@ -876,14 +863,14 @@
 				ol: null
 			},
 			isBlock: true,
-			format: "[ol]{0}[/ol]",
+			format: "[list=1]{0}[/list]",
 			html: '<ol>{0}</ol>'
 		},
 		li: {
 			tags: {
 				li: null
 			},
-			format: "[li]{0}[/li]",
+			format: "[*]{0}",
 			html: '<li>{0}</li>'
 		},
 		"*": {
@@ -966,11 +953,11 @@
 					};
 
 				// check if this is an emoticon image
-				if(typeof element.attr('data-sceditor-emoticon') !== "undefined")
+				if (typeof element.attr('data-sceditor-emoticon') !== "undefined")
 					return content;
 
 				// only add width and height if one is specified
-				if(element.attr('width') || element.attr('height') || style('width') || style('height'))
+				if (element.attr('width') || element.attr('height') || style('width') || style('height'))
 					attribs = "=" + $(element).width() + "x" + $(element).height();
 
 				return '[img' + attribs + ']' + element.attr('src') + '[/img]';
@@ -979,13 +966,13 @@
 				var attribs = "", parts;
 
 				// handle [img width=340 height=240]url[/img]
-				if(typeof attrs.width !== "undefined")
+				if (typeof attrs.width !== "undefined")
 					attribs += ' width="' + attrs.width + '"';
-				if(typeof attrs.height !== "undefined")
+				if (typeof attrs.height !== "undefined")
 					attribs += ' height="' + attrs.height + '"';
 
 				// handle [img=340x240]url[/img]
-				if(typeof attrs.defaultattr !== "undefined") {
+				if (typeof attrs.defaultattr !== "undefined") {
 					parts = attrs.defaultattr.split(/x/i);
 
 					attribs = ' width="' + parts[0] + '"' +
@@ -1007,13 +994,13 @@
 			},
 			format: function(element, content) {
 				// make sure this link is not an e-mail, if it is return e-mail BBCode
-				if(element.attr('href').substr(0, 7) === 'mailto:')
+				if (element.attr('href').substr(0, 7) === 'mailto:')
 					return '[email=' + element.attr('href').substr(7) + ']' + content + '[/email]';
 
 				return '[url=' + decodeURI(element.attr('href')) + ']' + content + '[/url]';
 			},
 			html: function(element, attrs, content) {
-				if(typeof attrs.defaultattr === "undefined" || attrs.defaultattr.length === 0)
+				if (typeof attrs.defaultattr === "undefined" || attrs.defaultattr.length === 0)
 					attrs.defaultattr = content;
 
 				return '<a href="' + encodeURI(attrs.defaultattr) + '">' + content + '</a>';
@@ -1024,7 +1011,7 @@
 		// START_COMMAND: E-mail
 		email: {
 			html: function(element, attrs, content) {
-				if(typeof attrs.defaultattr === "undefined")
+				if (typeof attrs.defaultattr === "undefined")
 					attrs.defaultattr = content;
 
 				return '<a href="mailto:' + attrs.defaultattr + '">' + content + '</a>';
@@ -1043,7 +1030,7 @@
 					attr = '',
 					$elm = $(element);
 
-				if($elm.children("cite:first").length === 1 || $elm.data("author")) {
+				if ($elm.children("cite:first").length === 1 || $elm.data("author")) {
 					author = $(element).children("cite:first").text() || $elm.data("author");
 
 
@@ -1058,7 +1045,7 @@
 				return '[quote' + attr + ']' + content + '[/quote]';
 			},
 			html: function(element, attrs, content) {
-				if(typeof attrs.defaultattr !== "undefined")
+				if (typeof attrs.defaultattr !== "undefined")
 					content = '<cite>' + attrs.defaultattr + '</cite>' + content;
 
 				return '<blockquote>' + content + '</blockquote>';
@@ -1131,7 +1118,7 @@
 				}
 			},
 			format: function(element, content) {
-				if(!element.attr('data-youtube-id'))
+				if (!element.attr('data-youtube-id'))
 					return content;
 
 				return '[youtube]' + element.attr('data-youtube-id') + '[/youtube]';
@@ -1198,7 +1185,7 @@
 		 * @since v1.3.5
 		 */
 		set: function(name, bbcode) {
-			if(!name || !bbcode)
+			if (!name || !bbcode)
 				return false;
 
 			// merge any existing command properties
@@ -1218,7 +1205,7 @@
 		 * @since v1.3.5
 		 */
 		remove: function(name) {
-			if($.sceditorBBCodePlugin.bbcodes[name])
+			if ($.sceditorBBCodePlugin.bbcodes[name])
 				delete $.sceditorBBCodePlugin.bbcodes[name];
 
 			return this;
@@ -1263,7 +1250,7 @@
 	};
 
 	$.fn.sceditorBBCodePlugin = function(options) {
-		if((!options || !options.runWithoutWysiwygSupport) && !$.sceditor.isWysiwygSupported())
+		if ((!options || !options.runWithoutWysiwygSupport) && !$.sceditor.isWysiwygSupported())
 			return;
 
 		return this.each(function() {
