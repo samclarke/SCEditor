@@ -2575,7 +2575,14 @@
 			var sel, r;
 
 			if(win.getSelection)
+			{
 				sel = win.getSelection();
+				if (sel === null)
+				{
+					win = window;
+					sel = win.getSelection();
+				}
+			}	
 			else
 				sel = doc.selection;
 
@@ -3491,7 +3498,13 @@
 		 * CSS that will be added to the to dropdown menu (eg. z-index)
 		 * @type {Object}
 		 */
-		dropDownCss: { }
+		dropDownCss: { },
+		
+		/**
+		 * Name of default plugin to use
+		 * @type {Boolean}
+		 */
+		usePlugin: null,		
 	};
 
 	$.fn.sceditor = function (options) {
@@ -3502,15 +3515,12 @@
 			return;
 
 		this.each(function () {
-			$this = this.jquery ? this : $(this);
+			//$this = this.jquery ? this : $(this);
+			$this = $(this);
 
 			// Don't allow the editor to be initilised on it's own source editor
 			if($this.parents('.sceditor-container').length > 0)
 				return;
-			
-			if(options && options == "state"){
-				return  !$this.data('sceditor');
-			}  
 
 			// If options set to state then return current state. True for initilised and false otherwise
 			if(options && options == "state")
@@ -3518,6 +3528,12 @@
 				ret.push(!!$this.data('sceditor'));
 				return;
 			}
+			
+			if(options && options.usePlugin)
+			{
+				$this[options.usePlugin](options);
+				return;
+			}			
 
 			if(!$this.data('sceditor'))
 				(new $.sceditor(this, options || {}));
