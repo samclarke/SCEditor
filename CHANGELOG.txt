@@ -26,6 +26,7 @@ Version 1.4.0:
 	Updated sceditor() to return the instance/instances of the editor and protect against
 		re-initialization.
 		- Thanks to @maiiku for reporting
+	Added IE 10 support
 
 Version 1.3.6:
 	Added Spanish translation
