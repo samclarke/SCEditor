@@ -29,7 +29,7 @@
 		html:		'<!DOCTYPE html>' +
 				'<html>' +
 					'<head>' +
-						'<!--[if IE]><style>* {min-height: auto !important}</style><![endif]-->' +
+						'<style>.ie * {min-height: auto !important}</style>' +
 						'<meta http-equiv="Content-Type" content="text/html;charset={charset}" />' +
 						'<link rel="stylesheet" type="text/css" href="{style}" />' +
 					'</head>' +
@@ -209,6 +209,7 @@
 	    options = options || {};
 		base.commands = $.extend({}, (options.commands || $.sceditor.commands));
 
+
 		/**
 		 * Initializer. Creates the editor iframe and textarea
 		 * @private
@@ -308,7 +309,7 @@
 			// Add IE version class to the HTML element so can apply
 			// conditional styling without CSS hacks
 			if($.sceditor.ie)
-				$doc.find("html").addClass('ie' + $.sceditor.ie);
+				$doc.find("html").addClass('ie').addClass('ie' + $.sceditor.ie);
 
 			// iframe overflow fix
 			if(/iPhone|iPod|iPad| wosbrowser\//i.test(navigator.userAgent) || $.sceditor.ie)
@@ -324,7 +325,8 @@
 				});
 
 			// auto-update original textbox on blur if option set to true
-			if(base.opts.autoUpdate){
+			if(base.opts.autoUpdate)
+			{
 				$body.bind("blur", base.updateOriginal);
 				$doc.bind("blur", base.updateOriginal);
 			}
@@ -354,6 +356,7 @@
 
 			buttonClick = function () {
 				var $this = $(this);
+
 				if(!$this.hasClass('disabled'))
 					handleCommand($this, base.commands[$this.data("sceditor-command")]);
 
@@ -459,16 +462,14 @@
 		 * @private
 		 */
 		updateToolBar = function(disable) {
-			$toolbar.find('.sceditor-button').removeClass('disabled');
+			var inSourceMode = base.inSourceMode();
 
-			$toolbar.find('.sceditor-button').each(function () {
+			$toolbar.find('.sceditor-button').removeClass('disabled').each(function () {
 				var button = $(this);
 
-				if(disable === true)
+				if(disable === true || (inSourceMode && !button.data('sceditor-txtmode')))
 					button.addClass('disabled');
-				else if(base.inSourceMode() && !button.data('sceditor-txtmode'))
-					button.addClass('disabled');
-				else if (!base.inSourceMode() && !button.data('sceditor-wysiwygmode'))
+				else if (!inSourceMode && !button.data('sceditor-wysiwygmode'))
 					button.addClass('disabled');
 			});
 		};
@@ -875,7 +876,7 @@
 		 */
 		base.closeDropDown = function (focus) {
 			if($dropdown) {
-				$dropdown.remove();
+				$dropdown.off().remove();
 				$dropdown = null;
 			}
 
@@ -1273,7 +1274,7 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.inSourceMode = function () {
-			return $sourceEditor.is(':visible');
+			return $editorContainer.hasClass('sourceMode');
 		};
 
 		/**
@@ -1325,13 +1326,10 @@
 			$sourceEditor.toggle();
 			$wysiwygEditor.toggle();
 
-			$editorContainer.removeClass('sourceMode')
-					.removeClass('wysiwygMode');
-
-			if(base.inSourceMode())
-				$editorContainer.addClass('sourceMode');
+			if(!base.inSourceMode())
+				$editorContainer.removeClass('wysiwygMode').addClass('sourceMode');
 			else
-				$editorContainer.addClass('wysiwygMode');
+				$editorContainer.removeClass('sourceMode').addClass('wysiwygMode');
 
 			updateToolBar();
 		};
@@ -1617,6 +1615,10 @@
 			div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->';
 		} while (all[0]);
 
+		// Detect IE 10 as it doesn't support conditional comments.
+		if((document.all && window.atob))
+			v = 10;
+
 		return v > 4 ? v : undef;
 	}());
 
@@ -1825,38 +1827,48 @@
 		// START_COMMAND: Colour
 		color: {
 			_dropDown: function(editor, caller, callback) {
-				var	genColor     = {r: 255, g: 255, b: 255},
+				var	i, x, color, colors,
+					genColor     = {r: 255, g: 255, b: 255},
 					content      = $("<div />"),
 					colorColumns = editor.opts.colors?editor.opts.colors.split("|"):new Array(21),
 					// IE is slow at string concation so use an array
-					html         = [],
-					htmlIndex    = 0;
+					html         = [];
 
-				for (var i=0; i < colorColumns.length; ++i) {
-					var colors = colorColumns[i]?colorColumns[i].split(","):new Array(21);
+				for (i=0; i < colorColumns.length; ++i)
+				{
+					colors = colorColumns[i]?colorColumns[i].split(","):new Array(21);
 
-					html[htmlIndex++] = '<div class="sceditor-color-column">';
-
-					for (var x=0; x < colors.length; ++x) {
+					html.push('<div class="sceditor-color-column">');
+					for (x=0; x < colors.length; ++x)
+					{
 						// use pre defined colour if can otherwise use the generated color
-						var color = colors[x]?colors[x]:"#" + genColor.r.toString(16) + genColor.g.toString(16) + genColor.b.toString(16);
+						color = colors[x] || "#" + genColor.r.toString(16) + genColor.g.toString(16) + genColor.b.toString(16);
 
-						html[htmlIndex++] = '<a href="#" class="sceditor-color-option" style="background-color: '+color+'" data-color="'+color+'"></a>';
+						html.push('<a href="#" class="sceditor-color-option" style="background-color: '+color+'" data-color="'+color+'"></a>');
 
 						// calculate the next generated color
 						if(x%5===0)
-							genColor = {r: genColor.r, g: genColor.g-51, b: 255};
+						{
+							genColor.g -= 51;
+							genColor.b = 255;
+						}
 						else
-							genColor = {r: genColor.r, g: genColor.g, b: genColor.b-51};
+							genColor.b -= 51;
 					}
-
-					html[htmlIndex++] = '</div>';
+					html.push('</div>');
 
 					// calculate the next generated color
 					if(i%5===0)
-						genColor = {r: genColor.r-51, g: 255, b: 255};
+					{
+						genColor.r -= 51;
+						genColor.g = 255;
+						genColor.b = 255;
+					}
 					else
-						genColor = {r: genColor.r, g: 255, b: 255};
+					{
+						genColor.g = 255;
+						genColor.b = 255;
+					}
 				}
 
 				content.append(html.join(''))
@@ -3005,7 +3017,7 @@
 		},
 
 		/**
-		 * List of block level elements seperated by bars (|)
+		 * List of block level elements separated by bars (|)
 		 * @type {string}
 		 */
 		blockLevelList: "|body|hr|p|div|h1|h2|h3|h4|h5|h6|address|pre|form|table|tbody|thead|tfoot|th|tr|td|li|ol|ul|blockquote|center|",
@@ -3019,10 +3031,12 @@
 			if(!elm || elm.nodeType !== 1)
 				return true;
 
-			if(elm.tagName.toLowerCase() === 'code')
+			elm = elm.tagName.toLowerCase();
+
+			if(elm === 'code')
 				return !includeCodeAsBlock;
 
-			return $.sceditor.dom.blockLevelList.indexOf("|" + elm.tagName.toLowerCase() + "|") < 0;
+			return $.sceditor.dom.blockLevelList.indexOf("|" + elm + "|") < 0;
 		},
 
 		/**
@@ -3251,7 +3265,7 @@
 	 */
 	$.sceditor.defaultOptions = {
 		/**
-		 * Toolbar buttons order and groups. Should be comma seperated and have a bar | to seperate groups
+		 * Toolbar buttons order and groups. Should be comma separated and have a bar | to separate groups
 		 * @type {String}
 		 */
 		toolbar:	"bold,italic,underline,strike,subscript,superscript|left,center,right,justify|" +
@@ -3266,13 +3280,13 @@
 		style: "jquery.sceditor.default.css",
 
 		/**
-		 * Comma seperated list of fonts for the font selector
+		 * Comma separated list of fonts for the font selector
 		 * @type {String}
 		 */
 		fonts: "Arial,Arial Black,Comic Sans MS,Courier New,Georgia,Impact,Sans-serif,Serif,Times New Roman,Trebuchet MS,Verdana",
 
 		/**
-		 * Colors should be comma seperated and have a bar | to signal a new column.
+		 * Colors should be comma separated and have a bar | to signal a new column.
 		 *
 		 * If null the colors will be auto generated.
 		 * @type {string}
@@ -3291,11 +3305,17 @@
 		 */
 		charset: "utf-8",
 
-		// compatibility mode for if you have emoticons such as :/ This mode requires
-		// emoticons to be surrounded by whitespace or end of line chars. This mode
-		// has limited As You Type emoticon converstion support (end of line chars)
-		// are not accepted as whitespace so only emoticons surrounded by whitespace
-		// will work
+		/**
+		 * Compatibility mode for emoticons.
+		 *
+		 * Helps if you have emoticons such as :/ which would put an emoticon inside http://
+		 *
+		 * This mode requires emoticons to be surrounded by whitespace or end of line chars.
+		 * This mode has limited As You Type emoticon conversion support. It will not replace
+		 * AYT for end of line chars, only emoticons surrounded by whitespace. They will still
+		 * be replaced correctly when loaded just not AYT.
+		 * @type {Boolean}
+		 */
 		emoticonsCompat: false,
 
 		/**
@@ -3398,17 +3418,21 @@
 		getTextHandler: null,
 
 		/**
-		 * Date format, will be overriden if locale specifies one.
+		 * Date format, will be overridden if locale specifies one.
 		 *
 		 * The words year, month and day will be replaced with the users current year, month and day.
 		 * @type {String}
 		 */
 		dateFormat: "year-month-day",
 
+		/**
+		 * Element to inset the toobar into.
+		 * @type {HTMLElement}
+		 */
 		toolbarContainer: null,
 
 		/**
-		 * If to enable paste filtering. This is curently experimental, please report any issues.
+		 * If to enable paste filtering. This is currently experimental, please report any issues.
 		 * @type {Boolean}
 		 */
 		enablePasteFiltering: false,
@@ -3426,7 +3450,7 @@
 		rtl: false,
 
 		/**
-		 * If to auto focus the editor on page laod
+		 * If to auto focus the editor on page load
 		 * @type {Boolean}
 		 */
 		autofocus: false,
@@ -3436,6 +3460,7 @@
 		 * @type {Boolean}
 		 */
 		autoExpand: false,
+
 		/**
 		 * If to auto update original textbox on blur
 		 * @type {Boolean}
@@ -3448,6 +3473,10 @@
 		 */
 		runWithoutWysiwygSupport: false,
 
+		/**
+		 * Optional ID to give the editor.
+		 * @type {String}
+		 */
 		id: null,
 
 		/**
@@ -3458,7 +3487,10 @@
 		 */
 		parserOptions: { },
 
-		//add css to dropdown menu (eg. z-index)
+		/**
+		 * CSS that will be added to the to dropdown menu (eg. z-index)
+		 * @type {Object}
+		 */
 		dropDownCss: { }
 	};
 
@@ -3472,6 +3504,7 @@
 		this.each(function () {
 			$this = this.jquery ? this : $(this);
 
+			// Don't allow the editor to be initilised on it's own source editor
 			if($this.parents('.sceditor-container').length > 0)
 				return;
 			
@@ -3479,8 +3512,15 @@
 				return  !$this.data('sceditor');
 			}  
 
+			// If options set to state then return current state. True for initilised and false otherwise
+			if(options && options == "state")
+			{
+				ret.push(!!$this.data('sceditor'));
+				return;
+			}
+
 			if(!$this.data('sceditor'))
-				(new $.sceditor(this, options));
+				(new $.sceditor(this, options || {}));
 
 			ret.push($this.data('sceditor'));
 		});
