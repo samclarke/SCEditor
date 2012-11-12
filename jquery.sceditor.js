@@ -3515,8 +3515,7 @@
 			return;
 
 		this.each(function () {
-			//$this = this.jquery ? this : $(this);
-			$this = $(this);
+			$this = this.jquery ? this : $(this);
 
 			// Don't allow the editor to be initilised on it's own source editor
 			if($this.parents('.sceditor-container').length > 0)
