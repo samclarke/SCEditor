@@ -29,7 +29,7 @@
 		html:		'<!DOCTYPE html>' +
 				'<html>' +
 					'<head>' +
-						'<!--[if IE]><style>* {min-height: auto !important}</style><![endif]-->' +
+						'<style>.ie * {min-height: auto !important}</style>' +
 						'<meta http-equiv="Content-Type" content="text/html;charset={charset}" />' +
 						'<link rel="stylesheet" type="text/css" href="{style}" />' +
 					'</head>' +
@@ -208,6 +208,7 @@
 		 */
 		base.commands = $.extend({}, (options.commands || $.sceditor.commands));
 
+
 		/**
 		 * Initializer. Creates the editor iframe and textarea
 		 * @private
@@ -307,7 +308,7 @@
 			// Add IE version class to the HTML element so can apply
 			// conditional styling without CSS hacks
 			if($.sceditor.ie)
-				$doc.find("html").addClass('ie' + $.sceditor.ie);
+				$doc.find("html").addClass('ie').addClass('ie' + $.sceditor.ie);
 
 			// iframe overflow fix
 			if(/iPhone|iPod|iPad| wosbrowser\//i.test(navigator.userAgent) || $.sceditor.ie)
@@ -323,7 +324,8 @@
 				});
 
 			// auto-update original textbox on blur if option set to true
-			if(base.opts.autoUpdate){
+			if(base.opts.autoUpdate)
+			{
 				$body.bind("blur", base.updateOriginal);
 				$doc.bind("blur", base.updateOriginal);
 			}
@@ -353,6 +355,7 @@
 
 			buttonClick = function () {
 				var $this = $(this);
+
 				if(!$this.hasClass('disabled'))
 					handleCommand($this, base.commands[$this.data("sceditor-command")]);
 
@@ -872,7 +875,7 @@
 		 */
 		base.closeDropDown = function (focus) {
 			if($dropdown) {
-				$dropdown.remove();
+				$dropdown.off().remove();
 				$dropdown = null;
 			}
 
@@ -1611,6 +1614,10 @@
 			div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->';
 		} while (all[0]);
 
+		// Detect IE 10 as it doesn't support conditional comments.
+		if((document.all && window.atob))
+			v = 10;
+
 		return v > 4 ? v : undef;
 	}());
 
@@ -1819,38 +1826,48 @@
 		// START_COMMAND: Colour
 		color: {
 			_dropDown: function(editor, caller, callback) {
-				var	genColor     = {r: 255, g: 255, b: 255},
+				var	i, x, color, colors,
+					genColor     = {r: 255, g: 255, b: 255},
 					content      = $("<div />"),
 					colorColumns = editor.opts.colors?editor.opts.colors.split("|"):new Array(21),
 					// IE is slow at string concation so use an array
-					html         = [],
-					htmlIndex    = 0;
+					html         = [];
 
-				for (var i=0; i < colorColumns.length; ++i) {
-					var colors = colorColumns[i]?colorColumns[i].split(","):new Array(21);
+				for (i=0; i < colorColumns.length; ++i)
+				{
+					colors = colorColumns[i]?colorColumns[i].split(","):new Array(21);
 
-					html[htmlIndex++] = '<div class="sceditor-color-column">';
-
-					for (var x=0; x < colors.length; ++x) {
+					html.push('<div class="sceditor-color-column">');
+					for (x=0; x < colors.length; ++x)
+					{
 						// use pre defined colour if can otherwise use the generated color
-						var color = colors[x]?colors[x]:"#" + genColor.r.toString(16) + genColor.g.toString(16) + genColor.b.toString(16);
+						color = colors[x] || "#" + genColor.r.toString(16) + genColor.g.toString(16) + genColor.b.toString(16);
 
-						html[htmlIndex++] = '<a href="#" class="sceditor-color-option" style="background-color: '+color+'" data-color="'+color+'"></a>';
+						html.push('<a href="#" class="sceditor-color-option" style="background-color: '+color+'" data-color="'+color+'"></a>');
 
 						// calculate the next generated color
 						if(x%5===0)
-							genColor = {r: genColor.r, g: genColor.g-51, b: 255};
+						{
+							genColor.g -= 51;
+							genColor.b = 255;
+						}
 						else
-							genColor = {r: genColor.r, g: genColor.g, b: genColor.b-51};
+							genColor.b -= 51;
 					}
-
-					html[htmlIndex++] = '</div>';
+					html.push('</div>');
 
 					// calculate the next generated color
 					if(i%5===0)
-						genColor = {r: genColor.r-51, g: 255, b: 255};
+					{
+						genColor.r -= 51;
+						genColor.g = 255;
+						genColor.b = 255;
+					}
 					else
-						genColor = {r: genColor.r, g: 255, b: 255};
+					{
+						genColor.g = 255;
+						genColor.b = 255;
+					}
 				}
 
 				content.append(html.join(''))
