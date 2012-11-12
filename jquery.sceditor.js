@@ -192,7 +192,6 @@
 			formSubmitHandler,
 			initEmoticons,
 			getWysiwygDoc,
-			handleWindowResize,
 			initLocale,
 			updateToolBar,
 			textEditorSelectedText,
@@ -215,12 +214,6 @@
 			// Load locale
 			if (base.options.locale && base.options.locale !== "en")
 				initLocale();
-
-			// if either width or height are % based, add the resize handler to update the editor
-			// when the window is resized
-			var h = base.options.height, w = base.options.width;
-			if ((h && (h + "").indexOf("%") > -1) || (w && (w + "").indexOf("%") > -1))
-				$(window).resize(handleWindowResize);
 
 			$editorContainer = $('<div class="sceditor-container" />').insertAfter($textarea);
 
@@ -538,7 +531,7 @@
 
 			height -= !base.options.toolbarContainer ? $toolbar.outerHeight(true) : 0;
 
-			// fix the height and width of the textarea/iframe
+			// fix the height of the textarea/iframe
 			$wysiwygEditor.height(height);
 			$wysiwygEditor.height(height + (height - $wysiwygEditor.outerHeight(true)));
 
@@ -593,6 +586,8 @@
 
 			minHeight = base.options.resizeMinHeight || origHeight / 1.5;
 			maxHeight = base.options.resizeMaxHeight || origHeight * 2.5;
+
+			// We're explicitly setting these variables for us in the forum view
 			minWidth = base.options.resizeMinWidth  || origWidth / 1.25;
 			maxWidth = base.options.resizeMaxWidth || origWidth * 1.25;
 
@@ -663,7 +658,6 @@
 		 */
 		base.destory = function () {
 			$(document).unbind('click', documentClickHandler);
-			$(window).unbind('resize', handleWindowResize);
 
 			$(textarea.form).removeAttr('novalidate')
 				.unbind('submit', formSubmitHandler)
@@ -1499,21 +1493,6 @@
 		handleMouseDown = function() {
 			base.closeDropDown();
 			lastRange = null;
-		};
-
-		/**
-		 * Handles the window resize event. Needed to resize then editor
-		 * when the window size changes in fluid deisgns.
-		 * @ignore
-		 */
-		handleWindowResize = function() {
-			if (base.options.height && base.options.height.toString().indexOf("%") > -1)
-				base.height($editorContainer.parent().height() *
-					(parseFloat(base.options.height) / 100));
-
-			if (base.options.width && base.options.width.toString().indexOf("%") > -1)
-				base.width($editorContainer.parent().width() *
-					(parseFloat(base.options.width) / 100));
 		};
 
 		/**
@@ -3297,13 +3276,13 @@
 		resizeEnabled: true,
 
 		// Min resize to width, set to null for half textarea width or -1 for unlimited
-		resizeMinWidth: null,
+		resizeMinWidth: 380,
 		// Min resize to height, set to null for half textarea height or -1 for unlimited
 		resizeMinHeight: null,
 		// Max resize to height, set to null for double textarea height or -1 for unlimited
 		resizeMaxHeight: null,
 		// Max resize to width, set to null for double textarea width or -1 for unlimited
-		resizeMaxWidth: null,
+		resizeMaxWidth: 665,
 
 		getHtmlHandler: null,
 		getTextHandler: null,
