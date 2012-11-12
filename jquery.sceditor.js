@@ -206,6 +206,7 @@
 		/**
 		 * All the commands supported by the editor
 		 */
+	    options = options || {};
 		base.commands = $.extend({}, (options.commands || $.sceditor.commands));
 
 
@@ -2574,7 +2575,14 @@
 			var sel, r;
 
 			if(win.getSelection)
+			{
 				sel = win.getSelection();
+				if (sel === null)
+				{
+					win = window;
+					sel = win.getSelection();
+				}
+			}	
 			else
 				sel = doc.selection;
 
@@ -3487,7 +3495,13 @@
 		 * CSS that will be added to the to dropdown menu (eg. z-index)
 		 * @type {Object}
 		 */
-		dropDownCss: { }
+		dropDownCss: { },
+		
+		/**
+		 * Name of default plugin to use
+		 * @type {Boolean}
+		 */
+		usePlugin: null,		
 	};
 
 	$.fn.sceditor = function (options) {
@@ -3510,6 +3524,12 @@
 				ret.push(!!$this.data('sceditor'));
 				return;
 			}
+			
+			if(options && options.usePlugin)
+			{
+				$this[options.usePlugin](options);
+				return;
+			}			
 
 			if(!$this.data('sceditor'))
 				(new $.sceditor(this, options || {}));
