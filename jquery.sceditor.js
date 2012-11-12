@@ -2587,10 +2587,7 @@
 				sel.addRange(r);
 			}
 
-			if(!isW3C)
-				return sel.createRange();
-
-			return sel.getRangeAt(0);
+			return isW3C ? sel.getRangeAt(0) : sel.createRange();
 		};
 
 		/**
@@ -3508,7 +3505,7 @@
 				return;
 
 			// If options set to state then return current state. True for initilised and false otherwise
-			if(options && options == "state")
+			if(options && options === "state")
 			{
 				ret.push(!!$this.data('sceditor'));
 				return;
