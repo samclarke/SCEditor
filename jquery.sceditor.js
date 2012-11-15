@@ -2475,12 +2475,14 @@
 		 *
 		 * @param {string} html
 		 * @param {string} endHTML
+		 * @return False on fail
 		 * @function
 		 * @name insertHTML
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.insertHTML = function(html, endHTML) {
-			var node, div;
+			var	node, div,
+				range = base.selectedRange();
 
 			if(endHTML)
 				html += base.selectedHtml() + endHTML;
@@ -2497,7 +2499,12 @@
 				base.insertNode(node);
 			}
 			else
-				base.selectedRange().pasteHTML(html);
+			{
+				if(!range)
+					return false;
+
+				range.pasteHTML(html);
+			}
 		};
 
 		/**
@@ -2509,7 +2516,7 @@
 		 *
 		 * @param {Node} node
 		 * @param {Node} endNode
-		 *
+		 * @return False on fail
 		 * @function
 		 * @name insertNode
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
@@ -2520,6 +2527,9 @@
 				var	selection, selectAfter,
 					toInsert = doc.createDocumentFragment(),
 					range    = base.selectedRange();
+
+				if(!range)
+					return false;
 
 				toInsert.appendChild(node);
 
@@ -2553,10 +2563,12 @@
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.cloneSelected = function() {
-			if(!isW3C)
-				return base.selectedRange().duplicate();
+			var range = base.selectedRange();
 
-			return base.selectedRange().cloneRange();
+			if(!range)
+				return;
+
+			return isW3C ? range.cloneRange() : range.duplicate();
 		};
 
 		/**
@@ -2571,12 +2583,11 @@
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.selectedRange = function() {
-			var sel, r;
+			var	r,
+				sel = isW3C ? win.getSelection() : doc.selection;
 
-			if(win.getSelection)
-				sel = win.getSelection();
-			else
-				sel = doc.selection;
+			if(!sel)
+				return;
 
 			// When creating a new range, set the start to the body
 			// element to avoid errors in FF.
@@ -2609,11 +2620,8 @@
 				return new XMLSerializer().serializeToString(range.cloneContents());
 
 			// IE < 9
-			if(!isW3C)
-			{
-				if(range.text !== '' && range.htmlText)
-					return range.htmlText;
-			}
+			if(!isW3C && range.text !== '' && range.htmlText)
+				return range.htmlText;
 
 			return '';
 		};
@@ -2628,6 +2636,9 @@
 		 */
 		base.parentNode = function() {
 			var range = base.selectedRange();
+
+			if(!range)
+				return;
 
 			return isW3C ?
 				range.commonAncestorContainer :
@@ -2791,7 +2802,7 @@
 				start = base.getMarker(startMarker),
 				end   = base.getMarker(endMarker);
 
-			if(!start || !end)
+			if(!start || !end || !range)
 				return false;
 
 			if(!isW3C)
@@ -3091,7 +3102,7 @@
 		findCommonAncestor: function(node1, node2) {
 			// not as fast as making two arrays of parents and comparing
 			// but is a lot smaller and as it's currently only used with
-			// fixing invalid nesting it doesn't need to be very fast
+			// fixing invalid nesting so it doesn't need to be very fast
 			return $(node1).parents().has($(node2)).first();
 		},
 
@@ -3103,25 +3114,30 @@
 		 */
 		removeWhiteSpace: function(root) {
 			// 00A0 is non-breaking space which should not be striped
-			var regex = /[^\S|\u00A0]+/g;
+			var	nodeValue,
+				regex = /[^\S|\u00A0]+/g;
 
 			this.traverse(root, function(node) {
-				if(node.nodeType === 3 && $(node).parents('code, pre').length === 0 && node.nodeValue)
+				nodeValue = node.nodeValue;
+// TODO: have proper white-space checking for pre formatted text instead of checking for code and pre tags.
+				if(node.nodeType === 3 && $(node).parents('code, pre').length === 0 && nodeValue)
 				{
 					// new lines in text nodes are always ignored in normal handling
-					node.nodeValue = node.nodeValue.replace(/[\r\n]/, "");
+					nodeValue = nodeValue.replace(/[\r\n]/, "");
 
 					//remove empty nodes
-					if(!node.nodeValue.length)
+					if(!nodeValue.length)
 					{
 						node.parentNode.removeChild(node);
 						return;
 					}
 
-					if(!/\S|\u00A0/.test(node.nodeValue))
+					// If entirely whitespace then just set to a single space
+					if(!/\S|\u00A0/.test(nodeValue))
 						node.nodeValue = " ";
-					else if(regex.test(node.nodeValue))
-						node.nodeValue = node.nodeValue.replace(regex, " ");
+					// replace multiple spaces inbetween non-white space with a single space
+					else if(regex.test(nodeValue))
+						node.nodeValue = nodeValue.replace(regex, " ");
 				}
 			});
 		},
