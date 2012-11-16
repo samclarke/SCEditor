@@ -2679,6 +2679,9 @@
 		base.insertNodeAt = function(start, node) {
 			var range = base.cloneSelected();
 
+			if(!range)
+				return false;
+
 			range.collapse(start);
 
 			if(range.insertNode)
@@ -2842,6 +2845,9 @@
 		_selectOuterText = function(left, right) {
 			var range = base.cloneSelected();
 
+			if(!range)
+				return false;
+
 			range.collapse(false);
 
 			if(!isW3C)
@@ -2867,6 +2873,9 @@
 		_getOuterText = function(before, length) {
 			var	ret   = "",
 				range = base.cloneSelected();
+
+			if(!range)
+				return '';
 
 			range.collapse(false);
 
