@@ -1031,24 +1031,37 @@
 					$elm = $(element);
 
 				if ($elm.children("cite:first").length === 1 || $elm.data("author")) {
-					author = $(element).children("cite:first").text() || $elm.data("author");
-
-
+					author = $elm.children("cite:first").text() || $elm.data("author");
 					$elm.data("author", author);
-					$(element).children("cite:first").remove();
+					$elm.children("cite:first").remove();
+					$elm.data('quotepost');
 
 					content	= '';
-					content	= this.elementToBbcode($(element));
+					content	= this.elementToBbcode($elm);
 					attr	= '=' + author;
+
+					if ($elm.data('quotepost')) {
+						attr = attr + ';' + $elm.data('quotepost');
+					}
 				}
 
 				return '[quote' + attr + ']' + content + '[/quote]';
 			},
 			html: function(element, attrs, content) {
-				if (typeof attrs.defaultattr !== "undefined")
-					content = '<cite>' + attrs.defaultattr + '</cite>' + content;
+				var starttag = '<blockquote';
+				if (typeof attrs.defaultattr !== "undefined") {
+					var author = attrs.defaultattr;
 
-				return '<blockquote>' + content + '</blockquote>';
+					if (attrs.defaultattr.indexOf(';') > 0) {
+						var quotedetails = attrs.defaultattr.split(';');
+						author = quotedetails[0];
+						starttag = starttag + ' data-quotepost="' + quotedetails[1] + '"';
+					}
+
+					content = '<cite>' + author + '</cite>' + content;
+				}
+
+				return starttag + '>' + content + '</blockquote>';
 			}
 		},
 		// END_COMMAND
