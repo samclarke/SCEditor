@@ -1055,7 +1055,7 @@
 					if (attrs.defaultattr.indexOf(';') > 0) {
 						var quotedetails = attrs.defaultattr.split(';');
 						author = quotedetails[0];
-						starttag = starttag + ' data-quotepost="' + quotedetails[1] + '"';
+						starttag = starttag + ' data-quotepost="' + quotedetails[1] + '" class="editor_quotepost_' + quotedetails[1] + '"';
 					}
 
 					content = '<cite>' + author + '</cite>' + content;
