@@ -12,20 +12,23 @@ Version 1.4.0:
 	Fixed bug with emoticons containing backslashes.
 		- Thanks to emanuele45 for the fix.
 	Fixed bug when pasting from Word.
-		- Thanks to Spuds for reporting.
+		- Thanks to @Spuds for reporting.
 	Fixed bug causing scrollbar to change when inserting BBCode in source mode.
 		- Thanks to Martec for reporting
 	Fixed bug causing cursor position to be lost in FF when getting the editors value.
-		- Thanks to Spuds for reporting
+		- Thanks to @Spuds for reporting
 	Improve IE support
 	Moved roadmap from GitHub wiki to source directory
 		for easier editing.
 	Added a new much more flexible BBCode parser
 	Added new option to auto-update original textbox on blur event occurring on SCEditor.
 		- Thanks to @maiiku for adding this feature
-	Updated sceditor() to return the instance/instances of the editor and protect against
-		re-initialization.
+	Updated sceditor() to return the instance/instances of the editor by passing "instance"
+		to sceditor() and protect against re-initialization.
 		- Thanks to @maiiku for reporting
+	Updated sceditor() to return the current state of the editor by passing
+		state to sceditor().
+		- Thanks to @maiiku
 	Added IE 10 support
 
 Version 1.3.6:

@@ -3515,6 +3515,11 @@
 		dropDownCss: { }
 	};
 
+	/**
+	 *
+	 * @param  {Object|String} options Should either be an Object of options or the strings "state" or "instance"
+	 * @return {this|Array|jQuery.sceditor|Bool}
+	 */
 	$.fn.sceditor = function (options) {
 		var	$this,
 			ret = [];
@@ -3529,20 +3534,23 @@
 			if($this.parents('.sceditor-container').length > 0)
 				return;
 
-			// If options set to state then return current state. True for initilised and false otherwise
-			if(options && options === "state")
+			// Add state of instance to ret if that is what options is set to
+			if(options)
 			{
-				ret.push(!!$this.data('sceditor'));
-				return;
+				if(options == "state")
+					ret.push(!!$this.data('sceditor'));
+				else if(options == "instance")
+					ret.push($this.data('sceditor'));
 			}
-
-			if(!$this.data('sceditor'))
+			else if(!$this.data('sceditor'))
 				(new $.sceditor(this, options || {}));
 
-			ret.push($this.data('sceditor'));
 		});
+
+		// If nothing in the ret array then must be init so return this
+		if(!ret.length)
+			return this;
 
 		return ret.length === 1 ? ret[0] : $(ret);
 	};
 })(jQuery, window, document);
-
