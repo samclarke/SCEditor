@@ -1121,8 +1121,7 @@
 			ol: ['li'],
 			table: ['tr'],
 			tr: ['td', 'th'],
-			code: ['br', 'p', 'div'],
-			youtube: []
+			code: ['br', 'p', 'div']
 		};
 
 		/**
@@ -1420,7 +1419,7 @@
 				// then ignore it as it will be collapsed
 				if(parentIsInline || parent.lastChild !== element[0] || $.sceditor.ie)
 					content += "\n";
-// TODO: pre-pend br to ul ol elements ?
+
 				// needed for browsers which when inside a textnode, if return is pressed they put the right half
 				// in a div instead of just inserting a br i.e.:
 				// text<div>line 2</div>
@@ -1488,7 +1487,7 @@
 						// don't loop inside iframes
 						if(tag !== 'iframe')
 							curTag = toBBCode(node, vChild);
-
+// TODO: isValidChild no longer needed? If it is needs to be editable
 						if(isValidChild)
 						{
 							// code tags should skip most styles
@@ -1823,6 +1822,7 @@
 			tags: {
 				ul: null
 			},
+			breakStart: true,
 			isInline: false,
 			skipLastLineBreak: true,
 			format: "[ul]{0}[/ul]",
@@ -2239,24 +2239,36 @@
 		}
 	};
 
-	$.fn.sceditorBBCodePlugin = function(options) {
+	$.fn.sceditorBBCodePlugin = function (options) {
 		var	$this,
 			ret = [];
 
-		if((!options || !options.runWithoutWysiwygSupport) && !$.sceditor.isWysiwygSupported)
+		options = options || {};
+
+		if(!options.runWithoutWysiwygSupport && !$.sceditor.isWysiwygSupported)
 			return;
 
 		this.each(function () {
+
 			$this = this.jquery ? this : $(this);
 
+			// Don't allow the editor to be initilised on it's own source editor
 			if($this.parents('.sceditor-container').length > 0)
 				return;
 
-			if(!$this.data('sceditorbbcode'))
-				(new $.sceditorBBCodePlugin($this, options || {}));
+			// Add state of instance to ret if that is what options is set to
+			if(options === "state")
+				ret.push(!!$this.data('sceditor'));
+			else if(options === "instance")
+				ret.push($this.data('sceditorbbcode'));
+			else if(!$this.data('sceditor'))
+				(new $.sceditorBBCodePlugin($this, options));
 
-			ret.push($this.data('sceditorbbcode'));
 		});
+
+		// If nothing in the ret array then must be init so return this
+		if(!ret.length)
+			return this;
 
 		return ret.length === 1 ? ret[0] : $(ret);
 	};

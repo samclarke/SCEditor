@@ -59,7 +59,8 @@
 
 			$(document).ready(function() {
 				var initEditor = function() {
-					$("textarea").sceditorBBCodePlugin({
+					$("textarea").sceditor({
+						plugins: 'bbcode',
 						style: "../minified/jquery.sceditor.default.min.css"
 					});
 				};
@@ -67,7 +68,7 @@
 				$("#theme").change(function() {
 					var theme = "../minified/themes/" + $(this).val() + ".min.css";
 
-					$("textarea").data("sceditor").destroy();
+					$("textarea").sceditor("instance").destroy();
 					$("link:first").remove();
 					$("#theme-style").remove();
 

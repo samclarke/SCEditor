@@ -3067,7 +3067,7 @@
 		 * @param {HTMLElement} to
 		 */
 		copyCSS: function(from, to) {
-			to.style.cssText = from.style.cssText;
+			to.style.cssText = from.style.cssText + to.style.cssText;
 		},
 
 		/**
@@ -3096,7 +3096,7 @@
 
 					// copy current styling so when moved out of the parent
 					// it still has the same styling
-					base.copyCSS(middle, middle);
+					base.copyCSS(parent, middle);
 
 					rParent.insertBefore(before, parent);
 					rParent.insertBefore(middle, parent);
@@ -3561,7 +3561,13 @@
 			else if(options === "instance")
 				ret.push($this.data('sceditor'));
 			else if(!$this.data('sceditor'))
-				(new $.sceditor(this, options));
+			{
+				// temp until plugins option is added properly in 1.4.1
+				if(options.plugins && /bbcode/i.test(options.plugins))
+					(new $.sceditorBBCodePlugin($this, options));
+				else
+					(new $.sceditor(this, options));
+			}
 
 		});
 
