@@ -1840,6 +1840,7 @@
 			},
 			breakStart: true,
 			isInline: false,
+			skipLastLineBreak: true,
 			format: "[ol]{0}[/ol]",
 			html: '<ol>{0}</ol>'
 		},
