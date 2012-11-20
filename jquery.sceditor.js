@@ -1830,46 +1830,52 @@
 					content      = $("<div />"),
 					colorColumns = editor.opts.colors?editor.opts.colors.split("|"):new Array(21),
 					// IE is slow at string concation so use an array
-					html         = [];
+					html         = [],
+					cmd          = $.sceditor.command.get('color');
 
-				for (i=0; i < colorColumns.length; ++i)
+				if(!cmd._htmlCache)
 				{
-					colors = colorColumns[i]?colorColumns[i].split(","):new Array(21);
-
-					html.push('<div class="sceditor-color-column">');
-					for (x=0; x < colors.length; ++x)
+					for (i=0; i < colorColumns.length; ++i)
 					{
-						// use pre defined colour if can otherwise use the generated color
-						color = colors[x] || "#" + genColor.r.toString(16) + genColor.g.toString(16) + genColor.b.toString(16);
+						colors = colorColumns[i]?colorColumns[i].split(","):new Array(21);
 
-						html.push('<a href="#" class="sceditor-color-option" style="background-color: '+color+'" data-color="'+color+'"></a>');
+						html.push('<div class="sceditor-color-column">');
+						for (x=0; x < colors.length; ++x)
+						{
+							// use pre defined colour if can otherwise use the generated color
+							color = colors[x] || "#" + genColor.r.toString(16) + genColor.g.toString(16) + genColor.b.toString(16);
+
+							html.push('<a href="#" class="sceditor-color-option" style="background-color: '+color+'" data-color="'+color+'"></a>');
+
+							// calculate the next generated color
+							if(x%5===0)
+							{
+								genColor.g -= 51;
+								genColor.b = 255;
+							}
+							else
+								genColor.b -= 51;
+						}
+						html.push('</div>');
 
 						// calculate the next generated color
-						if(x%5===0)
+						if(i%5===0)
 						{
-							genColor.g -= 51;
+							genColor.r -= 51;
+							genColor.g = 255;
 							genColor.b = 255;
 						}
 						else
-							genColor.b -= 51;
+						{
+							genColor.g = 255;
+							genColor.b = 255;
+						}
 					}
-					html.push('</div>');
 
-					// calculate the next generated color
-					if(i%5===0)
-					{
-						genColor.r -= 51;
-						genColor.g = 255;
-						genColor.b = 255;
-					}
-					else
-					{
-						genColor.g = 255;
-						genColor.b = 255;
-					}
+					cmd._htmlCache = html.join('');
 				}
 
-				content.append(html.join(''))
+				content.append(cmd._htmlCache)
 					.find('a')
 					.click(function (e) {
 						callback($(this).attr('data-color'));

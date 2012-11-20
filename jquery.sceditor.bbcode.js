@@ -516,6 +516,32 @@
 			return output;
 		};
 
+		/**
+		 * Normalise all new lines
+		 *
+		 * Removes any formatting new lines from the BBCode
+		 * leaving only content ones. I.e. for a list:
+		 *
+		 * [list]
+		 * [*] list item one
+		 * with a line break
+		 * [*] list item two
+		 * [/list]
+		 *
+		 * would become
+		 *
+		 * [list] [*] list item one
+		 * with a line break [*] list item two [/list]
+		 *
+		 * Which makes it easier to convert to HTML or add
+		 * the formmating new lines back in when converting
+		 * back to BBCode
+		 *
+		 * @param  {Array} children
+		 * @param  {TokenizeToken} parent
+		 * @param  {Bool} onlyRemoveBreakAfter
+		 * @return {void}
+		 */
 		normaliseNewLines = function(children, parent, onlyRemoveBreakAfter) {
 			var	token, left, right, bbcode, leftBBCode, rightBBCode,
 				removedBreakEnd, removedBreakBefore, remove,
@@ -1392,7 +1418,7 @@
 
 				// If this br/block element is the last child of another block level element
 				// then ignore it as it will be collapsed
-				if(parentIsInline || parent.lastChild !== element[0])
+				if(parentIsInline || parent.lastChild !== element[0] || $.sceditor.ie)
 					content += "\n";
 // TODO: pre-pend br to ul ol elements ?
 				// needed for browsers which when inside a textnode, if return is pressed they put the right half
@@ -2024,7 +2050,7 @@
 				code: null
 			},
 			isInline: false,
-			allowedChildren: ['#'],
+			allowedChildren: ['#', '#newline'],
 			format: "[code]{0}[/code]",
 			html: '<code>{0}</code>'
 		},
