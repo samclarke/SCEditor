@@ -3516,6 +3516,22 @@
 	};
 
 	/**
+	 * Creates an instance of sceditor on all textareas
+	 * matched by the jQuery selector.
+	 *
+	 * If options is set to "state" it will return bool value
+	 * indicating if the editor has been initilised on the
+	 * matched textarea(s). If there is only one textarea
+	 * it will return the bool value for that textarea.
+	 * If more than one textarea is matched it will
+	 * return an array of bool values for each textarea.
+	 *
+	 * If options is set to "instance" it will return the
+	 * current editor instance for the textarea(s). Like the
+	 * state option, if only one textarea is matched this will
+	 * return just the instace for that textarea. If more than
+	 * one textarea is matched it will return an array of
+	 * instances each textarea.
 	 *
 	 * @param  {Object|String} options Should either be an Object of options or the strings "state" or "instance"
 	 * @return {this|Array|jQuery.sceditor|Bool}
@@ -3524,7 +3540,9 @@
 		var	$this,
 			ret = [];
 
-		if((!options || !options.runWithoutWysiwygSupport) && !$.sceditor.isWysiwygSupported)
+		options = options || {};
+
+		if(!options.runWithoutWysiwygSupport && !$.sceditor.isWysiwygSupported)
 			return;
 
 		this.each(function () {
@@ -3535,15 +3553,12 @@
 				return;
 
 			// Add state of instance to ret if that is what options is set to
-			if(options)
-			{
-				if(options == "state")
-					ret.push(!!$this.data('sceditor'));
-				else if(options == "instance")
-					ret.push($this.data('sceditor'));
-			}
+			if(options == "state")
+				ret.push(!!$this.data('sceditor'));
+			else if(options == "instance")
+				ret.push($this.data('sceditor'));
 			else if(!$this.data('sceditor'))
-				(new $.sceditor(this, options || {}));
+				(new $.sceditor(this, options));
 
 		});
 
