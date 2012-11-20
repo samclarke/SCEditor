@@ -20,7 +20,6 @@
 // ==/ClosureCompiler==
 
 /*jshint smarttabs: true, scripturl: true, jquery: true, devel:true, eqnull:true, curly: false */
-/*global XMLSerializer: true*/
 
 ;(function ($, window, document) {
 	'use strict';
@@ -2565,10 +2564,8 @@
 		base.cloneSelected = function() {
 			var range = base.selectedRange();
 
-			if(!range)
-				return;
-
-			return isW3C ? range.cloneRange() : range.duplicate();
+			if(range)
+				return isW3C ? range.cloneRange() : range.duplicate();
 		};
 
 		/**
@@ -2639,12 +2636,10 @@
 		base.parentNode = function() {
 			var range = base.selectedRange();
 
-			if(!range)
-				return;
-
-			return isW3C ?
-				range.commonAncestorContainer :
-				range.parentElement();
+			if(range)
+				return  isW3C ?
+					range.commonAncestorContainer :
+					range.parentElement();
 		};
 
 		/**
@@ -3555,9 +3550,9 @@
 				return;
 
 			// Add state of instance to ret if that is what options is set to
-			if(options == "state")
+			if(options === "state")
 				ret.push(!!$this.data('sceditor'));
-			else if(options == "instance")
+			else if(options === "instance")
 				ret.push($this.data('sceditor'));
 			else if(!$this.data('sceditor'))
 				(new $.sceditor(this, options));
