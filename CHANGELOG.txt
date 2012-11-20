@@ -32,6 +32,8 @@ Version 1.4.0:
 	Added IE 10 support
 	Added Vietnamese translation.
 		- Thanks to Chien for translating
+	Added plugins option
+		- Thanks to @maiiku
 
 Version 1.3.6:
 	Added Spanish translation
