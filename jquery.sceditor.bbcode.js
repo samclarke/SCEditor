@@ -393,7 +393,7 @@
 		 */
 		base.getHtmlHandler = function(html, domBody) {
 			$.sceditor.dom.removeWhiteSpace(domBody[0]);
-			return $.trim(base.elementToBbcode(domBody));
+			return base.elementToBbcode(domBody);
 		};
 
 		/**
