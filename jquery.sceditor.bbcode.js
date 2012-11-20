@@ -249,6 +249,11 @@
 				matches = val.match(/\[\/([^\[\]]+)\]/);
 				name    = lower(matches[1]);
 			}
+			else if(type === "newline")
+				name = '#newline';
+			else
+				name = '#';
+
 
 			return new TokenizeToken(type, name, val, attrs);
 		};
@@ -389,18 +394,15 @@
 						output.push(token);
 				},
 				/**
-				 * Checks if this tag closes the current tag, if it does
-				 * then this will close the current tag.
+				 * Checks if this tag closes the current tag
 				 * @param  {String} name
 				 * @return {Void}
 				 */
-				checkIfClosesCurrent = function(name) {
-					if(currentOpenTag() && (bbcode = base.bbcodes[currentOpenTag().name]) &&
-						bbcode.closedBy && $.inArray(name, bbcode.closedBy) > -1)
-					{
-						openTags.pop();
-					}
-// TODO: if block then do block processing? unless being closed by a closing tag?
+				closesCurrentTag = function(name) {
+					return currentOpenTag() &&
+						(bbcode = base.bbcodes[currentOpenTag().name]) &&
+						bbcode.closedBy &&
+						$.inArray(name, bbcode.closedBy) > -1;
 				};
 
 			while((token = toks.shift()))
@@ -411,7 +413,8 @@
 				{
 					case tokenType.open:
 						// Check it this closes a parent, i.e. for lists [*]one [*]two
-						checkIfClosesCurrent(token.name);
+						if(closesCurrentTag(token.name))
+							openTags.pop();
 
 						addTag(token);
 						bbcode = base.bbcodes[token.name];
@@ -426,8 +429,8 @@
 
 					case tokenType.close:
 						// check if this closes the current tag, e.g. [/list] would close an open [*]
-						if(currentOpenTag() && token.name !== currentOpenTag().name)
-							checkIfClosesCurrent(token.name);
+						if(currentOpenTag() && token.name !== currentOpenTag().name && closesCurrentTag(token.name))
+							openTags.pop();
 
 						// If this is closing the currently open tag just pop the
 						// tage off the open tags array
@@ -482,7 +485,27 @@
 						}
 						break;
 
-					default: // content and new lines
+					case tokenType.newline:
+						// handle things like
+						//     [*]list\nitem\n[*]list1
+						// where it should come out as
+						//     [*]list\nitem[/*]\n[*]list1[/*]
+						// instead of
+						//     [*]list\nitem\n[/*][*]list1[/*]
+						if(currentOpenTag() && next && closesCurrentTag(next.name))
+						{
+							bbcode = base.bbcodes[currentOpenTag().name];
+
+							if(bbcode && bbcode.breakAfter)
+								openTags.pop();
+							else if(bbcode && bbcode.isInline === false && base.opts.breakAfterBlock && bbcode.breakAfter !== false)
+								openTags.pop();
+						}
+
+						addTag(token);
+						break;
+
+					default: // content
 						addTag(token);
 						break;
 				}
@@ -527,7 +550,7 @@
 						}
 						// Last child of parent so must be end line break (breakEndBlock, breakEnd) e.g. \n[/tag]
 						// remove last line break (breakEndBlock, breakEnd)
-						else if (childrenLength === i && !removedBreakEnd)
+						else if (!removedBreakEnd && childrenLength - 1 === i)
 						{
 							if(bbcode.isInline === false && base.opts.breakEndBlock && bbcode.breakEnd !== false)
 								remove = true;
@@ -539,7 +562,7 @@
 						}
 					}
 
-					if(left && left.closing)
+					if(left && left.type === tokenType.open)
 					{
 						if((leftBBCode = base.bbcodes[left.name]))
 						{
@@ -565,7 +588,6 @@
 
 							if(remove)
 							{
-
 								children.splice(i, 1);
 								continue;
 							}
@@ -1367,9 +1389,7 @@
 				var	parent		= element[0].parentNode,
 					previousSibling = element[0].previousSibling,
 					parentIsInline	= $.sceditor.dom.isInline(parent, true) || parent.nodeName.toLowerCase() === "body";
-//console.log(parent);
-//console.log(parent.lastChild);
-//console.log('~');
+
 				// If this br/block element is the last child of another block level element
 				// then ignore it as it will be collapsed
 				if(parentIsInline || parent.lastChild !== element[0])
@@ -1396,7 +1416,7 @@
 			var parser = new $.sceditor.BBCodeParser(base.opts.parserOptions);
 
 			$.sceditor.dom.removeWhiteSpace(domBody[0]);
-console.log(base.elementToBbcode(domBody));
+
 			return $.trim(parser.toBBCode(base.elementToBbcode(domBody), true));
 		};
 
@@ -1783,6 +1803,7 @@ console.log(base.elementToBbcode(domBody));
 			html: '<ul>{0}</ul>'
 		},
 		list: {
+			breakStart: true,
 			isInline: false,
 			skipLastLineBreak: true,
 			html: '<ul>{0}</ul>'
@@ -1791,6 +1812,7 @@ console.log(base.elementToBbcode(domBody));
 			tags: {
 				ol: null
 			},
+			breakStart: true,
 			isInline: false,
 			format: "[ol]{0}[/ol]",
 			html: '<ol>{0}</ol>'
