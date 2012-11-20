@@ -2,7 +2,7 @@ module("BBCode Parser", {
 	setup: function() {
 		var $textarea = $("#qunit-fixture textarea:first");
 		$textarea.sceditorBBCodePlugin();
-		this.sb = $textarea.sceditorBBCodePlugin();
+		this.sb = $textarea.sceditorBBCodePlugin("instance");
 		this.parser = new $.sceditor.BBCodeParser();
 	}
 });
@@ -33,7 +33,7 @@ test("Invalid nesting", function() {
 
 	equal(
 		this.sb.getHtmlHandler("", $dom),
-		"[color=#000000]this[/color][quote]is[/quote]\n[color=#000000]a test[/color]",
+		"[color=#000000]this[/color][quote][color=#000000]is[/color][/quote]\n[color=#000000]a test[/color]",
 		"Invalid block level nesting"
 	);
 });
@@ -60,7 +60,7 @@ module("HTML to BBCodes", {
 	setup: function() {
 		var textarea = $("#qunit-fixture textarea:first");
 		textarea.sceditorBBCodePlugin();
-		this.sb = textarea.sceditorBBCodePlugin();
+		this.sb = textarea.sceditorBBCodePlugin("instance");
 	}
 });
 
@@ -326,14 +326,14 @@ test("List", function() {
 	expect(2);
 
 	equal(
-		this.sb.getHtmlHandler("", html2dom("<ul><li>test</li></ul>", true)),
-		"[ul][li]test[/li][/ul]",
+		this.sb.getHtmlHandler("", html2dom("<ul><li>test<br /></li></ul>", true)),
+		"[ul]\n[li]test[/li]\n[/ul]",
 		"UL tag"
 	);
 
 	equal(
-		this.sb.getHtmlHandler("", html2dom("<ol><li>test</li></ol>", true)),
-		"[ol][li]test[/li][/ol]",
+		this.sb.getHtmlHandler("", html2dom("<ol><li>test<br /></li></ol>", true)),
+		"[ol]\n[li]test[/li]\n[/ol]",
 		"OL tag"
 	);
 });
@@ -582,7 +582,7 @@ module("BBCode to HTML", {
 	setup: function() {
 		var textarea = $("#qunit-fixture textarea:first");
 		textarea.sceditorBBCodePlugin();
-		this.sb = textarea.sceditorBBCodePlugin();
+		this.sb = textarea.sceditorBBCodePlugin("instance");
 	}
 });
 
@@ -693,13 +693,13 @@ test("List", function() {
 
 	equal(
 		this.sb.getTextHandler("[ul][li]test[/li][/ul]"),
-		html2dom("<ul><li>test</li></ul>").innerHTML,
+		"<ul><li>test<br /></li></ul>",
 		"UL"
 	);
 
 	equal(
 		this.sb.getTextHandler("[ol][li]test[/li][/ol]"),
-		html2dom("<ol><li>test</li></ol>").innerHTML,
+		"<ol><li>test<br /></li></ol>",
 		"OL"
 	);
 });
@@ -938,7 +938,7 @@ test("New Line Handling", function() {
 
 	equal(
 		this.sb.getTextHandler("[list][*]test\n[*]test2\nline\n[/list]"),
-		"<ul><li>test<br /><br /></li><li>test2<br />line<br /><br /></li></ul>",
+		"<ul><li>test<br /></li><li>test2<br />line<br /></li></ul>",
 		"List with non-closed [*]"
 	);
 
