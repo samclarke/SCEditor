@@ -44,6 +44,7 @@
 			tokenizeTag,
 			tokenizeAttrs,
 			parseTokens,
+			normaliseNewLines,
 			fixNesting,
 			isChildAllowed,
 			removeEmpty,
@@ -290,7 +291,7 @@
 		 * @memberOf jQuery.sceditor.BBCodeParser.prototype
 		 */
 		base.parse = function(str, preserveNewLines) {
-			var ret = parseTokens(base.tokenize(str), preserveNewLines);
+			var ret = parseTokens(base.tokenize(str));
 
 			if(base.opts.fixInvalidChildren)
 				fixChildren(ret);
@@ -300,6 +301,8 @@
 
 			if(base.opts.fixInvalidNesting)
 				fixNesting(ret);
+
+			normaliseNewLines(ret, null, preserveNewLines);
 
 			if(base.opts.removeEmptyTags)
 				removeEmpty(ret);
@@ -357,12 +360,11 @@
 		 * Parses an array of tokens created by tokenize()
 		 *
 		 * @param  {Array} toks
-		 * @param {Bool} preserveNewLines If to preserve all new lines, not strip any based on the passed formatting options
 		 * @return {Array} Parsed tokens
 		 * @see tokenize()
 		 * @private
 		 */
-		parseTokens = function(toks, preserveNewLines) {
+		parseTokens = function(toks) {
 			var	token, bbcode, curTok, clone, i, previous, next,
 				cloned     = [],
 				output     = [],
@@ -398,6 +400,7 @@
 					{
 						openTags.pop();
 					}
+// TODO: if block then do block processing? unless being closed by a closing tag?
 				};
 
 			while((token = toks.shift()))
@@ -479,50 +482,7 @@
 						}
 						break;
 
-					case tokenType.newline:
-
-
-						// Remove any newlines which are not part of the content, this will
-						// normalise all BBCode newline handling options
-						if(previous && (bbcode = base.bbcodes[previous.name]))
-						{
-							if(!preserveNewLines && previous.type === tokenType.open && bbcode.isSelfClosing !== true)
-							{
-								if((bbcode.isInline === false && base.opts.breakStartBlock) || bbcode.breakStart)
-									break;
-							}
-							else if(previous.type === tokenType.close)
-							{
-								if((bbcode.isInline === false && (preserveNewLines || base.opts.breakAfterBlock)) || bbcode.breakAfter)
-									break;
-							}
-						}
-
-						if(preserveNewLines)
-						{
-							addTag(token);
-							break;
-						}
-
-						if(next && (bbcode = base.bbcodes[next.name]))
-						{
-
-							if(next.type === tokenType.open)
-							{
-								if((bbcode.isInline === false && base.opts.breakBeforeBlock) || bbcode.breakBefore)
-									break;
-							}
-							else if(next.type === tokenType.close && bbcode.isSelfClosing !== true)
-							{
-								if((bbcode.isInline === false && base.opts.breakEndBlock) || bbcode.breakEnd)
-									break;
-							}
-						}
-
-						addTag(token);
-						break;
-
-					default: // content
+					default: // content and new lines
 						addTag(token);
 						break;
 				}
@@ -531,6 +491,99 @@
 			}
 
 			return output;
+		};
+
+		normaliseNewLines = function(children, parent, onlyRemoveBreakAfter) {
+			var	token, left, right, bbcode, leftBBCode, rightBBCode,
+				removedBreakEnd, removedBreakBefore, remove,
+				childrenLength = children.length,
+				i              = childrenLength;
+
+			if(parent)
+				bbcode = base.bbcodes[parent.name];
+
+			while(i--)
+			{
+				if(!(token = children[i]))
+					continue;
+
+				if(token.type === tokenType.newline)
+				{
+					left   = i > 0 ? children[i - 1] : null;
+					right  = i < childrenLength - 1 ? children[i+1] : null;
+					remove = false;
+
+					// Handle the start and end new lines e.g. [tag]\n and \n[/tag]
+					if(!onlyRemoveBreakAfter && bbcode && bbcode.isSelfClosing !== true)
+					{
+						// First child of parent so must be opening line break (breakStartBlock, breakStart) e.g. [tag]\n
+						if(i === 0)
+						{
+							if(bbcode.isInline === false && base.opts.breakStartBlock && bbcode.breakStart !== false)
+								remove = true;
+
+							if(bbcode.breakStart)
+								remove = true;
+						}
+						// Last child of parent so must be end line break (breakEndBlock, breakEnd) e.g. \n[/tag]
+						// remove last line break (breakEndBlock, breakEnd)
+						else if (childrenLength === i && !removedBreakEnd)
+						{
+							if(bbcode.isInline === false && base.opts.breakEndBlock && bbcode.breakEnd !== false)
+								remove = true;
+
+							if(bbcode.breakEnd)
+								remove = true;
+
+							removedBreakEnd = remove;
+						}
+					}
+
+					if(left && left.closing)
+					{
+						if((leftBBCode = base.bbcodes[left.name]))
+						{
+							if(leftBBCode.isInline === false && base.opts.breakAfterBlock && leftBBCode.breakAfter !== false)
+								remove = true;
+
+							if(leftBBCode.breakAfter)
+								remove = true;
+						}
+					}
+
+					if(!onlyRemoveBreakAfter && !removedBreakBefore && right && right.type === tokenType.open)
+					{
+						if((rightBBCode = base.bbcodes[right.name]))
+						{
+							if(rightBBCode.isInline === false && base.opts.breakBeforeBlock && rightBBCode.breakBefore !== false)
+								remove = true;
+
+							if(rightBBCode.breakBefore)
+								remove = true;
+
+							removedBreakBefore = remove;
+
+							if(remove)
+							{
+
+								children.splice(i, 1);
+								continue;
+							}
+						}
+					}
+
+					if(remove)
+						children.splice(i, 1);
+
+					// reset double removedBreakBefore removal protection.
+					// This is needed for cases like \n\n[\tag] where
+					// only 1 \n should be removed but without this they both
+					// would be.
+					removedBreakBefore = false;
+				}
+				else if(token.type === tokenType.open)
+					normaliseNewLines(token.children, token, onlyRemoveBreakAfter);
+			}
 		};
 
 		/**
@@ -693,8 +746,8 @@
 
 		convertToHTML = function(tokens, isRoot) {
 			var	token, bbcode, content, html, needsBlockWrap,
-				blockWrapOpen, isInline,
-				ret    = [];
+				blockWrapOpen, isInline, addLineBreak,
+				ret = [];
 
 			while(tokens.length > 0)
 			{
@@ -710,6 +763,16 @@
 
 					if(bbcode && bbcode.html)
 					{
+						addLineBreak = isInline === false && !bbcode.isPreFormatted && !bbcode.skipLastLineBreak;
+
+						// Add placeholder br to end of block level elements in all browsers apart from IE < 9 which
+						// handle new lines diffrently and don't need one.
+						if(addLineBreak && !$.sceditor.ie)
+							content += "<br />";
+						// This is for IE 9+, see comment below for line "ret.push('\u00a0');"
+						else if(addLineBreak && ((document.documentMode && document.documentMode < 8) || $.sceditor.ie < 8))
+							ret.push('\u00a0');
+
 						if($.isFunction(bbcode.html))
 							html = bbcode.html.call(base, token, token.attrs, content);
 						else
@@ -722,7 +785,7 @@
 				{
 					if(!isRoot)
 					{
-						ret.push('<br />\n');
+						ret.push('<br />');
 						continue;
 					}
 
@@ -1304,7 +1367,9 @@
 				var	parent		= element[0].parentNode,
 					previousSibling = element[0].previousSibling,
 					parentIsInline	= $.sceditor.dom.isInline(parent, true) || parent.nodeName.toLowerCase() === "body";
-
+//console.log(parent);
+//console.log(parent.lastChild);
+//console.log('~');
 				// If this br/block element is the last child of another block level element
 				// then ignore it as it will be collapsed
 				if(parentIsInline || parent.lastChild !== element[0])
@@ -1331,7 +1396,7 @@
 			var parser = new $.sceditor.BBCodeParser(base.opts.parserOptions);
 
 			$.sceditor.dom.removeWhiteSpace(domBody[0]);
-
+console.log(base.elementToBbcode(domBody));
 			return $.trim(parser.toBBCode(base.elementToBbcode(domBody), true));
 		};
 
@@ -1713,11 +1778,13 @@
 				ul: null
 			},
 			isInline: false,
+			skipLastLineBreak: true,
 			format: "[ul]{0}[/ul]",
 			html: '<ul>{0}</ul>'
 		},
 		list: {
 			isInline: false,
+			skipLastLineBreak: true,
 			html: '<ul>{0}</ul>'
 		},
 		ol: {
@@ -1732,11 +1799,13 @@
 			tags: {
 				li: null
 			},
+			isInline: false,
 			closedBy: ['ul', 'ol', 'list', '*', 'li'],
 			format: "[li]{0}[/li]",
 			html: '<li>{0}</li>'
 		},
 		"*": {
+			isInline: false,
 			closedBy: ['ul', 'ol', 'list', '*', 'li'],
 			html: '<li>{0}</li>'
 		},
@@ -1764,6 +1833,7 @@
 			tags: {
 				th: null
 			},
+			allowsEmpty: true,
 			isInline: false,
 			format: "[th]{0}[/th]",
 			html: '<th>{0}</th>'
@@ -1772,9 +1842,10 @@
 			tags: {
 				td: null
 			},
+			allowsEmpty: true,
 			isInline: false,
 			format: "[td]{0}[/td]",
-			html: '<td>{0}<br class="sceditor-ignore" /></td>'
+			html: '<td>{0}</td>'
 		},
 		// END_COMMAND
 
@@ -1896,15 +1967,19 @@
 			},
 			isInline: false,
 			format: function(element, content) {
-				var	author,
+				var	author = '',
 					$elm  = $(element),
-					$cite = $elm.children("cite:first");
+					$cite = $elm.children("cite").first();
 
 				if($cite.length === 1 || $elm.data("author")) {
 					author = $cite.text() || $elm.data("author");
 
 					$elm.data("author", author);
 					$cite.remove();
+
+					$elm.children("cite").replaceWith(function() {
+						return $(this).text();
+					});
 
 					content	= this.elementToBbcode($(element));
 					author  = '=' + author;
