@@ -1,7 +1,8 @@
 module("BBCode Parser", {
 	setup: function() {
-		var textarea = $("#qunit-fixture textarea:first").sceditorBBCodePlugin();
-		this.sb = textarea.data("sceditorbbcode");
+		var $textarea = $("#qunit-fixture textarea:first");
+		$textarea.sceditorBBCodePlugin();
+		this.sb = $textarea.sceditorBBCodePlugin();
 		this.parser = new $.sceditor.BBCodeParser();
 	}
 });
@@ -57,8 +58,9 @@ test("Newlines DOM nesting", function() {
 
 module("HTML to BBCodes", {
 	setup: function() {
-		var textarea = $("#qunit-fixture textarea:first").sceditorBBCodePlugin();
-		this.sb = textarea.data("sceditorbbcode");
+		var textarea = $("#qunit-fixture textarea:first");
+		textarea.sceditorBBCodePlugin();
+		this.sb = textarea.sceditorBBCodePlugin();
 	}
 });
 
@@ -578,8 +580,9 @@ test("YouTube", function() {
 
 module("BBCode to HTML", {
 	setup: function() {
-		var textarea = $("#qunit-fixture textarea:first").sceditorBBCodePlugin();
-		this.sb = textarea.data("sceditorbbcode");
+		var textarea = $("#qunit-fixture textarea:first");
+		textarea.sceditorBBCodePlugin();
+		this.sb = textarea.sceditorBBCodePlugin();
 	}
 });
 
@@ -706,7 +709,7 @@ test("Table", function() {
 
 	equal(
 		this.sb.getTextHandler("[table][tr][th]test[/th][/tr][tr][td]data1[/td][/tr][/table]"),
-		"<div><table><tr><th>test</th></tr><tr><td>data1<br class=\"sceditor-ignore\" /></td></tr></table></div>\n",
+		"<div><table><tr><th>test<br /></th><br /></tr><tr><td>data1<br /></td><br /></tr></table></div>\n",
 		"Normal"
 	);
 });
@@ -787,13 +790,13 @@ test("Quote", function() {
 
 	equal(
 		this.sb.getTextHandler("[quote]Testing 1.2.3....[/quote]").toLowerCase(),
-		"<blockquote>testing 1.2.3....</blockquote>",
+		"<blockquote>testing 1.2.3....<br /></blockquote>",
 		"Normal"
 	);
 
 	equal(
 		this.sb.getTextHandler("[quote=admin]Testing 1.2.3....[/quote]").toLowerCase(),
-		"<blockquote><cite>admin</cite>testing 1.2.3....</blockquote>",
+		"<blockquote><cite>admin</cite>testing 1.2.3....<br /></blockquote>",
 		"With author"
 	);
 });
@@ -803,7 +806,7 @@ test("Code", function() {
 
 	equal(
 		this.sb.getTextHandler("[code]Testing 1.2.3....[/code]").toLowerCase(),
-		"<code>testing 1.2.3....</code>",
+		"<code>testing 1.2.3....<br /></code>",
 		"Normal"
 	);
 });
@@ -813,7 +816,7 @@ test("Left", function() {
 
 	equal(
 		this.sb.getTextHandler("[left]Testing 1.2.3....[/left]"),
-		html2dom("<div align=\"left\">Testing 1.2.3....</div>").innerHTML,
+		"<div align=\"left\">Testing 1.2.3....<br /></div>",
 		"Normal"
 	);
 });
@@ -823,7 +826,7 @@ test("Right", function() {
 
 	equal(
 		this.sb.getTextHandler("[right]Testing 1.2.3....[/right]"),
-		html2dom("<div align=\"right\">Testing 1.2.3....</div>").innerHTML,
+		"<div align=\"right\">Testing 1.2.3....<br /></div>",
 		"Normal"
 	);
 });
@@ -833,7 +836,7 @@ test("Centre", function() {
 
 	equal(
 		this.sb.getTextHandler("[center]Testing 1.2.3....[/center]"),
-		html2dom("<div align=\"center\">Testing 1.2.3....</div>").innerHTML,
+		"<div align=\"center\">Testing 1.2.3....<br /></div>",
 		"Normal"
 	);
 });
@@ -843,7 +846,7 @@ test("Justify", function() {
 
 	equal(
 		this.sb.getTextHandler("[justify]Testing 1.2.3....[/justify]"),
-		html2dom("<div align=\"justify\">Testing 1.2.3....</div>").innerHTML,
+		"<div align=\"justify\">Testing 1.2.3....<br /></div>",
 		"Normal"
 	);
 });
@@ -926,5 +929,28 @@ test("Strip Quotes", function() {
 		ret === "[font='Arial Black', Arial]test[/font]" || ret === '[font="Arial Black", Arial]test[/font]' ||
 		ret === "[font='Arial Black',Arial]test[/font]" || ret === "[font=Arial Black]test[/font]",
 		"Quotes that shouldn't be stripped"
+	);
+});
+
+
+test("New Line Handling", function() {
+	expect(3);
+
+	equal(
+		this.sb.getTextHandler("[list][*]test\n[*]test2\nline\n[/list]"),
+		"<ul><li>test<br /><br /></li><li>test2<br />line<br /><br /></li></ul>",
+		"List with non-closed [*]"
+	);
+
+	equal(
+		this.sb.getTextHandler("[code]test\nline\n[/code]"),
+		"<code>test<br />line<br /><br /></code>",
+		"Code test"
+	);
+
+	equal(
+		this.sb.getTextHandler("[quote]test\nline\n[/quote]"),
+		"<blockquote>test<br />line<br /><br /></blockquote>",
+		"Quote test"
 	);
 });
