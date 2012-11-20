@@ -2610,20 +2610,22 @@
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.selectedHtml = function() {
-			var range = base.selectedRange();
+			var	div,
+				range = base.selectedRange();
 
 			if(!range)
 				return '';
-
-			// IE9+ and all other browsers
-			if (window.XMLSerializer)
-				return new XMLSerializer().serializeToString(range.cloneContents());
 
 			// IE < 9
 			if(!isW3C && range.text !== '' && range.htmlText)
 				return range.htmlText;
 
-			return '';
+
+			// IE9+ and all other browsers
+			div = doc.createElement('div');
+			div.appendChild(range.cloneContents());
+
+			return div.innerHTML;
 		};
 
 		/**
@@ -3546,8 +3548,8 @@
 			return;
 
 		this.each(function () {
-			$this = this.jquery ? this : $(this);
 
+			$this = this.jquery ? this : $(this);
 			// Don't allow the editor to be initilised on it's own source editor
 			if($this.parents('.sceditor-container').length > 0)
 				return;
