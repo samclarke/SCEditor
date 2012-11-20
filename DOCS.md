@@ -50,7 +50,10 @@ or for the BBCode editor do:
 
 	<script>
 		$(document).ready(function() {
-			$("textarea").sceditorBBCodePlugin({/* options here */});
+			$("textarea").sceditor({
+				plugins: 'bbcode'
+				/* other options here */
+			});
 		});
 	</script>
 
@@ -78,7 +81,7 @@ Options should be passed in the editor's constructor.
 
 **toolbar** *String* Defaults to all the built in buttons/commands
 
-A comma separated list of commands. To separate into groups, use the bar character (|) instead of a comma.  
+A comma separated list of commands. To separate into groups, use the bar character (|) instead of a comma.
 e.g.: "bold,italic,underline|source"
 
 
@@ -126,7 +129,7 @@ This mode currently has limited As You Type emoticon conversion support. EOL (en
 Root URL of emoticons, will be pre-pended to all emoticon URLs.
 
 
-**emoticons** *Object* 
+**emoticons** *Object*
 
 Map in the following format:
 
@@ -250,6 +253,11 @@ If to run the source editor when there is no browser WYSIWYG support. Only reall
 **id** *String* Defaults to null
 
 ID to assign the editor.
+
+
+**plugins** *String* Defaults to empty string
+
+A commas seperated list of plugins.
 
 
 **parserOptions** *Object* Defaults to an empty object
@@ -408,7 +416,7 @@ for all occurrences of a tag with a specific attribute:
 	}
 
 for all occurrences of a tag with a specific attribute with a specific value:
-  
+
 	"tag-name": {
 		"attribute-name": ["value1", "value2"]
 	}
@@ -433,10 +441,10 @@ If this BBCodes HTML is inline or not. Only needs to be set if it differs from t
 
 If null/undefined then all children will be allowed. If it's an array only the tags specified will be allowed. To allow plain text use `#` as the tag.
 
-To only allow plain text it would be:  
+To only allow plain text it would be:
 `allowedChildren: [#]`
 
-to only allow list items it would be:  
+to only allow list items it would be:
 `allowedChildren: ['*', 'li']`
 
 
@@ -469,7 +477,7 @@ If to always insert a new line after the end tag.
 
 Should be either a string like `"[b]{0}[/b]"` where {0} will be replaced with the BBCode tags content.
 
-Or a function which returns the formatted BBCode string. It should take two parameters, `element` and `content`.  
+Or a function which returns the formatted BBCode string. It should take two parameters, `element` and `content`.
 
 * **element** *HTMLElement* The DOM HTMLElement object to be converted
 * **content** *String* A string containing the BBCodes content
@@ -499,7 +507,7 @@ e.g.:
 	html: function(token, attrs, content) {
 		if(typeof attrs.defaultAttr !== "undefined")
 			content = '<cite>' + attrs.defaultAttr + '</cite>' + content;
-	
+
 		return '<blockquote>' + content + '</blockquote>';
 	}
 
@@ -533,28 +541,28 @@ To style the contents of the iframe, you must edit the stylesheet that is set wi
 ### CSS Structure<a id="cssstructure"></a>
 
 * **div.sceditor-container**
-  The container for the whole editor.  
+  The container for the whole editor.
   If the editor is in source mode the class **.sourceMode** will be added and the class **.wysiwygMode** will be added when in WYSIWYG mode.
 	* **div.sceditor-toolbar**
 	  The container for the toolbar
-	* **div.sceditor-group**  
+	* **div.sceditor-group**
 	  A toolbar group
-		* **a.sceditor-button**  
-		  A toolbar button.  
+		* **a.sceditor-button**
+		  A toolbar button.
 		  The class **.disabled** will be added if the command is not supported in the current mode.
-		* **a.sceditor-button-[name]**  
+		* **a.sceditor-button-[name]**
 		  Same as the previous class but [name] is replaced with the buttons command name, e.g. .sceditor-button-bold, .sceditor-button-italic, ect.
-		* **div**  
+		* **div**
 		  Div containing the buttons accessibility text and normally has the background image is set to the button's icon too
-	* **iframe**  
+	* **iframe**
 	  Iframe used for the WYSIWYG editor. This has no class, it must be selected with the HTML element
-	* **textarea**  
+	* **textarea**
 	  Textarea used for the source mode editor. This has no class, it must be selected with the HTML element
-	* **div.sceditor-grip**  
+	* **div.sceditor-grip**
 	  Grip used to resize the editor
-	* **div.sceditor-resize-cover**  
+	* **div.sceditor-resize-cover**
 	  Div which covers the editor during resizing
-	* **div.sceditor-dropdown** 
+	* **div.sceditor-dropdown**
 	  Div containing the dropdown
 
 

@@ -3504,6 +3504,12 @@
 		id: null,
 
 		/**
+		 * Comma seperated list of plugins
+		 * @type {String}
+		 */
+		plugins: '',
+
+		/**
 		 * BBCode parser options, only applies if using the editor in BBCode mode.
 		 *
 		 * See $.sceditor.BBCodeParser.defaults for list of valid options
