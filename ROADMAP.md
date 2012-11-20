@@ -2,12 +2,17 @@
 
 ## 1.4.1
 
+   * Ctreate a plugin system, letting plugins register themselves and
+      be activated by a plugins: option in the sceditor() function
    * Add keyboard shortcut support for commands
    * Improve table editing support
+      Make this a plugin?
    * Add ability to resize images in browsers that don't have native WYSIWYG resize.
+      Make this a plugin?
    * Add button state support
    * Add helper functions. Blur, focus, keypress, keyup, keydown
    * Add helpers for adding commands/bbcodes.
+   * Add BBCode parser helpers for BBCode-to-HTML and HTML-to-BBCode
    * Add disable emoticons option
 
 
