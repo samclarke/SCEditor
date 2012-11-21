@@ -1864,6 +1864,7 @@
 			},
 			isInline: false,
 			isHtmlInline: true,
+			skipLastLineBreak: true,
 			format: "[table]{0}[/table]",
 			html: '<table>{0}</table>'
 		},
@@ -1872,6 +1873,7 @@
 				tr: null
 			},
 			isInline: false,
+			skipLastLineBreak: true,
 			format: "[tr]{0}[/tr]",
 			html: '<tr>{0}</tr>'
 		},

@@ -2014,7 +2014,7 @@
 						html += '<tr>';
 
 						for (var col=0; col < cols; col++)
-							html += '<td>' + ($.sceditor.ie ? '' : '<br class="sceditor-ignore" />') + '</td>';
+							html += '<td>' + ($.sceditor.ie ? '' : '<br />') + '</td>';
 
 						html += '</tr>';
 					}
