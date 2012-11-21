@@ -1527,7 +1527,8 @@
 
 				// find the last non-empty text node or line break.
 				if((node.nodeType === 3 && !/^\s*$/.test(node.nodeValue)) ||
-					node.nodeName.toLowerCase() === 'br')
+					node.nodeName.toLowerCase() === 'br' ||
+					($.sceditor.ie && !node.firstChild && !$.sceditor.dom.isInline(node, false)))
 				{
 					// this is the last text or br node, if its in a code or quote tag
 					// then add a newline to the end of the editor
