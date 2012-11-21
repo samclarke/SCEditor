@@ -817,9 +817,6 @@
 						// handle new lines diffrently and don't need one.
 						if(addLineBreak && !$.sceditor.ie)
 							content += "<br />";
-						// This is for IE 9+, see comment below for line "ret.push('\u00a0');"
-						else if(addLineBreak && ((document.documentMode && document.documentMode < 8) || $.sceditor.ie < 8))
-							ret.push('\u00a0');
 
 						if($.isFunction(bbcode.html))
 							html = bbcode.html.call(base, token, token.attrs, content);
@@ -854,7 +851,7 @@
 					if(!$.sceditor.ie)
 						ret.push('<br />');
 
-					// If it's an empty DIV and in compatibility mode is below IE8 then
+					// If it's an empty DIV and compatibility mode is below IE8 then
 					// we must add a non-breaking space to the div otherwise the div
 					// will be collapsed. Adding a BR works but when you press enter
 					// to make a newline it suddenly goes back to the normal IE div
