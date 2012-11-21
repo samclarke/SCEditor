@@ -11,6 +11,7 @@ html {
 	-webkit-overflow-scrolling: touch;
 }
 body {
+	position: relative;
 	overflow: auto;
 	-webkit-overflow-scrolling: touch;
 	min-height: 100%;
