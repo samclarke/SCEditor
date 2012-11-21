@@ -7,7 +7,7 @@ Version 1.4.0:
 		Removed deprecated setCommand and commandExists functions.
 	Added resizeWidth and resizeHeight options to allow disabling of either
 		width or height resizing while keeping the other
-	Improve resize handling
+	Improved resize handling
 	Updated build.php
 	Fixed bug with emoticons containing backslashes.
 		- Thanks to emanuele45 for the fix.
@@ -34,6 +34,9 @@ Version 1.4.0:
 		- Thanks to Chien for translating
 	Added plugins option
 		- Thanks to @maiiku
+	Updated editor to force new line after code and quote tags so that text can
+		be entered after them.
+		- Thanks to Logan
 
 Version 1.3.6:
 	Added Spanish translation

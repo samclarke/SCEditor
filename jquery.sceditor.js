@@ -200,6 +200,7 @@
 			initLocale,
 			updateToolBar,
 			sourceEditorSelectedText,
+			appendNewLine,
 			autofocus;
 
 		/**
@@ -314,10 +315,12 @@
 				$body.height('100%');
 
 			// set the key press event
-			$body.keypress(handleKeyPress);
+			$body.keypress(handleKeyPress)
+				.keyup(appendNewLine);
 			$doc.keypress(handleKeyPress)
 				.mousedown(handleMouseDown)
 				.bind("beforedeactivate keyup", saveRange)
+				.keyup(appendNewLine)
 				.focus(function() {
 					lastRange = null;
 				});
@@ -921,8 +924,10 @@
 			if(!overrideCodeBlocking && ($(rangeHelper.parentNode()).is('code') ||
 				$(rangeHelper.parentNode()).parents('code').length !== 0))
 				return;
-
+// TODO: This code tag should be configurable
 			rangeHelper.insertHTML(html, endHtml);
+
+			appendNewLine();
 		};
 
 		/**
@@ -1203,6 +1208,8 @@
 				value = '<p>' + ($.sceditor.ie ? '' : '<br />') + '</p>';
 
 			getWysiwygDoc().body.innerHTML = replaceEmoticons(value);
+
+			appendNewLine();
 		};
 
 		/**
@@ -1490,20 +1497,6 @@
 				}
 			}
 
-			// make sure there is always a newline after code or quote tags
-			var d = getWysiwygDoc();
-			$.sceditor.dom.rTraverse(d.body, function(node) {
-				if((node.nodeType === 3 && node.nodeValue !== "") ||
-					node.nodeName.toLowerCase() === 'br') {
-					// this is the last text or br node, if its in a code or quote tag
-					// then add a newline after it
-					if($(node).parents('code, blockquote').length > 0)
-						$(d.body).append(d.createElement('br'));
-
-					return false;
-				}
-			}, true);
-
 			// don't apply to code elements
 			if($parentNode.is('code') || $parentNode.parents('code').length !== 0)
 				return;
@@ -1514,7 +1507,40 @@
 		};
 
 		/**
-		 * Handles any mousedown press in the WYSIWYG editor
+		 * Makes sure that if there is a code or quote tag at the
+		 * end of the editor, that there is a new line after it.
+		 *
+		 * If there wasn't a new line at the end you wouldn't be able
+		 * to enter any text after a code/quote tag
+		 * @return {void}
+		 * @private
+		 */
+		appendNewLine = function() {
+			var	name, inblock,
+				doc = getWysiwygDoc();
+
+			$.sceditor.dom.rTraverse(doc.body, function(node) {
+				name = node.nodeName.toLowerCase();
+
+				if(name === "code" || name === "blockquote")
+					inblock = true;
+
+				// find the last non-empty text node or line break.
+				if((node.nodeType === 3 && !/^\s*$/.test(node.nodeValue)) ||
+					node.nodeName.toLowerCase() === 'br')
+				{
+					// this is the last text or br node, if its in a code or quote tag
+					// then add a newline to the end of the editor
+					if(inblock)
+						$(doc.body).append($('<div>' + (!$.sceditor.ie ? '<br />' : '') + '</div>\n'));
+// TODO: Which tags require this fix should be configurable
+					return false;
+				}
+			});
+		};
+
+		/**
+		 * Handles form reset event
 		 * @private
 		 */
 		handleFormReset = function() {
