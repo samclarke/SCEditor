@@ -596,10 +596,15 @@
 					{
 						if((leftBBCode = base.bbcodes[left.name]))
 						{
-							if(leftBBCode.isInline === false && base.opts.breakAfterBlock && leftBBCode.breakAfter !== false)
-								remove = true;
+							if(!onlyRemoveBreakAfter)
+							{
+								if(leftBBCode.isInline === false && base.opts.breakAfterBlock && leftBBCode.breakAfter !== false)
+									remove = true;
 
-							if(leftBBCode.breakAfter)
+								if(leftBBCode.breakAfter)
+									remove = true;
+							}
+							else if(leftBBCode.isInline === false)
 								remove = true;
 						}
 					}
@@ -937,10 +942,10 @@
 				bbcode        = base.bbcodes[token.name];
 				isBlock       = !(!bbcode || bbcode.isInline !== false);
 				isSelfClosing = bbcode && bbcode.isSelfClosing;
-				breakBefore   = ((isBlock && base.opts.breakBeforeBlock) || (bbcode && bbcode.breakBefore));
-				breakStart    = ((isBlock && !isSelfClosing && base.opts.breakStartBlock) || (bbcode && bbcode.breakStart));
-				breakEnd      = ((isBlock && base.opts.breakEndBlock) || (bbcode && bbcode.breakEnd));
-				breakAfter    = ((isBlock && base.opts.breakAfterBlock) || (bbcode && bbcode.breakAfter));
+				breakBefore   = ((isBlock && base.opts.breakBeforeBlock && bbcode.breakBefore !== false) || (bbcode && bbcode.breakBefore));
+				breakStart    = ((isBlock && !isSelfClosing && base.opts.breakStartBlock && bbcode.breakStart !== false) || (bbcode && bbcode.breakStart));
+				breakEnd      = ((isBlock && base.opts.breakEndBlock && bbcode.breakEnd !== false) || (bbcode && bbcode.breakEnd));
+				breakAfter    = ((isBlock && base.opts.breakAfterBlock && bbcode.breakAfter !== false) || (bbcode && bbcode.breakAfter));
 
 				if(token.type === tokenType.open)
 				{
