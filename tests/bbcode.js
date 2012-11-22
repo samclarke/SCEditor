@@ -326,13 +326,13 @@ test("List", function() {
 	expect(2);
 
 	equal(
-		this.sb.getHtmlHandler("", html2dom("<ul><li>test<br /></li></ul>", true)),
+		this.sb.getHtmlHandler("", html2dom("<ul><li>test" + ($.sceditor.ie ? '' : "<br />") + "</li></ul>", true)),
 		"[ul]\n[li]test[/li]\n[/ul]",
 		"UL tag"
 	);
 
 	equal(
-		this.sb.getHtmlHandler("", html2dom("<ol><li>test<br /></li></ol>", true)),
+		this.sb.getHtmlHandler("", html2dom("<ol><li>test" + ($.sceditor.ie ? '' : "<br />") + "</li></ol>", true)),
 		"[ol]\n[li]test[/li]\n[/ol]",
 		"OL tag"
 	);
@@ -693,13 +693,13 @@ test("List", function() {
 
 	equal(
 		this.sb.getTextHandler("[ul][li]test[/li][/ul]"),
-		"<ul><li>test<br /></li></ul>",
+		"<ul><li>test" + ($.sceditor.ie ? '' : "<br />") + "</li></ul>",
 		"UL"
 	);
 
 	equal(
 		this.sb.getTextHandler("[ol][li]test[/li][/ol]"),
-		"<ol><li>test<br /></li></ol>",
+		"<ol><li>test" + ($.sceditor.ie ? '' : "<br />") + "</li></ol>",
 		"OL"
 	);
 });
@@ -709,7 +709,7 @@ test("Table", function() {
 
 	equal(
 		this.sb.getTextHandler("[table][tr][th]test[/th][/tr][tr][td]data1[/td][/tr][/table]"),
-		"<div><table><tr><th>test<br /></th><br /></tr><tr><td>data1<br /></td><br /></tr></table></div>\n",
+		"<div><table><tr><th>test" + ($.sceditor.ie ? '' : "<br />") + "</th></tr><tr><td>data1" + ($.sceditor.ie ? '' : "<br />") + "</td></tr></table></div>\n",
 		"Normal"
 	);
 });
@@ -790,13 +790,13 @@ test("Quote", function() {
 
 	equal(
 		this.sb.getTextHandler("[quote]Testing 1.2.3....[/quote]").toLowerCase(),
-		"<blockquote>testing 1.2.3....<br /></blockquote>",
+		"<blockquote>testing 1.2.3...." + ($.sceditor.ie ? '' : "<br />") + "</blockquote>",
 		"Normal"
 	);
 
 	equal(
 		this.sb.getTextHandler("[quote=admin]Testing 1.2.3....[/quote]").toLowerCase(),
-		"<blockquote><cite>admin</cite>testing 1.2.3....<br /></blockquote>",
+		"<blockquote><cite>admin</cite>testing 1.2.3...." + ($.sceditor.ie ? '' : "<br />") + "</blockquote>",
 		"With author"
 	);
 });
@@ -806,7 +806,7 @@ test("Code", function() {
 
 	equal(
 		this.sb.getTextHandler("[code]Testing 1.2.3....[/code]").toLowerCase(),
-		"<code>testing 1.2.3....<br /></code>",
+		"<code>testing 1.2.3...." + ($.sceditor.ie ? '' : "<br />") + "</code>",
 		"Normal"
 	);
 });
@@ -816,7 +816,7 @@ test("Left", function() {
 
 	equal(
 		this.sb.getTextHandler("[left]Testing 1.2.3....[/left]"),
-		"<div align=\"left\">Testing 1.2.3....<br /></div>",
+		"<div align=\"left\">Testing 1.2.3...." + ($.sceditor.ie ? '' : "<br />") + "</div>",
 		"Normal"
 	);
 });
@@ -826,7 +826,7 @@ test("Right", function() {
 
 	equal(
 		this.sb.getTextHandler("[right]Testing 1.2.3....[/right]"),
-		"<div align=\"right\">Testing 1.2.3....<br /></div>",
+		"<div align=\"right\">Testing 1.2.3...." + ($.sceditor.ie ? '' : "<br />") + "</div>",
 		"Normal"
 	);
 });
@@ -836,7 +836,7 @@ test("Centre", function() {
 
 	equal(
 		this.sb.getTextHandler("[center]Testing 1.2.3....[/center]"),
-		"<div align=\"center\">Testing 1.2.3....<br /></div>",
+		"<div align=\"center\">Testing 1.2.3...." + ($.sceditor.ie ? '' : "<br />") + "</div>",
 		"Normal"
 	);
 });
@@ -846,7 +846,7 @@ test("Justify", function() {
 
 	equal(
 		this.sb.getTextHandler("[justify]Testing 1.2.3....[/justify]"),
-		"<div align=\"justify\">Testing 1.2.3....<br /></div>",
+		"<div align=\"justify\">Testing 1.2.3...." + ($.sceditor.ie ? '' : "<br />") + "</div>",
 		"Normal"
 	);
 });
@@ -938,19 +938,19 @@ test("New Line Handling", function() {
 
 	equal(
 		this.sb.getTextHandler("[list][*]test\n[*]test2\nline\n[/list]"),
-		"<ul><li>test<br /></li><li>test2<br />line<br /></li></ul>",
+		"<ul><li>test" + ($.sceditor.ie ? '' : "<br />") + "</li><li>test2<br />line" + ($.sceditor.ie ? '' : "<br />") + "</li></ul>",
 		"List with non-closed [*]"
 	);
 
 	equal(
 		this.sb.getTextHandler("[code]test\nline\n[/code]"),
-		"<code>test<br />line<br /><br /></code>",
+		"<code>test<br />line<br />" + ($.sceditor.ie ? '' : "<br />") + "</code>",
 		"Code test"
 	);
 
 	equal(
 		this.sb.getTextHandler("[quote]test\nline\n[/quote]"),
-		"<blockquote>test<br />line<br /><br /></blockquote>",
+		"<blockquote>test<br />line<br />" + ($.sceditor.ie ? '' : "<br />") + "</blockquote>",
 		"Quote test"
 	);
 });

@@ -69,27 +69,61 @@ test("Fix nesting", function() {
 
 	var node = html2dom("<span>span<div style=\"font-weight: bold;\">div</div>span</span>");
 	$.sceditor.dom.fixNesting(node);
-	equal(
-		node.innerHTML.toLowerCase(),
-		"<span>span</span><div style=\"font-weight: bold;\">div</div><span>span</span>",
-		"Simple fix"
-	);
+	if(!$.sceditor.ie < 9)
+	{
+		equal(
+			node.innerHTML.toLowerCase(),
+			"<span>span</span><div style=\"font-weight: bold;\">div</div><span>span</span>",
+			"Simple fix"
+		);
+	}
+	else
+	{
+		equal(
+			node.innerHTML.toLowerCase(),
+			"<span>span</span>\r\n<div style=\"font-weight: bold\">div</div><span>span</span>",
+			"Simple fix"
+		);
+	}
+
 
 	node = html2dom("<span style=\"font-weight: bold;\">span<div>div</div>span</span>");
 	$.sceditor.dom.fixNesting(node);
-	equal(
-		node.innerHTML.toLowerCase(),
-		"<span style=\"font-weight: bold;\">span</span><div style=\"font-weight: bold;\">div</div><span style=\"font-weight: bold;\">span</span>",
-		"Fix with CSS"
-	);
+	if(!$.sceditor.ie < 9)
+	{
+		equal(
+			node.innerHTML.toLowerCase(),
+			"<span style=\"font-weight: bold;\">span</span><div style=\"font-weight: bold;\">div</div><span style=\"font-weight: bold;\">span</span>",
+			"Fix with CSS"
+		);
+	}
+	else
+	{
+		equal(
+			node.innerHTML.toLowerCase(),
+			"<span style=\"font-weight: bold\">span</span>\r\n<div style=\"font-weight: bold\">div</div><span style=\"font-weight: bold\">span</span>",
+			"Fix with CSS"
+		);
+	}
 
 	node = html2dom("<span>span<span>span<div style=\"font-weight: bold;\">div</div>span</span>span</span>");
 	$.sceditor.dom.fixNesting(node);
-	equal(
-		node.innerHTML.toLowerCase(),
-		"<span>span<span>span</span></span><div style=\"font-weight: bold;\">div</div><span><span>span</span>span</span>",
-		"Deeper fix"
-	);
+	if(!$.sceditor.ie < 9)
+	{
+		equal(
+			node.innerHTML.toLowerCase(),
+			"<span>span<span>span</span></span><div style=\"font-weight: bold;\">div</div><span><span>span</span>span</span>",
+			"Deeper fix"
+		);
+	}
+	else
+	{
+		equal(
+			node.innerHTML.toLowerCase(),
+			"<span>span<span>span</span></span>\r\n<div style=\"font-weight: bold\">div</div><span><span>span</span>span</span>",
+			"Deeper fix"
+		);
+	}
 });
 
 test("Remove White Space", function() {
@@ -103,29 +137,69 @@ test("Remove White Space", function() {
 		"Simple fix"
 	);
 
+
 	node = html2dom("<div>    <span>  \t\t\t\t </span>\t\t\t</div>");
 	$.sceditor.dom.removeWhiteSpace(node);
-	equal(
-		node.innerHTML.toLowerCase(),
-		"<div> <span> </span> </div>",
-		"Nested fix"
-	);
+
+	if(!$.sceditor.ie < 9)
+	{
+		equal(
+			node.innerHTML.toLowerCase(),
+			"<div> <span> </span> </div>",
+			"Nested fix"
+		);
+	}
+	else
+	{
+		equal(
+			node.innerHTML.toLowerCase(),
+			"<div><span></span></div>",
+			"Nested fix"
+		);
+	}
+
 
 	node = html2dom("<div>    <span>  \t\tcontent\t\t </span>\t\t\t</div>");
 	$.sceditor.dom.removeWhiteSpace(node);
-	equal(
-		node.innerHTML.toLowerCase(),
-		"<div> <span> content </span> </div>",
-		"Nested fix with content"
-	);
+
+	if(!$.sceditor.ie < 9)
+	{
+		equal(
+			node.innerHTML.toLowerCase(),
+			"<div> <span> content </span> </div>",
+			"Nested fix with content"
+		);
+	}
+	else
+	{
+		equal(
+			node.innerHTML.toLowerCase(),
+			"<div><span>content </span></div>",
+			"Nested fix with content"
+		);
+	}
+
 
 	node = html2dom("<div>    <pre>  \t\tcontent\t\t </pre>\t\t\t</div>");
 	$.sceditor.dom.removeWhiteSpace(node);
-	equal(
-		node.innerHTML.toLowerCase(),
-		"<div> <pre>  \t\tcontent\t\t </pre> </div>",
-		"Nested fix with content in pre tag"
-	);
+
+	if(!$.sceditor.ie < 9)
+	{
+		equal(
+			node.innerHTML.toLowerCase(),
+			"<div> <pre>  \t\tcontent\t\t </pre> </div>",
+			"Nested fix with content in pre tag"
+		);
+	}
+	else
+	{
+		equal(
+			node.innerHTML.toLowerCase(),
+			"<div><pre>  \t\tcontent\t\t </pre></div>",
+			"Nested fix with content in pre tag"
+		);
+	}
+
 
 	node = html2dom("<pre>    <span>  \t\tcontent\t\t </span>\t\t\t</pre>");
 	$.sceditor.dom.removeWhiteSpace(node);
