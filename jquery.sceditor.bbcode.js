@@ -494,12 +494,16 @@
 						//     [*]list\nitem\n[/*][*]list1[/*]
 						if(currentOpenTag() && next && closesCurrentTag(next.name))
 						{
-							bbcode = base.bbcodes[currentOpenTag().name];
+							// skip if the next tag is the closing tag for the option tag, i.e. [/*]
+							if(!(next.type === tokenType.close && next.name === currentOpenTag().name))
+							{
+								bbcode = base.bbcodes[currentOpenTag().name];
 
-							if(bbcode && bbcode.breakAfter)
-								openTags.pop();
-							else if(bbcode && bbcode.isInline === false && base.opts.breakAfterBlock && bbcode.breakAfter !== false)
-								openTags.pop();
+								if(bbcode && bbcode.breakAfter)
+									openTags.pop();
+								else if(bbcode && bbcode.isInline === false && base.opts.breakAfterBlock && bbcode.breakAfter !== false)
+									openTags.pop();
+							}
 						}
 
 						addTag(token);
@@ -1412,9 +1416,10 @@
 					previousSibling = element[0].previousSibling,
 					parentIsInline	= $.sceditor.dom.isInline(parent, true) || parent.nodeName.toLowerCase() === "body";
 
-				// If this br/block element is the last child of another block level element
-				// then ignore it as it will be collapsed
-				if(parentIsInline || parent.lastChild !== element[0] || $.sceditor.ie)
+				// If this br/block element inside an inline element. Or this is not a br.
+				// Or this is not the last br, the last br is collapsed. Or this is not IE, IE
+				// doesn't collapse the last BR
+				if(parentIsInline || tag !== "br" || parent.lastChild !== element[0] || $.sceditor.ie)
 					content += "\n";
 
 				// needed for browsers which when inside a textnode, if return is pressed they put the right half
