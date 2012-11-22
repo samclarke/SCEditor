@@ -13,7 +13,7 @@
    * Add helper functions. Blur, focus, keypress, keyup, keydown
    * Add helpers for adding commands/bbcodes.
    * Add BBCode parser helpers for BBCode-to-HTML and HTML-to-BBCode
-   * Add disable emoticons option
+   * Add disable emoticons option and helper to disable/enable while editing
 
 
 ## 1.4.2
