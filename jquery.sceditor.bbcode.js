@@ -273,11 +273,11 @@
 
 			// if only one attribute then remove the = from the start and strip any quotes
 			if(attrs.charAt(0) === "=" && attrs.split("=").length <= 2)
-				ret.defaultAttr = $.sceditorBBCodePlugin.stripQuotes(attrs.substr(1));
+				ret.defaultattr = $.sceditorBBCodePlugin.stripQuotes(attrs.substr(1));
 			else
 			{
 				if(attrs.charAt(0) === "=")
-					attrs = "defaultAttr" + attrs;
+					attrs = "defaultattr" + attrs;
 
 				// No need to strip quotes here, the regex will do that.
 				while((matches = atribsRegex.exec(attrs)))
@@ -956,10 +956,10 @@
 					ret.push('[' + token.name);
 					if(token.attrs)
 					{
-						if(token.attrs.defaultAttr)
+						if(token.attrs.defaultattr)
 						{
-							ret.push('=' + token.attrs.defaultAttr);
-							delete token.attrs.defaultAttr;
+							ret.push('=' + token.attrs.defaultattr);
+							delete token.attrs.defaultattr;
 						}
 
 						for(attr in token.attrs)
@@ -1748,7 +1748,7 @@
 				return '[font=' + this.stripQuotes(font) + ']' + content + '[/font]';
 			},
 			html: function(token, attrs, content) {
-				return '<font face="' + attrs.defaultAttr + '">' + content + '</font>';
+				return '<font face="' + attrs.defaultattr + '">' + content + '</font>';
 			}
 		},
 		// END_COMMAND
@@ -1794,7 +1794,7 @@
 				return '[size=' + size + ']' + content + '[/size]';
 			},
 			html: function(token, attrs, content) {
-				return '<font size="' + attrs.defaultAttr + '">' + content + '</font>';
+				return '<font size="' + attrs.defaultattr + '">' + content + '</font>';
 			}
 		},
 		// END_COMMAND
@@ -1819,7 +1819,7 @@
 				return '[color=' + $.sceditorBBCodePlugin.normaliseColour(color) + ']' + content + '[/color]';
 			},
 			html: function(token, attrs, content) {
-				return '<font color="' + attrs.defaultAttr + '">' + content + '</font>';
+				return '<font color="' + attrs.defaultattr + '">' + content + '</font>';
 			}
 		},
 		// END_COMMAND
@@ -1969,8 +1969,8 @@
 					attribs += ' height="' + attrs.height + '"';
 
 				// handle [img=340x240]url[/img]
-				if(typeof attrs.defaultAttr !== "undefined") {
-					parts = attrs.defaultAttr.split(/x/i);
+				if(typeof attrs.defaultattr !== "undefined") {
+					parts = attrs.defaultattr.split(/x/i);
 
 					attribs = ' width="' + parts[0] + '"' +
 						' height="' + (parts.length === 2 ? parts[1] : parts[0]) + '"';
@@ -1999,10 +1999,10 @@
 				return '[url=' + decodeURI(url) + ']' + content + '[/url]';
 			},
 			html: function(token, attrs, content) {
-				if(typeof attrs.defaultAttr === "undefined" || attrs.defaultAttr.length === 0)
-					attrs.defaultAttr = content;
+				if(typeof attrs.defaultattr === "undefined" || attrs.defaultattr.length === 0)
+					attrs.defaultattr = content;
 
-				return '<a href="' + encodeURI(attrs.defaultAttr) + '">' + content + '</a>';
+				return '<a href="' + encodeURI(attrs.defaultattr) + '">' + content + '</a>';
 			}
 		},
 		// END_COMMAND
@@ -2010,10 +2010,10 @@
 		// START_COMMAND: E-mail
 		email: {
 			html: function(token, attrs, content) {
-				if(typeof attrs.defaultAttr === "undefined")
-					attrs.defaultAttr = content;
+				if(typeof attrs.defaultattr === "undefined")
+					attrs.defaultattr = content;
 
-				return '<a href="mailto:' + attrs.defaultAttr + '">' + content + '</a>';
+				return '<a href="mailto:' + attrs.defaultattr + '">' + content + '</a>';
 			}
 		},
 		// END_COMMAND
@@ -2046,8 +2046,8 @@
 				return '[quote' + author + ']' + content + '[/quote]';
 			},
 			html: function(token, attrs, content) {
-				if(typeof attrs.defaultAttr !== "undefined")
-					content = '<cite>' + attrs.defaultAttr + '</cite>' + content;
+				if(typeof attrs.defaultattr !== "undefined")
+					content = '<cite>' + attrs.defaultattr + '</cite>' + content;
 
 				return '<blockquote>' + content + '</blockquote>';
 			}
