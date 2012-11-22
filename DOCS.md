@@ -376,6 +376,8 @@ $.sceditorBBCodePlugin.bbcode.set() takes two arguments, name and bbcode.
 		isHtmlInline: undefined,
 		allowedChildren: null,
 		allowsEmpty: false,
+		excludeClosing: false,
+		skipLastLineBreak: false,
 
 		breakBefore: false,
 		breakStart: false,
@@ -451,6 +453,16 @@ to only allow list items it would be:
 **allowsEmpty** *Bool* Defaults to false
 
 If this tag is allowed to be empty (have no children or content).
+
+
+**excludeClosing** *Bool* Defaults to false
+
+If to not add a closing tag. Mostly so that [*] can be used without [/*].
+
+
+**skipLastLineBreak** *Bool*
+
+All block level tags have an extra &lt;br /> added to the end of them in all browsers except IE. If this is set to true the extra line break will not be added.
 
 
 **breakBefore** *Bool* Defaults to false
