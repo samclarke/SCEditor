@@ -24,7 +24,9 @@ Then to change all textareas to WYSIWYG editors, simply do:
 or for a BBCode WYSIWYG editor do:
 
 	$(document).ready(function() {
-		$("textarea").sceditorBBCodePlugin();
+		$("textarea").sceditor({
+			plugins: 'bbcode'
+		});
 	});
 
 
@@ -136,6 +138,11 @@ String to set the ID attribute of the editor container to. Useful if you want di
 **rtl** *boolean*
 If true, the entire editor will be set to RTL mode.
 
+**autoUpdate** *boolean*
+If to auto update original textbox on blur
+
+**plugins** *string*
+A comma separated list of plugins. Currently bbcode is the only available plugin.
 
 
 ## License
