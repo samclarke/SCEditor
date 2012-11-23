@@ -576,6 +576,21 @@ test("YouTube", function() {
 	);
 });
 
+test("New Line Handling", function() {
+	expect(2);
+
+	equal(
+		this.sb.getHtmlHandler("", html2dom("<ul><li>newline<br />" + ($.sceditor.ie ? '' : "<br />") + "</li></ul>", true)),
+		"[ul]\n[li]newline\n[/li]\n[/ul]",
+		"List item last child block level"
+	);
+
+	equal(
+		this.sb.getHtmlHandler("", html2dom("<div><code>newline" + ($.sceditor.ie ? '' : "<br />") + "</code></div><div>newline</div>", true)),
+		"[code]newline[/code]\nnewline",
+		"Block level last child"
+	);
+});
 
 
 module("BBCode to HTML", {

@@ -2656,10 +2656,15 @@
 
 
 			// IE9+ and all other browsers
-			div = doc.createElement('div');
-			div.appendChild(range.cloneContents());
+			if(isW3C)
+			{
+				div = doc.createElement('div');
+				div.appendChild(range.cloneContents());
 
-			return div.innerHTML;
+				return div.innerHTML;
+			}
+
+			return '';
 		};
 
 		/**

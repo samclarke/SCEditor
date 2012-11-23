@@ -1421,10 +1421,10 @@
 					previousSibling = element[0].previousSibling,
 					parentIsInline	= $.sceditor.dom.isInline(parent, true) || parent.nodeName.toLowerCase() === "body";
 
-				// If this br/block element inside an inline element. Or this is not a br.
-				// Or this is not the last br, the last br is collapsed. Or this is not IE, IE
-				// doesn't collapse the last BR
-				if(parentIsInline || tag !== "br" || parent.lastChild !== element[0] || $.sceditor.ie)
+				// If this br/block element inside an inline element. Or this is an li element.
+				// Or this is not the last block level as the last block level is collapsed.
+				// Or this is IE and the tag is BR
+				if(parentIsInline || tag === "li" || parent.lastChild !== element[0] || (tag === "br" && $.sceditor.ie))
 					content += "\n";
 
 				// needed for browsers which when inside a textnode, if return is pressed they put the right half
