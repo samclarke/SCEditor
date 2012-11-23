@@ -1157,6 +1157,10 @@
 			var	$body = $wysiwygEditor.contents().find("body"),
 				html;
 
+			// Must focus the editor for IE before saving the range
+			if($.sceditor.ie)
+				base.focus();
+
 			// save the range before the DOM gets messed with
 			rangeHelper.saveRange();
 
