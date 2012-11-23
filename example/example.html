@@ -7,7 +7,7 @@
 
 		<link rel="stylesheet" href="../minified/themes/default.min.css" type="text/css" media="all" />
 
-		<script src="jquery-1.7.2.min.js"></script>
+		<script src="jquery-1.8.2.min.js"></script>
 		<script src="../minified/jquery.sceditor.min.js"></script>
 
 		<style>
@@ -47,19 +47,20 @@
 				link.rel = 'stylesheet';
 				link.href = url;
 				link.id = 'theme-style';
-			
+
 				document.getElementsByTagName('head')[0].appendChild(link);
-			
+
 				var img = document.createElement('img');
 				img.onerror = function(){
 					if(callback) callback(link);
 				}
 				img.src = url;
 			}
-			
+
 			$(document).ready(function() {
 				var initEditor = function() {
-					$("textarea").sceditorBBCodePlugin({
+					$("textarea").sceditor({
+						plugins: 'bbcode',
 						style: "../minified/jquery.sceditor.default.min.css"
 					});
 				};
@@ -67,10 +68,10 @@
 				$("#theme").change(function() {
 					var theme = "../minified/themes/" + $(this).val() + ".min.css";
 
-					$("textarea").data("sceditor").destory();
+					$("textarea").sceditor("instance").destroy();
 					$("link:first").remove();
 					$("#theme-style").remove();
-					
+
 					loadCSS(theme, initEditor);
 				});
 
@@ -88,6 +89,7 @@ Give it a try! :)
 [color=#ff00]Red text! [/color][color=#3399ff]Blue?[/color]
 
 [ul][li]A simple list[/li][li]list item 2[/li][/ul]
+
 If you are using IE9+ or any non-IE browser just type [b]:[/b]) and it should be converted into :) as you type.</textarea>
 
 				<p>If you are using IE9+ or any other browser then it should automatically replace
@@ -101,6 +103,7 @@ If you are using IE9+ or any non-IE browser just type [b]:[/b]) and it should be
 					<option value="modern">Modern</option>
 					<option value="office-toolbar">Office Toolbar</option>
 					<option value="office">Office</option>
+					<option value="square">Square</option>
 				</select>
 			</div>
 		</form>

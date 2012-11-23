@@ -1,4 +1,5 @@
-# SCEditor v1.3.6
+# SCEditor v1.4.0
+
 Copyright (C) 2011-2012, [Sam Clarke](http://www.samclarke.com).
 
 For more information visit: http://www.samclarke.com/2011/07/sceditor/
@@ -13,7 +14,7 @@ or contacting me via: http://www.samclarke.com/contact or GitHub
 Include the JQuery and SCEditor JavaScript
 	<link rel="stylesheet" href="minified/jquery.sceditor.min.css" type="text/css" media="all" />
 	<script type="text/javascript" src="minified/jquery.sceditor.min.js"></script>
-	
+
 Then to change all textareas to WYSIWYG editors, simply do:
 
 	$(document).ready(function() {
@@ -23,7 +24,9 @@ Then to change all textareas to WYSIWYG editors, simply do:
 or for a BBCode WYSIWYG editor do:
 
 	$(document).ready(function() {
-		$("textarea").sceditorBBCodePlugin();
+		$("textarea").sceditor({
+			plugins: 'bbcode'
+		});
 	});
 
 
@@ -38,14 +41,14 @@ The locale to use, e.g. en-GB, en-US, no-NB, ect. The language file for the spec
 
 	<script src="../minified/jquery.sceditor.min.js"></script>
 	<script src="../languages/nl.js"></script>
-	
+
 	// setup the editor here
 
 **charset** *string*
 The charset to use. Defaults to utf-8.
 
 **style** *string*
-The stylesheet used to style the HTML content of the WYSIWYG document, normally it should be jquery.sceditor.default.css. This dose not style the editor, the editor is styled by a seperate stylesheet which is normally jquery.sceditor.css.
+The stylesheet used to style the HTML content of the WYSIWYG document, normally it should be jquery.sceditor.default.css. This dose not style the editor, the editor is styled by a separate stylesheet which is normally jquery.sceditor.css.
 
 **fonts** *string*
 Comma separated list of fonts. There is no way to check if the fonts are installed on the users PC, so the fonts on the list should be kept to the few fonts that are included on most PC's and Macs. The default list should be adequate for most uses.
@@ -110,8 +113,14 @@ Maximum height in px that the editor can be resized to. Set to null for double t
 **resizeMaxWidth** *int*
 Maximum width in px that the editor can be resized to. Set to null for double textarea width or -1 for no maximum.
 
+**resizeWidth** *bool*
+If to allow resizing by width (resizeEnabled must be set to true). Defaults to true.
+
+**resizeHeight** *bool*
+If to allow resizing by height (resizeEnabled must be set to true). Defaults to true.
+
 **getHtmlHandler** *function*
-This is called to filter the HTML before being shown in View Source or set as the textareas value. The function should take two arguments, the first being a string containnig the HTML the second being the DOM body node.
+This is called to filter the HTML before being shown in View Source or set as the textareas value. The function should take two arguments, the first being a string containing the HTML the second being the DOM body node.
 
 **getTextHandler** *function*
 This function will be called when switching from View Source mode back to WYSIWYG mode, or when loading the value from the textarea. The function should 1 argument, a string containing the content from the textarea.
@@ -129,6 +138,11 @@ String to set the ID attribute of the editor container to. Useful if you want di
 **rtl** *boolean*
 If true, the entire editor will be set to RTL mode.
 
+**autoUpdate** *boolean*
+If to auto update original textbox on blur
+
+**plugins** *string*
+A comma separated list of plugins. Currently bbcode is the only available plugin.
 
 
 ## License

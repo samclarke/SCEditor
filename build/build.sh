@@ -26,7 +26,7 @@ done
 if $DO_CSS; then
 	echo "Creating CSS sprites"
 
-	glue themes/icons/src/famfamfam themes/icons --less --algorithm=vertical --optipng --namespace=sceditor-button
+	glue-sprite themes/icons/src/famfamfam themes/icons --less --algorithm=vertical --optipng --namespace=sceditor-button
 	sed -i 's/famfamfam\-//' themes/icons/famfamfam.less
 	sed -i 's/url,/link,/' themes/icons/famfamfam.less
 	sed -i 's/url{/link{/' themes/icons/famfamfam.less
