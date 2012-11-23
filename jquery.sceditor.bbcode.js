@@ -785,7 +785,7 @@
 				// removed this one doesn't think it's not empty.
 				removeEmpty(token.children);
 
-				if(token.children.length < 1 && (!bbcode || (!bbcode.isSelfClosing && !bbcode.allowsEmpty)))
+				if(token.children.length < 1 && bbcode && !bbcode.isSelfClosing && !bbcode.allowsEmpty)
 					tokens.splice(i, 1);
 			}
 		};
@@ -947,7 +947,17 @@
 				breakEnd      = ((isBlock && base.opts.breakEndBlock && bbcode.breakEnd !== false) || (bbcode && bbcode.breakEnd));
 				breakAfter    = ((isBlock && base.opts.breakAfterBlock && bbcode.breakAfter !== false) || (bbcode && bbcode.breakAfter));
 
-				if(token.type === tokenType.open)
+				if(!bbcode && token.type === tokenType.open)
+				{
+					ret.push(token.val);
+
+					if(token.children)
+						ret.push(convertToBBCode(token.children));
+
+					if(token.closing)
+						ret.push(token.closing.val);
+				}
+				else if(token.type === tokenType.open)
 				{
 					if(breakBefore)
 						ret.push('\n');
@@ -976,7 +986,7 @@
 						ret.push(convertToBBCode(token.children));
 
 					// add closing tag if not self closing
-					if(!bbcode || (!isSelfClosing && !bbcode.excludeClosing))
+					if(!isSelfClosing && !bbcode.excludeClosing)
 					{
 						if(breakEnd)
 							ret.push('\n');
