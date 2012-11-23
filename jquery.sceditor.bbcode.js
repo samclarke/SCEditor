@@ -9,7 +9,7 @@
  *	http://www.gnu.org/licenses/gpl.html
  *
  * @author Sam Clarke
- * @version 1.4.0
+ * @version 1.4.1
  * @requires jQuery
  */
 
