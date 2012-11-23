@@ -69,7 +69,7 @@ test("Fix nesting", function() {
 
 	var node = html2dom("<span>span<div style=\"font-weight: bold;\">div</div>span</span>");
 	$.sceditor.dom.fixNesting(node);
-	if(!$.sceditor.ie < 9)
+	if(!$.sceditor.ie || $.sceditor.ie > 8)
 	{
 		equal(
 			node.innerHTML.toLowerCase(),
@@ -89,7 +89,7 @@ test("Fix nesting", function() {
 
 	node = html2dom("<span style=\"font-weight: bold;\">span<div>div</div>span</span>");
 	$.sceditor.dom.fixNesting(node);
-	if(!$.sceditor.ie < 9)
+	if(!$.sceditor.ie || $.sceditor.ie > 8)
 	{
 		equal(
 			node.innerHTML.toLowerCase(),
@@ -108,7 +108,7 @@ test("Fix nesting", function() {
 
 	node = html2dom("<span>span<span>span<div style=\"font-weight: bold;\">div</div>span</span>span</span>");
 	$.sceditor.dom.fixNesting(node);
-	if(!$.sceditor.ie < 9)
+	if(!$.sceditor.ie || $.sceditor.ie > 8)
 	{
 		equal(
 			node.innerHTML.toLowerCase(),
@@ -141,7 +141,7 @@ test("Remove White Space", function() {
 	node = html2dom("<div>    <span>  \t\t\t\t </span>\t\t\t</div>");
 	$.sceditor.dom.removeWhiteSpace(node);
 
-	if(!$.sceditor.ie < 9)
+	if(!$.sceditor.ie || $.sceditor.ie > 8)
 	{
 		equal(
 			node.innerHTML.toLowerCase(),
@@ -162,7 +162,7 @@ test("Remove White Space", function() {
 	node = html2dom("<div>    <span>  \t\tcontent\t\t </span>\t\t\t</div>");
 	$.sceditor.dom.removeWhiteSpace(node);
 
-	if(!$.sceditor.ie < 9)
+	if(!$.sceditor.ie || $.sceditor.ie > 8)
 	{
 		equal(
 			node.innerHTML.toLowerCase(),
@@ -183,7 +183,7 @@ test("Remove White Space", function() {
 	node = html2dom("<div>    <pre>  \t\tcontent\t\t </pre>\t\t\t</div>");
 	$.sceditor.dom.removeWhiteSpace(node);
 
-	if(!$.sceditor.ie < 9)
+	if(!$.sceditor.ie || $.sceditor.ie > 8)
 	{
 		equal(
 			node.innerHTML.toLowerCase(),

@@ -876,6 +876,22 @@ test("YouTube", function() {
 	);
 });
 
+test("Unsupported BBCodes", function() {
+	expect(2);
+
+	equal(
+		this.sb.getTextHandler("[nonexistant]test[/nonexistant]").toLowerCase(),
+		"<div>[nonexistant]test[/nonexistant]</div>\n",
+		"Open and closing tag"
+	);
+
+	equal(
+		this.sb.getTextHandler("[nonexistant aaa]").toLowerCase(),
+		"<div>[nonexistant aaa]</div>\n",
+		"Only opening tag"
+	);
+});
+
 
 test("Stripping empty", function() {
 	expect(8);
