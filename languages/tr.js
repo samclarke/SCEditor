@@ -26,7 +26,7 @@
         "Paste": "Yapıştır",
         "Your browser does not allow the paste command. Please use the keyboard shortcut Ctrl/Cmd-V": "Tarayıcınız yapıştırma komutuna izin vermiyor. Lütfen Ctrl/Cmd-V klavye kısayolunu kullanın.",
         "Paste your text inside the following box:": "Yazınızı bu kutucuğa yapıştırın:",
-        "Paste Text": "Metni Yapıştır",
+        "Paste Text": "Metin Yapıştır",
         "Bullet list": "Madde işaretli liste",
         "Numbered list": "Numaralı liste",
         "Undo": "Geri al",
