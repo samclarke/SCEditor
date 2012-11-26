@@ -1057,8 +1057,8 @@
 						author = quotedetails[0];
 						starttag = starttag + ' data-quotepost="' + quotedetails[1] + '" class="editor_quotepost_' + quotedetails[1] + '"';
 					}
-
-					content = '<cite>' + author + '</cite>' + content;
+					var postlink = '<span class="user-arrow"></span>';
+					content = '<div class="citeblock">Originally posted by <cite>' + author + '</cite>'+postlink+'</div>' + content;
 				}
 
 				return starttag + '>' + content + '</blockquote>';
