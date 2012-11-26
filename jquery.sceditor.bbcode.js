@@ -1033,7 +1033,7 @@
 				if ($elm.children("cite:first").length === 1 || $elm.data("author")) {
 					author = $elm.children("cite:first").text() || $elm.data("author");
 					$elm.data("author", author);
-					$elm.children("cite:first").remove();
+					$elm.children("div.citeblock").remove();
 					$elm.data('quotepost');
 
 					content	= '';
@@ -1055,7 +1055,7 @@
 					if (attrs.defaultattr.indexOf(';') > 0) {
 						var quotedetails = attrs.defaultattr.split(';');
 						author = quotedetails[0];
-						starttag = starttag + ' data-quotepost="' + quotedetails[1] + '" class="editor_quotepost_' + quotedetails[1] + '"';
+						starttag = starttag + ' data-author="'+author+'" data-quotepost="' + quotedetails[1] + '" class="editor_quotepost_' + quotedetails[1] + '"';
 					}
 					var postlink = '<span class="user-arrow"></span>';
 					content = '<div class="citeblock">Originally posted by <cite>' + author + '</cite>'+postlink+'</div>' + content;
