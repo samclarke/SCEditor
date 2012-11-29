@@ -1,5 +1,5 @@
 Version 1.4.1:
-
+	Change GPL license to v2
 
 Version 1.4.0:
 	New theme "square" added
