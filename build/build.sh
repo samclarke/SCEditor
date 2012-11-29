@@ -4,8 +4,16 @@
 # $ ./build/build.sh
 # in the terminal from the root directory.
 #
-# You must have uglifyjs, lessc, jsdoc, glue and yui-compressor
-# in order to run this buil script.
+# In order to run this build script, following must be installed:
+#
+#   * UglifyJS
+#   * Lessc
+#   * JSDoc
+#   * Glue CSS sprite creator
+#   * YUI compresser (for compressing the CSS)
+#
+# To install in Ubuntu type:
+# $ sudo apt-get install node-uglify node-less jsdoc-toolkit glue-sprite yui-compressor
 
 USAGE="Usage: `basename $0` [--css|--js|--docs]"
 
