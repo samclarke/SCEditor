@@ -1020,9 +1020,6 @@
 				right: {
 					txtExec: ["[right]", "[/right]"]
 				},
-				justify: {
-					txtExec: ["[justify]", "[/justify]"]
-				},
 				font: {
 					txtExec: function(caller) {
 						var editor = this;
@@ -1054,16 +1051,13 @@
 					}
 				},
 				bulletlist: {
-					txtExec: ["[ul][li]", "[/li][/ul]"]
+					txtExec: ["[list][*]", "[/list]"]
 				},
 				orderedlist: {
-					txtExec: ["[ol][li]", "[/li][/ol]"]
+					txtExec: ["[list=1][*]", "[/list]"]
 				},
 				table: {
 					txtExec: ["[table][tr][td]", "[/td][/tr][/table]"]
-				},
-				horizontalrule: {
-					txtExec: ["[hr]"]
 				},
 				code: {
 					txtExec: ["[code]", "[/code]"]
@@ -1105,12 +1099,6 @@
 							editor.insertText("[youtube]" + id + "[/youtube]");
 						});
 					}
-				},
-				rtl: {
-					txtExec: ["[rtl]", "[/rtl]"]
-				},
-				ltr: {
-					txtExec: ["[ltr]", "[/ltr]"]
 				}
 			};
 
@@ -1291,7 +1279,7 @@
 
 			$.sceditor.dom.removeWhiteSpace(domBody[0]);
 
-			return $.trim(parser.toBBCode(base.elementToBbcode(domBody), true));
+			return parser.toBBCode(base.elementToBbcode(domBody), true);
 		};
 
 		/**
@@ -1629,44 +1617,15 @@
 		// END_COMMAND
 
 		// START_COMMAND: Lists
-		ul: {
-			tags: {
-				ul: null
-			},
-			breakStart: true,
-			isInline: false,
-			skipLastLineBreak: true,
-			format: "[ul]{0}[/ul]",
-			html: '<ul>{0}</ul>'
-		},
 		list: {
 			breakStart: true,
 			isInline: false,
 			skipLastLineBreak: true,
 			html: '<ul>{0}</ul>'
 		},
-		ol: {
-			tags: {
-				ol: null
-			},
-			breakStart: true,
-			isInline: false,
-			skipLastLineBreak: true,
-			format: "[ol]{0}[/ol]",
-			html: '<ol>{0}</ol>'
-		},
-		li: {
-			tags: {
-				li: null
-			},
-			isInline: false,
-			closedBy: ['ul', 'ol', 'list', '*', 'li'],
-			format: "[li]{0}[/li]",
-			html: '<li>{0}</li>'
-		},
 		"*": {
 			isInline: false,
-			closedBy: ['ul', 'ol', 'list', '*', 'li'],
+			closedBy: ['list', '*', 'li'],
 			html: '<li>{0}</li>'
 		},
 		// END_COMMAND
@@ -1724,17 +1683,6 @@
 				return element.attr('data-sceditor-emoticon') + content;
 			},
 			html: '{0}'
-		},
-		// END_COMMAND
-
-		// START_COMMAND: Horizontal Rule
-		horizontalrule: {
-			allowsEmpty: true,
-			tags: {
-				hr: null
-			},
-			format: "[hr]{0}",
-			html: "<hr />"
 		},
 		// END_COMMAND
 
@@ -1821,6 +1769,7 @@
 			isInline: false,
 			format: function(element, content) {
 				var author = '',
+					postid = '',
 					$elm = $(element),
 					$cite = $elm.children("cite").first();
 
@@ -1828,7 +1777,7 @@
 					author = $cite.text() || $elm.data("author");
 
 					$elm.data("author", author);
-					$cite.remove();
+					$cite.parent().remove();
 
 					$elm.children("cite").replaceWith(function() {
 						return $(this).text();
@@ -1836,14 +1785,48 @@
 
 					content = this.elementToBbcode($(element));
 					author = '=' + author;
+					postid = parseInt($elm.data('quotepost'), 10);
+
+					if (postid > 0) {
+						author = author + ';' + postid;
+					}
 				}
 
 				return '[quote' + author + ']' + content + '[/quote]';
 			},
 			html: function(token, attrs, content) {
-				if (typeof attrs.defaultattr !== "undefined") content = '<cite>' + attrs.defaultattr + '</cite>' + content;
+				var start_tag = '<blockquot';
+				var postlink = '';
 
-				return '<blockquote>' + content + '</blockquote>';
+				if (typeof attrs.defaultattr !== "undefined") {
+					var author = attrs.defaultattr;
+					var postid = 0;
+
+					if (attrs.defaultattr.indexOf(';') > 0) {
+						var quotedetails = attrs.defaultattr.split(';');
+
+						// Add the author
+						author = quotedetails[0];
+						start_tag = start_tag + ' data-author="' + author + '"';
+
+						// Add the post ID
+						postid = parseInt(quotedetails[1], 10);
+						if (postid) {
+							postlink = '<span class="user-arrow"></span>';
+							start_tag = start_tag + ' data-quotepost="' +
+								quotedetails[1] +
+								'" class="editor_quotepost_' + quotedetails[1] +
+								'"';
+						}
+					}
+
+					content = '<div class="citeblock">Originally posted by <cite>' +
+						author + '</cite> ' +
+						postlink + '</div>' +
+						content;
+				}
+
+				return start_tag + '>' + content + '</blockquote>';
 			}
 		},
 		// END_COMMAND
@@ -1894,17 +1877,6 @@
 		},
 		// END_COMMAND
 
-		// START_COMMAND: Justify
-		justify: {
-			styles: {
-				"text-align": ["justify", "-webkit-justify", "-moz-justify", "-khtml-justify"]
-			},
-			isInline: false,
-			format: "[justify]{0}[/justify]",
-			html: '<div align="justify">{0}</div>'
-		},
-		// END_COMMAND
-
 		// START_COMMAND: YouTube
 		youtube: {
 			allowsEmpty: true,
@@ -1921,40 +1893,6 @@
 			html: '<iframe width="560" height="315" src="http://www.youtube.com/embed/{0}?wmode=opaque' + '" data-youtube-id="{0}" frameborder="0" allowfullscreen></iframe>'
 		},
 		// END_COMMAND
-
-
-		// START_COMMAND: Rtl
-		rtl: {
-			styles: {
-				"direction": ["rtl"]
-			},
-			format: "[rtl]{0}[/rtl]",
-			html: '<div style="direction: rtl">{0}</div>'
-		},
-		// END_COMMAND
-
-		// START_COMMAND: Ltr
-		ltr: {
-			styles: {
-				"direction": ["ltr"]
-			},
-			format: "[ltr]{0}[/ltr]",
-			html: '<div style="direction: ltr">{0}</div>'
-		},
-		// END_COMMAND
-
-		// START_COMMAND: Hr
-		hr: {
-			tags: {
-				hr: null
-			},
-			isSelfClosing: true,
-			isInline: false,
-			format: "[hr]",
-			html: '<hr />'
-		},
-		// END_COMMAND
-
 
 		// this is here so that commands above can be removed
 		// without having to remove the , after the last one.
