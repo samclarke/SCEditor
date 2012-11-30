@@ -1617,15 +1617,46 @@
 		// END_COMMAND
 
 		// START_COMMAND: Lists
+		ul: {
+			tags: {
+				ul: null
+			},
+			breakStart: true,
+			isInline: false,
+			skipLastLineBreak: true,
+			format: "[list]{0}[/list]",
+			html: '[ul]{0}[/ul]'
+		},
 		list: {
 			breakStart: true,
 			isInline: false,
 			skipLastLineBreak: true,
 			html: '<ul>{0}</ul>'
 		},
+		ol: {
+			tags: {
+				ol: null
+			},
+			breakStart: true,
+			isInline: false,
+			skipLastLineBreak: true,
+			format: "[list=1]{0}[/list]",
+			html: '[ol]{0}[/ol]'
+		},
+		li: {
+			tags: {
+				li: null
+			},
+			isInline: false,
+			excludeClosing: true,
+			closedBy: ['ul', 'ol', 'list', '*', 'li'],
+			format: "[*]{0}",
+			html: '<li>{0}</li>'
+		},
 		"*": {
 			isInline: false,
-			closedBy: ['list', '*', 'li'],
+			closedBy: ['ul', 'ol', 'list', '*', 'li'],
+			excludeClosing: true,
 			html: '<li>{0}</li>'
 		},
 		// END_COMMAND
@@ -1777,11 +1808,7 @@
 					author = $cite.text() || $elm.data("author");
 
 					$elm.data("author", author);
-					$cite.parent().remove();
-
-					$elm.children("cite").replaceWith(function() {
-						return $(this).text();
-					});
+					$elm.children('div.citeblock').remove();
 
 					content = this.elementToBbcode($(element));
 					author = '=' + author;
@@ -1795,7 +1822,7 @@
 				return '[quote' + author + ']' + content + '[/quote]';
 			},
 			html: function(token, attrs, content) {
-				var start_tag = '<blockquot';
+				var start_tag = '<blockquote';
 				var postlink = '';
 
 				if (typeof attrs.defaultattr !== "undefined") {
