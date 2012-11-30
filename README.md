@@ -1,4 +1,5 @@
-# SCEditor v1.3.7
+# SCEditor v1.4.0
+
 Copyright (C) 2011-2012, [Sam Clarke](http://www.samclarke.com).
 
 For more information visit: http://www.samclarke.com/2011/07/sceditor/
@@ -23,7 +24,9 @@ Then to change all textareas to WYSIWYG editors, simply do:
 or for a BBCode WYSIWYG editor do:
 
 	$(document).ready(function() {
-		$("textarea").sceditorBBCodePlugin();
+		$("textarea").sceditor({
+			plugins: 'bbcode'
+		});
 	});
 
 
@@ -110,6 +113,12 @@ Maximum height in px that the editor can be resized to. Set to null for double t
 **resizeMaxWidth** *int*
 Maximum width in px that the editor can be resized to. Set to null for double textarea width or -1 for no maximum.
 
+**resizeWidth** *bool*
+If to allow resizing by width (resizeEnabled must be set to true). Defaults to true.
+
+**resizeHeight** *bool*
+If to allow resizing by height (resizeEnabled must be set to true). Defaults to true.
+
 **getHtmlHandler** *function*
 This is called to filter the HTML before being shown in View Source or set as the textareas value. The function should take two arguments, the first being a string containing the HTML the second being the DOM body node.
 
@@ -129,6 +138,11 @@ String to set the ID attribute of the editor container to. Useful if you want di
 **rtl** *boolean*
 If true, the entire editor will be set to RTL mode.
 
+**autoUpdate** *boolean*
+If to auto update original textbox on blur
+
+**plugins** *string*
+A comma separated list of plugins. Currently bbcode is the only available plugin.
 
 
 ## License

@@ -4,7 +4,7 @@
 	<head>
 		<meta charset="utf-8"></meta>
 		<meta name="generator" content="JsDoc Toolkit"></meta>
-		<title>jQuery.sceditor.command | SCEditor</title>
+		<title>jQuery.sceditor.BBCodeParser | SCEditor</title>
 
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"></meta>
 		<meta name="mobileoptimized" content="0"></meta>
@@ -71,12 +71,12 @@
     <div class="innerContent">
         <h1 class="classTitle">
             
-            Class <span>jQuery.sceditor.command</span>
+            Class <span>jQuery.sceditor.BBCodeParser</span>
         </h1>
 
         <div class="intro">
             <p class="description summary">
-                command
+                BBCodeParser
             </p>
 
             
@@ -84,7 +84,7 @@
                     
 
                     
-                        <li>Defined in: <a href="../symbols/src/jquery.sceditor.js.html">jquery.sceditor.js</a></li>
+                        <li>Defined in: <a href="../symbols/src/jquery.sceditor.bbcode.js.html">jquery.sceditor.bbcode.js</a></li>
                     
                         
                 </ul>
@@ -93,7 +93,7 @@
 
         
             <div class="props">
-                <table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class jQuery.sceditor.command.">
+                <table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class jQuery.sceditor.BBCodeParser.">
                     <caption class="sectionTitle">Class Summary</caption>
                     <thead>
                         <tr>
@@ -107,9 +107,9 @@
                             <td class="attributes">&nbsp;</td>
                             <td class="nameDescription" >
                                 <div class="fixedFont">
-                                    <b><a href="../symbols/jQuery.sceditor.command.html#constructor">jQuery.sceditor.command</a></b>()
+                                    <b><a href="../symbols/jQuery.sceditor.BBCodeParser.html#constructor">jQuery.sceditor.BBCodeParser</a></b>(options)
                                 </div>
-                                <div class="description">Static command helper class</div>
+                                <div class="description">SCEditor BBCode parser class</div>
                             </td>
                         </tr>
                     </tbody>
@@ -128,7 +128,7 @@
                 <h2 class="sectionTitle">Method Summary</h2>
 
                 
-                    <table class="summaryTable" id="MethodsList" cellspacing="0" summary="A summary of the methods documented in the class jQuery.sceditor.command.">
+                    <table class="summaryTable" id="MethodsList" cellspacing="0" summary="A summary of the methods documented in the class jQuery.sceditor.BBCodeParser.">
                         <thead>
                             <tr>
                                 <th scope="col">Method Attributes</th>
@@ -142,34 +142,44 @@
                                 <tr
                                      class='item0'
                                 >
-                                    <td class="attributes">&lt;static&gt; &nbsp;</td>
+                                    <td class="attributes">&nbsp;</td>
                                     <td class="nameDescription">
-                                        <div class="fixedFont">jQuery.sceditor.command.<b><a href="../symbols/jQuery.sceditor.command.html#.get">get</a></b>(name)
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.BBCodeParser.html#base.parse">base.parse</a></b>(str, preserveNewLines)
                                         </div>
-                                        <div class="description">Gets a command</div>
+                                        <div class="description">Parses a string into an array of BBCodes</div>
                                     </td>
                                 </tr>
                             
                                 <tr
                                      class='item1'
                                 >
-                                    <td class="attributes">&lt;static&gt; &nbsp;</td>
+                                    <td class="attributes">&nbsp;</td>
                                     <td class="nameDescription">
-                                        <div class="fixedFont">jQuery.sceditor.command.<b><a href="../symbols/jQuery.sceditor.command.html#.remove">remove</a></b>(name)
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.BBCodeParser.html#base.toBBCode">base.toBBCode</a></b>(str, preserveNewLines)
                                         </div>
-                                        <div class="description">Removes a command</div>
+                                        <div class="description">Takes a BBCode string, parses it then converts it back to BBCode.</div>
                                     </td>
                                 </tr>
                             
                                 <tr
                                      class='item2'
                                 >
-                                    <td class="attributes">&lt;static&gt; &nbsp;</td>
+                                    <td class="attributes">&nbsp;</td>
                                     <td class="nameDescription">
-                                        <div class="fixedFont">jQuery.sceditor.command.<b><a href="../symbols/jQuery.sceditor.command.html#.set">set</a></b>(name, cmd)
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.BBCodeParser.html#base.toHTML">base.toHTML</a></b>(str, preserveNewLines)
                                         </div>
-                                        <div class="description"><p>Adds a command to the editor or updates an exisiting
-command if a command with the specified name already exists.</div>
+                                        <div class="description">Converts a BBCode string to HTML</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item3'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.BBCodeParser.html#base.tokenize">base.tokenize</a></b>(str)
+                                        </div>
+                                        <div class="description">Takes a BBCode string and splits it into open, content and close tags.</div>
                                     </td>
                                 </tr>
                             
@@ -196,18 +206,46 @@ command if a command with the specified name already exists.</div>
                     </h2>
 
                     <div class="fixedFont">
-                        <b>jQuery.sceditor.command</b>()
+                        <b>jQuery.sceditor.BBCodeParser</b>(options)
                     </div>
 
                     <div class="description">
-                        Static command helper class
+                        SCEditor BBCode parser class
                         
                     </div>
 
                     
 
                     
+                        <dl class="detailList params">
+                            <dt class="heading">Parameters:</dt>
+                            
+                                <dt>
+                                    <span class="light fixedFont">{Object}</span>  <b>options</b>
+                                    
+                                </dt>
+                                <dd></dd>
+                            
+                        </dl>
+                    
 
+                    
+                        <dl class="detailList nomargin">
+                            
+
+                            
+                                <dt class="heading">Since:</dt>
+                                <dd>v1.4.0</dd>
+                            
+
+                            
+
+                            
+
+                            
+
+                            
+                        </dl>
                     
                 </div>
             </div>
@@ -232,18 +270,18 @@ command if a command with the specified name already exists.</div>
                             <li
                                  class='item0'
                             >
-                                <div class="fixedFont heading" id=".get">
+                                <div class="fixedFont heading" id="base.parse">
                                     <span class='lighter'>
-                                    &lt;static&gt; 
+                                    
                                     </span>
 
-                                    <span class="light">{Object|null}</span>
+                                    <span class="light">{Array}</span>
 
-                                    <span class="light">jQuery.sceditor.command.</span><b>get</b>(name)
+                                    <b>base.parse</b>(str, preserveNewLines)
                                 </div>
 
                                 <div class="description">
-                                    Gets a command
+                                    Parses a string into an array of BBCodes
 
                                     
 
@@ -257,10 +295,16 @@ command if a command with the specified name already exists.</div>
                                         <dt class="heading">Parameters:</dt>
                                         
                                             <dt>
-                                                <span class="light fixedFont">{String}</span> <b>name</b>
+                                                <span class="light fixedFont">{String}</span> <b>str</b>
                                                 
                                             </dt>
                                             <dd></dd>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{Bool}</span> <b>preserveNewLines</b>
+                                                
+                                            </dt>
+                                            <dd>If to preserve all new lines, not strip any based on the passed formatting options</dd>
                                         
                                     </dl>
                                 
@@ -271,16 +315,13 @@ command if a command with the specified name already exists.</div>
                                         
 
                                         
-                                            <dt class="heading">Since:</dt>
-                                            <dd>v1.3.5</dd>
-                                        
 
                                         
 
                                         
                                             <dt class="heading"><br/>Returns:</dt>
                                             
-                                                <dd><span class="light fixedFont">{Object|null}</span> <br/></dd>
+                                                <dd><span class="light fixedFont">{Array}</span> Array of BBCode objects<br/></dd>
                                             
                                         
 
@@ -296,18 +337,20 @@ command if a command with the specified name already exists.</div>
                             <li
                                  class='item1'
                             >
-                                <div class="fixedFont heading" id=".remove">
+                                <div class="fixedFont heading" id="base.toBBCode">
                                     <span class='lighter'>
-                                    &lt;static&gt; 
+                                    
                                     </span>
 
-                                    <span class="light">{this}</span>
+                                    <span class="light">{String}</span>
 
-                                    <span class="light">jQuery.sceditor.command.</span><b>remove</b>(name)
+                                    <b>base.toBBCode</b>(str, preserveNewLines)
                                 </div>
 
                                 <div class="description">
-                                    Removes a command
+                                    Takes a BBCode string, parses it then converts it back to BBCode.
+
+This will auto fix the BBCode and format it with the specified options.
 
                                     
 
@@ -321,10 +364,16 @@ command if a command with the specified name already exists.</div>
                                         <dt class="heading">Parameters:</dt>
                                         
                                             <dt>
-                                                <span class="light fixedFont">{String}</span> <b>name</b>
+                                                <span class="light fixedFont">{String}</span> <b>str</b>
                                                 
                                             </dt>
                                             <dd></dd>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{Bool}</span> <b>preserveNewLines</b>
+                                                
+                                            </dt>
+                                            <dd>If to preserve all new lines, not strip any based on the passed formatting options</dd>
                                         
                                     </dl>
                                 
@@ -335,16 +384,13 @@ command if a command with the specified name already exists.</div>
                                         
 
                                         
-                                            <dt class="heading">Since:</dt>
-                                            <dd>v1.3.5</dd>
-                                        
 
                                         
 
                                         
                                             <dt class="heading"><br/>Returns:</dt>
                                             
-                                                <dd><span class="light fixedFont">{this}</span> <br/></dd>
+                                                <dd><span class="light fixedFont">{String}</span> <br/></dd>
                                             
                                         
 
@@ -360,38 +406,24 @@ command if a command with the specified name already exists.</div>
                             <li
                                  class='item2'
                             >
-                                <div class="fixedFont heading" id=".set">
+                                <div class="fixedFont heading" id="base.toHTML">
                                     <span class='lighter'>
-                                    &lt;static&gt; 
+                                    
                                     </span>
 
-                                    <span class="light">{this|false}</span>
+                                    <span class="light">{String}</span>
 
-                                    <span class="light">jQuery.sceditor.command.</span><b>set</b>(name, cmd)
+                                    <b>base.toHTML</b>(str, preserveNewLines)
                                 </div>
 
                                 <div class="description">
-                                    <p>Adds a command to the editor or updates an exisiting
-command if a command with the specified name already exists.</p>
-
-<p>Once a command is add it can be included in the toolbar by
-adding it's name to the toolbar option in the constructor. It
-can also be executed manually by calling jQuery.sceditor.execCommand</p>
+                                    Converts a BBCode string to HTML
 
                                     
 
                                     
                                 </div>
 
-                                
-                                    
-                                        <pre><code class="js">$.sceditor.command.set("hello",
-{
-    exec: function() {
-        alert("Hello World!");
-    }
-});</code></pre>
-                                    
                                 
 
                                 
@@ -399,13 +431,78 @@ can also be executed manually by calling jQuery.sceditor.execCommand</p>
                                         <dt class="heading">Parameters:</dt>
                                         
                                             <dt>
-                                                <span class="light fixedFont">{String}</span> <b>name</b>
+                                                <span class="light fixedFont">{String}</span> <b>str</b>
                                                 
                                             </dt>
                                             <dd></dd>
                                         
                                             <dt>
-                                                <span class="light fixedFont">{Object}</span> <b>cmd</b>
+                                                <span class="light fixedFont">{Bool}</span> <b>preserveNewLines</b>
+                                                
+                                            </dt>
+                                            <dd>If to preserve all new lines, not strip any based on the passed formatting options</dd>
+                                        
+                                    </dl>
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+
+                                        
+
+                                        
+                                            <dt class="heading"><br/>Returns:</dt>
+                                            
+                                                <dd><span class="light fixedFont">{String}</span> <br/></dd>
+                                            
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item3'
+                            >
+                                <div class="fixedFont heading" id="base.tokenize">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    <span class="light">{Array}</span>
+
+                                    <b>base.tokenize</b>(str)
+                                </div>
+
+                                <div class="description">
+                                    Takes a BBCode string and splits it into open, content and close tags.
+
+It dose no checking to verify a tag has a matching open or closing tag
+or if the tag is valid child of any tag before it. For that the tokens
+should be passed to the parse function.
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+                                    <dl class="detailList params">
+                                        <dt class="heading">Parameters:</dt>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{String}</span> <b>str</b>
                                                 
                                             </dt>
                                             <dd></dd>
@@ -419,16 +516,13 @@ can also be executed manually by calling jQuery.sceditor.execCommand</p>
                                         
 
                                         
-                                            <dt class="heading">Since:</dt>
-                                            <dd>v1.3.5</dd>
-                                        
 
                                         
 
                                         
                                             <dt class="heading"><br/>Returns:</dt>
                                             
-                                                <dd><span class="light fixedFont">{this|false}</span> Returns false if name or cmd is false<br/></dd>
+                                                <dd><span class="light fixedFont">{Array}</span> <br/></dd>
                                             
                                         
 

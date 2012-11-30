@@ -1,42 +1,48 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 	<head>
-		<meta charset="utf-8" />
-		<meta name="generator" content="JsDoc Toolkit" />
+		<meta charset="utf-8"></meta>
+		<meta name="generator" content="JsDoc Toolkit"></meta>
 		<title>jQuery.sceditor | SCEditor</title>
 
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-		<meta name="mobileoptimized" content="0" />
-	
-		<link rel="stylesheet" href="../css/all.css" media="all" />
-		<link rel="stylesheet" href="../css/handheld.css" media="only screen and (max-width: 660px)" />
-		<link rel="stylesheet" href="../css/handheld.css" media="handheld" />
-		<link rel="stylesheet" href="../css/screen.css" media="screen and (min-width: 661px)" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"></meta>
+		<meta name="mobileoptimized" content="0"></meta>
 
-		<script src="../javascript/all.js"></script>
+		<link rel="stylesheet" href="../css/all.min.css" media="all"></link>
+		<link rel="stylesheet" href="../css/handheld.css" media="only screen and (max-width: 660px)"></link>
+		<link rel="stylesheet" href="../css/handheld.css" media="handheld"></link>
+		<link rel="stylesheet" href="../css/screen.css" media="screen and (min-width: 661px)"></link>
+
+		<!-- Syntax Highlighting -->
+		<script src="../javascript/all.min.js"></script>
 		<!--[if lt IE 9]>
 			<script src="../javascript/html5.js"></script>
 		<![endif]-->
 	</head>
 
 	<body>
-
 <div class="index">
 	<div class="menu">
 		<div class="indexLinks">
+
 			<a href="../index.html">Classes</a>
+			<a href="../jsIndex.html">js</a>
 			<a href="../files.html">Files</a>
 		</div>
-	
-		<h2 class="heading1">Classes</h2>
-		
+
+        <h2 class="heading1">Filter</h2>
+
 		<input type="text" name="classFilter" class="classFilter" id="ClassFilter" placeholder="Filter"></input>
-		
+
 		<nav>
 			<ul class="classList" id="ClassList">
 				
 					<li><a href="../symbols/jQuery.sceditor.html">jQuery<span class='break'> </span>.<span class='break'> </span>sceditor</a></li>
+				
+					<li><a href="../symbols/jQuery.sceditor.BBCodeParser.html">jQuery<span class='break'> </span>.<span class='break'> </span>sceditor<span class='break'> </span>.<span class='break'> </span>BBCodeParser</a></li>
+				
+					<li><a href="../symbols/jQuery.sceditor.BBCodeParser%23TokenizeToken.html">jQuery<span class='break'> </span>.<span class='break'> </span>sceditor<span class='break'> </span>.<span class='break'> </span>BBCodeParser#TokenizeToken</a></li>
 				
 					<li><a href="../symbols/jQuery.sceditor.command.html">jQuery<span class='break'> </span>.<span class='break'> </span>sceditor<span class='break'> </span>.<span class='break'> </span>command</a></li>
 				
@@ -52,2525 +58,2461 @@
 		</nav>
 	</div>
 	<div class="fineprint" style="clear:both">
-		<footer>
-			
-			Documentation generator: <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0<br />
-			Template: <a href="http://www.thebrightlines.com/2010/05/06/new-template-for-jsdoctoolkit-codeview/" target="_blank">Codeview</a> 1.2<br />
-			Generated on:
-			<time datetime='2012-5-28' pubdate>2012-5-28 15:38</time>
-		</footer>
+		
+		Documentation generator: <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0<br />
+		Template: <a href="https://github.com/WouterBos/Codeview" target="_blank">Codeview</a> 1.3<br />
+		Generated on:
+		<time datetime='2012-11-20' pubdate>2012-11-20 23:38</time>
 	</div>
 </div>
 
 <div class="index indexStatic"></div>
-
 <div class="content">
-	<div class="innerContent">
-		<article>
-			<header>
-				<h1 class="classTitle">
-					
-					Class <span>jQuery.sceditor</span>
-				</h1>
-				
-				<div class="intro">
-					<p class="description summary">
-						sceditor
-					</p>
-						
-					
-						<ul class="summary">
-							
-							
-							
-								<li>Defined in: <a href="../symbols/src/jquery.sceditor.js.html">jquery.sceditor.js</a></li>
-							
-							
-						</ul>
-					
-				</div>
-			</header>
-			
-			
-				<section>
-					<div class="props">
-						<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class jQuery.sceditor.">
-							<caption class="sectionTitle">Class Summary</caption>
-							<thead>
-								<tr>
-									<th scope="col">Constructor Attributes</th>
-									<th scope="col">Constructor Name and Description</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td class="attributes">&nbsp;</td>
-									<td class="nameDescription" >
-										<div class="fixedFont">
-											<b><a href="../symbols/jQuery.sceditor.html#constructor">jQuery.sceditor</a></b>(el)
-										</div>
-										<div class="description">SCEditor - A lightweight WYSIWYG editor</div>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</section>
-			
-			
-			
-				
-				<section>
-					
-						<nav>
-							<div class="props">
-								<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class jQuery.sceditor.">
-									<caption class="sectionTitle">Field Summary</caption>
-									
-									<thead>
-										<tr>
-											<th scope="col">Field Attributes</th>
-											<th scope="col">Field Name and Description</th>
-										</tr>
-									</thead>
-									
-									<tbody>
-										
-											<tr>
-												<td class="attributes">&lt;static&gt; &nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont">
-													jQuery.sceditor.<b><a href="../symbols/jQuery.sceditor.html#.$.sceditor.ie">$.sceditor.ie</a></b>
-													</div>
-													<div class="description">Detects which version of IE is being used if any.</div>
-												</td>
-											</tr>
-										
-									</tbody>
-								</table>
-							</div>
-						</nav>
-					
-					
-					
-				</section>
-			
-	<!--
-	#### METHODS SUMMARY
-	-->
-			
-				<section>
-					
-					
-					<div class="props">
-						<h2 class="sectionTitle">Method Summary</h2>
-						
-						
-							<nav>
-								<table class="summaryTable" id="MethodsList" cellspacing="0" summary="A summary of the methods documented in the class jQuery.sceditor.">
-									<thead>
-										<tr>
-											<th scope="col">Method Attributes</th>
-											<th scope="col">Method Name and Description</th>
-										</tr>
-									</thead>
-									
-									<tbody>
-										
-										
-											<tr
-												 class='item0'
-											>
-												<td class="attributes">&lt;static&gt; &nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditor.<b><a href="../symbols/jQuery.sceditor.html#.$.sceditor.commandExists">$.sceditor.commandExists</a></b>(name)
-													</div>
-													<div class="description">Checks if a command with the specified name exists</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item1'
-											>
-												<td class="attributes">&lt;static&gt; &nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditor.<b><a href="../symbols/jQuery.sceditor.html#.$.sceditor.isWysiwygSupported">$.sceditor.isWysiwygSupported</a></b>()
-													</div>
-													<div class="description">Detects if WYSIWYG is supported by the browser</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item2'
-											>
-												<td class="attributes">&lt;static&gt; &nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditor.<b><a href="../symbols/jQuery.sceditor.html#.$.sceditor.regexEscape">$.sceditor.regexEscape</a></b>(str)
-													</div>
-													<div class="description">Escapes a string so it's safe to use in regex</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item3'
-											>
-												<td class="attributes">&lt;static&gt; &nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditor.<b><a href="../symbols/jQuery.sceditor.html#.$.sceditor.setCommand">$.sceditor.setCommand</a></b>(name, exec, tooltip, keypress, txtExec)
-													</div>
-													<div class="description">Adds/updates a command.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item4'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#_">_</a></b>(str, args)
-													</div>
-													<div class="description">Translates the string into the locale language.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item5'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#closeDropDown">closeDropDown</a></b>(bool)
-													</div>
-													<div class="description">Closes the current drop down</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item6'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#createDropDown">createDropDown</a></b>(HTMLElement, string, string, bool)
-													</div>
-													<div class="description">Creates a menu item drop down</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item7'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#destory">destory</a></b>()
-													</div>
-													<div class="description">Destroys the editor, removing all elements and
+    <div class="innerContent">
+        <h1 class="classTitle">
+            
+            Class <span>jQuery.sceditor</span>
+        </h1>
+
+        <div class="intro">
+            <p class="description summary">
+                sceditor
+            </p>
+
+            
+                <ul class="summary">
+                    
+
+                    
+                        <li>Defined in: <a href="../symbols/src/jquery.sceditor.js.html">jquery.sceditor.js</a></li>
+                    
+                        
+                </ul>
+            
+        </div>
+
+        
+            <div class="props">
+                <table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class jQuery.sceditor.">
+                    <caption class="sectionTitle">Class Summary</caption>
+                    <thead>
+                        <tr>
+                            
+                            <th scope="col">Constructor Attributes</th>
+                            <th scope="col">Constructor Name and Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="attributes">&nbsp;</td>
+                            <td class="nameDescription" >
+                                <div class="fixedFont">
+                                    <b><a href="../symbols/jQuery.sceditor.html#constructor">jQuery.sceditor</a></b>(el)
+                                </div>
+                                <div class="description">SCEditor - A lightweight WYSIWYG editor</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        
+
+        
+            
+            
+                <div class="props">
+                    <table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class jQuery.sceditor.">
+                        <caption class="sectionTitle">Field Summary</caption>
+
+                        <thead>
+                            <tr>
+                                <th scope="col">Field Attributes</th>
+                                <th scope="col">Field Name and Description</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            
+                                <tr>
+                                    <td class="attributes">&lt;static&gt; &nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont">
+                                        jQuery.sceditor.<b><a href="../symbols/jQuery.sceditor.html#.$.sceditor.ie">$.sceditor.ie</a></b>
+                                        </div>
+                                        <div class="description"><p>Detects which version of IE is being used if any.</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr>
+                                    <td class="attributes">&lt;static&gt; &nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont">
+                                        jQuery.sceditor.<b><a href="../symbols/jQuery.sceditor.html#.$.sceditor.isWysiwygSupported">$.sceditor.isWysiwygSupported</a></b>
+                                        </div>
+                                        <div class="description">If the browser supports WYSIWYG editing (e.g.</div>
+                                    </td>
+                                </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+            
+
+            
+        
+<!--
+#### METHODS SUMMARY
+-->
+        
+            
+
+            <div class="props">
+                <h2 class="sectionTitle">Method Summary</h2>
+
+                
+                    <table class="summaryTable" id="MethodsList" cellspacing="0" summary="A summary of the methods documented in the class jQuery.sceditor.">
+                        <thead>
+                            <tr>
+                                <th scope="col">Method Attributes</th>
+                                <th scope="col">Method Name and Description</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            
+                            
+                                <tr
+                                     class='item0'
+                                >
+                                    <td class="attributes">&lt;static&gt; &nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont">jQuery.sceditor.<b><a href="../symbols/jQuery.sceditor.html#.$.sceditor.regexEscape">$.sceditor.regexEscape</a></b>(str)
+                                        </div>
+                                        <div class="description">Escapes a string so it's safe to use in regex</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item1'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#_">_</a></b>(str, args)
+                                        </div>
+                                        <div class="description">Translates the string into the locale language.</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item2'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#blur">blur</a></b>()
+                                        </div>
+                                        <div class="description">Blurs the editors input area</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item3'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#closeDropDown">closeDropDown</a></b>(bool)
+                                        </div>
+                                        <div class="description">Closes the current drop down</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item4'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#createDropDown">createDropDown</a></b>(HTMLElement, string, string, bool)
+                                        </div>
+                                        <div class="description">Creates a menu item drop down</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item5'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#destroy">destroy</a></b>()
+                                        </div>
+                                        <div class="description">Destroys the editor, removing all elements and
 event handlers.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item8'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#execCommand">execCommand</a></b>(command, param)
-													</div>
-													<div class="description">Executes a command on the WYSIWYG editor</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item9'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#expandToContent">expandToContent</a></b>()
-													</div>
-													<div class="description">Expands the editor to the size of it's content</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item10'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#focus">focus</a></b>()
-													</div>
-													<div class="description">Fucuses the editors input area</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item11'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#getRangeHelper">getRangeHelper</a></b>()
-													</div>
-													<div class="description">Gets the current rangeHelper instance</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item12'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#getTextareaValue">getTextareaValue</a></b>(filter)
-													</div>
-													<div class="description">Gets the text editor value</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item13'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#getWysiwygEditorValue">getWysiwygEditorValue</a></b>(filter)
-													</div>
-													<div class="description">Gets the WYSIWYG editors HTML which is between the body tags</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item14'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#height">height</a></b>()
-													</div>
-													<div class="description">Gets the height of the editor in px</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item15'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#height^2">height</a></b>(height)
-													</div>
-													<div class="description">Sets the height of the editor</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item16'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#insert">insert</a></b>(start, end, filter, convertEmoticons)
-													</div>
-													<div class="description"><p>Inserts HTML/BBCode into the editor</p>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item6'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#execCommand">execCommand</a></b>(command, param)
+                                        </div>
+                                        <div class="description">Executes a command on the WYSIWYG editor</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item7'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#expandToContent">expandToContent</a></b>(ignoreMaxHeight)
+                                        </div>
+                                        <div class="description">Expands the editor to the size of it's content</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item8'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#focus">focus</a></b>()
+                                        </div>
+                                        <div class="description">Fucuses the editors input area</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item9'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#getRangeHelper">getRangeHelper</a></b>()
+                                        </div>
+                                        <div class="description">Gets the current rangeHelper instance</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item10'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#getSourceEditorValue">getSourceEditorValue</a></b>(filter)
+                                        </div>
+                                        <div class="description">Gets the text editor value</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item11'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#getWysiwygEditorValue">getWysiwygEditorValue</a></b>(filter)
+                                        </div>
+                                        <div class="description">Gets the WYSIWYG editors HTML which is between the body tags</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item12'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#height">height</a></b>()
+                                        </div>
+                                        <div class="description">Gets the height of the editor in px</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item13'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#height^2">height</a></b>(height)
+                                        </div>
+                                        <div class="description">Sets the height of the editor</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item14'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#insert">insert</a></b>(start, end, filter, convertEmoticons)
+                                        </div>
+                                        <div class="description"><p>Inserts HTML/BBCode into the editor</p>
 
 <p>If end is supplied any slected text will be placed between
 start and end.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item17'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#insertText">insertText</a></b>(text, endText)
-													</div>
-													<div class="description"><p>Inserts text into either WYSIWYG or textEditor depending on which
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item15'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#insertText">insertText</a></b>(text, endText)
+                                        </div>
+                                        <div class="description"><p>Inserts text into either WYSIWYG or sourceEditor depending on which
 mode the editor is in.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item18'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#inSourceMode">inSourceMode</a></b>()
-													</div>
-													<div class="description">If the editor is in source code mode</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item19'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#readOnly">readOnly</a></b>()
-													</div>
-													<div class="description">Gets the readOnly property of the editor</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item20'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#readOnly^2">readOnly</a></b>(readOnly)
-													</div>
-													<div class="description">Sets the readOnly property of the editor</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item21'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#setTextareaValue">setTextareaValue</a></b>(value)
-													</div>
-													<div class="description">Sets the text editor value</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item22'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#setWysiwygEditorValue">setWysiwygEditorValue</a></b>(value)
-													</div>
-													<div class="description">Sets the WYSIWYG HTML editor value.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item23'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#sourceMode">sourceMode</a></b>()
-													</div>
-													<div class="description">Gets if the editor is in sourceMode</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item24'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#sourceMode^2">sourceMode</a></b>(enable)
-													</div>
-													<div class="description">Sets if the editor is in sourceMode</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item25'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#textEditorInsertText">textEditorInsertText</a></b>(text, endText)
-													</div>
-													<div class="description">Like wysiwygEditorInsertHtml but inserts text into the text
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item16'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#inSourceMode">inSourceMode</a></b>()
+                                        </div>
+                                        <div class="description">If the editor is in source code mode</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item17'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#readOnly">readOnly</a></b>()
+                                        </div>
+                                        <div class="description">Gets the readOnly property of the editor</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item18'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#readOnly^2">readOnly</a></b>(readOnly)
+                                        </div>
+                                        <div class="description">Sets the readOnly property of the editor</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item19'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#setSourceEditorValue">setSourceEditorValue</a></b>(value)
+                                        </div>
+                                        <div class="description">Sets the text editor value</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item20'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#setWysiwygEditorValue">setWysiwygEditorValue</a></b>(value)
+                                        </div>
+                                        <div class="description">Sets the WYSIWYG HTML editor value.</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item21'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#sourceEditorInsertText">sourceEditorInsertText</a></b>(text, endText)
+                                        </div>
+                                        <div class="description">Like wysiwygEditorInsertHtml but inserts text into the text
 (source mode) editor instead</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item26'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#toggleTextMode">toggleTextMode</a></b>()
-													</div>
-													<div class="description">Switches between the WYSIWYG and plain text modes</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item27'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#updateTextareaValue">updateTextareaValue</a></b>()
-													</div>
-													<div class="description">Updates the textarea that the editor is replacing
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item22'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#sourceMode">sourceMode</a></b>()
+                                        </div>
+                                        <div class="description">Gets if the editor is in sourceMode</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item23'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#sourceMode^2">sourceMode</a></b>(enable)
+                                        </div>
+                                        <div class="description">Sets if the editor is in sourceMode</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item24'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#toggleSourceMode">toggleSourceMode</a></b>()
+                                        </div>
+                                        <div class="description">Switches between the WYSIWYG and source modes</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item25'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#updateOriginal">updateOriginal</a></b>()
+                                        </div>
+                                        <div class="description">Updates the textarea that the editor is replacing
 with the value currently inside the editor.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item28'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#val">val</a></b>()
-													</div>
-													<div class="description">Gets the value of the editor</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item29'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#val^2">val</a></b>(val, filter)
-													</div>
-													<div class="description">Sets the value of the editor</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item30'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#width">width</a></b>()
-													</div>
-													<div class="description">Gets the width of the editor in px</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item31'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#width^2">width</a></b>(width)
-													</div>
-													<div class="description">Sets the width of the editor</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item32'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#wysiwygEditorInsertHtml">wysiwygEditorInsertHtml</a></b>(html, endHtml, overrideCodeBlocking)
-													</div>
-													<div class="description"><p>Inserts HTML into WYSIWYG editor.</div>
-												</td>
-											</tr>
-										
-											<tr
-												 class='item33'
-											>
-												<td class="attributes">&nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#wysiwygEditorInsertText">wysiwygEditorInsertText</a></b>(text, endText)
-													</div>
-													<div class="description">Like wysiwygEditorInsertHtml except it will convert any HTML into text
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item26'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#val">val</a></b>()
+                                        </div>
+                                        <div class="description"><p>Gets the value of the editor.</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item27'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#val^2">val</a></b>(val, filter)
+                                        </div>
+                                        <div class="description">Sets the value of the editor</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item28'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#width">width</a></b>()
+                                        </div>
+                                        <div class="description">Gets the width of the editor in pixels</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item29'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#width^2">width</a></b>(width)
+                                        </div>
+                                        <div class="description">Sets the width of the editor</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item30'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#wysiwygEditorInsertHtml">wysiwygEditorInsertHtml</a></b>(html, endHtml, overrideCodeBlocking)
+                                        </div>
+                                        <div class="description"><p>Inserts HTML into WYSIWYG editor.</div>
+                                    </td>
+                                </tr>
+                            
+                                <tr
+                                     class='item31'
+                                >
+                                    <td class="attributes">&nbsp;</td>
+                                    <td class="nameDescription">
+                                        <div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.html#wysiwygEditorInsertText">wysiwygEditorInsertText</a></b>(text, endText)
+                                        </div>
+                                        <div class="description">Like wysiwygEditorInsertHtml except it will convert any HTML into text
 before inserting it.</div>
-												</td>
-											</tr>
-										
-									</tbody>
-								</table>
-							</nav>
-						
-					
-						
-					</div>
-				</section>
-			
-			
-	<!--
-	#### EVENTS SUMMARY
-	-->
-			
-	<!--
-	#### CONSTRUCTOR DETAILS
-	-->
-			
-				<section>
-					<div class="details props">
-						<div class="innerProps">
-							<h2 class="sectionTitle" id="constructor">
-								Class Detail
-							</h2>
-							
-							<div class="fixedFont">
-								<b>jQuery.sceditor</b>(el)
-							</div>
-							
-							<div class="description">
-								SCEditor - A lightweight WYSIWYG editor
-								
-							</div>
-							
-							
-						
-							
-								<dl class="detailList params">
-									<dt class="heading">Parameters:</dt>
-									
-										<dt>
-											<span class="light fixedFont">{Element}</span>  <b>el</b>
-											
-										</dt>
-										<dd>The textarea to be converted</dd>
-									
-								</dl>
-							
-							
-							
-								<dl class="detailList nomargin">
-									
-									
-									
-									
-									
-									
-									
-										<dt class="heading">Returns:</dt>
-										
-												<dd><span class="light fixedFont">{Object}</span> options</dd>
-										
-									
-									
-									
-									
-									
-								</dl>
-							
-						</div>
-					</div>
-				</section>
-			
-	<!--
-	#### FIELD DETAILS
-	-->
-			
-				<section>
-					<div class="details props">
-						<div class="innerProps">
-							<h2 class="sectionTitle">
-								Field Detail
-							</h2>
-							
-							
-								<div class="fixedFont heading" id=".$.sceditor.ie">
-									<span class='lighter'>
-									&lt;static&gt; 
-									</span>
-									
-									
-									
-									<span class="light">jQuery.sceditor.</span><b>$.sceditor.ie</b>							
-								</div>
-								
-								<div class="description">
-									Detects which version of IE is being used if any.
+                                    </td>
+                                </tr>
+                            
+                        </tbody>
+                    </table>
+                
 
-Will be the IE version number or undefined if not IE.
+                
+            </div>
+        
+
+<!--
+#### EVENTS SUMMARY
+-->
+        
+<!--
+#### CONSTRUCTOR DETAILS
+-->
+        
+            <div class="details props">
+                <div class="innerProps">
+                    <h2 class="sectionTitle" id="constructor">
+                        Class Detail
+                    </h2>
+
+                    <div class="fixedFont">
+                        <b>jQuery.sceditor</b>(el)
+                    </div>
+
+                    <div class="description">
+                        SCEditor - A lightweight WYSIWYG editor
+                        
+                    </div>
+
+                    
+
+                    
+                        <dl class="detailList params">
+                            <dt class="heading">Parameters:</dt>
+                            
+                                <dt>
+                                    <span class="light fixedFont">{Element}</span>  <b>el</b>
+                                    
+                                </dt>
+                                <dd>The textarea to be converted</dd>
+                            
+                        </dl>
+                    
+
+                    
+                        <dl class="detailList nomargin">
+                            
+
+                            
+
+                            
+
+                            
+                                <dt class="heading"><br/>Returns:</dt>
+                                
+                                        <dd><span class="light fixedFont">{Object}</span> options<br/></dd>
+                                
+                            
+
+                            
+
+                            
+                        </dl>
+                    
+                </div>
+            </div>
+        
+<!--
+#### FIELD DETAILS
+-->
+        
+            <div class="details props">
+                <div class="innerProps">
+                    <h2 class="sectionTitle">
+                        Field Detail
+                    </h2>
+
+                    
+                        <div class="fixedFont heading" id=".$.sceditor.ie">
+                            <span class='lighter'>
+                            &lt;static&gt; 
+                            </span>
+
+                            
+
+                            <span class="light">jQuery.sceditor.</span><b>$.sceditor.ie</b>
+                        </div>
+
+                        <div class="description">
+                            <p>Detects which version of IE is being used if any.</p>
+
+<p>Will be the IE version number or undefined if not IE.</p>
 
 Source: https://gist.github.com/527683
-									
-									
-									
-								</div>
-								
-								
-									
-								
-								
-							
-						</div>
-					</div>
-				</section>
-			
-	<!--
-	#### METHOD DETAILS
-	-->		
-			
-				<section>
-					<div class="details props">
-						<div class="innerProps">
-							<h2 class="sectionTitle">
-								Method Detail
-							</h2>
-							
-							<ul class="methodDetail" id="MethodDetail">
-								
-								
-									<li 
-										 class='item0'
-									>
-										<div class="fixedFont heading" id=".$.sceditor.commandExists">
-											<span class='lighter'>
-											&lt;static&gt; 
-											</span>
-											
-											<span class="light">{Bool}</span>
-											
-											<span class="light">jQuery.sceditor.</span><b>$.sceditor.commandExists</b>(name)
-										</div>
-										
-										<div class="description">
-											Checks if a command with the specified name exists
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{String}</span> <b>name</b>
-														
-													</dt>
-													<dd></dd>
-												
-											</dl>
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-													<dt class="heading">Deprecated:</dt>
-													<dt>
-														Since v1.3.5
-													</dt>
-												
-												
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{Bool}</span> </dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item1'
-									>
-										<div class="fixedFont heading" id=".$.sceditor.isWysiwygSupported">
-											<span class='lighter'>
-											&lt;static&gt; 
-											</span>
-											
-											<span class="light">{bool}</span>
-											
-											<span class="light">jQuery.sceditor.</span><b>$.sceditor.isWysiwygSupported</b>()
-										</div>
-										
-										<div class="description">
-											Detects if WYSIWYG is supported by the browser
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{bool}</span> </dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item2'
-									>
-										<div class="fixedFont heading" id=".$.sceditor.regexEscape">
-											<span class='lighter'>
-											&lt;static&gt; 
-											</span>
-											
-											<span class="light">{string}</span>
-											
-											<span class="light">jQuery.sceditor.</span><b>$.sceditor.regexEscape</b>(str)
-										</div>
-										
-										<div class="description">
-											Escapes a string so it's safe to use in regex
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>str</b>
-														
-													</dt>
-													<dd></dd>
-												
-											</dl>
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{string}</span> </dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item3'
-									>
-										<div class="fixedFont heading" id=".$.sceditor.setCommand">
-											<span class='lighter'>
-											&lt;static&gt; 
-											</span>
-											
-											<span class="light">{Bool}</span>
-											
-											<span class="light">jQuery.sceditor.</span><b>$.sceditor.setCommand</b>(name, exec, tooltip, keypress, txtExec)
-										</div>
-										
-										<div class="description">
-											Adds/updates a command.
+                            
 
-Only name and exec are required. Exec is only required if
-the command dose not already exist.
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{String}</span> <b>name</b>
-														
-													</dt>
-													<dd>The commands name</dd>
-												
-													<dt>
-														<span class="light fixedFont">{String|Function}</span> <b>exec</b>
-														
-													</dt>
-													<dd>The commands exec function or string for the native execCommand</dd>
-												
-													<dt>
-														<span class="light fixedFont">{String}</span> <b>tooltip</b>
-														
-													</dt>
-													<dd>The commands tooltip text</dd>
-												
-													<dt>
-														<span class="light fixedFont">{Function}</span> <b>keypress</b>
-														
-													</dt>
-													<dd>Function that gets called every time a key is pressed</dd>
-												
-													<dt>
-														<span class="light fixedFont">{Function|Array}</span> <b>txtExec</b>
-														
-													</dt>
-													<dd>Called when the command is executed in source mode or array containing prepend and optional append</dd>
-												
-											</dl>
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-													<dt class="heading">Deprecated:</dt>
-													<dt>
-														Since v1.3.5
-													</dt>
-												
-												
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{Bool}</span> </dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item4'
-									>
-										<div class="fixedFont heading" id="_">
-											<span class='lighter'>
-											
-											</span>
-											
-											<span class="light">{string}</span>
-											
-											<b>_</b>(str, args)
-										</div>
-										
-										<div class="description">
-											Translates the string into the locale language.
+                            
+                        </div>
+
+                        
+                            
+
+                        <div class="hr"></div>
+                    
+                        <div class="fixedFont heading" id=".$.sceditor.isWysiwygSupported">
+                            <span class='lighter'>
+                            &lt;static&gt; 
+                            </span>
+
+                            
+
+                            <span class="light">jQuery.sceditor.</span><b>$.sceditor.isWysiwygSupported</b>
+                        </div>
+
+                        <div class="description">
+                            If the browser supports WYSIWYG editing (e.g. older mobile browsers).
+                            
+
+                            
+                        </div>
+
+                        
+                            
+
+                        
+                    
+                </div>
+            </div>
+        
+<!--
+#### METHOD DETAILS
+-->
+        
+            <div class="details props">
+                <div class="innerProps">
+                    <h2 class="sectionTitle">
+                        Method Detail
+                    </h2>
+
+                    <ul class="methodDetail" id="MethodDetail">
+                        
+                        
+                            <li
+                                 class='item0'
+                            >
+                                <div class="fixedFont heading" id=".$.sceditor.regexEscape">
+                                    <span class='lighter'>
+                                    &lt;static&gt; 
+                                    </span>
+
+                                    <span class="light">{string}</span>
+
+                                    <span class="light">jQuery.sceditor.</span><b>$.sceditor.regexEscape</b>(str)
+                                </div>
+
+                                <div class="description">
+                                    Escapes a string so it's safe to use in regex
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+                                    <dl class="detailList params">
+                                        <dt class="heading">Parameters:</dt>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{string}</span> <b>str</b>
+                                                
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                    </dl>
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+
+                                        
+
+                                        
+                                            <dt class="heading"><br/>Returns:</dt>
+                                            
+                                                <dd><span class="light fixedFont">{string}</span> <br/></dd>
+                                            
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item1'
+                            >
+                                <div class="fixedFont heading" id="_">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    <span class="light">{string}</span>
+
+                                    <b>_</b>(str, args)
+                                </div>
+
+                                <div class="description">
+                                    Translates the string into the locale language.
 
 Replaces any {0}, {1}, {2}, ect. with the params provided.
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>str</b>
-														
-													</dt>
-													<dd></dd>
-												
-													<dt>
-														<span class="light fixedFont">{...String}</span> <b>args</b>
-														
-													</dt>
-													<dd></dd>
-												
-											</dl>
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{string}</span> </dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item5'
-									>
-										<div class="fixedFont heading" id="closeDropDown">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>closeDropDown</b>(bool)
-										</div>
-										
-										<div class="description">
-											Closes the current drop down
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<b>bool</b>
-														
-													</dt>
-													<dd>focus If to focus the editor on close</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item6'
-									>
-										<div class="fixedFont heading" id="createDropDown">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>createDropDown</b>(HTMLElement, string, string, bool)
-										</div>
-										
-										<div class="description">
-											Creates a menu item drop down
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<b>HTMLElement</b>
-														
-													</dt>
-													<dd>menuItem	The button to align the drop down with</dd>
-												
-													<dt>
-														<b>string</b>
-														
-													</dt>
-													<dd>dropDownName	Used for styling the dropown, will be a class sceditor-dropDownName</dd>
-												
-													<dt>
-														<b>string</b>
-														
-													</dt>
-													<dd>content			The HTML content of the dropdown</dd>
-												
-													<dt>
-														<b>bool</b>
-														
-													</dt>
-													<dd>ieUnselectable	If to add the unselectable attribute to all the contents elements. Stops IE from deselecting the text in the editor</dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item7'
-									>
-										<div class="fixedFont heading" id="destory">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>destory</b>()
-										</div>
-										
-										<div class="description">
-											Destroys the editor, removing all elements and
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+                                    <dl class="detailList params">
+                                        <dt class="heading">Parameters:</dt>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{string}</span> <b>str</b>
+                                                
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{...String}</span> <b>args</b>
+                                                
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                    </dl>
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+
+                                        
+
+                                        
+                                            <dt class="heading"><br/>Returns:</dt>
+                                            
+                                                <dd><span class="light fixedFont">{string}</span> <br/></dd>
+                                            
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item2'
+                            >
+                                <div class="fixedFont heading" id="blur">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    <span class="light">{this}</span>
+
+                                    <b>blur</b>()
+                                </div>
+
+                                <div class="description">
+                                    Blurs the editors input area
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+                                            <dt class="heading">Since:</dt>
+                                            <dd>1.3.6</dd>
+                                        
+
+                                        
+
+                                        
+                                            <dt class="heading"><br/>Returns:</dt>
+                                            
+                                                <dd><span class="light fixedFont">{this}</span> <br/></dd>
+                                            
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item3'
+                            >
+                                <div class="fixedFont heading" id="closeDropDown">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    
+
+                                    <b>closeDropDown</b>(bool)
+                                </div>
+
+                                <div class="description">
+                                    Closes the current drop down
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+                                    <dl class="detailList params">
+                                        <dt class="heading">Parameters:</dt>
+                                        
+                                            <dt>
+                                                <b>bool</b>
+                                                
+                                            </dt>
+                                            <dd>focus If to focus the editor on close</dd>
+                                        
+                                    </dl>
+                                
+
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item4'
+                            >
+                                <div class="fixedFont heading" id="createDropDown">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    
+
+                                    <b>createDropDown</b>(HTMLElement, string, string, bool)
+                                </div>
+
+                                <div class="description">
+                                    Creates a menu item drop down
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+                                    <dl class="detailList params">
+                                        <dt class="heading">Parameters:</dt>
+                                        
+                                            <dt>
+                                                <b>HTMLElement</b>
+                                                
+                                            </dt>
+                                            <dd>menuItem	The button to align the drop down with</dd>
+                                        
+                                            <dt>
+                                                <b>string</b>
+                                                
+                                            </dt>
+                                            <dd>dropDownName	Used for styling the dropown, will be a class sceditor-dropDownName</dd>
+                                        
+                                            <dt>
+                                                <b>string</b>
+                                                
+                                            </dt>
+                                            <dd>content			The HTML content of the dropdown</dd>
+                                        
+                                            <dt>
+                                                <b>bool</b>
+                                                
+                                            </dt>
+                                            <dd>ieUnselectable	If to add the unselectable attribute to all the contents elements. Stops IE from deselecting the text in the editor</dd>
+                                        
+                                    </dl>
+                                
+
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item5'
+                            >
+                                <div class="fixedFont heading" id="destroy">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    
+
+                                    <b>destroy</b>()
+                                </div>
+
+                                <div class="description">
+                                    Destroys the editor, removing all elements and
 event handlers.
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item8'
-									>
-										<div class="fixedFont heading" id="execCommand">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>execCommand</b>(command, param)
-										</div>
-										
-										<div class="description">
-											Executes a command on the WYSIWYG editor
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{String|Function}</span> <b>command</b>
-														
-													</dt>
-													<dd></dd>
-												
-													<dt>
-														<span class="light fixedFont">{String|Boolean}</span> <b>param</b>
-														<i>Optional</i>
-													</dt>
-													<dd></dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item9'
-									>
-										<div class="fixedFont heading" id="expandToContent">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>expandToContent</b>()
-										</div>
-										
-										<div class="description">
-											Expands the editor to the size of it's content
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-													<dt class="heading">Since:</dt>
-													<dd>1.3.5</dd>
-												
-												
-												
-												
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item10'
-									>
-										<div class="fixedFont heading" id="focus">
-											<span class='lighter'>
-											
-											</span>
-											
-											<span class="light">{this}</span>
-											
-											<b>focus</b>()
-										</div>
-										
-										<div class="description">
-											Fucuses the editors input area
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{this}</span> </dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item11'
-									>
-										<div class="fixedFont heading" id="getRangeHelper">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>getRangeHelper</b>()
-										</div>
-										
-										<div class="description">
-											Gets the current rangeHelper instance
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd>jQuery.sceditor.rangeHelper</dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item12'
-									>
-										<div class="fixedFont heading" id="getTextareaValue">
-											<span class='lighter'>
-											
-											</span>
-											
-											<span class="light">{string}</span>
-											
-											<b>getTextareaValue</b>(filter)
-										</div>
-										
-										<div class="description">
-											Gets the text editor value
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{bool}</span> <b>filter</b>
-														<i>Optional, Default: true</i>
-													</dt>
-													<dd></dd>
-												
-											</dl>
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{string}</span> </dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item13'
-									>
-										<div class="fixedFont heading" id="getWysiwygEditorValue">
-											<span class='lighter'>
-											
-											</span>
-											
-											<span class="light">{string}</span>
-											
-											<b>getWysiwygEditorValue</b>(filter)
-										</div>
-										
-										<div class="description">
-											Gets the WYSIWYG editors HTML which is between the body tags
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{bool}</span> <b>filter</b>
-														<i>Optional, Default: true</i>
-													</dt>
-													<dd></dd>
-												
-											</dl>
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{string}</span> </dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item14'
-									>
-										<div class="fixedFont heading" id="height">
-											<span class='lighter'>
-											
-											</span>
-											
-											<span class="light">{int}</span>
-											
-											<b>height</b>()
-										</div>
-										
-										<div class="description">
-											Gets the height of the editor in px
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-													<dt class="heading">Since:</dt>
-													<dd>1.3.5</dd>
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{int}</span> </dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item15'
-									>
-										<div class="fixedFont heading" id="height^2">
-											<span class='lighter'>
-											
-											</span>
-											
-											<span class="light">{this}</span>
-											
-											<b>height</b>(height)
-										</div>
-										
-										<div class="description">
-											Sets the height of the editor
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{int}</span> <b>height</b>
-														
-													</dt>
-													<dd>Height in px</dd>
-												
-											</dl>
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-													<dt class="heading">Since:</dt>
-													<dd>1.3.5</dd>
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{this}</span> </dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item16'
-									>
-										<div class="fixedFont heading" id="insert">
-											<span class='lighter'>
-											
-											</span>
-											
-											<span class="light">{this}</span>
-											
-											<b>insert</b>(start, end, filter, convertEmoticons)
-										</div>
-										
-										<div class="description">
-											<p>Inserts HTML/BBCode into the editor</p>
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item6'
+                            >
+                                <div class="fixedFont heading" id="execCommand">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    
+
+                                    <b>execCommand</b>(command, param)
+                                </div>
+
+                                <div class="description">
+                                    Executes a command on the WYSIWYG editor
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+                                    <dl class="detailList params">
+                                        <dt class="heading">Parameters:</dt>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{String}</span> <b>command</b>
+                                                
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{String|Boolean}</span> <b>param</b>
+                                                <i>Optional</i>
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                    </dl>
+                                
+
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item7'
+                            >
+                                <div class="fixedFont heading" id="expandToContent">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    
+
+                                    <b>expandToContent</b>(ignoreMaxHeight)
+                                </div>
+
+                                <div class="description">
+                                    Expands the editor to the size of it's content
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+                                    <dl class="detailList params">
+                                        <dt class="heading">Parameters:</dt>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{Boolean}</span> <b>ignoreMaxHeight</b>
+                                                <i>Optional, Default: false</i>
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                    </dl>
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+                                            <dt class="heading">Since:</dt>
+                                            <dd>1.3.5</dd>
+                                        
+
+                                        
+
+                                        
+
+                                        
+
+                                        
+                                            <dt class="heading"><br/>See:<br/></dt>
+                                            
+                                                <dd>#resizeToContent<br/></dd>
+                                            
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item8'
+                            >
+                                <div class="fixedFont heading" id="focus">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    <span class="light">{this}</span>
+
+                                    <b>focus</b>()
+                                </div>
+
+                                <div class="description">
+                                    Fucuses the editors input area
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+
+                                        
+
+                                        
+                                            <dt class="heading"><br/>Returns:</dt>
+                                            
+                                                <dd><span class="light fixedFont">{this}</span> <br/></dd>
+                                            
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item9'
+                            >
+                                <div class="fixedFont heading" id="getRangeHelper">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    
+
+                                    <b>getRangeHelper</b>()
+                                </div>
+
+                                <div class="description">
+                                    Gets the current rangeHelper instance
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+
+                                        
+
+                                        
+                                            <dt class="heading"><br/>Returns:</dt>
+                                            
+                                                <dd>jQuery.sceditor.rangeHelper<br/></dd>
+                                            
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item10'
+                            >
+                                <div class="fixedFont heading" id="getSourceEditorValue">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    <span class="light">{string}</span>
+
+                                    <b>getSourceEditorValue</b>(filter)
+                                </div>
+
+                                <div class="description">
+                                    Gets the text editor value
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+                                    <dl class="detailList params">
+                                        <dt class="heading">Parameters:</dt>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{bool}</span> <b>filter</b>
+                                                <i>Optional, Default: true</i>
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                    </dl>
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+                                            <dt class="heading">Since:</dt>
+                                            <dd>1.4.0</dd>
+                                        
+
+                                        
+
+                                        
+                                            <dt class="heading"><br/>Returns:</dt>
+                                            
+                                                <dd><span class="light fixedFont">{string}</span> <br/></dd>
+                                            
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item11'
+                            >
+                                <div class="fixedFont heading" id="getWysiwygEditorValue">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    <span class="light">{string}</span>
+
+                                    <b>getWysiwygEditorValue</b>(filter)
+                                </div>
+
+                                <div class="description">
+                                    Gets the WYSIWYG editors HTML which is between the body tags
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+                                    <dl class="detailList params">
+                                        <dt class="heading">Parameters:</dt>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{bool}</span> <b>filter</b>
+                                                <i>Optional, Default: true</i>
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                    </dl>
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+
+                                        
+
+                                        
+                                            <dt class="heading"><br/>Returns:</dt>
+                                            
+                                                <dd><span class="light fixedFont">{string}</span> <br/></dd>
+                                            
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item12'
+                            >
+                                <div class="fixedFont heading" id="height">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    <span class="light">{int}</span>
+
+                                    <b>height</b>()
+                                </div>
+
+                                <div class="description">
+                                    Gets the height of the editor in px
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+                                            <dt class="heading">Since:</dt>
+                                            <dd>1.3.5</dd>
+                                        
+
+                                        
+
+                                        
+                                            <dt class="heading"><br/>Returns:</dt>
+                                            
+                                                <dd><span class="light fixedFont">{int}</span> <br/></dd>
+                                            
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item13'
+                            >
+                                <div class="fixedFont heading" id="height^2">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    <span class="light">{this}</span>
+
+                                    <b>height</b>(height)
+                                </div>
+
+                                <div class="description">
+                                    Sets the height of the editor
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+                                    <dl class="detailList params">
+                                        <dt class="heading">Parameters:</dt>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{int}</span> <b>height</b>
+                                                
+                                            </dt>
+                                            <dd>Height in px</dd>
+                                        
+                                    </dl>
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+                                            <dt class="heading">Since:</dt>
+                                            <dd>1.3.5</dd>
+                                        
+
+                                        
+
+                                        
+                                            <dt class="heading"><br/>Returns:</dt>
+                                            
+                                                <dd><span class="light fixedFont">{this}</span> <br/></dd>
+                                            
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item14'
+                            >
+                                <div class="fixedFont heading" id="insert">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    <span class="light">{this}</span>
+
+                                    <b>insert</b>(start, end, filter, convertEmoticons)
+                                </div>
+
+                                <div class="description">
+                                    <p>Inserts HTML/BBCode into the editor</p>
 
 <p>If end is supplied any slected text will be placed between
 start and end. If there is no selected text start and end
 will be concated together.</p>
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{String}</span> <b>start</b>
-														
-													</dt>
-													<dd></dd>
-												
-													<dt>
-														<span class="light fixedFont">{String}</span> <b>end</b>
-														<i>Optional, Default: null</i>
-													</dt>
-													<dd></dd>
-												
-													<dt>
-														<span class="light fixedFont">{Boolean}</span> <b>filter</b>
-														<i>Optional, Default: true</i>
-													</dt>
-													<dd></dd>
-												
-													<dt>
-														<span class="light fixedFont">{Boolean}</span> <b>convertEmoticons</b>
-														<i>Optional, Default: true</i>
-													</dt>
-													<dd></dd>
-												
-											</dl>
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-													<dt class="heading">Since:</dt>
-													<dd>1.3.5</dd>
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{this}</span> </dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item17'
-									>
-										<div class="fixedFont heading" id="insertText">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>insertText</b>(text, endText)
-										</div>
-										
-										<div class="description">
-											<p>Inserts text into either WYSIWYG or textEditor depending on which
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+                                    <dl class="detailList params">
+                                        <dt class="heading">Parameters:</dt>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{String}</span> <b>start</b>
+                                                
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{String}</span> <b>end</b>
+                                                <i>Optional, Default: null</i>
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{Boolean}</span> <b>filter</b>
+                                                <i>Optional, Default: true</i>
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{Boolean}</span> <b>convertEmoticons</b>
+                                                <i>Optional, Default: true</i>
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                    </dl>
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+                                            <dt class="heading">Since:</dt>
+                                            <dd>1.3.5</dd>
+                                        
+
+                                        
+
+                                        
+                                            <dt class="heading"><br/>Returns:</dt>
+                                            
+                                                <dd><span class="light fixedFont">{this}</span> <br/></dd>
+                                            
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item15'
+                            >
+                                <div class="fixedFont heading" id="insertText">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    
+
+                                    <b>insertText</b>(text, endText)
+                                </div>
+
+                                <div class="description">
+                                    <p>Inserts text into either WYSIWYG or sourceEditor depending on which
 mode the editor is in.</p>
 
 <p>If endText is specified any selected text will be placed between
 text and endText. If no text is selected text and endText will
 just be concated together.</p>
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{String}</span> <b>text</b>
-														
-													</dt>
-													<dd></dd>
-												
-													<dt>
-														<span class="light fixedFont">{String}</span> <b>endText</b>
-														<i>Optional, Default: null</i>
-													</dt>
-													<dd></dd>
-												
-											</dl>
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-													<dt class="heading">Since:</dt>
-													<dd>1.3.5</dd>
-												
-												
-												
-												
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item18'
-									>
-										<div class="fixedFont heading" id="inSourceMode">
-											<span class='lighter'>
-											
-											</span>
-											
-											<span class="light">{bool}</span>
-											
-											<b>inSourceMode</b>()
-										</div>
-										
-										<div class="description">
-											If the editor is in source code mode
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{bool}</span> </dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item19'
-									>
-										<div class="fixedFont heading" id="readOnly">
-											<span class='lighter'>
-											
-											</span>
-											
-											<span class="light">{boolean}</span>
-											
-											<b>readOnly</b>()
-										</div>
-										
-										<div class="description">
-											Gets the readOnly property of the editor
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-													<dt class="heading">Since:</dt>
-													<dd>1.3.5</dd>
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{boolean}</span> </dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item20'
-									>
-										<div class="fixedFont heading" id="readOnly^2">
-											<span class='lighter'>
-											
-											</span>
-											
-											<span class="light">{this}</span>
-											
-											<b>readOnly</b>(readOnly)
-										</div>
-										
-										<div class="description">
-											Sets the readOnly property of the editor
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{boolean}</span> <b>readOnly</b>
-														
-													</dt>
-													<dd></dd>
-												
-											</dl>
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-													<dt class="heading">Since:</dt>
-													<dd>1.3.5</dd>
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{this}</span> </dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item21'
-									>
-										<div class="fixedFont heading" id="setTextareaValue">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>setTextareaValue</b>(value)
-										</div>
-										
-										<div class="description">
-											Sets the text editor value
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>value</b>
-														
-													</dt>
-													<dd></dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item22'
-									>
-										<div class="fixedFont heading" id="setWysiwygEditorValue">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>setWysiwygEditorValue</b>(value)
-										</div>
-										
-										<div class="description">
-											Sets the WYSIWYG HTML editor value. Should only be the HTML
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+                                    <dl class="detailList params">
+                                        <dt class="heading">Parameters:</dt>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{String}</span> <b>text</b>
+                                                
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{String}</span> <b>endText</b>
+                                                <i>Optional, Default: null</i>
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                    </dl>
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+                                            <dt class="heading">Since:</dt>
+                                            <dd>1.3.5</dd>
+                                        
+
+                                        
+
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item16'
+                            >
+                                <div class="fixedFont heading" id="inSourceMode">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    <span class="light">{bool}</span>
+
+                                    <b>inSourceMode</b>()
+                                </div>
+
+                                <div class="description">
+                                    If the editor is in source code mode
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+
+                                        
+
+                                        
+                                            <dt class="heading"><br/>Returns:</dt>
+                                            
+                                                <dd><span class="light fixedFont">{bool}</span> <br/></dd>
+                                            
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item17'
+                            >
+                                <div class="fixedFont heading" id="readOnly">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    <span class="light">{boolean}</span>
+
+                                    <b>readOnly</b>()
+                                </div>
+
+                                <div class="description">
+                                    Gets the readOnly property of the editor
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+                                            <dt class="heading">Since:</dt>
+                                            <dd>1.3.5</dd>
+                                        
+
+                                        
+
+                                        
+                                            <dt class="heading"><br/>Returns:</dt>
+                                            
+                                                <dd><span class="light fixedFont">{boolean}</span> <br/></dd>
+                                            
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item18'
+                            >
+                                <div class="fixedFont heading" id="readOnly^2">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    <span class="light">{this}</span>
+
+                                    <b>readOnly</b>(readOnly)
+                                </div>
+
+                                <div class="description">
+                                    Sets the readOnly property of the editor
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+                                    <dl class="detailList params">
+                                        <dt class="heading">Parameters:</dt>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{boolean}</span> <b>readOnly</b>
+                                                
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                    </dl>
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+                                            <dt class="heading">Since:</dt>
+                                            <dd>1.3.5</dd>
+                                        
+
+                                        
+
+                                        
+                                            <dt class="heading"><br/>Returns:</dt>
+                                            
+                                                <dd><span class="light fixedFont">{this}</span> <br/></dd>
+                                            
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item19'
+                            >
+                                <div class="fixedFont heading" id="setSourceEditorValue">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    
+
+                                    <b>setSourceEditorValue</b>(value)
+                                </div>
+
+                                <div class="description">
+                                    Sets the text editor value
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+                                    <dl class="detailList params">
+                                        <dt class="heading">Parameters:</dt>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{string}</span> <b>value</b>
+                                                
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                    </dl>
+                                
+
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item20'
+                            >
+                                <div class="fixedFont heading" id="setWysiwygEditorValue">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    
+
+                                    <b>setWysiwygEditorValue</b>(value)
+                                </div>
+
+                                <div class="description">
+                                    Sets the WYSIWYG HTML editor value. Should only be the HTML
 contained within the body tags
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>value</b>
-														
-													</dt>
-													<dd></dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item23'
-									>
-										<div class="fixedFont heading" id="sourceMode">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>sourceMode</b>()
-										</div>
-										
-										<div class="description">
-											Gets if the editor is in sourceMode
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd>boolean</dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item24'
-									>
-										<div class="fixedFont heading" id="sourceMode^2">
-											<span class='lighter'>
-											
-											</span>
-											
-											<span class="light">{this}</span>
-											
-											<b>sourceMode</b>(enable)
-										</div>
-										
-										<div class="description">
-											Sets if the editor is in sourceMode
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{bool}</span> <b>enable</b>
-														
-													</dt>
-													<dd></dd>
-												
-											</dl>
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{this}</span> </dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item25'
-									>
-										<div class="fixedFont heading" id="textEditorInsertText">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>textEditorInsertText</b>(text, endText)
-										</div>
-										
-										<div class="description">
-											Like wysiwygEditorInsertHtml but inserts text into the text
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+                                    <dl class="detailList params">
+                                        <dt class="heading">Parameters:</dt>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{string}</span> <b>value</b>
+                                                
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                    </dl>
+                                
+
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item21'
+                            >
+                                <div class="fixedFont heading" id="sourceEditorInsertText">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    
+
+                                    <b>sourceEditorInsertText</b>(text, endText)
+                                </div>
+
+                                <div class="description">
+                                    Like wysiwygEditorInsertHtml but inserts text into the text
 (source mode) editor instead
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{String}</span> <b>text</b>
-														
-													</dt>
-													<dd></dd>
-												
-													<dt>
-														<span class="light fixedFont">{String}</span> <b>endText</b>
-														<i>Optional, Default: null</i>
-													</dt>
-													<dd></dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item26'
-									>
-										<div class="fixedFont heading" id="toggleTextMode">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>toggleTextMode</b>()
-										</div>
-										
-										<div class="description">
-											Switches between the WYSIWYG and plain text modes
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item27'
-									>
-										<div class="fixedFont heading" id="updateTextareaValue">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>updateTextareaValue</b>()
-										</div>
-										
-										<div class="description">
-											Updates the textarea that the editor is replacing
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+                                    <dl class="detailList params">
+                                        <dt class="heading">Parameters:</dt>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{String}</span> <b>text</b>
+                                                
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{String}</span> <b>endText</b>
+                                                <i>Optional, Default: null</i>
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                    </dl>
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+                                            <dt class="heading">Since:</dt>
+                                            <dd>1.4.0</dd>
+                                        
+
+                                        
+
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item22'
+                            >
+                                <div class="fixedFont heading" id="sourceMode">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    
+
+                                    <b>sourceMode</b>()
+                                </div>
+
+                                <div class="description">
+                                    Gets if the editor is in sourceMode
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+
+                                        
+
+                                        
+                                            <dt class="heading"><br/>Returns:</dt>
+                                            
+                                                <dd>boolean<br/></dd>
+                                            
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item23'
+                            >
+                                <div class="fixedFont heading" id="sourceMode^2">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    <span class="light">{this}</span>
+
+                                    <b>sourceMode</b>(enable)
+                                </div>
+
+                                <div class="description">
+                                    Sets if the editor is in sourceMode
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+                                    <dl class="detailList params">
+                                        <dt class="heading">Parameters:</dt>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{bool}</span> <b>enable</b>
+                                                
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                    </dl>
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+
+                                        
+
+                                        
+                                            <dt class="heading"><br/>Returns:</dt>
+                                            
+                                                <dd><span class="light fixedFont">{this}</span> <br/></dd>
+                                            
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item24'
+                            >
+                                <div class="fixedFont heading" id="toggleSourceMode">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    
+
+                                    <b>toggleSourceMode</b>()
+                                </div>
+
+                                <div class="description">
+                                    Switches between the WYSIWYG and source modes
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+                                            <dt class="heading">Since:</dt>
+                                            <dd>1.4.0</dd>
+                                        
+
+                                        
+
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item25'
+                            >
+                                <div class="fixedFont heading" id="updateOriginal">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    
+
+                                    <b>updateOriginal</b>()
+                                </div>
+
+                                <div class="description">
+                                    Updates the textarea that the editor is replacing
 with the value currently inside the editor.
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item28'
-									>
-										<div class="fixedFont heading" id="val">
-											<span class='lighter'>
-											
-											</span>
-											
-											<span class="light">{string}</span>
-											
-											<b>val</b>()
-										</div>
-										
-										<div class="description">
-											Gets the value of the editor
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-													<dt class="heading">Since:</dt>
-													<dd>1.3.5</dd>
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{string}</span> </dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item29'
-									>
-										<div class="fixedFont heading" id="val^2">
-											<span class='lighter'>
-											
-											</span>
-											
-											<span class="light">{this}</span>
-											
-											<b>val</b>(val, filter)
-										</div>
-										
-										<div class="description">
-											Sets the value of the editor
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{String}</span> <b>val</b>
-														
-													</dt>
-													<dd></dd>
-												
-													<dt>
-														<span class="light fixedFont">{Boolean}</span> <b>filter</b>
-														<i>Optional</i>
-													</dt>
-													<dd></dd>
-												
-											</dl>
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-													<dt class="heading">Since:</dt>
-													<dd>1.3.5</dd>
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{this}</span> </dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item30'
-									>
-										<div class="fixedFont heading" id="width">
-											<span class='lighter'>
-											
-											</span>
-											
-											<span class="light">{int}</span>
-											
-											<b>width</b>()
-										</div>
-										
-										<div class="description">
-											Gets the width of the editor in px
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-													<dt class="heading">Since:</dt>
-													<dd>1.3.5</dd>
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{int}</span> </dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item31'
-									>
-										<div class="fixedFont heading" id="width^2">
-											<span class='lighter'>
-											
-											</span>
-											
-											<span class="light">{this}</span>
-											
-											<b>width</b>(width)
-										</div>
-										
-										<div class="description">
-											Sets the width of the editor
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{int}</span> <b>width</b>
-														
-													</dt>
-													<dd>Width in px</dd>
-												
-											</dl>
-										
-										
-										
-											<dl class="detailList nomargin">
-											
-												
-												
-												
-													<dt class="heading">Since:</dt>
-													<dd>1.3.5</dd>
-												
-												
-												
-												
-												
-													<dt class="heading">Returns:</dt>
-													
-														<dd><span class="light fixedFont">{this}</span> </dd>
-													
-												
-												
-												
-												
-												
-											
-											</dl>
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item32'
-									>
-										<div class="fixedFont heading" id="wysiwygEditorInsertHtml">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>wysiwygEditorInsertHtml</b>(html, endHtml, overrideCodeBlocking)
-										</div>
-										
-										<div class="description">
-											<p>Inserts HTML into WYSIWYG editor.</p>
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+                                            <dt class="heading">Since:</dt>
+                                            <dd>1.4.0</dd>
+                                        
+
+                                        
+
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item26'
+                            >
+                                <div class="fixedFont heading" id="val">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    <span class="light">{string}</span>
+
+                                    <b>val</b>()
+                                </div>
+
+                                <div class="description">
+                                    <p>Gets the value of the editor.</p>
+
+<p>If the editor is in WYSIWYG mode it will return the filtered
+HTML from it (converted to BBCode if using the BBCode plugin).
+It it's in Source Mode it will return the unfiltered contents
+of the source editor (if using the BBCode plugin this will be
+BBCode again).</p>
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+                                            <dt class="heading">Since:</dt>
+                                            <dd>1.3.5</dd>
+                                        
+
+                                        
+
+                                        
+                                            <dt class="heading"><br/>Returns:</dt>
+                                            
+                                                <dd><span class="light fixedFont">{string}</span> <br/></dd>
+                                            
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item27'
+                            >
+                                <div class="fixedFont heading" id="val^2">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    <span class="light">{this}</span>
+
+                                    <b>val</b>(val, filter)
+                                </div>
+
+                                <div class="description">
+                                    Sets the value of the editor
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+                                    <dl class="detailList params">
+                                        <dt class="heading">Parameters:</dt>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{String}</span> <b>val</b>
+                                                
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{Boolean}</span> <b>filter</b>
+                                                <i>Optional</i>
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                    </dl>
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+                                            <dt class="heading">Since:</dt>
+                                            <dd>1.3.5</dd>
+                                        
+
+                                        
+
+                                        
+                                            <dt class="heading"><br/>Returns:</dt>
+                                            
+                                                <dd><span class="light fixedFont">{this}</span> <br/></dd>
+                                            
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item28'
+                            >
+                                <div class="fixedFont heading" id="width">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    <span class="light">{int}</span>
+
+                                    <b>width</b>()
+                                </div>
+
+                                <div class="description">
+                                    Gets the width of the editor in pixels
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+                                            <dt class="heading">Since:</dt>
+                                            <dd>1.3.5</dd>
+                                        
+
+                                        
+
+                                        
+                                            <dt class="heading"><br/>Returns:</dt>
+                                            
+                                                <dd><span class="light fixedFont">{int}</span> <br/></dd>
+                                            
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item29'
+                            >
+                                <div class="fixedFont heading" id="width^2">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    <span class="light">{this}</span>
+
+                                    <b>width</b>(width)
+                                </div>
+
+                                <div class="description">
+                                    Sets the width of the editor
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+                                    <dl class="detailList params">
+                                        <dt class="heading">Parameters:</dt>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{int}</span> <b>width</b>
+                                                
+                                            </dt>
+                                            <dd>Width in pixels</dd>
+                                        
+                                    </dl>
+                                
+
+                                
+                                    <dl class="detailList nomargin">
+
+                                        
+
+                                        
+                                            <dt class="heading">Since:</dt>
+                                            <dd>1.3.5</dd>
+                                        
+
+                                        
+
+                                        
+                                            <dt class="heading"><br/>Returns:</dt>
+                                            
+                                                <dd><span class="light fixedFont">{this}</span> <br/></dd>
+                                            
+                                        
+
+                                        
+
+                                        
+
+                                    </dl>
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item30'
+                            >
+                                <div class="fixedFont heading" id="wysiwygEditorInsertHtml">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    
+
+                                    <b>wysiwygEditorInsertHtml</b>(html, endHtml, overrideCodeBlocking)
+                                </div>
+
+                                <div class="description">
+                                    <p>Inserts HTML into WYSIWYG editor.</p>
 
 <p>If endHtml is specified instead of the inserted HTML replacing the selected
 text the selected text will be placed between html and endHtml. If there is
 no selected text html and endHtml will be concated together.</p>
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>html</b>
-														
-													</dt>
-													<dd></dd>
-												
-													<dt>
-														<span class="light fixedFont">{string}</span> <b>endHtml</b>
-														<i>Optional, Default: null</i>
-													</dt>
-													<dd></dd>
-												
-													<dt>
-														<span class="light fixedFont">{boolean}</span> <b>overrideCodeBlocking</b>
-														<i>Optional, Default: false</i>
-													</dt>
-													<dd></dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item33'
-									>
-										<div class="fixedFont heading" id="wysiwygEditorInsertText">
-											<span class='lighter'>
-											
-											</span>
-											
-											
-											
-											<b>wysiwygEditorInsertText</b>(text, endText)
-										</div>
-										
-										<div class="description">
-											Like wysiwygEditorInsertHtml except it will convert any HTML into text
-before inserting it.
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{String}</span> <b>text</b>
-														
-													</dt>
-													<dd></dd>
-												
-													<dt>
-														<span class="light fixedFont">{String}</span> <b>endText</b>
-														<i>Optional, Default: null</i>
-													</dt>
-													<dd></dd>
-												
-											</dl>
-										
-										
-										
-										
-									</li>
-								
-							</ul>
-						</div>
-					</div>
-				</section>
-			
-			
-	<!--
-	#### EVENT DETAILS
-	-->		
-			
-		</article>
-	</div>
-</div>
 
-		<script type="text/javascript">
-			wbos.CssTools.MediaQueryFallBack.LoadCss('../css/screen.css', '../css/handheld.css', 660)
-			codeview.classFilter.Init()
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+                                    <dl class="detailList params">
+                                        <dt class="heading">Parameters:</dt>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{string}</span> <b>html</b>
+                                                
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{string}</span> <b>endHtml</b>
+                                                <i>Optional, Default: null</i>
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{boolean}</span> <b>overrideCodeBlocking</b>
+                                                <i>Optional, Default: false</i>
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                    </dl>
+                                
+
+                                
+                                <div class="hr"></div>
+                            </li>
+                        
+                            <li
+                                 class='item31'
+                            >
+                                <div class="fixedFont heading" id="wysiwygEditorInsertText">
+                                    <span class='lighter'>
+                                    
+                                    </span>
+
+                                    
+
+                                    <b>wysiwygEditorInsertText</b>(text, endText)
+                                </div>
+
+                                <div class="description">
+                                    Like wysiwygEditorInsertHtml except it will convert any HTML into text
+before inserting it.
+
+                                    
+
+                                    
+                                </div>
+
+                                
+
+                                
+                                    <dl class="detailList params">
+                                        <dt class="heading">Parameters:</dt>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{String}</span> <b>text</b>
+                                                
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                            <dt>
+                                                <span class="light fixedFont">{String}</span> <b>endText</b>
+                                                <i>Optional, Default: null</i>
+                                            </dt>
+                                            <dd></dd>
+                                        
+                                    </dl>
+                                
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+<!--
+#### EVENT DETAILS
+-->
+        
+    </div>
+</div>
+<script type="text/javascript">
+			wbos.CssTools.MediaQueryFallBack.LoadCss('../css/screen.css', '../css/handheld.css', 660);
+
+            codeview.classFilter.Init();
+
+            var searchTerm = ((window.location.search).split('='))[1];
+
+            if(searchTerm){
+                var numDocLinks = document.links.length;
+                for (i = 3; i < numDocLinks; i++) {
+                    var currentLink = document.links[i];
+                    var anchorIndex = currentLink.href.indexOf('#');
+                    if(anchorIndex !== -1) {
+                        currentLink.href = currentLink.href.slice(0, anchorIndex) + "?classFilter=" + searchTerm + currentLink.href.slice(anchorIndex);
+                    }
+                    else {
+                        currentLink.href = currentLink.href + "?classFilter=" + searchTerm;
+                    }
+                }
+            }
+            else {
+                searchTerm="";
+            }
+            // codeview.filter(searchTerm);
+
+			// Syntax Highlighting
+			highlightJavascript.format();
 		</script>
 	</body>
 </html>
-

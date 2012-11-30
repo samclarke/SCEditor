@@ -61,6 +61,7 @@
 		"Enter URL:": "Ingresar URL:",
 		"Enter the YouTube video URL or ID:": "Ingresar URL o ID de YouTube",
 		"Insert a Quote":"Insertar Cita",
+		"Invalid YouTube video": "Video de YouTube Inv\u00e1lido",
 		
 		dateFormat: "day-month-year"
 	}

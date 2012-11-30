@@ -1,7 +1,9 @@
 module("BBCode Parser", {
 	setup: function() {
-		var textarea = $("#qunit-fixture textarea:first").sceditorBBCodePlugin();
-		this.sb = textarea.data("sceditorbbcode");
+		var $textarea = $("#qunit-fixture textarea:first");
+		$textarea.sceditorBBCodePlugin();
+		this.sb = $textarea.sceditorBBCodePlugin("instance");
+		this.parser = new $.sceditor.BBCodeParser();
 	}
 });
 
@@ -31,7 +33,7 @@ test("Invalid nesting", function() {
 
 	equal(
 		this.sb.getHtmlHandler("", $dom),
-		"[color=#000000]this[/color][quote]is[/quote][color=#000000]a test[/color]",
+		"[color=#000000]this[/color][quote][color=#000000]is[/color][/quote]\n[color=#000000]a test[/color]",
 		"Invalid block level nesting"
 	);
 });
@@ -56,8 +58,9 @@ test("Newlines DOM nesting", function() {
 
 module("HTML to BBCodes", {
 	setup: function() {
-		var textarea = $("#qunit-fixture textarea:first").sceditorBBCodePlugin();
-		this.sb = textarea.data("sceditorbbcode");
+		var textarea = $("#qunit-fixture textarea:first");
+		textarea.sceditorBBCodePlugin();
+		this.sb = textarea.sceditorBBCodePlugin("instance");
 	}
 });
 
@@ -323,14 +326,14 @@ test("List", function() {
 	expect(2);
 
 	equal(
-		this.sb.getHtmlHandler("", html2dom("<ul><li>test</li></ul>", true)),
-		"[ul][li]test[/li][/ul]",
+		this.sb.getHtmlHandler("", html2dom("<ul><li>test" + ($.sceditor.ie ? '' : "<br />") + "</li></ul>", true)),
+		"[ul]\n[li]test[/li]\n[/ul]",
 		"UL tag"
 	);
 
 	equal(
-		this.sb.getHtmlHandler("", html2dom("<ol><li>test</li></ol>", true)),
-		"[ol][li]test[/li][/ol]",
+		this.sb.getHtmlHandler("", html2dom("<ol><li>test" + ($.sceditor.ie ? '' : "<br />") + "</li></ol>", true)),
+		"[ol]\n[li]test[/li]\n[/ol]",
 		"OL tag"
 	);
 });
@@ -340,7 +343,7 @@ test("Table", function() {
 
 	equal(
 		this.sb.getHtmlHandler("", html2dom("<table><tr><th>test</th></tr><tr><td>data1</td></tr></table>", true)),
-		"[table][tr][th]test[/th][/tr][tr][td]data1[/td][/tr][/table]",
+		"[table][tr][th]test[/th]\n[/tr]\n[tr][td]data1[/td]\n[/tr]\n[/table]",
 		"Table tag"
 	);
 });
@@ -414,8 +417,8 @@ test("Email", function() {
 
 	equal(
 		this.sb.getHtmlHandler("", html2dom("<a href='mailto:test@test.com'></a>", true)),
-		"[email=test@test.com][/email]",
-		"A tag empty"
+		"",
+		"Empty e-mail tag"
 	);
 });
 
@@ -436,7 +439,7 @@ test("Quote", function() {
 
 	equal(
 		this.sb.getHtmlHandler("", html2dom("<blockquote><cite>admin</cite>Testing 1.2.3....<blockquote><cite>admin</cite>Testing 1.2.3....</blockquote></blockquote>", true)),
-		"[quote=admin]Testing 1.2.3....[quote=admin]Testing 1.2.3....[/quote][/quote]",
+		"[quote=admin]Testing 1.2.3....\n[quote=admin]Testing 1.2.3....[/quote]\n[/quote]",
 		"Nested quote with cite (author)"
 	);
 
@@ -466,15 +469,15 @@ test("Code", function() {
 test("Left", function() {
 	expect(2);
 
-	equal(
-		this.sb.getHtmlHandler("", html2dom("<div style='text-align: left'>test</div>", true)),
-		"[left]test[/left]",
+	var ret = this.sb.getHtmlHandler("", html2dom("<div style='text-align: left'>test</div>", true));
+	ok(
+		ret === "[left]test[/left]" || ret === 'test',
 		"Div CSS text-align"
 	);
 
-	equal(
-		this.sb.getHtmlHandler("", html2dom("<p style='text-align: left'>test</p>", true)),
-		"[left]test[/left]",
+	ret = this.sb.getHtmlHandler("", html2dom("<p style='text-align: left'>test</p>", true));
+	ok(
+		ret === "[left]test[/left]" || ret === 'test',
 		"P CSS text-align"
 	);
 });
@@ -573,12 +576,28 @@ test("YouTube", function() {
 	);
 });
 
+test("New Line Handling", function() {
+	expect(2);
+
+	equal(
+		this.sb.getHtmlHandler("", html2dom("<ul><li>newline<br />" + ($.sceditor.ie ? '' : "<br />") + "</li></ul>", true)),
+		"[ul]\n[li]newline\n[/li]\n[/ul]",
+		"List item last child block level"
+	);
+
+	equal(
+		this.sb.getHtmlHandler("", html2dom("<div><code>newline" + ($.sceditor.ie ? '' : "<br />") + "</code></div><div>newline</div>", true)),
+		"[code]newline[/code]\nnewline",
+		"Block level last child"
+	);
+});
 
 
 module("BBCode to HTML", {
 	setup: function() {
-		var textarea = $("#qunit-fixture textarea:first").sceditorBBCodePlugin();
-		this.sb = textarea.data("sceditorbbcode");
+		var textarea = $("#qunit-fixture textarea:first");
+		textarea.sceditorBBCodePlugin();
+		this.sb = textarea.sceditorBBCodePlugin("instance");
 	}
 });
 
@@ -587,7 +606,7 @@ test("Bold", function() {
 
 	equal(
 		this.sb.getTextHandler("[b]test[/b]").toLowerCase(),
-		"<div><strong>test</strong></div>"
+		"<div><strong>test</strong></div>\n"
 	);
 });
 
@@ -596,7 +615,7 @@ test("Italic", function() {
 
 	equal(
 		this.sb.getTextHandler("[i]test[/i]").toLowerCase(),
-		"<div><em>test</em></div>"
+		"<div><em>test</em></div>\n"
 	);
 });
 
@@ -605,7 +624,7 @@ test("Underline", function() {
 
 	equal(
 		this.sb.getTextHandler("[u]test[/u]").toLowerCase(),
-		"<div><u>test</u></div>"
+		"<div><u>test</u></div>\n"
 	);
 });
 
@@ -614,7 +633,7 @@ test("Strikethrough", function() {
 
 	equal(
 		this.sb.getTextHandler("[s]test[/s]").toLowerCase(),
-		"<div><s>test</s></div>"
+		"<div><s>test</s></div>\n"
 	);
 });
 
@@ -623,7 +642,7 @@ test("Subscript", function() {
 
 	equal(
 		this.sb.getTextHandler("[sub]test[/sub]").toLowerCase(),
-		"<div><sub>test</sub></div>"
+		"<div><sub>test</sub></div>\n"
 	);
 });
 
@@ -632,7 +651,7 @@ test("Superscript", function() {
 
 	equal(
 		this.sb.getTextHandler("[sup]test[/sup]").toLowerCase(),
-		"<div><sup>test</sup></div>"
+		"<div><sup>test</sup></div>\n"
 	);
 });
 
@@ -641,19 +660,19 @@ test("Font face", function() {
 
 	equal(
 		this.sb.getTextHandler("[font=arial]test[/font]"),
-		html2dom("<div><font face=\"arial\">test</font></div>").innerHTML,
+		"<div><font face=\"arial\">test</font></div>\n",
 		"Normal"
 	);
 
 	equal(
 		this.sb.getTextHandler("[font=arial black]test[/font]"),
-		html2dom("<div><font face=\"arial black\">test</font></div>").innerHTML,
+		"<div><font face=\"arial black\">test</font></div>\n",
 		"Space"
 	);
 
 	equal(
 		this.sb.getTextHandler("[font='arial black']test[/font]"),
-		html2dom("<div><font face=\"arial black\">test</font></div>").innerHTML,
+		"<div><font face=\"arial black\">test</font></div>\n",
 		"Quotes"
 	);
 });
@@ -663,7 +682,7 @@ test("Size", function() {
 
 	equal(
 		this.sb.getTextHandler("[size=4]test[/size]"),
-		html2dom("<div><font size=\"4\">test</font></div>").innerHTML,
+		"<div><font size=\"4\">test</font></div>\n",
 		"Normal"
 	);
 });
@@ -673,13 +692,13 @@ test("Font colour", function() {
 
 	equal(
 		this.sb.getTextHandler("[color=#000]test[/color]"),
-		html2dom("<div><font color=\"#000\">test</font></div>").innerHTML,
+		"<div><font color=\"#000\">test</font></div>\n",
 		"Normal"
 	);
 
 	equal(
 		this.sb.getTextHandler("[color=black]test[/color]"),
-		html2dom("<div><font color=\"black\">test</font></div>").innerHTML,
+		"<div><font color=\"black\">test</font></div>\n",
 		"Named"
 	);
 });
@@ -689,13 +708,13 @@ test("List", function() {
 
 	equal(
 		this.sb.getTextHandler("[ul][li]test[/li][/ul]"),
-		html2dom("<ul><li>test</li></ul>").innerHTML,
+		"<ul><li>test" + ($.sceditor.ie ? '' : "<br />") + "</li></ul>",
 		"UL"
 	);
 
 	equal(
 		this.sb.getTextHandler("[ol][li]test[/li][/ol]"),
-		html2dom("<ol><li>test</li></ol>").innerHTML,
+		"<ol><li>test" + ($.sceditor.ie ? '' : "<br />") + "</li></ol>",
 		"OL"
 	);
 });
@@ -705,7 +724,7 @@ test("Table", function() {
 
 	equal(
 		this.sb.getTextHandler("[table][tr][th]test[/th][/tr][tr][td]data1[/td][/tr][/table]"),
-		html2dom("<table><tr><th>test</th></tr><tr><td>data1<br class=\"sceditor-ignore\"></td></tr></table>").innerHTML,
+		"<div><table><tr><th>test" + ($.sceditor.ie ? '' : "<br />") + "</th></tr><tr><td>data1" + ($.sceditor.ie ? '' : "<br />") + "</td></tr></table></div>\n",
 		"Normal"
 	);
 });
@@ -715,7 +734,7 @@ test("Horizontal rule", function() {
 
 	equal(
 		this.sb.getTextHandler("[hr]").toLowerCase(),
-		"<hr>",
+		"<hr />",
 		"Normal"
 	);
 });
@@ -725,25 +744,25 @@ test("Image", function() {
 
 	equal(
 		this.sb.getTextHandler("[img=10x10]http://test.com/test.png[/img]"),
-		html2dom("<div><img width=\"10\" height=\"10\" src=\"http://test.com/test.png\"></div>").innerHTML,
+		"<div><img width=\"10\" height=\"10\" src=\"http://test.com/test.png\" /></div>\n",
 		"Normal"
 	);
 
 	equal(
 		this.sb.getTextHandler("[img width=10]http://test.com/test.png[/img]"),
-		html2dom("<div><img width=\"10\" src=\"http://test.com/test.png\"></div>").innerHTML,
+		"<div><img width=\"10\" src=\"http://test.com/test.png\" /></div>\n",
 		"Width only"
 	);
 
 	equal(
 		this.sb.getTextHandler("[img height=10]http://test.com/test.png[/img]"),
-		html2dom("<div><img height=\"10\" src=\"http://test.com/test.png\"></div>").innerHTML,
+		"<div><img height=\"10\" src=\"http://test.com/test.png\" /></div>\n",
 		"Height only"
 	);
 
 	equal(
 		this.sb.getTextHandler("[img]http://test.com/test.png[/img]").toLowerCase(),
-		"<div><img src=\"http://test.com/test.png\"></div>",
+		"<div><img src=\"http://test.com/test.png\" /></div>\n",
 		"No size"
 	);
 });
@@ -754,13 +773,13 @@ test("URL", function() {
 
 	equal(
 		this.sb.getTextHandler("[url=http://test.com/]Test[/url]").toLowerCase(),
-			"<div><a href=\"http://test.com/\">test</a></div>",
+			"<div><a href=\"http://test.com/\">test</a></div>\n",
 		"Normal"
 	);
 
 	equal(
 		this.sb.getTextHandler("[url]http://test.com/[/url]").toLowerCase(),
-		"<div><a href=\"http://test.com/\">http://test.com/</a></div>",
+		"<div><a href=\"http://test.com/\">http://test.com/</a></div>\n",
 		"Only URL"
 	);
 });
@@ -770,13 +789,13 @@ test("Email", function() {
 
 	equal(
 		this.sb.getTextHandler("[email=test@test.com]test[/email]").toLowerCase(),
-		"<div><a href=\"mailto:test@test.com\">test</a></div>",
+		"<div><a href=\"mailto:test@test.com\">test</a></div>\n",
 		"Normal"
 	);
 
 	equal(
 		this.sb.getTextHandler("[email]test@test.com[/email]").toLowerCase(),
-		"<div><a href=\"mailto:test@test.com\">test@test.com</a></div>",
+		"<div><a href=\"mailto:test@test.com\">test@test.com</a></div>\n",
 		"Only e-mail"
 	);
 });
@@ -786,13 +805,13 @@ test("Quote", function() {
 
 	equal(
 		this.sb.getTextHandler("[quote]Testing 1.2.3....[/quote]").toLowerCase(),
-		"<blockquote>testing 1.2.3....</blockquote>",
+		"<blockquote>testing 1.2.3...." + ($.sceditor.ie ? '' : "<br />") + "</blockquote>",
 		"Normal"
 	);
 
 	equal(
 		this.sb.getTextHandler("[quote=admin]Testing 1.2.3....[/quote]").toLowerCase(),
-		"<blockquote><cite>admin</cite>testing 1.2.3....</blockquote>",
+		"<blockquote><cite>admin</cite>testing 1.2.3...." + ($.sceditor.ie ? '' : "<br />") + "</blockquote>",
 		"With author"
 	);
 });
@@ -802,7 +821,7 @@ test("Code", function() {
 
 	equal(
 		this.sb.getTextHandler("[code]Testing 1.2.3....[/code]").toLowerCase(),
-		"<div><code>testing 1.2.3....</code></div>",
+		"<code>testing 1.2.3...." + ($.sceditor.ie ? '' : "<br />") + "</code>",
 		"Normal"
 	);
 });
@@ -812,7 +831,7 @@ test("Left", function() {
 
 	equal(
 		this.sb.getTextHandler("[left]Testing 1.2.3....[/left]"),
-		html2dom("<div align=\"left\">Testing 1.2.3....</div>").innerHTML,
+		"<div align=\"left\">Testing 1.2.3...." + ($.sceditor.ie ? '' : "<br />") + "</div>",
 		"Normal"
 	);
 });
@@ -822,7 +841,7 @@ test("Right", function() {
 
 	equal(
 		this.sb.getTextHandler("[right]Testing 1.2.3....[/right]"),
-		html2dom("<div align=\"right\">Testing 1.2.3....</div>").innerHTML,
+		"<div align=\"right\">Testing 1.2.3...." + ($.sceditor.ie ? '' : "<br />") + "</div>",
 		"Normal"
 	);
 });
@@ -832,7 +851,7 @@ test("Centre", function() {
 
 	equal(
 		this.sb.getTextHandler("[center]Testing 1.2.3....[/center]"),
-		html2dom("<div align=\"center\">Testing 1.2.3....</div>").innerHTML,
+		"<div align=\"center\">Testing 1.2.3...." + ($.sceditor.ie ? '' : "<br />") + "</div>",
 		"Normal"
 	);
 });
@@ -842,7 +861,7 @@ test("Justify", function() {
 
 	equal(
 		this.sb.getTextHandler("[justify]Testing 1.2.3....[/justify]"),
-		html2dom("<div align=\"justify\">Testing 1.2.3....</div>").innerHTML,
+		"<div align=\"justify\">Testing 1.2.3...." + ($.sceditor.ie ? '' : "<br />") + "</div>",
 		"Normal"
 	);
 });
@@ -852,8 +871,24 @@ test("YouTube", function() {
 
 	equal(
 		this.sb.getTextHandler("[youtube]xyz[/youtube]"),
-		html2dom("<div><iframe width=\"560\" height=\"315\" src=\"http://www.youtube.com/embed/xyz?wmode=opaque\" data-youtube-id=\"xyz\" frameborder=\"0\" allowfullscreen></iframe></div>").innerHTML,
+		"<div><iframe width=\"560\" height=\"315\" src=\"http://www.youtube.com/embed/xyz?wmode=opaque\" data-youtube-id=\"xyz\" frameborder=\"0\" allowfullscreen></iframe></div>\n",
 		"Normal"
+	);
+});
+
+test("Unsupported BBCodes", function() {
+	expect(2);
+
+	equal(
+		this.sb.getTextHandler("[nonexistant]test[/nonexistant]").toLowerCase(),
+		"<div>[nonexistant]test[/nonexistant]</div>\n",
+		"Open and closing tag"
+	);
+
+	equal(
+		this.sb.getTextHandler("[nonexistant aaa]").toLowerCase(),
+		"<div>[nonexistant aaa]</div>\n",
+		"Only opening tag"
 	);
 });
 
@@ -922,7 +957,31 @@ test("Strip Quotes", function() {
 
 	var ret = this.sb.getHtmlHandler("", html2dom("<span  style=\"font-family: 'Arial Black', Arial\">test</span>", true));
 	ok(
-		ret === "[font='Arial Black', Arial]test[/font]" || ret === '[font="Arial Black", Arial]test[/font]',
+		ret === "[font='Arial Black', Arial]test[/font]" || ret === '[font="Arial Black", Arial]test[/font]' ||
+		ret === "[font='Arial Black',Arial]test[/font]" || ret === "[font=Arial Black]test[/font]",
 		"Quotes that shouldn't be stripped"
+	);
+});
+
+
+test("New Line Handling", function() {
+	expect(3);
+
+	equal(
+		this.sb.getTextHandler("[list][*]test\n[*]test2\nline\n[/list]"),
+		"<ul><li>test" + ($.sceditor.ie ? '' : "<br />") + "</li><li>test2<br />line" + ($.sceditor.ie ? '' : "<br />") + "</li></ul>",
+		"List with non-closed [*]"
+	);
+
+	equal(
+		this.sb.getTextHandler("[code]test\nline\n[/code]"),
+		"<code>test<br />line<br />" + ($.sceditor.ie ? '' : "<br />") + "</code>",
+		"Code test"
+	);
+
+	equal(
+		this.sb.getTextHandler("[quote]test\nline\n[/quote]"),
+		"<blockquote>test<br />line<br />" + ($.sceditor.ie ? '' : "<br />") + "</blockquote>",
+		"Quote test"
 	);
 });
