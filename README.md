@@ -147,7 +147,7 @@ A comma separated list of plugins. Currently bbcode is the only available plugin
 
 ## License
 
-SCEditor is dual licensed under the [MIT](http://www.opensource.org/licenses/mit-license.php) and [GPL](http://www.gnu.org/licenses/gpl.html) licenses.
+SCEditor is licensed under the [MIT](http://www.opensource.org/licenses/mit-license.php) license.
 
 If you use SCEditor a link back or a donation would be appreciated, but not required.
 

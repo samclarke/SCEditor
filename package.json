@@ -1,7 +1,7 @@
 {
 	"name": "jquery.sceditor",
 	"title": "SCEditor",
-	"description": "SCEditor is designed to be a lightweight HTML and BBCode WYSIWUG editor.",
+	"description": "SCEditor is designed to be a lightweight HTML and BBCode WYSIWYG editor.",
 	"version": "1.4.1",
 	"homepage": "http://sceditor.samclarke.com/",
 	"author": {
@@ -18,9 +18,6 @@
 	"licenses": [{
 		"type": "MIT",
 		"url": "MIT.txt"
-	}, {
-		"type": "GPLv3",
-		"url": "GPL.txt"
 	}],
 	"dependencies": {
 		"jquery": "*"
