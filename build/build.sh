@@ -18,7 +18,7 @@
 USAGE="Usage: `basename $0` [--css|--js|--docs]"
 
 DO_CSS=false
-DO_JS=true
+DO_JS=false
 DO_DOCS=false
 
 while true; do
@@ -30,6 +30,9 @@ while true; do
 	esac
 done
 
+if ! $DO_CSS ! $DO_JS ! $DO_DOCS; then
+	echo $USAGE;
+fi
 
 if $DO_CSS; then
 	echo "Creating CSS sprites"
@@ -41,6 +44,7 @@ if $DO_CSS; then
 	sed -i 's/{/ div {/' themes/icons/famfamfam.less
 	sed -i 's/,/ div,/' themes/icons/famfamfam.less
 	sed -i 's/grip div/grip/' themes/icons/famfamfam.less
+	sed -i 's/.sceditor-button-grip/div.sceditor-grip/' themes/icons/famfamfam.less
 
 	for f in themes/icons/*.png
 	do
@@ -72,8 +76,6 @@ if $DO_JS; then
 	cat jquery.sceditor.js jquery.sceditor.bbcode.js > minified/jquery.sceditor.min.js
 
 	uglifyjs -nc --overwrite minified/jquery.sceditor.min.js
-
-	#java -jar build/compiler.jar --js=jquery.sceditor.js --js=jquery.sceditor.bbcode.js --js_output_file=minified/jquery.sceditor.min.js
 fi
 
 if $DO_DOCS; then
