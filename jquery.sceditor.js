@@ -384,9 +384,9 @@
 			$body
 				.keypress(handleKeyPress)
 				.keyup(appendNewLine)
-				.bind("keydown keyup keypress blur", handleEvent);
+				.bind("keydown keyup keypress focus blur", handleEvent);
 
-			$sourceEditor.bind("keydown keyup keypress blur", handleEvent);
+			$sourceEditor.bind("keydown keyup keypress focus blur", handleEvent);
 
 			$doc
 				.keypress(handleKeyPress)
@@ -1477,36 +1477,6 @@
 		};
 
 		/**
-		 * Fucuses the editors input area
-		 *
-		 * @return {this}
-		 * @function
-		 * @name focus
-		 * @memberOf jQuery.sceditor.prototype
-		 */
-		base.focus = function () {
-			if(!base.inSourceMode())
-			{
-				wysiwygEditor.contentWindow.focus();
-
-				// Needed for IE < 9
-				if(lastRange)
-				{
-					rangeHelper.selectRange(lastRange);
-
-					// remove the stored range after being set.
-					// If the editor loses focus it should be
-					// saved again.
-					lastRange = null;
-				}
-			}
-			else
-				sourceEditor.focus();
-
-			return this;
-		};
-
-		/**
 		 * Saves the current range. Needed for IE because it forgets
 		 * where the cursor was and what was selected
 		 * @private
@@ -1820,6 +1790,53 @@
 			}
 			else
 				$sourceEditor.blur();
+
+			return this;
+		};
+
+		/**
+		 * Fucuses the editors input area
+		 *
+		 * @return {this}
+		 * @function
+		 * @name focus
+		 * @memberOf jQuery.sceditor.prototype
+		 */
+		/**
+		 * Adds an event handler to the focus event
+		 *
+		 * @param  {Function} handler
+		 * @param  {Boolean} excludeWysiwyg If to exclude adding this handler to the WYSIWYG editor
+		 * @param  {Boolean} excludeSource  if to exclude adding this handler to the source editor
+		 * @return {this}
+		 * @function
+		 * @name focus^2
+		 * @memberOf jQuery.sceditor.prototype
+		 * @since 1.4.1
+		 */
+		base.focus = function (handler, excludeWysiwyg, excludeSource) {
+			if($.isFunction(handler))
+				base.bind('focus', handler, excludeWysiwyg, excludeSource);
+			else
+			{
+				if(!base.inSourceMode())
+				{
+					wysiwygEditor.contentWindow.focus();
+
+					// Needed for IE < 9
+					if(lastRange)
+					{
+						rangeHelper.selectRange(lastRange);
+
+						// remove the stored range after being set.
+						// If the editor loses focus it should be
+						// saved again.
+						lastRange = null;
+					}
+				}
+				else
+					sourceEditor.focus();
+			}
 
 			return this;
 		};
