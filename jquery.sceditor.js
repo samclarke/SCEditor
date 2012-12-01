@@ -23,6 +23,11 @@
 ;(function ($, window, document) {
 	'use strict';
 
+	/**
+	 * HTML templates used by the editor and default commands
+	 * @type {Object}
+	 * @private
+	 */
 	var _templates = {
 		html:		'<!DOCTYPE html>' +
 				'<html>' +
@@ -148,6 +153,7 @@
 		/**
 		 * Array of all the commands key press functions
 		 * @private
+		 * @type {Array}
 		 */
 		var keyPressFuncs = [];
 
@@ -166,16 +172,29 @@
 		/**
 		 * Stores a cache of preloaded images
 		 * @private
+		 * @type {Array}
 		 */
 		var preLoadCache = [];
 
 		/**
 		 * The editors rangeHelper instance
-		 * @type {$.sceditor.rangeHelper}
+		 * @type {jQuery.sceditor.rangeHelper}
 		 * @private
 		 */
 		var rangeHelper;
 
+		/**
+		 * Tags which require the new line fix
+		 * @type {Array}
+		 */
+		var requireNewLineFix = [];
+
+		/**
+		 * Element which gets focused to blur the editor.
+		 *
+		 * This will be null until blur() is called.
+		 * @type {HTMLElement}
+		 */
 		var $blurElm;
 
 		var	init,
@@ -187,7 +206,7 @@
 			initToolBar,
 			initOptions,
 			initEvents,
-			initKeyPressFuncs,
+			initCommands,
 			initResize,
 			initEmoticons,
 			getWysiwygDoc,
@@ -228,7 +247,7 @@
 			// create the editor
 			initToolBar();
 			initEditor();
-			initKeyPressFuncs();
+			initCommands();
 			initOptions();
 			initEvents();
 
@@ -366,8 +385,7 @@
 		initEvents = function() {
 			var	height = base.opts.height,
 				width  = base.opts.width,
-				$doc   = $(getWysiwygDoc()),
-				$body  = $doc.find("body");
+				$doc   = $(getWysiwygDoc());
 
 			$(document).click(handleDocumentClick);
 
@@ -381,7 +399,7 @@
 			if((height && (height + "").indexOf("%") > -1) || (width && (width + "").indexOf("%") > -1))
 				$(window).resize(handleWindowResize);
 
-			$body
+			 $doc.find("body")
 				.keypress(handleKeyPress)
 				.keyup(appendNewLine)
 				.bind("keydown keyup keypress focus blur", handleEvent);
@@ -416,11 +434,13 @@
 			};
 
 			$toolbar = $('<div class="sceditor-toolbar" />');
-			for (i=0; i < groups.length; i++) {
+			for (i=0; i < groups.length; i++)
+			{
 				$group  = $('<div class="sceditor-group" />');
 				buttons = groups[i].split(",");
 
-				for (x=0; x < buttons.length; x++) {
+				for (x=0; x < buttons.length; x++)
+				{
 					// the button must be a valid command otherwise ignore it
 					if(!base.commands[buttons[x]])
 						continue;
@@ -456,10 +476,13 @@
 		 * like emoticons, ect.
 		 * @private
 		 */
-		initKeyPressFuncs = function () {
-			$.each(base.commands, function (command, values) {
-				if(values.keyPress)
-					keyPressFuncs.push(values.keyPress);
+		initCommands = function () {
+			$.each(base.commands, function (name, cmd) {
+				if(cmd.keyPress)
+					keyPressFuncs.push(cmd.keyPress);
+
+				if(cmd.forceNewLineAfter && $.isArray(cmd.forceNewLineAfter))
+					requireNewLineFix = $.merge(requireNewLineFix, cmd.forceNewLineAfter);
 			});
 		};
 
@@ -468,7 +491,7 @@
 		 * @private
 		 */
 		initResize = function () {
-			var	minHeight, maxHeight, minWidth, maxWidth, mouseMoveFunc,
+			var	minHeight, maxHeight, minWidth, maxWidth, mouseMoveFunc, mouseUpFunc,
 				$grip       = $('<div class="sceditor-grip" />'),
 				// cover is used to cover the editor iframe so document still gets mouse move events
 				$cover      = $('<div class="sceditor-resize-cover" />'),
@@ -504,6 +527,19 @@
 				e.preventDefault();
 			};
 
+			mouseUpFunc = function (e) {
+				if(!dragging)
+					return;
+
+				dragging = false;
+				$cover.hide();
+
+				$editorContainer.removeClass('resizing');
+				$(document).unbind('mousemove', mouseMoveFunc);
+				$(document).unbind('mouseup', mouseUpFunc);
+				e.preventDefault();
+			};
+
 			$editorContainer.append($grip);
 			$editorContainer.append($cover.hide());
 
@@ -516,19 +552,8 @@
 
 				$editorContainer.addClass('resizing');
 				$cover.show();
-				$(document).bind('mousemove', mouseMoveFunc);
-				e.preventDefault();
-			});
-
-			$(document).mouseup(function (e) {
-				if(!dragging)
-					return;
-
-				dragging = false;
-				$cover.hide();
-
-				$editorContainer.removeClass('resizing');
-				$(document).unbind('mousemove', mouseMoveFunc);
+				$(document).mousemove(mouseMoveFunc);
+				$(document).mouseup(mouseUpFunc);
 				e.preventDefault();
 			});
 		};
@@ -574,15 +599,15 @@
 			if(!doc.createRange)
 				return base.focus();
 
-			if(!body.firstChild)
-				return;
+			if(body.firstChild)
+			{
+				rng = doc.createRange();
+				rng.setStart(body.firstChild, 0);
+				rng.setEnd(body.firstChild, 0);
 
-			rng = doc.createRange();
-			rng.setStart(body.firstChild, 0);
-			rng.setEnd(body.firstChild, 0);
-
-			rangeHelper.selectRange(rng);
-			body.focus();
+				rangeHelper.selectRange(rng);
+				body.focus();
+			}
 		};
 
 		/**
@@ -763,31 +788,36 @@
 		 * Destroys the editor, removing all elements and
 		 * event handlers.
 		 *
+		 * Leaves only the original textarea.
+		 *
 		 * @function
 		 * @name destroy
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.destroy = function () {
+			rangeHelper = null;
+			lastRange = null;
+
 			$(document).unbind('click', handleDocumentClick);
 			$(window).unbind('resize', handleWindowResize);
 
 			$(original.form)
-					.removeAttr('novalidate')
-					.unbind('submit', handleFormSubmit)
-					.unbind("reset", handleFormReset);
+				.removeAttr('novalidate')
+				.unbind("reset", handleFormReset)
+				.unbind("submit", handleFormSubmit);
 
+			// unbind anything from the body
 			$(getWysiwygDoc().body).unbind();
 
-			$(getWysiwygDoc())
-					.unbind()
-					.find('*')
-					.remove();
+			// unbind anything from the doc
+			$(getWysiwygDoc()).unbind().find('*').remove();
 
-			$editorContainer
-					.unbind()
-					.find('*')
-					.remove();
+			// unbind anything from the source editor
+			$sourceEditor.unbind().remove();
 
+			// unbind anything from the container and anything in the container
+			// then remove the container
+			$editorContainer.unbind().find('*').unbind().remove();
 			$editorContainer.remove();
 
 			$original.removeData("sceditor").removeData("sceditorbbcode").show();
@@ -847,6 +877,9 @@
 				base.closeDropDown();
 		};
 
+		/**
+		 * @private
+		 */
 		handlePasteEvt = function(e) {
 			var	html,
 				elm             = getWysiwygDoc().body,
@@ -1236,7 +1269,7 @@
 		 *
 		 * If using a plugin that filters the HTMl like the BBCode plugin
 		 * it will return the result of the filtering (BBCode) unless the
-		 * filter is set to false.
+		 * filter param is set to false.
 		 *
 		 * @param {bool} [filter=true]
 		 * @return {string}
@@ -1252,19 +1285,16 @@
 			if($.sceditor.ie)
 				base.focus();
 
-			// save the range before the DOM gets messed with
 			rangeHelper.saveRange();
-
-			// fix any invalid nesting
 			$.sceditor.dom.fixNesting($body.get(0));
 			html = $body.html();
 
+			// filter the HTML and DOM through any plugins
 			if(filter !== false && base.opts.getHtmlHandler)
 				html = base.opts.getHtmlHandler(html, $body);
 
-			// restore the range.
-			rangeHelper.restoreRange();
 			// remove the last stored range for IE as it no longer applies
+			rangeHelper.restoreRange();
 			lastRange = null;
 
 			return html;
@@ -1272,6 +1302,11 @@
 
 		/**
 		 * Gets the text editor value
+		 *
+		 * If using a plugin that filters the text like the BBCode plugin
+		 * it will return the result of the filtering which is BBCode to
+		 * HTML so it will return HTML. If filter is set to false it will
+		 * just return the contents of the source editor (BBCode).
 		 *
 		 * @param {bool} [filter=true]
 		 * @return {string}
@@ -1483,10 +1518,8 @@
 		 */
 		saveRange = function () {
 			/* this is only needed for IE */
-			if(!$.sceditor.ie)
-				return;
-
-			lastRange = rangeHelper.selectedRange();
+			if($.sceditor.ie)
+				lastRange = rangeHelper.selectedRange();
 		};
 
 		/**
@@ -1528,7 +1561,8 @@
 		 * @private
 		 */
 		handleKeyPress = function(e) {
-			var i, $parentNode;
+			var	$parentNode,
+				i = keyPressFuncs.length;
 
 			base.closeDropDown();
 
@@ -1550,7 +1584,6 @@
 			if($parentNode.is('code') || $parentNode.parents('code').length !== 0)
 				return;
 
-			i = keyPressFuncs.length;
 			while(i--)
 				keyPressFuncs[i].call(base, e, wysiwygEditor, $sourceEditor);
 		};
@@ -1565,14 +1598,14 @@
 		 * @private
 		 */
 		appendNewLine = function() {
-			var	name, inblock,
+			var	name, inBlock,
 				doc = getWysiwygDoc();
 
 			$.sceditor.dom.rTraverse(doc.body, function(node) {
 				name = node.nodeName.toLowerCase();
-// TODO: Which tags require this fix should be configurable
-				if(name === "code" || name === "blockquote")
-					inblock = true;
+
+				if($.inArray(name, requireNewLineFix) > -1)
+					inBlock = true;
 
 				// find the last non-empty text node or line break.
 				if((node.nodeType === 3 && !/^\s*$/.test(node.nodeValue)) ||
@@ -1581,7 +1614,7 @@
 				{
 					// this is the last text or br node, if its in a code or quote tag
 					// then add a newline to the end of the editor
-					if(inblock)
+					if(inBlock)
 						$(doc.body).append($('<div>' + (!$.sceditor.ie ? '<br />' : '') + '</div>\n'));
 
 					return false;
@@ -1656,7 +1689,6 @@
 				clone = $.extend({}, e);
 
 			delete clone.type;
-			delete clone.type;
 			customEvent = $.Event((e.target === sourceEditor ? "scesrc" : "scewys") + e.type, clone);
 
 			$editorContainer.trigger(customEvent, this);
@@ -1698,10 +1730,8 @@
 		 * @since 1.4.1
 		 */
 		base.bind = function(events, handler, excludeWysiwyg, excludeSource) {
-			var i;
-
+			var i  = events.length;
 			events = events.split(" ");
-			i      = events.length;
 
 			while(i--)
 			{
@@ -1735,10 +1765,8 @@
 		 * @see bind
 		 */
 		base.unbind = function(events, handler, excludeWysiwyg, excludeSource) {
-			var i;
-
+			var i  = events.length;
 			events = events.split(" ");
-			i      = events.length;
 
 			while(i--)
 			{
@@ -1924,10 +1952,10 @@
 	 * @type {bool}
 	 */
 	$.sceditor.isWysiwygSupported = (function() {
-		var	contentEditable          = $('<div contenteditable="true">')[0].contentEditable,
+		var	match,
+			contentEditable          = $('<div contenteditable="true">')[0].contentEditable,
 			contentEditableSupported = typeof contentEditable !== 'undefined' && contentEditable !== 'inherit',
-			userAgent                = navigator.userAgent,
-			match;
+			userAgent                = navigator.userAgent;
 
 		if(!contentEditableSupported)
 			return false;
@@ -1937,15 +1965,15 @@
 		// so it's' not included here.
 
 
-		// The latest WebOS dose support contentEditable.
+		// The latest WebOS does support contentEditable.
 		// But I still till need to check if all supported
 		// versions of WebOS support contentEditable
 
 
-		// I hate having to use UA sniffing but as some mobile browsers say they support
+		// I hate having to use UA sniffing but some mobile browsers say they support
 		// contentediable/design mode when it isn't usable (i.e. you can't enter text, ect.).
-		// This is the only way I can think of to detect them. It's also how every other editor
-		// I've seen detects them
+		// This is the only way I can think of to detect them which is also how every other
+		// editor I've seen deals with this
 		var isUnsupported = /Opera Mobi|Opera Mini/i.test(userAgent);
 
 		if(/Android/i.test(userAgent))
@@ -2310,6 +2338,7 @@
 
 		// START_COMMAND: Code
 		code: {
+			forceNewLineAfter: ['code'],
 			exec: function () {
 				this.wysiwygEditorInsertHtml('<code>', '<br /></code>');
 			},
@@ -2434,6 +2463,7 @@
 
 		// START_COMMAND: Quote
 		quote: {
+			forceNewLineAfter: ['blockquote'],
 			exec: function (caller, html, author) {
 				var	before = '<blockquote>',
 					end    = '</blockquote>';

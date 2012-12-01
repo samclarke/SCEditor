@@ -271,7 +271,8 @@ $.sceditor.command.set() takes two arguments, name and cmd.
 	errorMessage: undefined,
 	txtExec: undefined,
 	keyPress: undefined,
-	tooltip: undefined
+	tooltip: undefined,
+	forceNewLineAfter: undefined
 }
 {% endhighlight %}
 
@@ -324,6 +325,10 @@ Function that will be called each time a key is pressed when in WYSIWYG mode.
 
 **tooltip** *String*
 Tooltip to show when the mouse hovers over the commands button.
+
+
+**forceNewLineAfter** *Array*
+Array containing any tags to force a new line after. If certian tags like &lt;code> and &lt;blockquote> are the last child of the editor, you can't enter any text after them. To solve this you can add them to this array which will cause a new line to be force after them allowing text to be entered.
 
 
 ### Adding a custom BBCode<a id="addingbbcode"></a>
@@ -696,9 +701,6 @@ Licensing<a id="licensing"></a>
 ------------------------------------------
 
 SCEditor is licensed under the MIT license.
-
-	Copyright (C) 2011 by Sam Clarke and contributors
-	http://www.sceditor.com/
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
