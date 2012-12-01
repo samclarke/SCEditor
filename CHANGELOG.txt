@@ -5,6 +5,8 @@ Version 1.4.1:
 		they couldn't before (as it was dual licensed under the MTI) so there isn't
 		really any change, just a bit simpler.
 	Added blur, keyDown, keyPress and KeyUp helpers
+	Added Turkish translation
+		- Thanks to @MYaman34 for translating.
 
 Version 1.4.0:
 	New theme "square" added
