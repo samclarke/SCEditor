@@ -10,7 +10,6 @@
    * Add ability to resize images in browsers that don't have native WYSIWYG resize.
       Make this a plugin?
    * Add button state support
-   * Add helper functions. Blur, focus, keypress, keyup, keydown
    * Add helpers for adding commands/bbcodes.
    * Add BBCode parser helpers for BBCode-to-HTML and HTML-to-BBCode
    * Add disable emoticons option and helper to disable/enable while editing

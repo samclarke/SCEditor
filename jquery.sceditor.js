@@ -186,17 +186,30 @@
 		/**
 		 * Tags which require the new line fix
 		 * @type {Array}
+		 * @private
 		 */
 		var requireNewLineFix = [];
+
+		/**
+		 * An array of button state handlers
+		 * @type {Array}
+		 * @private
+		 */
+		var btnStateHandlers = [];
 
 		/**
 		 * Element which gets focused to blur the editor.
 		 *
 		 * This will be null until blur() is called.
 		 * @type {HTMLElement}
+		 * @private
 		 */
 		var $blurElm;
 
+		/**
+		 * Private functions
+		 * @private
+		 */
 		var	init,
 			replaceEmoticons,
 			handleCommand,
@@ -220,6 +233,7 @@
 			handleFormSubmit,
 			handleWindowResize,
 			updateToolBar,
+			updateActiveButtons,
 			sourceEditorSelectedText,
 			appendNewLine,
 			autofocus;
@@ -402,13 +416,15 @@
 			 $doc.find("body")
 				.keypress(handleKeyPress)
 				.keyup(appendNewLine)
-				.bind("keydown keyup keypress focus blur", handleEvent);
+				.bind("keydown keyup keypress focus blur", handleEvent)
+				.bind("keyup focus blur mousedown click", updateActiveButtons);
 
 			$sourceEditor.bind("keydown keyup keypress focus blur", handleEvent);
 
 			$doc
 				.keypress(handleKeyPress)
 				.mousedown(handleMouseDown)
+				.bind("focus blur mousedown click", updateActiveButtons)
 				.bind("beforedeactivate keyup", saveRange)
 				.keyup(appendNewLine)
 				.focus(function() {
@@ -429,6 +445,8 @@
 
 				if(!$this.hasClass('disabled'))
 					handleCommand($this, base.commands[$this.data("sceditor-command")]);
+
+				updateActiveButtons();
 
 				return false;
 			};
@@ -483,6 +501,12 @@
 
 				if(cmd.forceNewLineAfter && $.isArray(cmd.forceNewLineAfter))
 					requireNewLineFix = $.merge(requireNewLineFix, cmd.forceNewLineAfter);
+
+				if(cmd.state)
+					btnStateHandlers.push({ name: name, state: cmd.state });
+				// exec string commands can be passed to queryCommandState
+				else if(typeof cmd.exec === "string")
+					btnStateHandlers.push({ name: name, state: cmd.exec });
 			});
 		};
 
@@ -1467,6 +1491,7 @@
 				$editorContainer.removeClass('sourceMode').addClass('wysiwygMode');
 
 			updateToolBar();
+			updateActiveButtons();
 		};
 
 		/**
@@ -1553,6 +1578,43 @@
 			// show error if execution failed and an error message exists
 			if(!executed && base.commands[command] && base.commands[command].errorMessage)
 				alert(base._(base.commands[command].errorMessage));
+		};
+
+		/**
+		 * Updates if buttons are active or not
+		 * @private
+		 */
+		updateActiveButtons = function() {
+			var	parent, isActive, stateHandler, firstBlock,
+				i = btnStateHandlers.length;
+
+			$toolbar.find('.sceditor-button').removeClass('active');
+
+			if(!base.sourceMode())
+			{
+				parent     = rangeHelper.parentNode();
+				firstBlock = rangeHelper.getFirstBlockParent(parent);
+
+				while(i--)
+				{
+					isActive     = false;
+					stateHandler = btnStateHandlers[i];
+
+					if(typeof stateHandler.state === 'string')
+					{
+						try
+						{
+							isActive = getWysiwygDoc().queryCommandState(stateHandler.state);
+						}
+						catch (e) {}
+					}
+					else
+						isActive = stateHandler.state.call(base, parent, firstBlock);
+
+					if(isActive)
+						$toolbar.find('.sceditor-button-' + stateHandler.name).addClass('active');
+				}
+			}
 		};
 
 		/**
@@ -1926,7 +1988,10 @@
 	 *
 	 * <p>Will be the IE version number or undefined if not IE.</p>
 	 *
-	 * Source: https://gist.github.com/527683
+	 * <p>Source: https://gist.github.com/527683</p>
+	 * @function
+	 * @name ie
+	 * @memberOf jQuery.sceditor
 	 * @type {int}
 	 */
 	$.sceditor.ie = (function(){
@@ -1948,8 +2013,10 @@
 
 	/**
 	 * If the browser supports WYSIWYG editing (e.g. older mobile browsers).
-	 *
-	 * @type {bool}
+	 * @function
+	 * @name isWysiwygSupported
+	 * @memberOf jQuery.sceditor
+	 * @return {Boolean}
 	 */
 	$.sceditor.isWysiwygSupported = (function() {
 		var	match,
@@ -2687,6 +2754,9 @@
 
 		// START_COMMAND: Ltr
 		ltr: {
+			state: function(parents, firstBlock) {
+				return firstBlock && firstBlock.style.direction === 'ltr';
+			},
 			exec: function() {
 				var	editor = this,
 					elm    = editor.getRangeHelper().getFirstBlockParent(),
@@ -2716,6 +2786,9 @@
 
 		// START_COMMAND: Rtl
 		rtl: {
+			state: function(parents, firstBlock) {
+				return firstBlock && firstBlock.style.direction === 'rtl';
+			},
 			exec: function() {
 				var	editor = this,
 					elm    = editor.getRangeHelper().getFirstBlockParent(),
@@ -2988,7 +3061,18 @@
 		 * @name getFirstBlockParent
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
-		base.getFirstBlockParent = function() {
+		/**
+		 * Gets the first block level parent of the selected
+		 * contents of the range.
+		 *
+		 * @param {Node} n The element to get the first block level parent frmo
+		 * @return {HTMLElement}
+		 * @function
+		 * @name getFirstBlockParent^2
+		 * @since 1.4.1
+		 * @memberOf jQuery.sceditor.rangeHelper.prototype
+		 */
+		base.getFirstBlockParent = function(n) {
 			var func = function(node) {
 				if(!$.sceditor.dom.isInline(node))
 					return node;
@@ -2998,7 +3082,7 @@
 				return p ? func(p) : null;
 			};
 
-			return func(base.parentNode());
+			return func(n || base.parentNode());
 		};
 
 		/**
