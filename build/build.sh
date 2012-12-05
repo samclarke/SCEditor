@@ -37,16 +37,17 @@ fi
 if $DO_CSS; then
 	echo "Creating CSS sprites"
 
-	glue-sprite themes/icons/src/famfamfam themes/icons --less --algorithm=vertical --optipng --namespace=sceditor-button
-	sed -i 's/famfamfam\-//' themes/icons/famfamfam.less
-	sed -i 's/url,/link,/' themes/icons/famfamfam.less
-	sed -i 's/url{/link{/' themes/icons/famfamfam.less
-	sed -i 's/{/ div {/' themes/icons/famfamfam.less
-	sed -i 's/,/ div,/' themes/icons/famfamfam.less
-	sed -i 's/grip div/grip/' themes/icons/famfamfam.less
-	sed -i 's/.sceditor-button-grip/div.sceditor-grip/' themes/icons/famfamfam.less
+	glue-sprite src/themes/icons/src/famfamfam themes/icons --less --algorithm=vertical --optipng --namespace=sceditor-button
+	sed -i 's/famfamfam\-//' src/themes/icons/famfamfam.less
+	sed -i 's/url,/link,/' src/themes/icons/famfamfam.less
+	sed -i 's/url{/link{/' src/themes/icons/famfamfam.less
+	sed -i 's/{/ div {/' src/themes/icons/famfamfam.less
+	sed -i 's/,/ div,/' src/themes/icons/famfamfam.less
+	sed -i 's/grip div/grip/' src/themes/icons/famfamfam.less
+	sed -i 's/.sceditor-button-grip/div.sceditor-grip/' src/themes/icons/famfamfam.less
+	sed -i 'N; s/^.sceditor[^{]*bold div/.sceditor-button div/,m' src/themes/icons/famfamfam.less
 
-	for f in themes/icons/*.png
+	for f in src/themes/icons/*.png
 	do
 		echo "Processing $f file..";
 
@@ -57,7 +58,7 @@ if $DO_CSS; then
 	done
 
 	echo "Minimising CSS"
-	for f in themes/*.less
+	for f in src/themes/*.less
 	do
 		echo "Processing $f file..";
 
@@ -67,20 +68,36 @@ if $DO_CSS; then
 		lessc --yui-compress $f > minified/themes/$filename.min.css
 	done
 
-	yui-compressor --type css -o minified/jquery.sceditor.default.min.css jquery.sceditor.default.css
+	yui-compressor --type css -o minified/jquery.sceditor.default.min.css src/jquery.sceditor.default.css
 fi
 
 if $DO_JS; then
-	echo "Minimising JavaScript"
+	echo "Minifying JavaScript"
 
-	cat jquery.sceditor.js jquery.sceditor.bbcode.js > minified/jquery.sceditor.min.js
+	cat src/jquery.sceditor.js src/plugins/bbcode.js > minified/jquery.sceditor.bbcode.min.js
+	cat src/jquery.sceditor.js src/plugins/xhtml.js > minified/jquery.sceditor.xhtml.min.js
 
-	uglifyjs -nc --overwrite minified/jquery.sceditor.min.js
+	echo "Minifying SCEditor"
+	uglifyjs -nc -o minified/jquery.sceditor.min.js src/jquery.sceditor.js
+	uglifyjs -nc --overwrite minified/jquery.sceditor.xhtml.min.js
+	uglifyjs -nc --overwrite minified/jquery.sceditor.bbcode.min.js
+
+	echo "Minifying plugins"
+	for f in src/plugins/*.js
+	do
+		echo "Minifying file $f..";
+
+		filename=$(basename "$f")
+		filename="${filename%.*}"
+
+		cp $f minified/plugins/$filename.js
+		uglifyjs -nc --overwrite minified/plugins/$filename.js
+	done
 fi
 
 if $DO_DOCS; then
 	echo "Creating Docs"
 
-	jsdoc --exclude=jquery.sceditor.xhtml.js -D="title:SCEditor" -D="noGlobal:true" -t=./build/CodeView -d=./docs ./
+	jsdoc -D="title:SCEditor" -D="noGlobal:true" -t=./build/CodeView -d=./docs ./src
 fi
 

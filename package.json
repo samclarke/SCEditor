@@ -38,9 +38,11 @@
 		"languages/",
 		"minified/",
 		"themes/",
-		"jquery.sceditor.bbcode.js",
-		"jquery.sceditor.css",
-		"jquery.sceditor.default.js",
-		"jquery.sceditor.js"
+		"src/",
+		"example/",
+		"docs/",
+		"CHANGELOG.txt",
+		"README.md",
+		"MIT.txt"
 	]
 }

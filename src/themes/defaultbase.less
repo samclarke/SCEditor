@@ -1,17 +1,13 @@
 /**
- * SCEditor v1.3.5
- * http://www.samclarke.com/2011/07/sceditor/
+ * SCEditor
+ * http://www.ssceditor.com/
  *
- * Copyright (C) 2011, Sam Clarke (samclarke.com)
+ * Copyright (C) 2011-12, Sam Clarke (samclarke.com)
  *
  * SCEditor is licensed under the MIT license:
  *	http://www.opensource.org/licenses/mit-license.php
- *
- * Icons by Mark James (http://www.famfamfam.com/lab/icons/silk/)
- * Licensed under the Creative Commons CC-BY license (http://creativecommons.org/licenses/by/3.0/)
  */
 
-@import "icons/famfamfam.less";
 @import "inc/elements.less";
 
 .sceditor-container {
@@ -187,6 +183,10 @@ div.sceditor-dropdown div {
 			float: left;
 			cursor: pointer;
 			padding: 3px 4px;
+		}
+		.sceditor-button.active div {
+			filter: alpha(opacity=30);
+			opacity: 0.3;
 		}
 		.sceditor-button.disabled div {
 			filter: alpha(opacity=30);
