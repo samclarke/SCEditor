@@ -207,6 +207,13 @@
 		var $blurElm;
 
 		/**
+		 * Plugin manager instance
+		 * @type {jQuery.sceditor.PluginManager}
+		 * @private
+		 */
+		var pluginManager;
+
+		/**
 		 * Private functions
 		 * @private
 		 */
@@ -215,6 +222,7 @@
 			handleCommand,
 			saveRange,
 			initEditor,
+			initPlugins,
 			initLocale,
 			initToolBar,
 			initOptions,
@@ -240,8 +248,10 @@
 
 		/**
 		 * All the commands supported by the editor
+		 * @name commands
+		 * @memberOf jQuery.sceditor.prototype
 		 */
-		base.commands = $.extend({}, (options.commands || $.sceditor.commands));
+		base.commands = $.extend(true, {}, (options.commands || $.sceditor.commands));
 
 
 		/**
@@ -258,7 +268,13 @@
 
 			$editorContainer = $('<div class="sceditor-container" />').insertAfter($original);
 
+			// Add IE version to the container to allow IE specific CSS
+			// fixes without using CSS hacks or conditional comments
+			if($.sceditor.ie)
+				$editorContainer.addClass('ie').addClass('ie' + $.sceditor.ie);
+
 			// create the editor
+			initPlugins();
 			initToolBar();
 			initEditor();
 			initCommands();
@@ -287,6 +303,18 @@
 					}
 				}, 10);
 			}
+
+			pluginManager.call("ready");
+		};
+
+		initPlugins = function() {
+			var plugins   = base.opts.plugins;
+			plugins       = plugins ? plugins.toString().split(',') : [];
+			pluginManager = new $.sceditor.PluginManager(base);
+
+			$.each(plugins, function(idx, plugin) {
+				pluginManager.register($.trim(plugin));
+			});
 		};
 
 		/**
@@ -819,8 +847,11 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.destroy = function () {
-			rangeHelper = null;
-			lastRange = null;
+			pluginManager.destroy();
+
+			rangeHelper   = null;
+			lastRange     = null;
+			pluginManager = null;
 
 			$(document).unbind('click', handleDocumentClick);
 			$(window).unbind('resize', handleWindowResize);
@@ -981,13 +1012,13 @@
 
 			var pasteddata = pastearea.innerHTML;
 
-			if(base.opts.getHtmlHandler)
-				pasteddata = base.opts.getHtmlHandler(pasteddata, $(pastearea));
+			if(pluginManager.hasHandler("toSource"))
+				pasteddata = pluginManager.callOnlyFirst("toSource", pasteddata, $(pastearea));
 
 			pastearea.parentNode.removeChild(pastearea);
 
-			if(base.opts.getTextHandler)
-				pasteddata = base.opts.getTextHandler(pasteddata, true);
+			if(pluginManager.hasHandler("toWysiwyg"))
+				pasteddata = pluginManager.callOnlyFirst("toWysiwyg", pasteddata, true);
 
 			rangeHelper.restoreRange();
 			rangeHelper.insertHTML(pasteddata);
@@ -1107,21 +1138,21 @@
 		};
 
 		/**
-		 * Like wysiwygEditorInsertHtml but inserts text into the
-		 * source mode editor instead.
+		 * <p>Like wysiwygEditorInsertHtml but inserts text into the
+		 * source mode editor instead.</p>
 		 *
-		 * If endText is specified any selected text will be placed between
+		 * <p>If endText is specified any selected text will be placed between
 		 * text and endText. If no text is selected text and endText will
-		 * just be concated together.
+		 * just be concated together.</p>
 		 *
-		 * The cursor will be placed after the text param. If endText is
-		 * specified the cursor will be placed before endText, so passing:
+		 * <p>The cursor will be placed after the text param. If endText is
+		 * specified the cursor will be placed before endText, so passing:<br />
 		 *
-		 * '[b]', '[/b]'
+		 * '[b]', '[/b]'</p>
 		 *
-		 * Would cause the cursor to be placed:
+		 * <p>Would cause the cursor to be placed:<br />
 		 *
-		 * [b]Selected text|[/b]
+		 * [b]Selected text|[/b]</p>
 		 *
 		 * @param {String} text
 		 * @param {String} [endText=null]
@@ -1201,11 +1232,11 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		/**
-		 * Sets the value of the editor.
+		 * <p>Sets the value of the editor.</p>
 		 *
-		 * If filter set true the val will be passed through the filter
+		 * <p>If filter set true the val will be passed through the filter
 		 * function. If using the BBCode plugin it will pass the val to
-		 * the BBCode filter to convert any BBCode into HTML.
+		 * the BBCode filter to convert any BBCode into HTML.</p>
 		 *
 		 * @param {String} val
 		 * @param {Boolean} [filter=true]
@@ -1222,8 +1253,8 @@
 					base.setSourceEditorValue(val);
 				else
 				{
-					if(filter !== false && base.opts.getTextHandler)
-						val = base.opts.getTextHandler(val);
+					if(filter !== false && pluginManager.hasHandler("toWysiwyg"))
+						val = pluginManager.callOnlyFirst("toWysiwyg", val);
 
 					base.setWysiwygEditorValue(val);
 				}
@@ -1267,17 +1298,19 @@
 					var	html = base.getRangeHelper().selectedHtml(),
 						frag = $('<div>').appendTo($('body')).hide().html(html);
 
-					if(filter !== false && base.opts.getHtmlHandler)
+					if(filter !== false)
 					{
-						html = base.opts.getHtmlHandler(html, frag);
+						if(pluginManager.hasHandler("toSource"))
+							html = pluginManager.callOnlyFirst("toSource", html, frag);
+
 						frag.remove();
 					}
 
 					start += html + end;
 				}
 
-				if(filter !== false && base.opts.getTextHandler)
-					start = base.opts.getTextHandler(start, true);
+				if(pluginManager.hasHandler("toWysiwyg"))
+					start = pluginManager.callOnlyFirst("toWysiwyg", start, true);
 
 				if(convertEmoticons !== false)
 					start = replaceEmoticons(start);
@@ -1302,8 +1335,8 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.getWysiwygEditorValue = function (filter) {
-			var	$body = $wysiwygEditor.contents().find("body"),
-				html;
+			var	html,
+				$body = $wysiwygEditor.contents().find("body");
 
 			// Must focus the editor for IE before saving the range
 			if($.sceditor.ie)
@@ -1314,8 +1347,8 @@
 			html = $body.html();
 
 			// filter the HTML and DOM through any plugins
-			if(filter !== false && base.opts.getHtmlHandler)
-				html = base.opts.getHtmlHandler(html, $body);
+			if(filter !== false && pluginManager.hasHandler("toSource"))
+				html = pluginManager.callOnlyFirst("toSource", html, $body);
 
 			// remove the last stored range for IE as it no longer applies
 			rangeHelper.restoreRange();
@@ -1342,8 +1375,8 @@
 		base.getSourceEditorValue = function (filter) {
 			var val = $sourceEditor.val();
 
-			if(filter !== false && base.opts.getTextHandler)
-				val = base.opts.getTextHandler(val);
+			if(filter !== false && pluginManager.hasHandler("toWysiwyg"))
+				val = pluginManager.callOnlyFirst("toWysiwyg", val);
 
 			return val;
 		};
@@ -1984,11 +2017,11 @@
 	};
 
 	/**
-	 * <p>Detects which version of IE is being used if any.</p>
+	 * <p>Detects the version of IE is being used if any.</p>
 	 *
-	 * <p>Will be the IE version number or undefined if not IE.</p>
+	 * <p>Returns the IE version number or undefined if not IE.</p>
 	 *
-	 * <p>Source: https://gist.github.com/527683</p>
+	 * <p>Source: https://gist.github.com/527683 with extra code for IE 10 detection</p>
 	 * @function
 	 * @name ie
 	 * @memberOf jQuery.sceditor
@@ -2078,8 +2111,10 @@
 	/**
 	 * Escapes a string so it's safe to use in regex
 	 *
-	 * @param {string} str
-	 * @return {string}
+	 * @param {String} str
+	 * @return {String}
+	 * @name regexEscape
+	 * @memberOf jQuery.sceditor
 	 */
 	$.sceditor.regexEscape = function (str) {
 		return str.replace(/[\$\?\[\]\.\*\(\)\|\\]/g, "\\$&")
@@ -2087,8 +2122,20 @@
 			.replace(">", "&gt;");
 	};
 
+	/**
+	 * Map containing the loaded SCEditor locales
+	 * @type {Object}
+	 * @name locale
+	 * @memberOf jQuery.sceditor
+	 */
 	$.sceditor.locale = {};
 
+	/**
+	 * Map of all the commands for SCEditor
+	 * @type {Object}
+	 * @name commands
+	 * @memberOf jQuery.sceditor
+	 */
 	$.sceditor.commands = {
 		// START_COMMAND: Bold
 		bold: {
@@ -3631,6 +3678,264 @@
 	};
 
 	/**
+	 * Object containing SCEditor plugins
+	 * @type {Object}
+	 * @name plugins
+	 * @memberOf jQuery.sceditor
+	 */
+	$.sceditor.plugins = {};
+
+	/**
+	 * Plugin Manager class
+	 * @class PluginManager
+	 * @name jQuery.sceditor.PluginManager
+	 */
+	$.sceditor.PluginManager = function(owner) {
+		/**
+		 * Alias of this
+		 * @private
+		 * @type {Object}
+		 */
+		var base = this;
+
+		/**
+		 * Array of all currently registered plugins
+		 * @type {Array}
+		 * @private
+		 */
+		var plugins = [];
+
+		/**
+		 * Editor instance this plugin manager belongs to
+		 * @type {jQuery.sceditor}
+		 * @private
+		 */
+		var editorInstance = owner;
+
+
+		/**
+		 * Changes a signals name from "name" into "signalName".
+		 * @param  {String} signal
+		 * @return {String}
+		 */
+		var formatSignalName = function(signal) {
+			return 'signal' + signal.charAt(0).toUpperCase() + signal.slice(1);
+		};
+
+		/**
+		 * Calls handlers for a signal
+		 * @see call()
+		 * @see callOnlyFirst()
+		 * @param  {Array}   args
+		 * @param  {Boolean} returnAtFirst
+		 * @return {Mixed}
+		 * @private
+		 */
+		var callHandlers = function(args, returnAtFirst) {
+			args = [].slice.call(args);
+
+			var	i      = plugins.length,
+				signal = formatSignalName(args.shift());
+
+			while(i--)
+			{
+				if(signal in plugins[i])
+				{
+					if(returnAtFirst)
+						return plugins[i][signal].apply(editorInstance, args);
+
+					plugins[i][signal].apply(editorInstance, args);
+				}
+			}
+		};
+
+		/**
+		 * Calls all handlers for the passed signal
+		 * @param  {String}    signal
+		 * @param  {...String} args
+		 * @return {Void}
+		 * @name call
+		 * @memberOf jQuery.sceditor.PluginManager.prototype
+		 */
+		base.call = function() {
+			callHandlers(arguments, false);
+		};
+
+		/**
+		 * Calls the first handler for a signal, and returns the result
+		 * @param  {String}    signal
+		 * @param  {...String} args
+		 * @return {Mixed} The result of calling the handler
+		 * @name callOnlyFirst
+		 * @memberOf jQuery.sceditor.PluginManager.prototype
+		 */
+		base.callOnlyFirst = function() {
+			return callHandlers(arguments, true);
+		};
+
+		/**
+		 * <p>Returns an object which has callNext and hasNext methods.</p>
+		 *
+		 * <p>callNext takes arguments to pass to the handler and returns the
+		 * result of calling the handler</p>
+		 *
+		 * <p>hasNext checks if there is another handler</p>
+		 *
+		 * @param {String} signal
+		 * @return {Object} Object with hasNext and callNext methods
+		 * @name iter
+		 * @memberOf jQuery.sceditor.PluginManager.prototype
+		 */
+		base.iter = function(signal) {
+			signal = formatSignalName(signal);
+
+			return (function () {
+				var i = plugins.length;
+
+				return {
+						callNext: function(args) {
+							while(i--)
+								if(plugins[i] && signal in plugins[i])
+									return plugins[i].apply(editorInstance, args);
+						},
+						hasNext: function() {
+							var j = i;
+
+							while(j--)
+								if(plugins[j] && signal in plugins[j])
+									return true;
+
+							return false;
+						}
+					};
+			}());
+		};
+
+		/**
+		 * Checks if a signal has a handler
+		 * @param  {String} signal
+		 * @return {Boolean}
+		 * @name hasHandler
+		 * @memberOf jQuery.sceditor.PluginManager.prototype
+		 */
+		base.hasHandler = function(signal) {
+			var i  = plugins.length;
+			signal = formatSignalName(signal);
+
+			while(i--)
+				if(signal in plugins[i])
+					return true;
+
+			return false;
+		};
+
+		/**
+		 * Checks if the plugin exists in jQuery.sceditor.plugins
+		 * @param  {String} plugin
+		 * @return {Boolean}
+		 * @name exsists
+		 * @memberOf jQuery.sceditor.PluginManager.prototype
+		 */
+		base.exsists = function(plugin) {
+			if(plugin in $.sceditor.plugins)
+			{
+				plugin = $.sceditor.plugins[plugin];
+
+				return typeof plugin === "function" && typeof plugin.prototype === "object";
+			}
+
+			return false;
+		};
+
+		/**
+		 * Checks if the passed plugin is currrently registered.
+		 * @param  {String} plugin
+		 * @return {Boolean}
+		 * @name isRegistered
+		 * @memberOf jQuery.sceditor.PluginManager.prototype
+		 */
+		base.isRegistered = function(plugin) {
+			var i = plugins.length;
+
+			if(!base.exsists(plugin))
+				return false;
+
+			while(i--)
+				if(plugins[i] instanceof $.sceditor.plugins[plugin])
+					return true;
+
+			return false;
+		};
+
+		/**
+		 * Registers a plugin to receive signals
+		 * @param  {String} plugin
+		 * @return {Boolean}
+		 * @name register
+		 * @memberOf jQuery.sceditor.PluginManager.prototype
+		 */
+		base.register = function(plugin) {
+			if(!base.exsists(plugin))
+				return false;
+
+			plugin = new $.sceditor.plugins[plugin]();
+			plugins.push(plugin);
+
+			if('init' in plugin)
+				plugin.init.apply(editorInstance);
+
+			return true;
+		};
+
+		/**
+		 * Deregisters a plugin.
+		 * @param  {String} plugin
+		 * @return {Boolean}
+		 * @name deregister
+		 * @memberOf jQuery.sceditor.PluginManager.prototype
+		 */
+		base.deregister = function(plugin) {
+			var	removedPlugin,
+				i   = plugins.length,
+				ret = false;
+
+			if(!base.isRegistered(plugin))
+				return false;
+
+			while(i--)
+			{
+				if(plugins[i] instanceof $.sceditor.plugins[plugin])
+				{
+					removedPlugin = plugins.splice(i, 1)[0];
+					ret    = true;
+
+					if('destroy' in removedPlugin)
+						removedPlugin.destroy.apply(editorInstance);
+				}
+			}
+
+			return ret;
+		};
+
+		/**
+		 * <p>Clears all plugins and removes the owner refrence.</p>
+		 *
+		 * <p>Calling any functions on this object after calling destroy will cause a JS error.</p>
+		 * @return {Void}
+		 */
+		base.destroy = function() {
+			var i = plugins.length;
+
+			while(i--)
+				if('destroy' in plugins[i])
+					plugins[i].destroy.apply(editorInstance);
+
+			plugins        = null;
+			editorInstance = null;
+		};
+	};
+
+	/**
 	 * Static command helper class
 	 * @class command
 	 * @name jQuery.sceditor.command
@@ -3701,8 +4006,11 @@
 	/**
 	 * Default options for SCEditor
 	 * @type {Object}
+	 * @class defaultOptions
+	 * @name jQuery.sceditor.defaultOptions
 	 */
 	$.sceditor.defaultOptions = {
+		/** @lends jQuery.sceditor.defaultOptions */
 		/**
 		 * Toolbar buttons order and groups. Should be comma separated and have a bar | to separate groups
 		 * @type {String}
@@ -3982,14 +4290,7 @@
 			else if(options === "instance")
 				ret.push($this.data('sceditor'));
 			else if(!$this.data('sceditor'))
-			{
-				// temp until plugins option is added properly in 1.4.1
-				if(options.plugins && /bbcode/i.test(options.plugins))
-					(new $.sceditorBBCodePlugin($this, options));
-				else
-					(new $.sceditor(this, options));
-			}
-
+				(new $.sceditor(this, options));
 		});
 
 		// If nothing in the ret array then must be init so return this

@@ -7,6 +7,7 @@
  * SCEditor is licensed under the MIT license:
  *	http://www.opensource.org/licenses/mit-license.php
  *
+ * @fileoverview SCEditor BBCode Plugin
  * @author Sam Clarke
  * @version 1.4.1
  * @requires jQuery
@@ -1092,21 +1093,21 @@
 	 * @class sceditorBBCodePlugin
 	 * @name jQuery.sceditorBBCodePlugin
 	 */
-	$.sceditorBBCodePlugin = function($element, options) {
+	$.sceditorBBCodePlugin =
+	$.sceditor.plugins.bbcode = function() {
 		var base = this;
 
 		/**
 		 * Private methods
 		 * @private
 		 */
-		var	init,
-			buildBbcodeCache,
+		var	buildBbcodeCache,
 			handleStyles,
 			handleTags,
 			formatString,
 			getStyle,
 			isEmpty,
-			mergeTextModeCommands,
+			mergeSourceModeCommands,
 			removeFirstLastDiv;
 
 		formatString     = $.sceditorBBCodePlugin.formatString;
@@ -1150,24 +1151,15 @@
 		 * Initializer
 		 * @private
 		 */
-		init = function() {
-			$element.data("sceditorbbcode", base);
-
-			base.opts = $.extend({}, $.sceditor.defaultOptions, options);
+		base.init = function() {
+			base.opts = this.opts;
 
 			// build the BBCode cache
 			buildBbcodeCache();
-
-			(new $.sceditor($element,
-				$.extend({}, base.opts, {
-					getHtmlHandler: base.getHtmlHandler,
-					getTextHandler: base.getTextHandler,
-					commands: mergeTextModeCommands()
-				})
-			));
+			mergeSourceModeCommands(this);
 		};
 
-		mergeTextModeCommands = function() {
+		mergeSourceModeCommands = function(editor) {
 			var merge = {
 				bold: { txtExec: ["[b]", "[/b]"] },
 				italic: { txtExec: ["[i]", "[/i]"] },
@@ -1255,7 +1247,7 @@
 				ltr: { txtExec: ["[ltr]", "[/ltr]"] }
 			};
 
-			return $.extend(true, {}, merge, $.sceditor.commands);
+			editor.commands = $.extend(true, {}, merge, editor.commands);
 		};
 
 		/**
@@ -1453,7 +1445,7 @@
 		 * @return string BBCode which has been converted from HTML
 		 * @memberOf jQuery.sceditorBBCodePlugin.prototype
 		 */
-		base.getHtmlHandler = function(html, domBody) {
+		base.signalToSource = function(html, domBody) {
 			var parser = new $.sceditor.BBCodeParser(base.opts.parserOptions);
 
 			$.sceditor.dom.removeWhiteSpace(domBody[0]);
@@ -1467,7 +1459,7 @@
 		 *
 		 * @private
 		 * @param HtmlElement	element		The element to convert to BBCode
-		 * @param array			vChildren	Valid child tags allowed
+		 * @param array		vChildren	Valid child tags allowed
 		 * @return string BBCode
 		 * @memberOf jQuery.sceditorBBCodePlugin.prototype
 		 */
@@ -1546,7 +1538,7 @@
 		 * @return {String} HTML
 		 * @memberOf jQuery.sceditorBBCodePlugin.prototype
 		 */
-		base.getTextHandler = function(text, asFragment) {
+		base.signalToWysiwyg = function(text, asFragment) {
 			var	parser = new $.sceditor.BBCodeParser(base.opts.parserOptions),
 				html   = parser.toHTML(text);
 
@@ -1597,8 +1589,6 @@
 
 			return ret;
 		};
-
-		init();
 	};
 
 	/**
@@ -2259,36 +2249,9 @@
 	};
 
 	$.fn.sceditorBBCodePlugin = function (options) {
-		var	$this,
-			ret = [];
+		if($.isPlainObject(options))
+			options.plugins = (options.plugins ? options.plugins : '') + 'bbcode' ;
 
-		options = options || {};
-
-		if(!options.runWithoutWysiwygSupport && !$.sceditor.isWysiwygSupported)
-			return;
-
-		this.each(function () {
-
-			$this = this.jquery ? this : $(this);
-
-			// Don't allow the editor to be initilised on it's own source editor
-			if($this.parents('.sceditor-container').length > 0)
-				return;
-
-			// Add state of instance to ret if that is what options is set to
-			if(options === "state")
-				ret.push(!!$this.data('sceditor'));
-			else if(options === "instance")
-				ret.push($this.data('sceditorbbcode'));
-			else if(!$this.data('sceditor'))
-				(new $.sceditorBBCodePlugin($this, options));
-
-		});
-
-		// If nothing in the ret array then must be init so return this
-		if(!ret.length)
-			return this;
-
-		return ret.length === 1 ? ret[0] : $(ret);
+		return this.sceditor(options);
 	};
 })(jQuery, window, document);
