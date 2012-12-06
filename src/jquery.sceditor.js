@@ -41,7 +41,7 @@
 
 		toolbarButton:	'<a class="sceditor-button sceditor-button-{name}" data-sceditor-command="{name}" unselectable="on"><div unselectable="on">{dispName}</div></a>',
 
-		emoticon:	'<img src="{url}" data-sceditor-emoticon="{key}" alt="{key}" />',
+		emoticon:	'<img src="{url}" data-sceditor-emoticon="{key}" alt="{key}" title="{key}" />',
 
 		fontOpt:	'<a class="sceditor-font-option" href="#" data-font="{font}"><font face="{font}">{font}</font></a>',
 
@@ -1098,19 +1098,7 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.wysiwygEditorInsertText = function (text, endText) {
-			var escape = function(str) {
-				if(!str)
-					return str;
-
-				return str.replace(/&/g, "&amp;")
-					.replace(/</g, "&lt;")
-					.replace(/>/g, "&gt;")
-					.replace(/ /g, "&nbsp;")
-					.replace(/\r\n|\r/g, "\n")
-					.replace(/\n/g, "<br />");
-			};
-
-			base.wysiwygEditorInsertHtml(escape(text), escape(endText));
+			base.wysiwygEditorInsertHtml($.sceditor.escapeEntities(text), $.sceditor.escapeEntities(endText));
 		};
 
 		/**
@@ -2139,6 +2127,27 @@
 	};
 
 	/**
+	 * Escapes all HTML entites in a string
+	 *
+	 * @param {String} str
+	 * @return {String}
+	 * @name escapeEntities
+	 * @memberOf jQuery.sceditor
+	 * @since 1.4.1
+	 */
+	$.sceditor.escapeEntities = function(str) {
+		if(!str)
+			return str;
+
+		return str.replace(/&/g, "&amp;")
+			.replace(/</g, "&lt;")
+			.replace(/>/g, "&gt;")
+			.replace(/ /g, "&nbsp;")
+			.replace(/\r\n|\r/g, "\n")
+			.replace(/\n/g, "<br />");
+	};
+
+	/**
 	 * Map containing the loaded SCEditor locales
 	 * @type {Object}
 	 * @name locale
@@ -2629,7 +2638,8 @@
 					line.append($('<img />')
 							.attr({
 								src: emoticon,
-								alt: code
+								alt: code,
+								title: code
 							})
 							.click(function (e) {
 								editor.insert($(this).attr('alt') + end);
