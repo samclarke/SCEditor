@@ -1791,8 +1791,12 @@
 			var	customEvent,
 				clone = $.extend({}, e);
 
+			// Send event to all plugins
+			pluginManager.call(clone.type + 'Event', e);
+
+			// convert the event into a custom event to send
 			delete clone.type;
-			customEvent = $.Event((e.target === sourceEditor ? "scesrc" : "scewys") + e.type, clone);
+			customEvent = $.Event((e.target === sourceEditor ? 'scesrc' : 'scewys') + e.type, clone);
 
 			$editorContainer.trigger(customEvent, this);
 
