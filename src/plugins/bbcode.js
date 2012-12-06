@@ -14,7 +14,7 @@
  */
 
 // ==ClosureCompiler==
-// @output_file_name jquery.sceditor.min.js
+// @output_file_name bbcode.min.js
 // @compilation_level SIMPLE_OPTIMIZATIONS
 // ==/ClosureCompiler==
 
@@ -878,9 +878,7 @@
 				else // content
 				{
 					needsBlockWrap = isRoot;
-					html           = token.val.replace(/&/g, "&amp;")
-								.replace(/>/g, "&gt;")
-								.replace(/</g, "&lt;");
+					html           = $.sceditor.escapeEntities(token.val);
 				}
 
 				if(needsBlockWrap && !blockWrapOpen)
@@ -1555,14 +1553,11 @@
 		 */
 		removeFirstLastDiv = function(html)
 		{
-			var	node, next, ret,
+			var	node, next,
 				$output = $('<div />').hide().appendTo(document.body),
 				output  = $output[0];
 
-			output.innerHTML = html;
-			node             = output.firstChild;
-			if(node && node.nodeName.toLowerCase() === "div")
-			{
+			var removeDiv = function(node) {
 				while((next = node.firstChild))
 					output.insertBefore(next, node);
 
@@ -1570,24 +1565,22 @@
 					output.insertBefore(document.createElement('br'), node);
 
 				output.removeChild(node);
-			}
+			};
+
+			output.innerHTML = html.replace(/<\/div>\n/g, '</div>');
+
+			node = output.firstChild;
+			if(node && node.nodeName.toLowerCase() === "div")
+				removeDiv(node);
 
 			node = output.lastChild;
 			if(node && node.nodeName.toLowerCase() === "div")
-			{
-				while((next = node.firstChild))
-					output.insertBefore(next, node);
+				removeDiv(node);
 
-				if($.sceditor.ie >= 9)
-					output.insertBefore(document.createElement('br'), node);
-
-				output.removeChild(node);
-			}
-
-			ret = output.innerHTML;
+			output = output.innerHTML;
 			$output.remove();
 
-			return ret;
+			return output;
 		};
 	};
 
