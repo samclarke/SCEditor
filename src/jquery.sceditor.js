@@ -624,7 +624,7 @@
 			{
 				$.each(base.opts.emoticons, function (idx, emoticons) {
 					$.each(emoticons, function (key, url) {
-						base.opts.emoticons[idx][key] = base.opts.emoticonsRoot + url;
+						base.opts.emoticons[idx][key] = base.opts.emoticonsRoot + (url.url || url);
 					});
 				});
 			}
