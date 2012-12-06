@@ -4106,10 +4106,7 @@
 		emoticonsRoot: '',
 		emoticons: {
 			dropdown: {
-				":)": {
-					tooltip: "Happy Face",
-					url: "emoticons/smile.png"
-				},
+				":)": "emoticons/smile.png",
 				":angel:": "emoticons/angel.png",
 				":angry:": "emoticons/angry.png",
 				"8-)": "emoticons/cool.png",
