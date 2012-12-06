@@ -10,6 +10,7 @@ Version 1.4.1:
 	Added button state support
 	Added better plugin system
 	Fixed emoticons now showing their code as a tooltip.
+	Added support for custom emoticon tooltips.
 		- Thanks to @Spuds for reporting
 
 Version 1.4.0:

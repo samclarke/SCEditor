@@ -41,7 +41,7 @@
 
 		toolbarButton:	'<a class="sceditor-button sceditor-button-{name}" data-sceditor-command="{name}" unselectable="on"><div unselectable="on">{dispName}</div></a>',
 
-		emoticon:	'<img src="{url}" data-sceditor-emoticon="{key}" alt="{key}" title="{key}" />',
+		emoticon:	'<img src="{url}" data-sceditor-emoticon="{key}" alt="{key}" title="{tooltip}" />',
 
 		fontOpt:	'<a class="sceditor-font-option" href="#" data-font="{font}"><font face="{font}">{font}</font></a>',
 
@@ -634,7 +634,7 @@
 
 			$.each(emoticons, function (key, url) {
 				emoticon     = document.createElement('img');
-				emoticon.src = url;
+				emoticon.src = url.url || url;
 				preLoadCache.push(emoticon);
 			});
 		};
@@ -1438,7 +1438,11 @@
 
 				html = html.replace(
 					new RegExp(reg, 'gm'),
-					group + _tmpl('emoticon', {key: key, url: url})
+					group + _tmpl('emoticon', {
+						key: key,
+						url: url.url || url,
+						tooltip: url.tooltip || key
+					})
 				);
 			});
 
@@ -2637,9 +2641,9 @@
 				appendEmoticon = function (code, emoticon) {
 					line.append($('<img />')
 							.attr({
-								src: emoticon,
+								src: $.isPlainObject(emoticon) ? emoticon.url : emoticon,
 								alt: code,
-								title: code
+								title: $.isPlainObject(emoticon) ? emoticon.tooltip || code : code,
 							})
 							.click(function (e) {
 								editor.insert($(this).attr('alt') + end);
@@ -2699,7 +2703,11 @@
 					$.each($.extend({}, editor.opts.emoticons.more, editor.opts.emoticons.dropdown, editor.opts.emoticons.hidden), function(key, url) {
 						editor.EmoticonsCache[pos++] = [
 							key,
-							_tmpl("emoticon", {key: key, url: url})
+							_tmpl("emoticon", {
+								key: key,
+								url: url.url || url,
+								tooltip: url.tooltip || key
+							})
 						];
 					});
 
@@ -4098,7 +4106,10 @@
 		emoticonsRoot: '',
 		emoticons: {
 			dropdown: {
-				":)": "emoticons/smile.png",
+				":)": {
+					tooltip: "Happy Face",
+					url: "emoticons/smile.png"
+				},
 				":angel:": "emoticons/angel.png",
 				":angry:": "emoticons/angry.png",
 				"8-)": "emoticons/cool.png",
