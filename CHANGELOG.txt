@@ -1,9 +1,9 @@
 Version 1.4.1:
-	Drop GPL to match jQuery.
-		The editor can still be used under the GPLv2 or GPLv3 or any other MIT compatible
-		license. Changes can't be submitted back unless under the MIT license but then
-		they couldn't before (as it was dual licensed under the MTI) so there isn't
-		really any change, just a bit simpler.
+	Dropped GPL to match jQuery license.
+		The editor can still be used under the GPLv2, GPLv3 or any other MIT compatible
+		license. Changes can't be submitted back unless they are licensed under the MIT
+		but then they couldn't before either as it was dual licensed under the MTI so
+		really there isn't any change, just a bit simpler.
 	Added blur, keyDown, keyPress and KeyUp helpers
 	Added Turkish translation
 		- Thanks to @MYaman34 for translating.
@@ -11,7 +11,8 @@ Version 1.4.1:
 	Added better plugin system
 	Fixed emoticons now showing their code as a tooltip.
 	Added support for custom emoticon tooltips.
-		- Thanks to @Spuds for reporting
+		- Thanks to @Spuds for reporting#
+	Added nodechanged event.
 
 Version 1.4.0:
 	New theme "square" added

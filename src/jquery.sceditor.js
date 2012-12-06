@@ -214,6 +214,13 @@
 		var pluginManager;
 
 		/**
+		 * The current node containing the selection/caret
+		 * @type {Node}
+		 * @private
+		 */
+		var currentNode;
+
+		/**
 		 * Private functions
 		 * @private
 		 */
@@ -244,6 +251,7 @@
 			updateActiveButtons,
 			sourceEditorSelectedText,
 			appendNewLine,
+			checkNodeChanged,
 			autofocus;
 
 		/**
@@ -445,19 +453,23 @@
 				.keypress(handleKeyPress)
 				.keyup(appendNewLine)
 				.bind("keydown keyup keypress focus blur", handleEvent)
-				.bind("keyup focus blur mouseup click", updateActiveButtons);
+				.bind("keyup focus blur mouseup click", checkNodeChanged);
 
 			$sourceEditor.bind("keydown keyup keypress focus blur", handleEvent);
 
 			$doc
 				.keypress(handleKeyPress)
 				.mousedown(handleMouseDown)
-				.bind("focus blur mouseup click", updateActiveButtons)
+				.bind("focus blur mouseup click", checkNodeChanged)
 				.bind("beforedeactivate keyup", saveRange)
 				.keyup(appendNewLine)
 				.focus(function() {
 					lastRange = null;
 				});
+
+			$editorContainer
+				.bind('nodechanged', updateActiveButtons)
+				.bind('nodechanged', handleEvent);
 		};
 
 		/**
@@ -1606,20 +1618,34 @@
 		};
 
 		/**
+		 * Checks if the current node has changed and tirggers
+		 * the nodechanged event if it has
+		 * @private
+		 */
+		checkNodeChanged = function() {
+			var node = rangeHelper.parentNode();
+
+			if(currentNode !== node)
+			{
+				$editorContainer.trigger($.Event('nodechanged', { oldNode: currentNode, newNode: node}));
+				currentNode = node;
+			}
+		};
+
+		/**
 		 * Updates if buttons are active or not
 		 * @private
 		 */
-		updateActiveButtons = function() {
-			var	parent, state, stateHandler, firstBlock, $button,
+		updateActiveButtons = function(e) {
+			var	state, stateHandler, firstBlock, $button, parent,
 				doc          = getWysiwygDoc(),
 				i            = btnStateHandlers.length,
 				inSourceMode = base.sourceMode();
 
-// TODO: have a current node changed check, maybe add a current node changed event and have this as bound to it? Sounds like a more useful idea
 			if(!base.sourceMode() && !base.readOnly())
 			{
 				$toolbar.find('.sceditor-button').removeClass('active').removeClass('disabled');
-				parent     = rangeHelper.parentNode();
+				parent     = e ? e.newNode : rangeHelper.parentNode();
 				firstBlock = rangeHelper.getFirstBlockParent(parent);
 
 				while(i--)
@@ -1788,7 +1814,7 @@
 		 * @return void
 		 */
 		handleEvent = function(e) {
-			var	customEvent,
+			var	customEvent, args,
 				clone = $.extend({}, e);
 
 			// Send event to all plugins
@@ -1798,7 +1824,10 @@
 			delete clone.type;
 			customEvent = $.Event((e.target === sourceEditor ? 'scesrc' : 'scewys') + e.type, clone);
 
-			$editorContainer.trigger(customEvent, this);
+			args = $.merge([], arguments);
+			args.shift();
+
+			$editorContainer.trigger.apply($editorContainer, $.merge([customEvent, this], args));
 
 			if(customEvent.isDefaultPrevented())
 				e.preventDefault();
@@ -1816,9 +1845,12 @@
 		 * <p>This function only binds to a limited list of supported events.<br />
 		 * The supported events are:
 		 * <ul>
-		 *   <li>keyUp</li>
-		 *   <li>keyDown</li>
-		 *   <li>KeyPress</li>
+		 *   <li>keyup</li>
+		 *   <li>keydown</li>
+		 *   <li>Keypress</li>
+		 *   <li>blur</li>
+		 *   <li>focus</li>
+		 *   <li>nodechanged</li>
 		 * </ul>
 		 * </p>
 		 *
@@ -2022,6 +2054,10 @@
 		 */
 		base.keyUp = function(handler, excludeWysiwyg, excludeSource) {
 			return base.bind('keyup', handler, excludeWysiwyg, excludeSource);
+		};
+
+		base.nodeChanged = function(handler) {
+			return base.bind('nodechanged', handler, false, true);
 		};
 
 		// run the initializer
@@ -2647,7 +2683,7 @@
 							.attr({
 								src: $.isPlainObject(emoticon) ? emoticon.url : emoticon,
 								alt: code,
-								title: $.isPlainObject(emoticon) ? emoticon.tooltip || code : code,
+								title: $.isPlainObject(emoticon) ? emoticon.tooltip || code : code
 							})
 							.click(function (e) {
 								editor.insert($(this).attr('alt') + end);
