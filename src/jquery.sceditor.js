@@ -445,14 +445,14 @@
 				.keypress(handleKeyPress)
 				.keyup(appendNewLine)
 				.bind("keydown keyup keypress focus blur", handleEvent)
-				.bind("keyup focus blur mousedown click", updateActiveButtons);
+				.bind("keyup focus blur mouseup click", updateActiveButtons);
 
 			$sourceEditor.bind("keydown keyup keypress focus blur", handleEvent);
 
 			$doc
 				.keypress(handleKeyPress)
 				.mousedown(handleMouseDown)
-				.bind("focus blur mousedown click", updateActiveButtons)
+				.bind("focus blur mouseup click", updateActiveButtons)
 				.bind("beforedeactivate keyup", saveRange)
 				.keyup(appendNewLine)
 				.focus(function() {
@@ -1618,34 +1618,50 @@
 		 * @private
 		 */
 		updateActiveButtons = function() {
-			var	parent, isActive, stateHandler, firstBlock,
-				i = btnStateHandlers.length;
+			var	parent, state, stateHandler, firstBlock, $button,
+				doc          = getWysiwygDoc(),
+				i            = btnStateHandlers.length,
+				inSourceMode = base.sourceMode();
 
-			$toolbar.find('.sceditor-button').removeClass('active');
-
-			if(!base.sourceMode())
+// TODO: have a current node changed check, maybe add a current node changed event and have this as bound to it? Sounds like a more useful idea
+			if(!base.sourceMode() && !base.readOnly())
 			{
+				$toolbar.find('.sceditor-button').removeClass('active').removeClass('disabled');
 				parent     = rangeHelper.parentNode();
 				firstBlock = rangeHelper.getFirstBlockParent(parent);
 
 				while(i--)
 				{
-					isActive     = false;
+					state        = 0;
 					stateHandler = btnStateHandlers[i];
+					$button      = $toolbar.find('.sceditor-button-' + stateHandler.name);
 
-					if(typeof stateHandler.state === 'string')
-					{
-						try
-						{
-							isActive = getWysiwygDoc().queryCommandState(stateHandler.state);
-						}
-						catch (e) {}
-					}
+					if(inSourceMode && !$button.data('sceditor-txtmode'))
+						$button.addClass('disabled');
+					else if (!inSourceMode && !$button.data('sceditor-wysiwygmode'))
+						$button.addClass('disabled');
 					else
-						isActive = stateHandler.state.call(base, parent, firstBlock);
+					{
+						if(typeof stateHandler.state === 'string')
+						{
+							try
+							{
+								state = doc.queryCommandEnabled(stateHandler.state) ? 0 : -1;
 
-					if(isActive)
-						$toolbar.find('.sceditor-button-' + stateHandler.name).addClass('active');
+								if(state > -1)
+									state = doc.queryCommandState(stateHandler.state) ? 1 : 0;
+							}
+							catch (e) {}
+						}
+						else
+							state = stateHandler.state.call(base, parent, firstBlock);
+
+						if(state < 0)
+							$button.addClass('disabled');
+
+						if(state > 0)
+							$button.addClass('active');
+					}
 				}
 			}
 		};
