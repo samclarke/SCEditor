@@ -1654,7 +1654,6 @@
 
 			if(!base.sourceMode() && !base.readOnly())
 			{
-				$toolbar.find('.sceditor-button').removeClass('active').removeClass('disabled');
 				parent     = e ? e.newNode : rangeHelper.parentNode();
 				firstBlock = rangeHelper.getFirstBlockParent(parent);
 
@@ -1686,9 +1685,13 @@
 
 						if(state < 0)
 							$button.addClass('disabled');
+						else
+							$button.removeClass('disabled');
 
 						if(state > 0)
 							$button.addClass('active');
+						else
+							$button.removeClass('active');
 					}
 				}
 			}
