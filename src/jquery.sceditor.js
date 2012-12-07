@@ -452,15 +452,15 @@
 			 $doc.find("body")
 				.keypress(handleKeyPress)
 				.keyup(appendNewLine)
-				.bind("keydown keyup keypress focus blur", handleEvent)
-				.bind("keyup focus blur mouseup click", checkNodeChanged);
+				.bind("keyup focus blur contextmenu mouseup click", checkNodeChanged)
+				.bind("keydown keyup keypress focus blur contextmenu", handleEvent);
 
-			$sourceEditor.bind("keydown keyup keypress focus blur", handleEvent);
+			$sourceEditor.bind("keydown keyup keypress focus blur contextmenu", handleEvent);
 
 			$doc
 				.keypress(handleKeyPress)
 				.mousedown(handleMouseDown)
-				.bind("focus blur mouseup click", checkNodeChanged)
+				.bind("focus blur contextmenu mouseup click", checkNodeChanged)
 				.bind("beforedeactivate keyup", saveRange)
 				.keyup(appendNewLine)
 				.focus(function() {
@@ -1633,6 +1633,16 @@
 		};
 
 		/**
+		 * <p>Gets the current node that contains the selection/caret in WYSIWYG mode.</p>
+		 *
+		 * <p>Will be null in sourceMode or if there is no selection.</p>
+		 * @return {Node}
+		 */
+		base.currentNode = function() {
+			return currentNode;
+		};
+
+		/**
 		 * Updates if buttons are active or not
 		 * @private
 		 */
@@ -1814,20 +1824,17 @@
 		 * @return void
 		 */
 		handleEvent = function(e) {
-			var	customEvent, args,
+			var	customEvent,
 				clone = $.extend({}, e);
 
 			// Send event to all plugins
-			pluginManager.call(clone.type + 'Event', e);
+			pluginManager.call(clone.type + 'Event', e, base);
 
 			// convert the event into a custom event to send
 			delete clone.type;
 			customEvent = $.Event((e.target === sourceEditor ? 'scesrc' : 'scewys') + e.type, clone);
 
-			args = $.merge([], arguments);
-			args.shift();
-
-			$editorContainer.trigger.apply($editorContainer, $.merge([customEvent, this], args));
+			$editorContainer.trigger.apply($editorContainer, [customEvent, base]);
 
 			if(customEvent.isDefaultPrevented())
 				e.preventDefault();
@@ -1850,7 +1857,9 @@
 		 *   <li>Keypress</li>
 		 *   <li>blur</li>
 		 *   <li>focus</li>
-		 *   <li>nodechanged</li>
+		 *   <li>nodechanged<br />
+		 *       When the current node containing the selection changes in WYSIWYG mode</li>
+		 *   <li>contextmenu</li>
 		 * </ul>
 		 * </p>
 		 *
@@ -3168,9 +3177,13 @@
 			var range = base.selectedRange();
 
 			if(range)
-				return  isW3C ?
-					range.commonAncestorContainer :
-					range.parentElement();
+			{
+				if(isW3C)
+					return range.commonAncestorContainer;
+
+				if(range.parentElement)
+					return range.parentElement();
+			}
 		};
 
 		/**
@@ -3198,7 +3211,7 @@
 				if(!$.sceditor.dom.isInline(node))
 					return node;
 
-				var p = node.parentNode;
+				var p = node ? node.parentNode : null;
 
 				return p ? func(p) : null;
 			};
