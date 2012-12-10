@@ -452,7 +452,7 @@
 			 $doc.find("body")
 				.keypress(handleKeyPress)
 				.keyup(appendNewLine)
-				.bind("keyup focus blur contextmenu mouseup click", checkNodeChanged)
+				.bind("keyup focus blur contextmenu mouseup mouseclick click", checkNodeChanged)
 				.bind("keydown keyup keypress focus blur contextmenu", handleEvent);
 
 			$sourceEditor.bind("keydown keyup keypress focus blur contextmenu", handleEvent);
@@ -460,7 +460,7 @@
 			$doc
 				.keypress(handleKeyPress)
 				.mousedown(handleMouseDown)
-				.bind("focus blur contextmenu mouseup click", checkNodeChanged)
+				.bind("focus blur contextmenu mouseup mouseclick click", checkNodeChanged)
 				.bind("beforedeactivate keyup", saveRange)
 				.keyup(appendNewLine)
 				.focus(function() {
@@ -1627,7 +1627,7 @@
 
 			if(currentNode !== node)
 			{
-				$editorContainer.trigger($.Event('nodechanged', { oldNode: currentNode, newNode: node}));
+				$editorContainer.trigger($.Event('nodechanged', { oldNode: currentNode, newNode: node }));
 				currentNode = node;
 			}
 		};
@@ -2198,7 +2198,7 @@
 		return str.replace(/&/g, "&amp;")
 			.replace(/</g, "&lt;")
 			.replace(/>/g, "&gt;")
-			.replace(/ /g, "&nbsp;")
+			.replace(/ {2}/g, " &nbsp;")
 			.replace(/\r\n|\r/g, "\n")
 			.replace(/\n/g, "<br />");
 	};

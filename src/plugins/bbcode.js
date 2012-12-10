@@ -52,6 +52,7 @@
 			convertToHTML,
 			convertToBBCode,
 			hasTag,
+			quote,
 			lower,
 			last;
 
@@ -254,7 +255,6 @@
 			else
 				name = '#';
 
-
 			return new TokenizeToken(type, name, val, attrs);
 		};
 
@@ -267,9 +267,34 @@
 		 * @private
 		 */
 		tokenizeAttrs = function(attrs) {
-			var	matches,
-				atribsRegex = /(\S+)=(?:(?:(["'])((?:\\\2|[^\2])*?)\2)|([^'"\s]+))/g,
+			var	matches, unquote,
+				/*
+				([^\s=]+)					Anything that's not a space or equals
+				=						Equals =
+				(?:
+					(?:
+						(["'])				The opening quote
+						(
+							(?:\\\2|[^\2])*?	Anything that isn't the unescaped opening quote
+						)
+						\2				The opening quote again which will now close the string
+					)
+						|				If not a quoted string then match
+					(
+						(?:.(?!\s\S+=))*.?		Anything that isn't part of [space][non-space][=] which would be a new attribute
+					)
+				)
+				 */
+				atribsRegex = /([^\s=]+)=(?:(?:(["'])((?:\\\2|[^\2])*?)\2)|((?:.(?!\s\S+=))*.))/g,
 				ret         = {};
+
+			//
+			unquote = function(str, quote) {
+				if(quote)
+					str = str.replace('\\\\', '\\').replace('\\' + quote, quote);
+
+				return str;
+			};
 
 			// if only one attribute then remove the = from the start and strip any quotes
 			if(attrs.charAt(0) === "=" && attrs.split("=").length <= 2)
@@ -281,7 +306,7 @@
 
 				// No need to strip quotes here, the regex will do that.
 				while((matches = atribsRegex.exec(attrs)))
-					ret[lower(matches[1])] = matches[3] || matches[4];
+					ret[lower(matches[1])] = unquote(matches[3], matches[2]) || matches[4];
 			}
 
 			return ret;
@@ -925,7 +950,7 @@
 		 * @private
 		 */
 		convertToBBCode = function(toks) {
-			var	token, attr, bbcode, isBlock, isSelfClosing,
+			var	token, attr, bbcode, isBlock, isSelfClosing, quoteType,
 				breakBefore, breakStart, breakEnd, breakAfter,
 				// Create an array of strings which are joined together
 				// before being returned as this is faster in slow browsers.
@@ -944,6 +969,7 @@
 				breakStart    = ((isBlock && !isSelfClosing && base.opts.breakStartBlock && bbcode.breakStart !== false) || (bbcode && bbcode.breakStart));
 				breakEnd      = ((isBlock && base.opts.breakEndBlock && bbcode.breakEnd !== false) || (bbcode && bbcode.breakEnd));
 				breakAfter    = ((isBlock && base.opts.breakAfterBlock && bbcode.breakAfter !== false) || (bbcode && bbcode.breakAfter));
+				quoteType     = (bbcode ? bbcode.quoteType : null) || base.opts.quoteType || $.sceditor.BBCodeParser.QuoteType.auto;
 
 				if(!bbcode && token.type === tokenType.open)
 				{
@@ -966,13 +992,13 @@
 					{
 						if(token.attrs.defaultattr)
 						{
-							ret.push('=' + token.attrs.defaultattr);
+							ret.push('=' + quote(token.attrs.defaultattr, quoteType));
 							delete token.attrs.defaultattr;
 						}
 
 						for(attr in token.attrs)
 							if(token.attrs.hasOwnProperty(attr))
-								ret.push(' ' + attr + '="' + token.attrs[attr] + '"');
+								ret.push(' ' + attr + '=' + quote(token.attrs[attr], quoteType));
 					}
 					ret.push(']');
 
@@ -1008,6 +1034,27 @@
 		};
 
 		/**
+		 * Quotes an attribute
+		 *
+		 * @param {String} str
+		 * @param {$.sceditor.BBCodeParser.QuoteType} quoteType
+		 * @return {String}
+		 * @private
+		 */
+		quote = function(str, quoteType) {
+			var	QuoteTypes  = $.sceditor.BBCodeParser.QuoteType,
+				needsQuotes = /\s|=/.test(str);
+
+			if($.isFunction(quoteType))
+				return quoteType(str);
+
+			if(quoteType === QuoteTypes.never || (quoteType === QuoteTypes.auto && !needsQuotes))
+				return str;
+
+			return '"' + str.replace('\\', '\\\\').replace('"', '\\"') + '"';
+		};
+
+		/**
 		 * Returns the last element of an array or null
 		 *
 		 * @param {Array} arr
@@ -1034,6 +1081,37 @@
 
 		init();
 	};
+
+	/**
+	 * Quote type
+	 * @type {Object}
+	 * @class QuoteType
+	 * @name jQuery.sceditor.BBCodeParser.QuoteType
+	 * @since v1.4.0
+	 */
+	$.sceditor.BBCodeParser.QuoteType = {
+		/**
+		 * Always quote the attribute value
+		 * @type {Number}
+		 */
+		always: 1,
+
+		/**
+		 * Never quote the attributes value
+		 * @type {Number}
+		 */
+		never: 2,
+
+		/**
+		 * Only quote the attributes value when it contains spaces ot equals
+		 * @type {Number}
+		 */
+		auto: 3
+	};
+
+	// Make AttributeQuoteType enum read-only in browsers that support it.
+	if(Object.freeze)
+		Object.freeze($.sceditor.BBCodeParser.QuoteType);
 
 	/**
 	 * Default BBCode parser options
@@ -1080,7 +1158,14 @@
 		 * If to fix invalid children. i.e. A tag which is inside a parent that doesn't allow that type of tag.
 		 * @type {Boolean}
 		 */
-		fixInvalidChildren: true
+		fixInvalidChildren: true,
+
+		/**
+		 * Attribute quote type
+		 * @type {$.sceditor.BBCodeParser.QuoteType}
+		 * @since 1.4.1
+		 */
+		quoteType: $.sceditor.BBCodeParser.QuoteType.auto
 	};
 
 	/**
@@ -1089,7 +1174,7 @@
 	 * @param {Element} $element The textarea to be converted
 	 * @return {Object} options
 	 * @class sceditorBBCodePlugin
-	 * @name jQuery.sceditorBBCodePlugin
+	 * @name jQuery.sceditor.plugins.bbcode
 	 */
 	$.sceditorBBCodePlugin =
 	$.sceditor.plugins.bbcode = function() {
@@ -1731,6 +1816,7 @@
 			styles: {
 				"font-family": null
 			},
+			quoteType: $.sceditor.BBCodeParser.QuoteType.never,
 			format: function(element, content) {
 				var font;
 
@@ -1986,9 +2072,9 @@
 
 				// make sure this link is not an e-mail, if it is return e-mail BBCode
 				if(url.substr(0, 7) === 'mailto:')
-					return '[email=' + url.substr(7) + ']' + content + '[/email]';
+					return '[email="' + url.substr(7) + '"]' + content + '[/email]';
 
-				return '[url=' + decodeURI(url) + ']' + content + '[/url]';
+				return '[url="' + decodeURI(url) + '"]' + content + '[/url]';
 			},
 			html: function(token, attrs, content) {
 				if(typeof attrs.defaultattr === "undefined" || attrs.defaultattr.length === 0)
@@ -2242,6 +2328,8 @@
 	};
 
 	$.fn.sceditorBBCodePlugin = function (options) {
+		options = options || {};
+
 		if($.isPlainObject(options))
 			options.plugins = (options.plugins ? options.plugins : '') + 'bbcode' ;
 
