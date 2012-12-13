@@ -945,6 +945,7 @@
 		};
 
 		/**
+		 * Handles the WYSIWYG editors paste event
 		 * @private
 		 */
 		handlePasteEvt = function(e) {
@@ -1008,7 +1009,6 @@
 			handlePaste(elm, pastearea);
 
 			base.focus();
-
 			return true;
 		};
 
@@ -1637,6 +1637,9 @@
 		 *
 		 * <p>Will be null in sourceMode or if there is no selection.</p>
 		 * @return {Node}
+		 * @function
+		 * @name currentNode
+		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.currentNode = function() {
 			return currentNode;
@@ -1695,6 +1698,8 @@
 					}
 				}
 			}
+			else
+				$toolbar.find('.sceditor-button').removeClass('active');
 		};
 
 		/**
@@ -3807,6 +3812,7 @@
 		 * Changes a signals name from "name" into "signalName".
 		 * @param  {String} signal
 		 * @return {String}
+		 * @private
 		 */
 		var formatSignalName = function(signal) {
 			return 'signal' + signal.charAt(0).toUpperCase() + signal.slice(1);
@@ -3844,6 +3850,7 @@
 		 * @param  {String}    signal
 		 * @param  {...String} args
 		 * @return {Void}
+		 * @function
 		 * @name call
 		 * @memberOf jQuery.sceditor.PluginManager.prototype
 		 */
@@ -3856,6 +3863,7 @@
 		 * @param  {String}    signal
 		 * @param  {...String} args
 		 * @return {Mixed} The result of calling the handler
+		 * @function
 		 * @name callOnlyFirst
 		 * @memberOf jQuery.sceditor.PluginManager.prototype
 		 */
@@ -3873,6 +3881,7 @@
 		 *
 		 * @param {String} signal
 		 * @return {Object} Object with hasNext and callNext methods
+		 * @function
 		 * @name iter
 		 * @memberOf jQuery.sceditor.PluginManager.prototype
 		 */
@@ -3905,6 +3914,7 @@
 		 * Checks if a signal has a handler
 		 * @param  {String} signal
 		 * @return {Boolean}
+		 * @function
 		 * @name hasHandler
 		 * @memberOf jQuery.sceditor.PluginManager.prototype
 		 */
@@ -3923,6 +3933,7 @@
 		 * Checks if the plugin exists in jQuery.sceditor.plugins
 		 * @param  {String} plugin
 		 * @return {Boolean}
+		 * @function
 		 * @name exsists
 		 * @memberOf jQuery.sceditor.PluginManager.prototype
 		 */
@@ -3941,6 +3952,7 @@
 		 * Checks if the passed plugin is currrently registered.
 		 * @param  {String} plugin
 		 * @return {Boolean}
+		 * @function
 		 * @name isRegistered
 		 * @memberOf jQuery.sceditor.PluginManager.prototype
 		 */
@@ -3961,6 +3973,7 @@
 		 * Registers a plugin to receive signals
 		 * @param  {String} plugin
 		 * @return {Boolean}
+		 * @function
 		 * @name register
 		 * @memberOf jQuery.sceditor.PluginManager.prototype
 		 */
@@ -3981,6 +3994,7 @@
 		 * Deregisters a plugin.
 		 * @param  {String} plugin
 		 * @return {Boolean}
+		 * @function
 		 * @name deregister
 		 * @memberOf jQuery.sceditor.PluginManager.prototype
 		 */
@@ -4012,6 +4026,9 @@
 		 *
 		 * <p>Calling any functions on this object after calling destroy will cause a JS error.</p>
 		 * @return {Void}
+		 * @function
+		 * @name destroy
+		 * @memberOf jQuery.sceditor.PluginManager.prototype
 		 */
 		base.destroy = function() {
 			var i = plugins.length;
