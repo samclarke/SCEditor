@@ -415,9 +415,6 @@
 				$sourceEditor.attr('dir', 'rtl');
 			}
 
-			if(base.opts.enablePasteFiltering)
-				$body.bind("paste", handlePasteEvt);
-
 			if(base.opts.autoExpand)
 				$doc.bind("keyup", base.expandToContent);
 
@@ -452,6 +449,7 @@
 			 $doc.find("body")
 				.keypress(handleKeyPress)
 				.keyup(appendNewLine)
+				.bind("paste", handlePasteEvt)
 				.bind("keyup focus blur contextmenu mouseup mouseclick click", checkNodeChanged)
 				.bind("keydown keyup keypress focus blur contextmenu", handleEvent);
 
@@ -954,6 +952,12 @@
 				checkCount      = 0,
 				pastearea       = elm.ownerDocument.createElement('div'),
 				prePasteContent = elm.ownerDocument.createDocumentFragment();
+
+			if(base.opts.disablePasting)
+				return false;
+
+			if(!base.opts.enablePasteFiltering)
+				return;
 
 			rangeHelper.saveRange();
 			document.body.appendChild(pastearea);
@@ -4290,6 +4294,12 @@
 		 * @type {Boolean}
 		 */
 		enablePasteFiltering: false,
+
+		/**
+		 * If to completely disable pasting into the editor
+		 * @type {Boolean}
+		 */
+		disablePasting: false,
 
 		/**
 		 * If the editor is read only.

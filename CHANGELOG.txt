@@ -17,6 +17,7 @@ Version 1.4.1:
 		- Thanks to @Spuds for reporting
 	Added Arabic translation.
 		- Thanks to @Atramez-Zeton for translating
+	Added disablePasting option.
 
 Version 1.4.0:
 	New theme "square" added
