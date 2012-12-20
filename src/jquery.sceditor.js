@@ -361,7 +361,7 @@
 		 * @private
 		 */
 		initEditor = function () {
-			var $body, doc, $doc;
+			var $body, doc, $doc, tabIndex;
 
 			$sourceEditor  = $('<textarea></textarea>').hide();
 			$wysiwygEditor = $('<iframe frameborder="0"></iframe>');
@@ -391,17 +391,23 @@
 			// Add IE version class to the HTML element so can apply
 			// conditional styling without CSS hacks
 			if($.sceditor.ie)
-				$doc.find("html").addClass('ie').addClass('ie' + $.sceditor.ie);
+				$doc.find("html").addClass("ie").addClass("ie" + $.sceditor.ie);
 
 			// iframe overflow fix for iOS, also fixes an IE issue with the
 			// editor not getting focus when clicking inside
 			if(/iPhone|iPod|iPad| wosbrowser\//i.test(navigator.userAgent) || $.sceditor.ie)
-				$body.height('100%');
+				$body.height("100%");
 
 			rangeHelper = new $.sceditor.rangeHelper(wysiwygEditor.contentWindow);
 
 			// load any textarea value into the editor
 			base.val($original.hide().val());
+
+			if(typeof (tabIndex = $original.attr("tabindex")) !== "undefined")
+			{
+				$sourceEditor.attr('tabindex', tabIndex);
+				$wysiwygEditor.attr('tabindex', tabIndex);
+			}
 		};
 
 		/**

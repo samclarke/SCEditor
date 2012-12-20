@@ -22,6 +22,8 @@ Version 1.4.1:
 		The editor will now just remove the required attribute from the original textarea
 		so validation will either need to be done server side or manually.
 		- Thanks to @bmxgrover for reporting
+	Added tabindex support. The tabindex will be picked up from the original textarea.
+		- Thanks to @Spuds for reporting
 
 Version 1.4.0:
 	New theme "square" added
