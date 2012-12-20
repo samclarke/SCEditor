@@ -18,6 +18,10 @@ Version 1.4.1:
 	Added Arabic translation.
 		- Thanks to @Atramez-Zeton for translating
 	Added disablePasting option.
+	Fixed problem with HTML5 form validation not working when using the editor.
+		The editor will now just remove the required attribute from the original textarea
+		so validation will either need to be done server side or manually.
+		- Thanks to @bmxgrover for reporting
 
 Version 1.4.0:
 	New theme "square" added

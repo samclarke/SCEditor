@@ -221,6 +221,13 @@
 		var currentNode;
 
 		/**
+		 * If content is required (equivalent to the HTML5 required attribute)
+		 * @type {Boolean}
+		 * @private
+		 */
+		var isRequired;
+
+		/**
 		 * Private functions
 		 * @private
 		 */
@@ -245,7 +252,6 @@
 			handleMouseDown,
 			handleEvent,
 			handleDocumentClick,
-			handleFormSubmit,
 			handleWindowResize,
 			updateToolBar,
 			updateActiveButtons,
@@ -280,6 +286,9 @@
 			// fixes without using CSS hacks or conditional comments
 			if($.sceditor.ie)
 				$editorContainer.addClass('ie').addClass('ie' + $.sceditor.ie);
+
+			isRequired = !!$original.attr('required');
+			$original.removeAttr('required');
 
 			// create the editor
 			initPlugins();
@@ -352,7 +361,7 @@
 		 * @private
 		 */
 		initEditor = function () {
-			var	$body, doc, $doc;
+			var $body, doc, $doc;
 
 			$sourceEditor  = $('<textarea></textarea>').hide();
 			$wysiwygEditor = $('<iframe frameborder="0"></iframe>');
@@ -384,7 +393,8 @@
 			if($.sceditor.ie)
 				$doc.find("html").addClass('ie').addClass('ie' + $.sceditor.ie);
 
-			// iframe overflow fix
+			// iframe overflow fix for iOS, also fixes an IE issue with the
+			// editor not getting focus when clicking inside
 			if(/iPhone|iPod|iPad| wosbrowser\//i.test(navigator.userAgent) || $.sceditor.ie)
 				$body.height('100%');
 
@@ -437,9 +447,8 @@
 			$(document).click(handleDocumentClick);
 
 			$(original.form)
-				.attr('novalidate','novalidate')
 				.bind("reset", handleFormReset)
-				.submit(handleFormSubmit);
+				.submit(base.updateOriginal);
 
 			// if either width or height are % based, add the resize handler to
 			// update the editor when the window is resized
@@ -489,7 +498,7 @@
 				return false;
 			};
 
-			$toolbar = $('<div class="sceditor-toolbar" />');
+			$toolbar = $('<div class="sceditor-toolbar" unselectable="on" />');
 			for (i=0; i < groups.length; i++)
 			{
 				$group  = $('<div class="sceditor-group" />');
@@ -803,21 +812,6 @@
 		};
 
 		/**
-		 * Handles the forms submit event
-		 * @private
-		 */
-		handleFormSubmit = function(e) {
-			base.updateOriginal();
-			$(this).removeAttr('novalidate');
-
-			if(this.checkValidity && !this.checkValidity())
-				e.preventDefault();
-
-			$(this).attr('novalidate','novalidate');
-			base.blur();
-		};
-
-		/**
 		 * Expands the editors height to the height of it's content
 		 *
 		 * Unless ignoreMaxHeight is set to true it will not expand
@@ -867,25 +861,23 @@
 			$(window).unbind('resize', handleWindowResize);
 
 			$(original.form)
-				.removeAttr('novalidate')
 				.unbind("reset", handleFormReset)
-				.unbind("submit", handleFormSubmit);
+				.unbind("submit", base.updateOriginal);
 
-			// unbind anything from the body
 			$(getWysiwygDoc().body).unbind();
-
-			// unbind anything from the doc
 			$(getWysiwygDoc()).unbind().find('*').remove();
 
-			// unbind anything from the source editor
 			$sourceEditor.unbind().remove();
-
-			// unbind anything from the container and anything in the container
-			// then remove the container
 			$editorContainer.unbind().find('*').unbind().remove();
 			$editorContainer.remove();
 
-			$original.removeData("sceditor").removeData("sceditorbbcode").show();
+			$original
+				.removeData("sceditor")
+				.removeData("sceditorbbcode")
+				.show();
+
+			if(isRequired)
+				$original.attr('required', 'required');
 		};
 
 		/**
