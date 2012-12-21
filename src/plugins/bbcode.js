@@ -1044,7 +1044,7 @@
 		quote = function(str, quoteType) {
 			var	QuoteTypes  = $.sceditor.BBCodeParser.QuoteType,
 				needsQuotes = /\s|=/.test(str);
-
+// TODO:Add name to quoteType callback
 			if($.isFunction(quoteType))
 				return quoteType(str);
 
@@ -1390,7 +1390,7 @@
 
 			return style[name];
 		};
-
+// TODO: remove duplicated by parser empty removal
 		isEmpty = function(element) {
 			var	childNodes = element.childNodes,
 				i          = childNodes.length;
@@ -1431,7 +1431,7 @@
 				// so you don't end up with [i]parent[i]child[/i][/i]
 				if(!elementPropVal || getStyle(element.parent()[0], property) === elementPropVal)
 					return;
-
+// TODO: remove allows empty handling here
 				$.each(bbcodes, function(bbcode, values) {
 					if(!/\S|\u00A0/.test(content) && !base.bbcodes[bbcode].allowsEmpty && isEmpty(element[0]))
 						return;
@@ -1469,7 +1469,7 @@
 				$.each(tagsToBbcodes[tag][blockLevel], function(bbcode, bbcodeAttribs) {
 					if(!/\S|\u00A0/.test(content) && !base.bbcodes[bbcode].allowsEmpty && isEmpty(element[0]))
 						return;
-
+// TODO: remove, duplicated by parser empty removal
 					// if the bbcode requires any attributes then check this has
 					// all needed
 					if(bbcodeAttribs) {
@@ -1599,7 +1599,7 @@
 					}
 					else if(node.wholeText && (!node.previousSibling || node.previousSibling.nodeType !== 3))
 					{
-// TODO:This should check for CSS white-space
+// TODO:This should check for CSS white-space, should pass it int the function to reduce css lookups which are SLOW!
 						if($node.parents('code').length === 0)
 							ret += node.wholeText.replace(/ +/g, " ");
 						else
@@ -1887,6 +1887,7 @@
 			styles: {
 				color: null
 			},
+			quoteType: $.sceditor.BBCodeParser.QuoteType.never,
 			format: function($element, content) {
 				var	color,
 					element = $element[0];
@@ -2002,11 +2003,13 @@
 		// END_COMMAND
 
 		// START_COMMAND: Horizontal Rule
-		horizontalrule: {
-			allowsEmpty: true,
+		hr: {
 			tags: {
 				hr: null
 			},
+			allowsEmpty: true,
+			isSelfClosing: true,
+			isInline: false,
 			format: "[hr]{0}",
 			html: "<hr />"
 		},
@@ -2020,6 +2023,7 @@
 					src: null
 				}
 			},
+			quoteType: $.sceditor.BBCodeParser.QuoteType.never,
 			format: function(element, content) {
 				var	attribs = '',
 					style = function(name) {
@@ -2067,6 +2071,7 @@
 					href: null
 				}
 			},
+			quoteType: $.sceditor.BBCodeParser.QuoteType.never,
 			format: function(element, content) {
 				var url = element.attr('href');
 
@@ -2074,7 +2079,7 @@
 				if(url.substr(0, 7) === 'mailto:')
 					return '[email="' + url.substr(7) + '"]' + content + '[/email]';
 
-				return '[url="' + decodeURI(url) + '"]' + content + '[/url]';
+				return '[url=' + decodeURI(url) + ']' + content + '[/url]';
 			},
 			html: function(token, attrs, content) {
 				if(typeof attrs.defaultattr === "undefined" || attrs.defaultattr.length === 0)
@@ -2087,6 +2092,7 @@
 
 		// START_COMMAND: E-mail
 		email: {
+			quoteType: $.sceditor.BBCodeParser.QuoteType.never,
 			html: function(token, attrs, content) {
 				if(typeof attrs.defaultattr === "undefined")
 					attrs.defaultattr = content;
@@ -2102,6 +2108,7 @@
 				blockquote: null
 			},
 			isInline: false,
+			quoteType: $.sceditor.BBCodeParser.QuoteType.never,
 			format: function(element, content) {
 				var	author = '',
 					$elm  = $(element),
@@ -2228,19 +2235,6 @@
 			html: '<div style="direction: ltr">{0}</div>'
 		},
 		// END_COMMAND
-
-		// START_COMMAND: Hr
-		hr: {
-			tags: {
-				hr: null
-			},
-			isSelfClosing: true,
-			isInline: false,
-			format: "[hr]",
-			html: '<hr />'
-		},
-		// END_COMMAND
-
 
 		// this is here so that commands above can be removed
 		// without having to remove the , after the last one.
