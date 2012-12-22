@@ -321,6 +321,7 @@
 				}, 10);
 			}
 
+			updateActiveButtons();
 			pluginManager.call("ready");
 		};
 
