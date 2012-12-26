@@ -24,6 +24,8 @@ Version 1.4.1:
 		- Thanks to @bmxgrover for reporting
 	Added tabindex support. The tabindex will be picked up from the original textarea.
 		- Thanks to @Spuds for reporting
+	Fixed bug with nested lists.
+		- Thanks to @brunoais for reporting.
 
 Version 1.4.0:
 	New theme "square" added

@@ -454,7 +454,7 @@
 
 					case tokenType.close:
 						// check if this closes the current tag, e.g. [/list] would close an open [*]
-						if(currentOpenTag() && token.name !== currentOpenTag().name && closesCurrentTag(token.name))
+						if(currentOpenTag() && token.name !== currentOpenTag().name && closesCurrentTag('/' + token.name))
 							openTags.pop();
 
 						// If this is closing the currently open tag just pop the
@@ -1216,8 +1216,8 @@
 		 * @private
 		 */
 		var validChildren = {
-			ul: ['li'],
-			ol: ['li'],
+			ul: ['li', 'ol', 'ul'],
+			ol: ['li', 'ol', 'ul'],
 			table: ['tr'],
 			tr: ['td', 'th'],
 			code: ['br', 'p', 'div']
@@ -1935,13 +1935,13 @@
 				li: null
 			},
 			isInline: false,
-			closedBy: ['ul', 'ol', 'list', '*', 'li'],
+			closedBy: ['/ul', '/ol', '/list', '*', 'li'],
 			format: "[li]{0}[/li]",
 			html: '<li>{0}</li>'
 		},
 		"*": {
 			isInline: false,
-			closedBy: ['ul', 'ol', 'list', '*', 'li'],
+			closedBy: ['/ul', '/ol', '/list', '*', 'li'],
 			html: '<li>{0}</li>'
 		},
 		// END_COMMAND
