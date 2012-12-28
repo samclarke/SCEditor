@@ -26,6 +26,10 @@ Version 1.4.1:
 		- Thanks to @Spuds for reporting
 	Fixed bug with nested lists.
 		- Thanks to @brunoais for reporting.
+	Improved IE resize speed.
+	Update themes to support showing active commands.
+	Update themes to support showing a commands icon, text or both.
+	Added new Monocon icons, licensed under the MIT license.
 
 Version 1.4.0:
 	New theme "square" added

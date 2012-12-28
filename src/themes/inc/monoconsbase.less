@@ -1,0 +1,59 @@
+/**
+ * SCEditor
+ * http://www.ssceditor.com/
+ *
+ * Copyright (C) 2011-12, Sam Clarke (samclarke.com)
+ *
+ * SCEditor is licensed under the MIT license:
+ *	http://www.opensource.org/licenses/mit-license.php
+ */
+
+@import "defaultbase.less";
+
+/*
+Should have a
+.icon .btn
+.btn.icon
+
+.text . btn
+.btn.text
+
+.icontext .btn
+.btn.icontext
+
+commands should have hasText and hasIcon properties
+
+Text should default to text || current methods
+
+editor should have heleprs:
+toolbarText() and toolbarIcons()
+
+to allow easy switching
+ */
+.text .sceditor-button,
+.text .sceditor-button div,
+.sceditor-button.text,
+.sceditor-button.text div
+{
+
+}
+
+.text-icon .sceditor-button div,
+.sceditor-button.text-icon div,
+.text .sceditor-button div,
+.sceditor-button.text div
+{
+	padding: 0 2px;
+}
+
+.text .sceditor-button div:before,
+.sceditor-button.text div:before
+{
+	display: none;
+}
+
+.text-icon .sceditor-button div:before,
+.sceditor-button.text-icon div:before
+{
+	display: block;
+}

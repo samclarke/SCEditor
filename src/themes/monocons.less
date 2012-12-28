@@ -9,16 +9,28 @@
  */
 
 @import "icons/monocons.less";
-@import "defaultbase.less";
+@import "inc/defaultbase.less";
 
-.sceditor-button div{
-	color: transparent;
+.ie7, .ie6 {
+	.sceditor-button div {
+		font-family: 'Monocons';
+		overflow: visible;
+		line-height: 1;
+		text-indent: 0;
+	}
 }
 
-.sceditor-button div:before, div.sceditor-grip {
+div.sceditor-grip {
+	height: 16px;
+	width: 16px;
+}
+
+.sceditor-button div:before, div.sceditor-grip:before {
 	text-indent: 0;
+	line-height: 17px;
 	width: 16px;
 	height: 16px;
 	display: block;
 	color: #333;
+	text-shadow: 0 1px #fff;
 }

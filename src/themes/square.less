@@ -42,6 +42,7 @@
 	div.sceditor-toolbar {
 		padding: 0;
 		border-bottom: 1px solid #bbb;
+
 		-moz-background-size: 100% 32px;
 		-o-background-size: 100% 32px;
 		-webkit-background-size: 100% 32px;
@@ -50,6 +51,7 @@
 		div.sceditor-group {
 			margin: 0;
 			padding: 2px 4px;
+			border: 0;
 			border-right: 1px solid #ccc;
 			border-left: 1px solid #eaeaea;
 			.rounded(0);
@@ -57,12 +59,40 @@
 		div.sceditor-group:last-child { border-right: 0; }
 		div.sceditor-group:first-child { border-left: 0; }
 		.sceditor-button {
+			height: 16px;
 			padding: 5px;
-			.rounded(0);
 			margin: 1px;
+
+			.rounded(0);
+		}
+		.sceditor-button div {
+			margin: 0;
+		}
+		.sceditor-button.active,
+		.sceditor-button:hover,
+		.sceditor-button:active,
+		.sceditor-button.active:hover {
+			margin: 0;
+			box-shadow: none;
+		}
+
+		.sceditor-button.active {
+			background: #f4f4f4;
+			border: 1px solid #ccc;
 		}
 		.sceditor-button:hover {
 			background: #fefefe;
 			border: 1px solid #ddd;
-			margin: 0px;
+		}
+		.sceditor-button.disabled:hover {
+			margin: 1px;
+			border: 0;
+		}
+		.sceditor-button:active {
+			background: #eee;
+			border: 1px solid #ccc;
+		}
+		.sceditor-button.active:hover {
+			background: #f8f8f8;
+			border: 1px solid #ddd;
 		}
