@@ -221,6 +221,21 @@
 		var currentNode;
 
 		/**
+		 * The current node selection/caret
+		 * @type {Object}
+		 * @private
+		 */
+		var currentSelection;
+
+		/**
+		 * Used to make sure only 1 selection changed check is called every 100ms.
+		 * Helps improve performance as it is checked a lot.
+		 * @type {Boolean}
+		 * @private
+		 */
+		var isSelectionCheckPending;
+
+		/**
 		 * If content is required (equivalent to the HTML5 required attribute)
 		 * @type {Boolean}
 		 * @private
@@ -257,6 +272,7 @@
 			updateActiveButtons,
 			sourceEditorSelectedText,
 			appendNewLine,
+			checkSelectionChanged,
 			checkNodeChanged,
 			autofocus;
 
@@ -466,7 +482,7 @@
 				.keypress(handleKeyPress)
 				.keyup(appendNewLine)
 				.bind("paste", handlePasteEvt)
-				.bind("keyup focus blur contextmenu mouseup mouseclick click", checkNodeChanged)
+				.bind("keyup focus blur contextmenu mouseup click", checkSelectionChanged)
 				.bind("keydown keyup keypress focus blur contextmenu", handleEvent);
 
 			$sourceEditor.bind("keydown keyup keypress focus blur contextmenu", handleEvent);
@@ -474,7 +490,7 @@
 			$doc
 				.keypress(handleKeyPress)
 				.mousedown(handleMouseDown)
-				.bind("focus blur contextmenu mouseup mouseclick click", checkNodeChanged)
+				.bind("focus blur contextmenu mouseup click", checkSelectionChanged)
 				.bind("beforedeactivate keyup", saveRange)
 				.keyup(appendNewLine)
 				.focus(function() {
@@ -482,7 +498,9 @@
 				});
 
 			$editorContainer
-				.bind('nodechanged', updateActiveButtons)
+				.bind('selectionchanged', updateActiveButtons)
+				.bind('selectionchanged', checkNodeChanged)
+				.bind('selectionchanged', handleEvent)
 				.bind('nodechanged', handleEvent);
 		};
 
@@ -1621,11 +1639,34 @@
 		};
 
 		/**
+		 * Checks if the current selection has changed and tirggers
+		 * the selectionchanged event if it has
+		 * @private
+		 */
+		checkSelectionChanged = function() {
+			if(isSelectionCheckPending)
+				return;
+
+			isSelectionCheckPending = true;
+
+			setTimeout(function() {
+				if(!rangeHelper.compare(currentSelection))
+				{
+					currentSelection = rangeHelper.cloneSelected();
+					$editorContainer.trigger($.Event('selectionchanged'));
+				}
+
+				isSelectionCheckPending = false;
+			}, 100);
+		};
+
+		/**
 		 * Checks if the current node has changed and tirggers
 		 * the nodechanged event if it has
 		 * @private
 		 */
 		checkNodeChanged = function() {
+			// check if node has chnaged
 			var node = rangeHelper.parentNode();
 
 			if(currentNode !== node)
@@ -2076,8 +2117,36 @@
 			return base.bind('keyup', handler, excludeWysiwyg, excludeSource);
 		};
 
+		/**
+		 * <p>Adds a handler to the node changed event.</p>
+		 *
+		 * <p>Happends whenever the node containing the selection/caret changes in WYSIWYG mode.</p>
+		 *
+		 * @param  {Function} handler
+		 * @return {this}
+		 * @function
+		 * @name nodeChanged
+		 * @memberOf jQuery.sceditor.prototype
+		 * @since 1.4.1
+		 */
 		base.nodeChanged = function(handler) {
 			return base.bind('nodechanged', handler, false, true);
+		};
+
+		/**
+		 * <p>Adds a handler to the selection changed event</p>
+		 *
+		 * <p>Happends whenever the selection changes in WYSIWYG mode.</p>
+		 *
+		 * @param  {Function} handler
+		 * @return {this}
+		 * @function
+		 * @name selectionChanged
+		 * @memberOf jQuery.sceditor.prototype
+		 * @since 1.4.1
+		 */
+		base.selectionChanged = function(handler) {
+			return base.bind('selectionchanged', handler, false, true);
 		};
 
 		// run the initializer
@@ -3540,6 +3609,30 @@
 
 			return false;
 		};
+
+		/**
+		 * Compares two ranges.
+		 * @param  {Range|TextRange} rangeA
+		 * @param  {Range|TextRange} rangeB If undefined it will be set to the current selected range
+		 * @return {Boolean}
+		 */
+		base.compare = function(rangeA, rangeB) {
+			if(!rangeB)
+				rangeB = base.selectedRange();
+
+			if(!rangeA || !rangeB)
+				return !rangeA && !rangeB;
+
+			if(!isW3C)
+			{
+				return rangeA.compareEndPoints('EndToEnd', rangeB)  === 0 &&
+					rangeA.compareEndPoints('StartToStart', rangeB) === 0;
+			}
+
+			return rangeA.compareBoundaryPoints(Range.END_TO_END, rangeB)  === 0 &&
+				rangeA.compareBoundaryPoints(Range.START_TO_START, rangeB) === 0;
+		};
+
 	};
 
 	/**
