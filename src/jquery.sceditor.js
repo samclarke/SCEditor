@@ -2986,9 +2986,9 @@
 				}
 
 				if($elm.css('direction') === 'ltr')
-					$(elm).css('direction', '');
+					$elm.css('direction', '');
 				else
-					$(elm).attr('direction', 'ltr');
+					$elm.css('direction', 'ltr');
 			},
 			tooltip: "Left-to-Right"
 		},
@@ -3018,9 +3018,9 @@
 				}
 
 				if($elm.css('direction') === 'rtl')
-					$(elm).css('direction', '');
+					$elm.css('direction', '');
 				else
-					$(elm).css('direction', 'rtl');
+					$elm.css('direction', 'rtl');
 			},
 			tooltip: "Right-to-Left"
 		},
