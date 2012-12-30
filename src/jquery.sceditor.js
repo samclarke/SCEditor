@@ -298,6 +298,9 @@
 
 			$editorContainer = $('<div class="sceditor-container" />').insertAfter($original);
 
+			if(base.opts.zIndex !== null)
+				$editorContainer.css('z-index', base.opts.zIndex);
+
 			// Add IE version to the container to allow IE specific CSS
 			// fixes without using CSS hacks or conditional comments
 			if($.sceditor.ie)
@@ -4438,6 +4441,12 @@
 		 * @type {String}
 		 */
 		plugins: '',
+
+		/**
+		 * z-index to set the editor container to. Needed for jQuery UI dialog.
+		 * @type {Int}
+		 */
+		zIndex: null,
 
 		/**
 		 * BBCode parser options, only applies if using the editor in BBCode mode.

@@ -21,8 +21,8 @@ Version 1.4.1:
 	Fixed problem with HTML5 form validation not working when using the editor.
 		The editor will now just remove the required attribute from the original textarea
 		so validation will either need to be done server side or manually.
-		- Thanks to @bmxgrover for reporting
 	Added tabindex support. The tabindex will be picked up from the original textarea.
+		- Thanks to @bmxgrover for reporting
 		- Thanks to @Spuds for reporting
 	Fixed bug with nested lists.
 		- Thanks to @brunoais for reporting.
@@ -33,6 +33,9 @@ Version 1.4.1:
 	Added selectionchanged event
 	Fixed bug with LTR command not working.
 		- Thanks to @charafweb for reporting
+	Added zIndex option to allow setting the containers z-index.
+		Fixes bug with modal jQuery UI dialogs.
+		- Thanks to @prdatur for reporting and the fix.
 
 Version 1.4.0:
 	New theme "square" added
