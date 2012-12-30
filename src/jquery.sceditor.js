@@ -821,8 +821,6 @@
 
 			if(base.height() !== height)
 			{
-				$editorContainer.height(height);
-
 				height -= !base.opts.toolbarContainer ? $toolbar.outerHeight(true) : 0;
 
 				// fix the height and width of the textarea/iframe
