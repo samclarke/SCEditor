@@ -787,6 +787,7 @@
 			if(base.width() !== width)
 			{
 				$editorContainer.width(width);
+				width = $editorContainer.width();
 
 				// fix the height and width of the textarea/iframe
 				$wysiwygEditor.width(width);
