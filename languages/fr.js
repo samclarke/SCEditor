@@ -54,6 +54,16 @@
 		"Insert current time": "Insérer l'heure actuelle",
 		"Print": "Imprimer",
 		"View source": "Afficher le Code source",
+		"Description (optional):": "Description (Optionelle)",
+		"Enter the image URL:": "Entrez l'URL d'image:",
+		"Enter the e-mail address:": "Entrez l'adresse e-mail:",
+		"Enter the displayed text:": "Entrez le texte affiché:",
+		"Enter URL:": "Entrer une URL:",
+		"Enter the YouTube video URL or ID:": "Entrez l'URL vidéo YouTube ou ID:",
+		"Insert a Quote": "Insérer une citation",
+		"Invalid YouTube video": "Invalid vidéo YouTube",
+		"Right-to-Left": "De droite à gauche",
+		"Left-to-Right": "De gauche à droite",
 		dateFormat: "day.month.year"
 	}
 })(jQuery);
