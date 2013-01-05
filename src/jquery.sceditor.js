@@ -2014,9 +2014,9 @@
 				// Must use an element that isn't display:hidden or visibility:hidden for iOS
 				// so create a special blur element to use
 				if(!$blurElm)
-					$blurElm = $('<input style="width:0; height:0; opacity:0; filter: alpha(opacity=0)" type="text" />').appendTo($editorContainer);
+					$blurElm = $('<input style="width:0;height:0;opacity:0;border:0;padding:0;filter:alpha(opacity=0)" type="text" />').appendTo($editorContainer);
 
-				$blurElm.removeAttr("disabled").focus().blur().attr("disabled", "disabled");
+				$blurElm.removeAttr("disabled").show().focus().blur().hide().attr("disabled", "disabled");
 			}
 			else
 				$sourceEditor.blur();
@@ -2239,7 +2239,7 @@
 		if(/iPhone|iPod|iPad/i.test(userAgent))
 			isUnsupported = !/OS [5-9](_\d)+ like Mac OS X/i.test(userAgent);
 
-		// FireFox dose support WYSIWYG on mobiles so override
+		// FireFox does support WYSIWYG on mobiles so override
 		// any previous value if using FF
 		if(/fennec/i.test(userAgent))
 			isUnsupported = false;
@@ -3197,7 +3197,7 @@
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.selectedRange = function() {
-			var	r,
+			var	range, parent,
 				sel = isW3C ? win.getSelection() : doc.selection;
 
 			if(!sel)
@@ -3207,12 +3207,19 @@
 			// element to avoid errors in FF.
 			if(sel.getRangeAt && sel.rangeCount <= 0)
 			{
-				r = doc.createRange();
-				r.setStart(doc.body, 0);
-				sel.addRange(r);
+				range = doc.createRange();
+				range.setStart(doc.body, 0);
+				sel.addRange(range);
 			}
 
-			return isW3C ? sel.getRangeAt(0) : sel.createRange();
+			range = isW3C ? sel.getRangeAt(0) : sel.createRange();
+
+			// IE fix to make sure only return selections that are part of the WYSIWYG iframe
+			if(range.parentElement && (parent = range.parentElement()))
+				if(parent.ownerDocument !== doc)
+					return;
+
+			return range;
 		};
 
 		/**
