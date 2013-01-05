@@ -158,7 +158,7 @@
 		/**
 		 * Takes a BBCode string and splits it into open, content and close tags.
 		 *
-		 * It dose no checking to verify a tag has a matching open or closing tag
+		 * It does no checking to verify a tag has a matching open or closing tag
 		 * or if the tag is valid child of any tag before it. For that the tokens
 		 * should be passed to the parse function.
 		 *
@@ -457,7 +457,7 @@
 						if(currentOpenTag() && token.name !== currentOpenTag().name && closesCurrentTag('/' + token.name))
 							openTags.pop();
 
-						// If this is closing the currently open tag just pop the
+						// If this is closing the currently open tag just pop thfcloe
 						// tage off the open tags array
 						if(currentOpenTag() && token.name === currentOpenTag().name)
 						{
@@ -517,7 +517,7 @@
 						//     [*]list\nitem[/*]\n[*]list1[/*]
 						// instead of
 						//     [*]list\nitem\n[/*][*]list1[/*]
-						if(currentOpenTag() && next && closesCurrentTag(next.name))
+						if(currentOpenTag() && next && closesCurrentTag((next.type === tokenType.close ? '/' : '') + next.name))
 						{
 							// skip if the next tag is the closing tag for the option tag, i.e. [/*]
 							if(!(next.type === tokenType.close && next.name === currentOpenTag().name))
@@ -879,9 +879,7 @@
 
 					ret.push('<div>');
 
-					// Putting BR in a div in IE9 causes it to do a double line break,
-					// as much as I hate browser UA sniffing, to do feature detection would
-					// be more code than it's worth for this specific bug.
+					// Putting BR in a div in IE9 causes it to do a double line break.
 					if(!$.sceditor.ie)
 						ret.push('<br />');
 
