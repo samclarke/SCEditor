@@ -446,10 +446,7 @@
 			}
 
 			if(base.opts.rtl)
-			{
-				$body.attr('dir', 'rtl');
-				$sourceEditor.attr('dir', 'rtl');
-			}
+				base.rtl(true);
 
 			if(base.opts.autoExpand)
 				$doc.bind("keyup", base.expandToContent);
@@ -600,7 +597,8 @@
 				startHeight = 0,
 				origWidth   = $editorContainer.width(),
 				origHeight  = $editorContainer.height(),
-				dragging    = false;
+				dragging    = false,
+				rtl         = base.rtl();
 
 			minHeight = base.opts.resizeMinHeight || origHeight / 1.5;
 			maxHeight = base.opts.resizeMaxHeight || origHeight * 2.5;
@@ -609,7 +607,7 @@
 
 			mouseMoveFunc = function (e) {
 				var	newHeight = startHeight + (e.pageY - startY),
-					newWidth  = startWidth  + (e.pageX - startX);
+					newWidth  = rtl ? startWidth - (e.pageX - startX) : startWidth + (e.pageX - startX);
 
 				if(maxWidth > 0 && newWidth > maxWidth)
 					newWidth = maxWidth;
@@ -617,10 +615,10 @@
 				if(maxHeight > 0 && newHeight > maxHeight)
 					newHeight = maxHeight;
 
-				if (base.opts.resizeWidth && newWidth >= minWidth && (maxWidth < 0 || newWidth <= maxWidth))
+				if(base.opts.resizeWidth && newWidth >= minWidth && (maxWidth < 0 || newWidth <= maxWidth))
 					base.width(newWidth);
 
-				if (base.opts.resizeHeight && newHeight >= minHeight && (maxHeight < 0 || newHeight <= maxHeight))
+				if(base.opts.resizeHeight && newHeight >= minHeight && (maxHeight < 0 || newHeight <= maxHeight))
 					base.height(newHeight);
 
 				e.preventDefault();
@@ -740,6 +738,42 @@
 				$sourceEditor.attr('readonly', 'readonly');
 
 			updateToolBar(readOnly);
+
+			return this;
+		};
+
+		/**
+		 * Gets if the editor is in RTL mode
+		 *
+		 * @since 1.4.1
+		 * @function
+		 * @memberOf jQuery.sceditor.prototype
+		 * @name rtl
+		 * @return {Boolean}
+		 */
+		/**
+		 * Sets if the editor is in RTL mode
+		 *
+		 * @param {boolean} rtl
+		 * @since 1.4.1
+		 * @function
+		 * @memberOf jQuery.sceditor.prototype
+		 * @name rtl^2
+		 * @return {this}
+		 */
+		base.rtl = function(rtl) {
+			var dir = rtl ? 'rtl' : 'ltr';
+
+			if(typeof rtl !== 'boolean')
+				return $sourceEditor.attr('dir') === 'rtl';
+
+			$(getWysiwygDoc().body).attr('dir', dir);
+			$sourceEditor.attr('dir', dir);
+
+			$editorContainer
+				.removeClass('rtl')
+				.removeClass('ltr')
+				.addClass(dir);
 
 			return this;
 		};
