@@ -445,6 +445,9 @@
 				$sourceEditor.bind("blur", base.updateOriginal);
 			}
 
+			if(base.opts.rtl === null)
+				base.opts.rtl = $sourceEditor.css('direction') === 'rtl';
+
 			if(base.opts.rtl)
 				base.rtl(true);
 
@@ -4444,6 +4447,8 @@
 
 		/**
 		 * If to set the editor to right-to-left mode.
+		 *
+		 * If set to null the direction will be automatically detected.
 		 * @type {Boolean}
 		 */
 		rtl: false,
