@@ -877,7 +877,7 @@
 		 */
 		base.closeDropDown = function (focus) {
 			if($dropdown) {
-				$dropdown.off().remove();
+				$dropdown.unbind().remove();
 				$dropdown = null;
 			}
 
