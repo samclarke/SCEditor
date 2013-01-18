@@ -476,16 +476,13 @@
 				.bind("reset", handleFormReset)
 				.submit(base.updateOriginal);
 
-			// if either width or height are % based, add the resize handler to
-			// update the editor when the window is resized
-			if((height && (height + "").indexOf("%") > -1) || (width && (width + "").indexOf("%") > -1))
-				$(window).resize(handleWindowResize);
+			$(window).bind('resize orientationChanged', handleWindowResize);
 
-			 $doc.find("body")
+			$doc.find("body")
 				.keypress(handleKeyPress)
 				.keyup(appendNewLine)
 				.bind("paste", handlePasteEvt)
-				.bind("keyup focus blur contextmenu mouseup click", checkSelectionChanged)
+				.bind($.sceditor.ie ? "selectionchange" : "keyup focus blur contextmenu mouseup click", checkSelectionChanged)
 				.bind("keydown keyup keypress focus blur contextmenu", handleEvent);
 
 			$sourceEditor.bind("keydown keyup keypress focus blur contextmenu", handleEvent);
@@ -493,7 +490,7 @@
 			$doc
 				.keypress(handleKeyPress)
 				.mousedown(handleMouseDown)
-				.bind("focus blur contextmenu mouseup click", checkSelectionChanged)
+				.bind($.sceditor.ie ? "selectionchange" : "focus blur contextmenu mouseup click", checkSelectionChanged)
 				.bind("beforedeactivate keyup", saveRange)
 				.keyup(appendNewLine)
 				.focus(function() {
@@ -823,10 +820,11 @@
 
 			if(base.width() !== width)
 			{
+				base.opts.width = width;
+
 				$editorContainer.width(width);
 				width = $editorContainer.width();
 
-				// fix the height and width of the textarea/iframe
 				$wysiwygEditor.width(width);
 				$wysiwygEditor.width(width + (width - $wysiwygEditor.outerWidth(true)));
 
@@ -862,6 +860,11 @@
 
 			if(base.height() !== height)
 			{
+				base.opts.height = height;
+
+				$editorContainer.height(height);
+
+				height  = $editorContainer.height();
 				height -= !base.opts.toolbarContainer ? $toolbar.outerHeight(true) : 0;
 
 				// fix the height and width of the textarea/iframe
