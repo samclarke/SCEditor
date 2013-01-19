@@ -814,13 +814,28 @@
 		 * @name width^2
 		 * @return {this}
 		 */
-		base.width = function (width) {
+		/**
+		 * Sets the width of the editor
+		 *
+		 * The saveWidth specifies if to save the width. The stored width can be
+		 * used for things like restoring from maximized state.
+		 *
+		 * @param {int} height Width in pixels
+		 * @param {boolean} saveWidth If to store the width
+		 * @since 1.3.5
+		 * @function
+		 * @memberOf jQuery.sceditor.prototype
+		 * @name width^2
+		 * @return {this}
+		 */
+		base.width = function (width, saveWidth) {
 			if(!width)
 				return $editorContainer.width();
 
 			if(base.width() !== width)
 			{
-				base.opts.width = width;
+				if(saveWidth !== false)
+					base.opts.width = width;
 
 				$editorContainer.width(width);
 				width = $editorContainer.width();
@@ -854,13 +869,28 @@
 		 * @name height^2
 		 * @return {this}
 		 */
-		base.height = function (height) {
+		/**
+		 * Sets the height of the editor
+		 *
+		 * The saveHeight specifies if to save the height. The stored height can be
+		 * used for things like restoring from maximized state.
+		 *
+		 * @param {int} height Height in px
+		 * @param {boolean} saveHeight If to store the height
+		 * @since 1.4.1
+		 * @function
+		 * @memberOf jQuery.sceditor.prototype
+		 * @name height^2
+		 * @return {this}
+		 */
+		base.height = function (height, saveHeight) {
 			if(!height)
 				return $editorContainer.height();
 
 			if(base.height() !== height)
 			{
-				base.opts.height = height;
+				if(saveHeight !== false)
+					base.opts.height = height;
 
 				$editorContainer.height(height);
 
@@ -898,8 +928,6 @@
 		 * @return {this}
 		 */
 		base.maximize = function(maximize) {
-			var oldWidth, oldHeight;
-
 			if(typeof maximize === 'undefined')
 				return $editorContainer.is('.sceditor-maximize');
 
@@ -909,18 +937,9 @@
 			if($.sceditor.ie < 7)
 				$('html, body').toggleClass('sceditor-maximize', maximize);
 
-			oldWidth  = base.opts.width;
-			oldHeight = base.opts.height;
-
 			$editorContainer.toggleClass('sceditor-maximize', maximize);
-			base.width(maximize ? '100%' : base.opts.width);
-			base.height(maximize ? '100%' : base.opts.height);
-
-			if(maximize)
-			{
-				base.opts.width  = oldWidth;
-				base.opts.height = oldHeight;
-			}
+			base.width(maximize ? '100%' : base.opts.width, false);
+			base.height(maximize ? '100%' : base.opts.height, false);
 
 			return this;
 		};
@@ -1927,7 +1946,7 @@
 		handleWindowResize = function() {
 			if(base.maximize())
 			{
-				base.height('100%').width('100%');
+				base.height('100%', false).width('100%', false);
 				return;
 			}
 
