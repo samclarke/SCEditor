@@ -9,11 +9,10 @@
 #   * UglifyJS
 #   * Lessc
 #   * JSDoc
-#   * Glue CSS sprite creator
 #   * YUI compresser (for compressing the CSS)
 #
 # To install in Ubuntu type:
-# $ sudo apt-get install node-uglify node-less jsdoc-toolkit glue-sprite yui-compressor
+# $ sudo apt-get install node-uglify node-less jsdoc-toolkit yui-compressor
 
 USAGE="Usage: `basename $0` [--css|--js|--docs]"
 
@@ -36,16 +35,6 @@ fi
 
 if $DO_CSS; then
 	echo "Creating CSS sprites"
-
-	glue-sprite src/themes/icons/src/famfamfam src/themes/icons --less --algorithm=vertical --optipng --namespace=sceditor-button
-	sed -i 's/famfamfam\-//' src/themes/icons/famfamfam.less
-	sed -i 's/url,/link,/' src/themes/icons/famfamfam.less
-	sed -i 's/url{/link{/' src/themes/icons/famfamfam.less
-	sed -i 's/{/ div {/' src/themes/icons/famfamfam.less
-	sed -i 's/,/ div,/' src/themes/icons/famfamfam.less
-	sed -i 's/grip div/grip/' src/themes/icons/famfamfam.less
-	sed -i 's/.sceditor-button-grip/div.sceditor-grip/' src/themes/icons/famfamfam.less
-	#sed -i 'N; s/^.sceditor[^{]*bold div/.sceditor-button div/,m' src/themes/icons/famfamfam.less
 
 	for f in src/themes/icons/*.png
 	do

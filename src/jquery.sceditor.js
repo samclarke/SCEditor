@@ -3131,6 +3131,9 @@
 
 		// START_COMMAND: Maximize
 		maximize: {
+			state: function(parents, firstBlock) {
+				return this.maximize();
+			},
 			exec: function () {
 				this.maximize(!this.maximize());
 			},
