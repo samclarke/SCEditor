@@ -879,6 +879,53 @@
 		};
 
 		/**
+		 * Gets if the editor is maximised or not
+		 *
+		 * @since 1.4.1
+		 * @function
+		 * @memberOf jQuery.sceditor.prototype
+		 * @name maximize
+		 * @return {boolean}
+		 */
+		/**
+		 * Sets if the editor is maximised or not
+		 *
+		 * @param {boolean} maximize If to maximise the editor
+		 * @since 1.4.1
+		 * @function
+		 * @memberOf jQuery.sceditor.prototype
+		 * @name maximize^2
+		 * @return {this}
+		 */
+		base.maximize = function(maximize) {
+			var oldWidth, oldHeight;
+
+			if(typeof maximize === 'undefined')
+				return $editorContainer.is('.sceditor-maximize');
+
+			maximize = !!maximize;
+
+			// IE 6 fix
+			if($.sceditor.ie < 7)
+				$('html, body').toggleClass('sceditor-maximize', maximize);
+
+			oldWidth  = base.opts.width;
+			oldHeight = base.opts.height;
+
+			$editorContainer.toggleClass('sceditor-maximize', maximize);
+			base.width(maximize ? '100%' : base.opts.width);
+			base.height(maximize ? '100%' : base.opts.height);
+
+			if(maximize)
+			{
+				base.opts.width  = oldWidth;
+				base.opts.height = oldHeight;
+			}
+
+			return this;
+		};
+
+		/**
 		 * Expands the editors height to the height of it's content
 		 *
 		 * Unless ignoreMaxHeight is set to true it will not expand
@@ -1878,6 +1925,12 @@
 		 * @ignore
 		 */
 		handleWindowResize = function() {
+			if(base.maximize())
+			{
+				base.height('100%').width('100%');
+				return;
+			}
+
 			if(base.opts.height && base.opts.height.toString().indexOf("%") > -1)
 				base.height($editorContainer.parent().height() *
 					(parseFloat(base.opts.height) / 100));
@@ -3076,6 +3129,18 @@
 		},
 		// END_COMMAND
 
+		// START_COMMAND: Maximize
+		maximize: {
+			exec: function () {
+				this.maximize(!this.maximize());
+			},
+			txtExec: function () {
+				this.maximize(!this.maximize());
+			},
+			tooltip: "Maximize"
+		},
+		// END_COMMAND
+
 		// START_COMMAND: Source
 		source: {
 			exec: function () {
@@ -4270,7 +4335,7 @@
 		toolbar:	"bold,italic,underline,strike,subscript,superscript|left,center,right,justify|" +
 				"font,size,color,removeformat|cut,copy,paste,pastetext|bulletlist,orderedlist|" +
 				"table|code,quote|horizontalrule,image,email,link,unlink|emoticon,youtube,date,time|" +
-				"ltr,rtl|print,source",
+				"ltr,rtl|print,maximize,source",
 
 		/**
 		 * Stylesheet to include in the WYSIWYG editor. Will style the WYSIWYG elements

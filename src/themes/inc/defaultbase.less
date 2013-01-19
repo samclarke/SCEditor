@@ -20,6 +20,7 @@
 	color: #222;
 	line-height: 1;
 	font-weight: bold;
+	z-index: 1001;
 
 	.rounded(4px);
 }
@@ -68,10 +69,10 @@ div.sceditor-dropdown div
 		}
 	}
 
-	.sceditor-container.resizing
+	.sceditor-container.ie6
 	{
-		/* stop the resize cover from overflowing */
-		//overflow: hidden;
+		// fixes resizing issues with IE 6
+		overflow: hidden;
 	}
 
 	div.sceditor-grip
@@ -85,6 +86,47 @@ div.sceditor-dropdown div
 		right: 0;
 		z-index: 3;
 	}
+
+	.sceditor-maximize
+	{
+		position: fixed;
+		top: 0;
+		left: 0;
+		height: 100% !important;
+		width: 100% !important;
+		.rounded(0);
+	}
+
+	// Used for IE 6 as it's old and bugy
+	html.sceditor-maximize,
+	body.sceditor-maximize
+	{
+		height: 100%;
+		width: 100%;
+		padding: 0;
+		margin: 0;
+
+		// Fixes issues with IE height being too big
+		overflow: hidden;
+	}
+
+	.ie6.sceditor-maximize
+	{
+		// IE6 has no position fixed support
+		position: absolute;
+	}
+
+		.sceditor-maximize div.sceditor-grip
+		{
+			display: none;
+		}
+
+
+		.sceditor-maximize div.sceditor-toolbar
+		{
+			.rounded(0);
+		}
+
 
 	/**
 	 * Dropdown styleing
@@ -264,7 +306,6 @@ div.sceditor-dropdown div
 
 		div.sceditor-group
 		{
-			overflow: hidden;
 			display: inline-block;
 			background: #ddd;
 			margin: 1px 5px 1px 0;
@@ -279,7 +320,7 @@ div.sceditor-dropdown div
 		.ie7 div.sceditor-group
 		{
 			display: inline;
-			margin: 2px 5px 2px 0;
+			zoom: 1;
 		}
 
 		.sceditor-button
@@ -290,6 +331,14 @@ div.sceditor-dropdown div
 			width: 16px;
 			height: 20px;
 			.rounded(3px);
+		}
+
+		.ie6 .sceditor-button,
+		.ie7 .sceditor-button
+		{
+			float: none !important;
+			display: inline;
+			zoom: 1;
 		}
 
 			.sceditor-button:hover,
@@ -323,8 +372,9 @@ div.sceditor-dropdown div
 				margin: 2px 0;
 				padding: 0;
 				overflow: hidden;
-				line-height: 2;
-				text-indent: 9999px;
+				line-height: 0;
+				font-size: 0;
+				color: transparent;
 			}
 
 			.sceditor-button.disabled div
@@ -345,7 +395,8 @@ div.sceditor-dropdown div
 				width: auto;
 				overflow: visible;
 				line-height: 16px;
-				text-indent: 0;
+				font-size: 1em;
+				color: inherit;
 			}
 
 			.text .sceditor-button div,
@@ -363,4 +414,17 @@ div.sceditor-dropdown div
 
 
 			// add has-text and has-icon classes? or better yet add no-icon, no-text classes
-			// Once done make a new wire frame base to be called base.less which all including default will be based on?
+
+.rtl
+{
+	.sceditor-button
+	{
+		float: right;
+	}
+
+	div.sceditor-grip
+	{
+		right: auto;
+		left: 0;
+	}
+}

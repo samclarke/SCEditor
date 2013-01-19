@@ -38,6 +38,8 @@ Version 1.4.1:
 		- Thanks to @prdatur for reporting and the fix.
 	Fixed bug with percentage based widths.
 		- Thanks to @charafweb for reporting.
+	Improved RTL support. Added rtl() helper and improved all themes RTL support.
+	Added maximize command and maximize() helper.
 
 Version 1.4.0:
 	New theme "square" added
