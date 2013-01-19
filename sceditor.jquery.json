@@ -1,9 +1,9 @@
 {
-	"name": "jquery.sceditor",
+	"name": "sceditor",
 	"title": "SCEditor",
 	"description": "SCEditor is designed to be a lightweight HTML and BBCode WYSIWYG editor.",
 	"version": "1.4.1",
-	"homepage": "http://sceditor.samclarke.com/",
+	"homepage": "http://www.sceditor.com/",
 	"author": {
 		"name": "Sam Clarke",
 		"url": "http://www.samclarke.com/"
@@ -12,15 +12,14 @@
 		"type": "git",
 		"url": "https://github.com/samclarke/SCEditor.git"
 	},
-	"bugs": {
-		"url": "https://github.com/samclarke/SCEditor/issues"
- 	},
+	"bugs": "https://github.com/samclarke/SCEditor/issues",
+	"docs": "http://www.sceditor.com/documentation/",
 	"licenses": [{
 		"type": "MIT",
-		"url": "MIT.txt"
+		"url": "https://github.com/samclarke/SCEditor/blob/master/MIT.txt"
 	}],
 	"dependencies": {
-		"jquery": "*"
+		"jquery": ">=1.5"
 	},
 	"keywords": [
 		"wysiwyg",
@@ -31,18 +30,5 @@
 	"maintainers": [{
 		"name": "Sam Clarke",
 		"url": "http://www.samclarke.com/"
-	}],
-	"files": [
-		"emoticons/",
-		"icons/",
-		"languages/",
-		"minified/",
-		"themes/",
-		"src/",
-		"example/",
-		"docs/",
-		"CHANGELOG.txt",
-		"README.md",
-		"MIT.txt"
-	]
+	}]
 }
