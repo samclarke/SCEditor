@@ -2,30 +2,34 @@
 
 Copyright (C) 2011-2012, [Sam Clarke](http://www.samclarke.com).
 
-For more information visit: http://www.samclarke.com/2011/07/sceditor/
+For more information visit: http://www.sceditor.com/
 
-If you find any bugs please let me know by either reporting them on GitHub,
-leaving a comment at: http://www.samclarke.com/2011/07/sceditor/
-or contacting me via: http://www.samclarke.com/contact or GitHub
+If you find any bugs please report them using the [issues page on GitHub](https://github.com/samclarke/SCEditor/issues/new)
+or by [contacting me](http://www.samclarke.com/contact).
+
 
 
 ## Usage
 
 Include the JQuery and SCEditor JavaScript
+
 	<link rel="stylesheet" href="minified/jquery.sceditor.min.css" type="text/css" media="all" />
-	<script type="text/javascript" src="minified/jquery.sceditor.min.js"></script>
+	<script type="text/javascript" src="minified/jquery.sceditor.bbcode.min.js"></script>
 
 Then to change all textareas to WYSIWYG editors, simply do:
 
 	$(document).ready(function() {
-		$("textarea").sceditor();
+		$("textarea").sceditor({
+			style: 'minified/jquery.sceditor.default.min.css'
+		});
 	});
 
 or for a BBCode WYSIWYG editor do:
 
 	$(document).ready(function() {
 		$("textarea").sceditor({
-			plugins: 'bbcode'
+			plugins: 'bbcode',
+			style: 'minified/jquery.sceditor.default.min.css'
 		});
 	});
 
@@ -145,6 +149,55 @@ If to auto update original textbox on blur
 A comma separated list of plugins. Currently bbcode is the only available plugin.
 
 
+
+## Files
+
+You should normally only include files in the minified files from the `minified/` directory as they use a *lot* less bandwidth causing the page to load much faster.
+
+
+### Main files
+
+   * `minified/jquery.sceditor.min.js`  
+     The core editor minified.
+
+   * `minified/jquery.sceditor.default.min.css`  
+     The default CSS used to style the content of the editor. The URL to this file should be passed via the `style` option.
+
+   * `minified/jquery.sceditor.bbcode.min.js`  
+     The core editor bundled with the BBCode plugin.
+
+   * `minified/jquery.sceditor.xhtml.min.js`  
+     The core editor bundled with the XHTML plugin.
+
+
+### Plugins
+
+   * `minified/plugins/bbcode.js`  
+     The minified BBCode plugin. Not needed if using the `minified/jquery.sceditor.bbcode.min.js` file.
+
+   * `minified/plugins/xhtml.js`  
+     The minified XHTML plugin. Not needed if using the `minified/jquery.sceditor.bbcode.xhtml.js` file.
+
+
+### Themes
+
+   * `minified/themes/default.css`  
+     Default theme.
+
+   * `minified/themes/modern.css`  
+     Modern theme.
+
+   * `minified/themes/office-toolbar.css`  
+     Office Toolbar theme.
+
+   * `minified/themes/default.css`  
+     Office theme.
+
+   * `minified/themes/default.css`  
+     Square theme.
+
+
+
 ## License
 
 SCEditor is licensed under the [MIT](http://www.opensource.org/licenses/mit-license.php) license.
@@ -152,11 +205,13 @@ SCEditor is licensed under the [MIT](http://www.opensource.org/licenses/mit-lice
 If you use SCEditor a link back or a donation would be appreciated, but not required.
 
 
+
 ## Contribute
 
 Any contributions and/or pull requests would be welcome.
 
-Themes, translations, bug reports, bug fixes and donations would be greatly appreciated.
+Themes, translations, bug reports, bug fixes and donations are greatly appreciated.
+
 
 
 ## Donate
@@ -164,6 +219,7 @@ Themes, translations, bug reports, bug fixes and donations would be greatly appr
 If you would like to make a donation you can via
 [PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AVJSF5NEETYYG)
 or via [Flattr](http://flattr.com/thing/400345/SCEditor)
+
 
 
 ## Credits
