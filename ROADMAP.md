@@ -1,39 +1,31 @@
 # Roadmap
 
-## 1.4.1
+## 1.4.2
 
-   * Ctreate a plugin system, letting plugins register themselves and
-      be activated by a plugins: option in the sceditor() function
    * Add keyboard shortcut support for commands
-   * Improve table editing support
-      Make this a plugin?
-   * Add ability to resize images in browsers that don't have native WYSIWYG resize.
-      Make this a plugin?
-   * Add button state support
+   * Table editing plugin
+   * Image resize plugin
    * Add helpers for adding commands/bbcodes.
    * Add BBCode parser helpers for BBCode-to-HTML and HTML-to-BBCode
    * Add disable emoticons option and helper to disable/enable while editing
-
-
-## 1.4.2
-
    * Consider adding support for BBCodes with just their BBCode and HTML replacement.
    * Add flash embedding command + BBCode
-   * Add option to disable pasting, maybe allow a callback or show a message
-   * Add option to only paste plain text
-   * Add build page to website so only the commands and BBCodes needed are included
-   * Add wget (or similar) support for build page so updating can be automated
-   * Add localstorage/cookie support to build page to remember last options
+   * Add option to disable pasting, plain text pasting and allow a callback or show a message
+   * Add context menu support
 
 
 ## 1.4.3
 
+   * Update dropdown to be able to work from an object to generate HTML instead of requiring HTML
+   * Add option to only paste plain text
+   * Add build page to website so only the commands and BBCodes needed are included
+   * Add wget (or similar) support for build page so updating can be automated
+   * Add localstorage/cookie support to build page to remember last options
    * Spell checker plugin?
    * HTML5 drag-drop file upload options with callbacks to handle the upload
 
 
 ## Future
-   * Possibly add XHTML output support
    * Possibly create a page which helps create custom commands and BBCodes
 
 
