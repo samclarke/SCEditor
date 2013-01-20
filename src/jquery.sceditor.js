@@ -482,7 +482,7 @@
 				.keypress(handleKeyPress)
 				.keyup(appendNewLine)
 				.bind("paste", handlePasteEvt)
-				.bind($.sceditor.ie ? "selectionchange" : "keyup focus blur contextmenu mouseup click", checkSelectionChanged)
+				.bind($.sceditor.ie ? "selectionchange" : "keyup focus blur contextmenu mouseup touchend click", checkSelectionChanged)
 				.bind("keydown keyup keypress focus blur contextmenu", handleEvent);
 
 			$sourceEditor.bind("keydown keyup keypress focus blur contextmenu", handleEvent);
@@ -606,6 +606,10 @@
 			maxWidth  = base.opts.resizeMaxWidth  || origWidth  * 1.25;
 
 			mouseMoveFunc = function (e) {
+				// iOS must use window.event
+				if(e.type === 'touchmove')
+					e = window.event;
+
 				var	newHeight = startHeight + (e.pageY - startY),
 					newWidth  = rtl ? startWidth - (e.pageX - startX) : startWidth + (e.pageX - startX);
 
@@ -629,18 +633,23 @@
 					return;
 
 				dragging = false;
-				$cover.hide();
 
+				$cover.hide();
 				$editorContainer.removeClass('resizing');
-				$(document).unbind('mousemove', mouseMoveFunc);
-				$(document).unbind('mouseup', mouseUpFunc);
+				$(document).unbind('touchmove mousemove', mouseMoveFunc);
+				$(document).unbind('touchend mouseup', mouseUpFunc);
+
 				e.preventDefault();
 			};
 
 			$editorContainer.append($grip);
 			$editorContainer.append($cover.hide());
 
-			$grip.mousedown(function (e) {
+			$grip.bind('touchstart mousedown', function (e) {
+				// iOS must use window.event
+				if(e.type === 'touchstart')
+					e = window.event;
+
 				startX      = e.pageX;
 				startY      = e.pageY;
 				startWidth  = $editorContainer.width();
@@ -649,8 +658,9 @@
 
 				$editorContainer.addClass('resizing');
 				$cover.show();
-				$(document).mousemove(mouseMoveFunc);
-				$(document).mouseup(mouseUpFunc);
+				$(document).bind('touchmove mousemove', mouseMoveFunc);
+				$(document).bind('touchend mouseup', mouseUpFunc);
+
 				e.preventDefault();
 			});
 		};
