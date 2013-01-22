@@ -830,34 +830,124 @@
 		 * The saveWidth specifies if to save the width. The stored width can be
 		 * used for things like restoring from maximized state.
 		 *
-		 * @param {int} height Width in pixels
-		 * @param {boolean} saveWidth If to store the width
-		 * @since 1.3.5
+		 * @param {int}		height			Width in pixels
+		 * @param {boolean}	[saveWidth=true]	If to store the width
+		 * @since 1.4.1
 		 * @function
 		 * @memberOf jQuery.sceditor.prototype
 		 * @name width^2
 		 * @return {this}
 		 */
 		base.width = function (width, saveWidth) {
-			if(!width)
+			if(!$.isNumeric(width))
 				return $editorContainer.width();
 
-			if(base.width() !== width)
+			base.dimensions(width, null, saveWidth);
+
+			return this;
+		};
+
+		/**
+		 * Returns an object with the properties width and height
+		 * which are the width and height of the editor in px.
+		 *
+		 * @since 1.4.1
+		 * @function
+		 * @memberOf jQuery.sceditor.prototype
+		 * @name dimensions
+		 * @return {object}
+		 */
+		/**
+		 * <p>Sets the width and/or height of the editor.</p>
+		 *
+		 * <p>If width or height is not numeric it is ignored.</p>
+		 *
+		 * @param {int}	width	Width in px
+		 * @param {int}	height	Height in px
+		 * @since 1.4.1
+		 * @function
+		 * @memberOf jQuery.sceditor.prototype
+		 * @name dimensions^2
+		 * @return {this}
+		 */
+		/**
+		 * <p>Sets the width and/or height of the editor.</p>
+		 *
+		 * <p>If width or height is not numeric it is ignored.</p>
+		 *
+		 * <p>The save argument specifies if to save the new sizes.
+		 * The saved sizes can be used for things like restoring from
+		 * maximized state. This should normally be left as true.</p>
+		 *
+		 * @param {int}		width		Width in px
+		 * @param {int}		height		Height in px
+		 * @param {boolean}	[save=true]	If to store the new sizes
+		 * @since 1.4.1
+		 * @function
+		 * @memberOf jQuery.sceditor.prototype
+		 * @name dimensions^2
+		 * @return {this}
+		 */
+		base.dimensions = function(width, height, save) {
+			var	toolbarHeight,
+				updateheight = false;
+
+			if(!$.isNumeric(width) && !$.isNumeric(height))
+				return { width: base.width(), height: base.height() };
+
+			if(typeof $wysiwygEditor.data('outerWidthOffset') === "undefined")
+				base.updateStyleCache();
+
+			if($.isNumeric(width) && width !== base.opts.width)
 			{
-				if(saveWidth !== false)
+				if(save !== false)
 					base.opts.width = width;
 
-				$editorContainer.width(width);
-				width = $editorContainer.width();
+				width = $editorContainer.width(width).width();
 
-				$wysiwygEditor.width(width);
-				$wysiwygEditor.width(width + (width - $wysiwygEditor.outerWidth(true)));
+				$wysiwygEditor.width(width - $wysiwygEditor.data('outerWidthOffset'));
+				$sourceEditor.width(width - $sourceEditor.data('outerWidthOffset'));
 
-				$sourceEditor.width(width);
-				$sourceEditor.width(width + (width - $sourceEditor.outerWidth(true)));
+				// If the toolbar height has changed then wysiwyg and source editor heights will need to be updated
+				toolbarHeight = !base.opts.toolbarContainer ? $toolbar.outerHeight(true) : 0;
+				updateheight  = toolbarHeight !== (!base.opts.toolbarContainer ? $toolbar.outerHeight(true) : 0);
+			}
+
+			if($.isNumeric(height) && height !== base.opts.height)
+			{
+				if(save !== false)
+					base.opts.height = height;
+
+				height  = $editorContainer.height(height).height();
+				height -= !base.opts.toolbarContainer ? $toolbar.outerHeight(true) : 0;
+				updateheight = true;
+			}
+
+			if(updateheight)
+			{
+				$wysiwygEditor.height(height - $wysiwygEditor.data('outerHeightOffset'));
+				$sourceEditor.height(height - $sourceEditor.data('outerHeightOffset'));
 			}
 
 			return this;
+		};
+
+		/**
+		 * Updates the CSS styles cache. Shouldn't be needed unless changing the editors theme.
+		 *
+		 * @since 1.4.1
+		 * @function
+		 * @memberOf jQuery.sceditor.prototype
+		 * @name updateStyleCache
+		 * @return {int}
+		 */
+		base.updateStyleCache = function() {
+			// caching these improves FF resize performance
+			$wysiwygEditor.data('outerWidthOffset', $wysiwygEditor.outerWidth(true) - $wysiwygEditor.width());
+			$sourceEditor.data('outerWidthOffset', $sourceEditor.outerWidth(true) - $sourceEditor.width());
+
+			$wysiwygEditor.data('outerHeightOffset', $wysiwygEditor.outerHeight(true) - $wysiwygEditor.height());
+			$sourceEditor.data('outerHeightOffset', $sourceEditor.outerHeight(true) - $sourceEditor.height());
 		};
 
 		/**
@@ -886,7 +976,7 @@
 		 * used for things like restoring from maximized state.
 		 *
 		 * @param {int} height Height in px
-		 * @param {boolean} saveHeight If to store the height
+		 * @param {boolean} [saveHeight=true] If to store the height
 		 * @since 1.4.1
 		 * @function
 		 * @memberOf jQuery.sceditor.prototype
@@ -894,26 +984,10 @@
 		 * @return {this}
 		 */
 		base.height = function (height, saveHeight) {
-			if(!height)
+			if(!$.isNumeric(height))
 				return $editorContainer.height();
 
-			if(base.height() !== height)
-			{
-				if(saveHeight !== false)
-					base.opts.height = height;
-
-				$editorContainer.height(height);
-
-				height  = $editorContainer.height();
-				height -= !base.opts.toolbarContainer ? $toolbar.outerHeight(true) : 0;
-
-				// fix the height and width of the textarea/iframe
-				$wysiwygEditor.height(height);
-				$wysiwygEditor.height(height + (height - $wysiwygEditor.outerHeight(true)));
-
-				$sourceEditor.height(height);
-				$sourceEditor.height(height + (height - $sourceEditor.outerHeight(true)));
-			}
+			base.dimensions(null, height, saveHeight);
 
 			return this;
 		};
@@ -1026,10 +1100,10 @@
 		/**
 		 * Creates a menu item drop down
 		 *
-		 * @param HTMLElement	menuItem	The button to align the drop down with
-		 * @param string	dropDownName	Used for styling the dropown, will be a class sceditor-dropDownName
-		 * @param string	content		The HTML content of the dropdown
-		 * @param bool		ieUnselectable	If to add the unselectable attribute to all the contents elements. Stops IE from deselecting the text in the editor
+		 * @param {HTMLElement}	menuItem		The button to align the drop down with
+		 * @param {string}	dropDownName		Used for styling the dropown, will be a class sceditor-dropDownName
+		 * @param {string}	content			The HTML content of the dropdown
+		 * @param {bool}	[ieUnselectable=true]	If to add the unselectable attribute to all the contents elements. Stops IE from deselecting the text in the editor
 		 * @function
 		 * @name createDropDown
 		 * @memberOf jQuery.sceditor.prototype
