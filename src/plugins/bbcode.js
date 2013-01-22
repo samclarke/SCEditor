@@ -990,13 +990,13 @@
 					{
 						if(token.attrs.defaultattr)
 						{
-							ret.push('=' + quote(token.attrs.defaultattr, quoteType));
+							ret.push('=' + quote(token.attrs.defaultattr, quoteType, 'defaultattr'));
 							delete token.attrs.defaultattr;
 						}
 
 						for(attr in token.attrs)
 							if(token.attrs.hasOwnProperty(attr))
-								ret.push(' ' + attr + '=' + quote(token.attrs[attr], quoteType));
+								ret.push(' ' + attr + '=' + quote(token.attrs[attr], quoteType, attr));
 					}
 					ret.push(']');
 
@@ -1036,15 +1036,16 @@
 		 *
 		 * @param {String} str
 		 * @param {$.sceditor.BBCodeParser.QuoteType} quoteType
+		 * @param {String} name
 		 * @return {String}
 		 * @private
 		 */
-		quote = function(str, quoteType) {
+		quote = function(str, quoteType, name) {
 			var	QuoteTypes  = $.sceditor.BBCodeParser.QuoteType,
 				needsQuotes = /\s|=/.test(str);
-// TODO:Add name to quoteType callback
+
 			if($.isFunction(quoteType))
-				return quoteType(str);
+				return quoteType(str, name);
 
 			if(quoteType === QuoteTypes.never || (quoteType === QuoteTypes.auto && !needsQuotes))
 				return str;
