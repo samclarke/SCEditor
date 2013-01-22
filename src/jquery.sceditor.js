@@ -4008,7 +4008,7 @@
 				if(node.nodeType === 3 && $(node).parents('code, pre').length === 0 && nodeValue)
 				{
 					// new lines in text nodes are always ignored in normal handling
-					nodeValue = nodeValue.replace(/[\r\n]/, "");
+					nodeValue = nodeValue.replace(/[\r\n]+/, " ");
 
 					//remove empty nodes
 					if(!nodeValue.length)
