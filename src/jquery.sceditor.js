@@ -839,7 +839,7 @@
 		 * @return {this}
 		 */
 		base.width = function (width, saveWidth) {
-			if(!$.isNumeric(width))
+			if(!width && width !== 0)
 				return $editorContainer.width();
 
 			base.dimensions(width, null, saveWidth);
@@ -892,13 +892,17 @@
 			var	toolbarHeight,
 				updateheight = false;
 
-			if(!$.isNumeric(width) && !$.isNumeric(height))
+			// set undefined width/height to boolean false
+			width  = (!width && width !== 0) ? false : width;
+			height = (!height && height !== 0) ? false : height;
+
+			if(width === false && height === false)
 				return { width: base.width(), height: base.height() };
 
 			if(typeof $wysiwygEditor.data('outerWidthOffset') === "undefined")
 				base.updateStyleCache();
 
-			if($.isNumeric(width) && width !== base.opts.width)
+			if(width !== false && width !== base.width())
 			{
 				if(save !== false)
 					base.opts.width = width;
@@ -911,9 +915,10 @@
 				// If the toolbar height has changed then wysiwyg and source editor heights will need to be updated
 				toolbarHeight = !base.opts.toolbarContainer ? $toolbar.outerHeight(true) : 0;
 				updateheight  = toolbarHeight !== (!base.opts.toolbarContainer ? $toolbar.outerHeight(true) : 0);
+				height        = height !== false ? height:  base.height();
 			}
 
-			if($.isNumeric(height) && height !== base.opts.height)
+			if(height !== false && height !== base.height())
 			{
 				if(save !== false)
 					base.opts.height = height;
@@ -984,7 +989,7 @@
 		 * @return {this}
 		 */
 		base.height = function (height, saveHeight) {
-			if(!$.isNumeric(height))
+			if(!height && height !== 0)
 				return $editorContainer.height();
 
 			base.dimensions(null, height, saveHeight);
