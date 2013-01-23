@@ -908,9 +908,8 @@
 					base.opts.width = width;
 
 				width = $editorContainer.width(width).width();
-
-				$wysiwygEditor.width(width - $wysiwygEditor.data('outerWidthOffset'));
-				$sourceEditor.width(width - $sourceEditor.data('outerWidthOffset'));
+				wysiwygEditor.style.width = width - $wysiwygEditor.data('outerWidthOffset') + 'px';
+				sourceEditor.style.width  = width - $sourceEditor.data('outerWidthOffset') + 'px';
 
 				// If the toolbar height has changed then wysiwyg and source editor heights will need to be updated
 				toolbarHeight = !base.opts.toolbarContainer ? $toolbar.outerHeight(true) : 0;
@@ -930,8 +929,8 @@
 
 			if(updateheight)
 			{
-				$wysiwygEditor.height(height - $wysiwygEditor.data('outerHeightOffset'));
-				$sourceEditor.height(height - $sourceEditor.data('outerHeightOffset'));
+				wysiwygEditor.style.height = height - $wysiwygEditor.data('outerHeightOffset') + 'px';
+				sourceEditor.style.height  = height - $sourceEditor.data('outerHeightOffset') + 'px';
 			}
 
 			return this;
