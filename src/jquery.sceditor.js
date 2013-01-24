@@ -466,9 +466,7 @@
 		 * @private
 		 */
 		initEvents = function() {
-			var	height = base.opts.height,
-				width  = base.opts.width,
-				$doc   = $(getWysiwygDoc());
+			var $doc = $(getWysiwygDoc());
 
 			$(document).click(handleDocumentClick);
 
