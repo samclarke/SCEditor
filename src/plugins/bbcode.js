@@ -240,15 +240,32 @@
 			if(type === "open")
 			{
 				matches = val.match(/\[([^\]\s=]+)(?:([^\]]+))?\]/);
-				name    = lower(matches[1]);
 
-				if(matches[2] && (matches[2] = $.trim(matches[2])))
-					attrs = tokenizeAttrs(matches[2]);
+				// Make sure there was a match otherwise it must be content
+				if(matches)
+				{
+					name = lower(matches[1]);
+
+					if(matches[2] && (matches[2] = $.trim(matches[2])))
+						attrs = tokenizeAttrs(matches[2]);
+				}
+				else
+				{
+					type = 'content';
+					name = '#';
+				}
 			}
 			else if(type === "close")
 			{
 				matches = val.match(/\[\/([^\[\]]+)\]/);
-				name    = lower(matches[1]);
+
+				if(!matches)
+				{
+					type = 'content';
+					name = '#';
+				}
+				else
+					name = lower(matches[1]);
 			}
 			else if(type === "newline")
 				name = '#newline';

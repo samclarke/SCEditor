@@ -40,6 +40,8 @@ Version 1.4.1:
 		- Thanks to @charafweb for reporting.
 	Improved RTL support. Added rtl() helper and improved all themes RTL support.
 	Added maximize command and maximize() helper.
+	Fixed bug with sentences wrapped in [] sometimes causing problems.
+		- Thanks to @liamdawe for reporting
 
 Version 1.4.0:
 	New theme "square" added
