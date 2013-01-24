@@ -25,7 +25,8 @@
 		"wysiwyg",
 		"bbcode",
 		"html",
-		"editor"
+		"editor",
+		"ui"
 	],
 	"maintainers": [{
 		"name": "Sam Clarke",
