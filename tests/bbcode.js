@@ -995,6 +995,7 @@ module("BBCode attributes");
 test("Auto quote", function() {
 	expect(4);
 
+	delete $.sceditorBBCodePlugin.bbcodes.quote.quoteType;
 	var parser = new $.sceditor.BBCodeParser({ quoteType: $.sceditor.BBCodeParser.QuoteType.auto });
 
 	equal(
@@ -1038,6 +1039,7 @@ test("Auto quote", function() {
 test("Never quote", function() {
 	expect(4);
 
+	delete $.sceditorBBCodePlugin.bbcodes.quote.quoteType;
 	var parser = new $.sceditor.BBCodeParser({ quoteType: $.sceditor.BBCodeParser.QuoteType.never });
 
 	equal(
@@ -1078,6 +1080,7 @@ test("Never quote", function() {
 test("Always quote", function() {
 	expect(4);
 
+	delete $.sceditorBBCodePlugin.bbcodes.quote.quoteType;
 	var parser = new $.sceditor.BBCodeParser({ quoteType: $.sceditor.BBCodeParser.QuoteType.always });
 
 	equal(
@@ -1121,6 +1124,7 @@ test("Always quote", function() {
 test("Custom quote", function() {
 	expect(4);
 
+	delete $.sceditorBBCodePlugin.bbcodes.quote.quoteType;
 	var parser = new $.sceditor.BBCodeParser({ quoteType: function(str) {
 		return "'" + str.replace('\\', '\\\\').replace("'", "\\'") + "'";
 	}});
