@@ -87,6 +87,6 @@ fi
 if $DO_DOCS; then
 	echo "Creating Docs"
 
-	jsdoc -D="title:SCEditor" -D="noGlobal:true" -t=./build/CodeView -d=./docs ./src ./src/plugins/bbcode.js
+	jsdoc -D="title:SCEditor" -D="noGlobal:true" -t=./build/CodeView -d=./docs ./src ./src/plugins/bbcode.js ./src/plugins/xhtml.js
 fi
 

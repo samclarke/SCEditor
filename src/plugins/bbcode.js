@@ -1106,6 +1106,7 @@
 	 * @since v1.4.0
 	 */
 	$.sceditor.BBCodeParser.QuoteType = {
+		/** @lends jQuery.sceditor.BBCodeParser.QuoteType */
 		/**
 		 * Always quote the attribute value
 		 * @type {Number}
@@ -1185,14 +1186,20 @@
 	};
 
 	/**
-	 * BBCode plugin for SCEditor
+	 * Deprecated, use $.sceditor.plugins.bbcode
 	 *
-	 * @param {Element} $element The textarea to be converted
-	 * @return {Object} options
 	 * @class sceditorBBCodePlugin
-	 * @name jQuery.sceditor.plugins.bbcode
+	 * @name jQuery.sceditor.sceditorBBCodePlugin
+	 * @deprecated
 	 */
 	$.sceditorBBCodePlugin =
+	/**
+	 * BBCode plugin for SCEditor
+	 *
+	 * @class bbcode
+	 * @name jQuery.sceditor.plugins.bbcode
+	 * @since 1.4.1
+	 */
 	$.sceditor.plugins.bbcode = function() {
 		var base = this;
 

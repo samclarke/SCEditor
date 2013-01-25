@@ -833,7 +833,7 @@
 		 * @since 1.4.1
 		 * @function
 		 * @memberOf jQuery.sceditor.prototype
-		 * @name width^2
+		 * @name width^3
 		 * @return {this}
 		 */
 		base.width = function (width, saveWidth) {
@@ -883,7 +883,7 @@
 		 * @since 1.4.1
 		 * @function
 		 * @memberOf jQuery.sceditor.prototype
-		 * @name dimensions^2
+		 * @name dimensions^3
 		 * @return {this}
 		 */
 		base.dimensions = function(width, height, save) {
@@ -982,7 +982,7 @@
 		 * @since 1.4.1
 		 * @function
 		 * @memberOf jQuery.sceditor.prototype
-		 * @name height^2
+		 * @name height^3
 		 * @return {this}
 		 */
 		base.height = function (height, saveHeight) {
@@ -3236,7 +3236,7 @@
 
 		// START_COMMAND: Maximize
 		maximize: {
-			state: function(parents, firstBlock) {
+			state: function() {
 				return this.maximize();
 			},
 			exec: function () {
