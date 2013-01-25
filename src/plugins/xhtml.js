@@ -20,9 +20,16 @@
 /*jshint smarttabs: true, jquery: true, eqnull:true, curly: false */
 /*global prompt: true*/
 
-(function($, window, document) {
+(function($) {
 	'use strict';
 
+	/**
+	 * XHTMLSerializer part of the XHTML plugin.
+	 *
+	 * @class XHTMLSerializer
+	 * @name jQuery.sceditor.XHTMLSerializer
+	 * @since v1.4.1
+	 */
 	$.sceditor.XHTMLSerializer = function() {
 		var base = this;
 
@@ -34,15 +41,20 @@
 		 * Array containing the output, used as it's faster
 		 * than string concation in slow browsers.
 		 * @type {Array}
+		 * @private
 		 */
 		var outputStringBuilder = [];
 
 		/**
 		 * Current indention level
 		 * @type {Number}
+		 * @private
 		 */
 		var currentIndent = 0;
 
+		/**
+		 * @private
+		 */
 		var	escapeEntites,
 			trim,
 			serializeNode,
@@ -74,6 +86,11 @@
 			});
 		};
 
+		/**
+		 * @param  {string} str
+		 * @return {string}
+		 * @private
+		 */
 		trim = function(str) {
 			return str
 				// new lines in text nodes are always ignored in normal handling
@@ -81,6 +98,15 @@
 				.replace(/[^\S|\u00A0]+/g, " ");
 		};
 
+		/**
+		 * Serializes a node to XHTML
+		 * @param  {Node}	node		Node to serialize
+		 * @param  {Boolean}	onlyChildren	If to only serialize the nodes children and not the node its self
+		 * @return {String}			The serialized node
+		 * @name serialize
+		 * @memberOf jQuery.sceditor.XHTMLSerializer.prototype
+		 * @since v1.4.1
+		 */
 		base.serialize = function(node, onlyChildren) {
 			outputStringBuilder = [];
 
@@ -100,6 +126,12 @@
 			return outputStringBuilder.join('');
 		};
 
+		/**
+		 * Serializes a node to the outputStringBuilder
+		 * @param  {Node} node
+		 * @return {Void}
+		 * @private
+		 */
 		serializeNode = function(node) {
 			switch(node.nodeType)
 			{
@@ -143,6 +175,12 @@
 			}
 		};
 
+		/**
+		 * Handles doc node
+		 * @param  {Node} node
+		 * @return {void}
+		 * @private
+		 */
 		handleDoc = function(node) {
 			var	child;
 
@@ -155,6 +193,12 @@
 			}
 		};
 
+		/**
+		 * Handles element nodes
+		 * @param  {Node} node
+		 * @return {void}
+		 * @private
+		 */
 		handleElement = function(node) {
 			var	child, attr,
 				tagName     = node.nodeName.toLowerCase(),
@@ -192,18 +236,36 @@
 			}
 		};
 
+		/**
+		 * Handles CDATA nodes
+		 * @param  {Node} node
+		 * @return {void}
+		 * @private
+		 */
 		handleCdata =  function(node) {
 			indent();
 
 			outputStringBuilder.push('<![CDATA[', escapeEntites(node.nodeValue), ']]>');
 		};
 
+		/**
+		 * Handles comment nodes
+		 * @param  {Node} node
+		 * @return {void}
+		 * @private
+		 */
 		handleComment = function(node) {
 			indent();
 
 			outputStringBuilder.push('<!-- ', escapeEntites(node.nodeValue), ' -->');
 		};
 
+		/**
+		 * Handles test nodes
+		 * @param  {Node} node
+		 * @return {void}
+		 * @private
+		 */
 		handleText = function(node) {
 			var text = trim(node.nodeValue);
 
@@ -216,6 +278,11 @@
 			}
 		};
 
+		/**
+		 * Adds indent to the outputStringBuilder
+		 * @return {void}
+		 * @private
+		 */
 		indent = function() {
 			var i = currentIndent;
 
@@ -225,6 +292,12 @@
 				outputStringBuilder.push(opts.indentStr);
 		};
 
+		/**
+		 * Checks if should indent the node or not
+		 * @param  {Node} node
+		 * @return {boolean}
+		 * @private
+		 */
 		canIndent = function(node) {
 			if(node.nodeType !== 1)
 			{
@@ -237,12 +310,23 @@
 			return !$.sceditor.dom.isInline(node);
 		};
 
+		/**
+		 * Adds a new line to the outputStringBuilder
+		 * @return {void}
+		 * @private
+		 */
 		newline = function() {
 			outputStringBuilder.push('\n');
 		};
 	};
 
-	$.sceditor.plugins.xhtml = function(element, options) {
+	/**
+	 * SCEditor XHTML plugin
+	 * @class xhtml
+	 * @name jQuery.sceditor.plugins.xhtml
+	 * @since v1.4.1
+	 */
+	$.sceditor.plugins.xhtml = function() {
 		var base = this;
 
 		/**
@@ -255,6 +339,7 @@
 		/**
 		 * Attributes filter cache
 		 * @type {Object}
+		 * @private
 		 */
 		var attrsCache = {};
 
@@ -270,11 +355,15 @@
 			removeAttribs;
 
 
+		/**
+		 * Init
+		 * @return {void}
+		 */
 		base.init = function() {
 			if(!$.isEmptyObject($.sceditor.plugins.xhtml.converters || {}))
 			{
 				$.each($.sceditor.plugins.xhtml.converters, function(idx, converter) {
-					$.each(converter.tags, function(tagname, attrs) {
+					$.each(converter.tags, function(tagname) {
 						if(!tagConvertersCache[tagname])
 							tagConvertersCache[tagname] = [];
 
@@ -389,6 +478,7 @@
 		 * @param  {String} html
 		 * @param  {Node} domBody
 		 * @return {String}
+		 * @memberOf jQuery.sceditor.plugins.xhtml.prototype
 		 */
 		base.signalToSource = function(html, domBody) {
 			domBody = domBody.jquery ? domBody[0] : domBody;
@@ -409,10 +499,10 @@
 		 * This doesn't currently do anything as XHTML
 		 * is valid WYSIWYG content.
 		 * @param  {String} text
-		 * @param  {Boolean} asFragment
 		 * @return {String}
+		 * @memberOf jQuery.sceditor.plugins.xhtml.prototype
 		 */
-		base.signalToWysiwyg = function(text, asFragment) {
+		base.signalToWysiwyg = function(text) {
 			return text;
 		};
 
@@ -422,6 +512,7 @@
 		 * @param  {Node} elm
 		 * @param  {String} newtagName
 		 * @return {Node} The new node
+		 * @memberOf jQuery.sceditor.plugins.xhtml.prototype
 		 */
 		base.convertTagTo = function(elm, newtagName) {
 			var	child, attr,
@@ -481,8 +572,7 @@
 				return;
 
 			$.sceditor.dom.traverse(node, function(node) {
-				var	child,
-					$node   = $(node),
+				var	$node   = $(node),
 					tagName = node.nodeName.toLowerCase();
 
 				if(!tagConvertersCache)
@@ -621,6 +711,8 @@
 	 * Tag conveters, a converter is applied to all
 	 * tags that match the criteria.
 	 * @type {Array}
+	 * @name jQuery.sceditor.plugins.xhtml.converters
+	 * @since v1.4.1
 	 */
 	$.sceditor.plugins.xhtml.converters = [
 		{
@@ -880,6 +972,8 @@
 	 * Leave empty or null to allow all attributes. (the disallow
 	 * list will be used to filter them instead)
 	 * @type {Object}
+	 * @name jQuery.sceditor.plugins.xhtml.allowedAttribs
+	 * @since v1.4.1
 	 */
 	$.sceditor.plugins.xhtml.allowedAttribs = {
 	};
@@ -889,6 +983,8 @@
 	 *
 	 * Only used if allowed attributes is null or empty.
 	 * @type {Object}
+	 * @name jQuery.sceditor.plugins.xhtml.disallowedAttribs
+	 * @since v1.4.1
 	 */
 	$.sceditor.plugins.xhtml.disallowedAttribs = { };
 
@@ -897,6 +993,8 @@
 	 *
 	 * If null or empty all tags will be allowed.
 	 * @type {Array}
+	 * @name jQuery.sceditor.plugins.xhtml.allowedTags
+	 * @since v1.4.1
 	 */
 	$.sceditor.plugins.xhtml.allowedTags = [];
 
@@ -905,6 +1003,8 @@
 	 *
 	 * Only used if allowed tags is null or empty.
 	 * @type {Array}
+	 * @name jQuery.sceditor.plugins.xhtml.disallowedTags
+	 * @since v1.4.1
 	 */
 	$.sceditor.plugins.xhtml.disallowedTags = [];
-})(jQuery, window, document);
+})(jQuery);
