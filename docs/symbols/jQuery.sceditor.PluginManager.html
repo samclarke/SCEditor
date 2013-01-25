@@ -4,7 +4,7 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
-		<title>jQuery.sceditor.dom | SCEditor</title>
+		<title>jQuery.sceditor.PluginManager | SCEditor</title>
 
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 		<meta name="mobileoptimized" content="0" />
@@ -80,12 +80,12 @@
 			<header>
 				<h1 class="classTitle">
 					
-					Class <span>jQuery.sceditor.dom</span>
+					Class <span>jQuery.sceditor.PluginManager</span>
 				</h1>
 				
 				<div class="intro">
 					<p class="description summary">
-						dom
+						PluginManager
 					</p>
 						
 					
@@ -104,7 +104,7 @@
 			
 				<section>
 					<div class="props">
-						<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class jQuery.sceditor.dom.">
+						<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class jQuery.sceditor.PluginManager.">
 							<caption class="sectionTitle">Class Summary</caption>
 							<thead>
 								<tr>
@@ -117,9 +117,9 @@
 									<td class="attributes">&nbsp;</td>
 									<td class="nameDescription" >
 										<div class="fixedFont">
-											<b><a href="../symbols/jQuery.sceditor.dom.html#constructor">jQuery.sceditor.dom</a></b>()
+											<b><a href="../symbols/jQuery.sceditor.PluginManager.html#constructor">jQuery.sceditor.PluginManager</a></b>()
 										</div>
-										<div class="description">Static DOM helper class</div>
+										<div class="description">Plugin Manager class</div>
 									</td>
 								</tr>
 							</tbody>
@@ -128,42 +128,6 @@
 				</section>
 			
 			
-			
-				
-				<section>
-					
-						<nav>
-							<div class="props">
-								<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class jQuery.sceditor.dom.">
-									<caption class="sectionTitle">Field Summary</caption>
-									
-									<thead>
-										<tr>
-											<th scope="col">Field Attributes</th>
-											<th scope="col">Field Name and Description</th>
-										</tr>
-									</thead>
-									
-									<tbody>
-										
-											<tr>
-												<td class="attributes">&lt;static&gt; &nbsp;</td>
-												<td class="nameDescription">
-													<div class="fixedFont">
-													jQuery.sceditor.dom.<b><a href="../symbols/jQuery.sceditor.dom.html#.blockLevelList">blockLevelList</a></b>
-													</div>
-													<div class="description">List of block level elements separated by bars (|)</div>
-												</td>
-											</tr>
-										
-									</tbody>
-								</table>
-							</div>
-						</nav>
-					
-					
-					
-				</section>
 			
 	<!--
 	#### METHODS SUMMARY
@@ -177,7 +141,7 @@
 						
 						
 							<nav>
-								<table class="summaryTable" id="MethodsList" cellspacing="0" summary="A summary of the methods documented in the class jQuery.sceditor.dom.">
+								<table class="summaryTable" id="MethodsList" cellspacing="0" summary="A summary of the methods documented in the class jQuery.sceditor.PluginManager.">
 									<thead>
 										<tr>
 											<th scope="col">Method Attributes</th>
@@ -191,90 +155,99 @@
 											<tr
 												 class='item0'
 											>
-												<td class="attributes">&lt;static&gt; &nbsp;</td>
+												<td class="attributes">&nbsp;</td>
 												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditor.dom.<b><a href="../symbols/jQuery.sceditor.dom.html#.copyCSS">copyCSS</a></b>(from, to)
+													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.PluginManager.html#call">call</a></b>(signal, args)
 													</div>
-													<div class="description"><p>Copys the CSS from 1 node to another.</div>
+													<div class="description">Calls all handlers for the passed signal</div>
 												</td>
 											</tr>
 										
 											<tr
 												 class='item1'
 											>
-												<td class="attributes">&lt;static&gt; &nbsp;</td>
+												<td class="attributes">&nbsp;</td>
 												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditor.dom.<b><a href="../symbols/jQuery.sceditor.dom.html#.extractContents">extractContents</a></b>(startNode, endNode)
+													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.PluginManager.html#callOnlyFirst">callOnlyFirst</a></b>(signal, args)
 													</div>
-													<div class="description">Extracts all the nodes between the start and end nodes</div>
+													<div class="description">Calls the first handler for a signal, and returns the result</div>
 												</td>
 											</tr>
 										
 											<tr
 												 class='item2'
 											>
-												<td class="attributes">&lt;static&gt; &nbsp;</td>
+												<td class="attributes">&nbsp;</td>
 												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditor.dom.<b><a href="../symbols/jQuery.sceditor.dom.html#.findCommonAncestor">findCommonAncestor</a></b>(node1, node2)
+													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.PluginManager.html#deregister">deregister</a></b>(plugin)
 													</div>
-													<div class="description">Finds the common parent of two nodes</div>
+													<div class="description">Deregisters a plugin.</div>
 												</td>
 											</tr>
 										
 											<tr
 												 class='item3'
 											>
-												<td class="attributes">&lt;static&gt; &nbsp;</td>
+												<td class="attributes">&nbsp;</td>
 												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditor.dom.<b><a href="../symbols/jQuery.sceditor.dom.html#.fixNesting">fixNesting</a></b>(node)
+													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.PluginManager.html#destroy">destroy</a></b>()
 													</div>
-													<div class="description">Fixes block level elements inside in inline elements.</div>
+													<div class="description"><p>Clears all plugins and removes the owner refrence.</div>
 												</td>
 											</tr>
 										
 											<tr
 												 class='item4'
 											>
-												<td class="attributes">&lt;static&gt; &nbsp;</td>
+												<td class="attributes">&nbsp;</td>
 												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditor.dom.<b><a href="../symbols/jQuery.sceditor.dom.html#.isInline">isInline</a></b>(elm, includeCodeAsBlock)
+													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.PluginManager.html#exsists">exsists</a></b>(plugin)
 													</div>
-													<div class="description">Checks if an element is inline</div>
+													<div class="description">Checks if the plugin exists in jQuery.sceditor.plugins</div>
 												</td>
 											</tr>
 										
 											<tr
 												 class='item5'
 											>
-												<td class="attributes">&lt;static&gt; &nbsp;</td>
+												<td class="attributes">&nbsp;</td>
 												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditor.dom.<b><a href="../symbols/jQuery.sceditor.dom.html#.removeWhiteSpace">removeWhiteSpace</a></b>(HTMLElement)
+													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.PluginManager.html#hasHandler">hasHandler</a></b>(signal)
 													</div>
-													<div class="description">Removes unused whitespace from the root and all it's children</div>
+													<div class="description">Checks if a signal has a handler</div>
 												</td>
 											</tr>
 										
 											<tr
 												 class='item6'
 											>
-												<td class="attributes">&lt;static&gt; &nbsp;</td>
+												<td class="attributes">&nbsp;</td>
 												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditor.dom.<b><a href="../symbols/jQuery.sceditor.dom.html#.rTraverse">rTraverse</a></b>(node, func, innermostFirst, siblingsOnly)
+													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.PluginManager.html#isRegistered">isRegistered</a></b>(plugin)
 													</div>
-													<div class="description">Like traverse but loops in reverse</div>
+													<div class="description">Checks if the passed plugin is currrently registered.</div>
 												</td>
 											</tr>
 										
 											<tr
 												 class='item7'
 											>
-												<td class="attributes">&lt;static&gt; &nbsp;</td>
+												<td class="attributes">&nbsp;</td>
 												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditor.dom.<b><a href="../symbols/jQuery.sceditor.dom.html#.traverse">traverse</a></b>(node, func, innermostFirst, siblingsOnly, reverse)
+													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.PluginManager.html#iter">iter</a></b>(signal)
 													</div>
-													<div class="description">Loop all child nodes of the passed node
-
-The function should accept 1 parameter being the node.</div>
+													<div class="description"><p>Returns an object which has callNext and hasNext methods.</div>
+												</td>
+											</tr>
+										
+											<tr
+												 class='item8'
+											>
+												<td class="attributes">&nbsp;</td>
+												<td class="nameDescription">
+													<div class="fixedFont"><b><a href="../symbols/jQuery.sceditor.PluginManager.html#register">register</a></b>(plugin)
+													</div>
+													<div class="description">Registers a plugin to receive signals</div>
 												</td>
 											</tr>
 										
@@ -304,11 +277,11 @@ The function should accept 1 parameter being the node.</div>
 							</h2>
 							
 							<div class="fixedFont">
-								<b>jQuery.sceditor.dom</b>()
+								<b>jQuery.sceditor.PluginManager</b>()
 							</div>
 							
 							<div class="description">
-								Static DOM helper class
+								Plugin Manager class
 								
 							</div>
 							
@@ -324,40 +297,6 @@ The function should accept 1 parameter being the node.</div>
 	<!--
 	#### FIELD DETAILS
 	-->
-			
-				<section>
-					<div class="details props">
-						<div class="innerProps">
-							<h2 class="sectionTitle">
-								Field Detail
-							</h2>
-							
-							
-								<div class="fixedFont heading" id=".blockLevelList">
-									<span class='lighter'>
-									&lt;static&gt; 
-									</span>
-									
-									
-									
-									<span class="light">jQuery.sceditor.dom.</span><b>blockLevelList</b>							
-								</div>
-								
-								<div class="description">
-									List of block level elements separated by bars (|)
-									
-									
-									
-								</div>
-								
-								
-									
-								
-								
-							
-						</div>
-					</div>
-				</section>
 			
 	<!--
 	#### METHOD DETAILS
@@ -376,20 +315,18 @@ The function should accept 1 parameter being the node.</div>
 									<li 
 										 class='item0'
 									>
-										<div class="fixedFont heading" id=".copyCSS">
+										<div class="fixedFont heading" id="call">
 											<span class='lighter'>
-											&lt;static&gt; 
+											
 											</span>
 											
+											<span class="light">{Void}</span>
 											
-											
-											<span class="light">jQuery.sceditor.dom.</span><b>copyCSS</b>(from, to)
+											<b>call</b>(signal, args)
 										</div>
 										
 										<div class="description">
-											<p>Copys the CSS from 1 node to another.</p>
-
-<p>Only copies CSS defined on the element e.g. style attr.</p>
+											Calls all handlers for the passed signal
 											
 											
 											
@@ -403,62 +340,16 @@ The function should accept 1 parameter being the node.</div>
 												<dt class="heading">Parameters:</dt>
 												
 													<dt>
-														<span class="light fixedFont">{HTMLElement}</span> <b>from</b>
+														<span class="light fixedFont">{String}</span> <b>signal</b>
 														
 													</dt>
 													<dd></dd>
 												
 													<dt>
-														<span class="light fixedFont">{HTMLElement}</span> <b>to</b>
+														<span class="light fixedFont">{...String}</span> <b>args</b>
 														
 													</dt>
 													<dd></dd>
-												
-											</dl>
-										
-										
-										
-										<div class="hr"></div>
-									</li>
-								
-									<li 
-										 class='item1'
-									>
-										<div class="fixedFont heading" id=".extractContents">
-											<span class='lighter'>
-											&lt;static&gt; 
-											</span>
-											
-											<span class="light">{DocumentFragment}</span>
-											
-											<span class="light">jQuery.sceditor.dom.</span><b>extractContents</b>(startNode, endNode)
-										</div>
-										
-										<div class="description">
-											Extracts all the nodes between the start and end nodes
-											
-											
-											
-											
-										</div>
-										
-										
-										
-										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
-												
-													<dt>
-														<span class="light fixedFont">{HTMLElement}</span> <b>startNode</b>
-														
-													</dt>
-													<dd>The node to start extracting at</dd>
-												
-													<dt>
-														<span class="light fixedFont">{HTMLElement}</span> <b>endNode</b>
-														
-													</dt>
-													<dd>The node to stop extracting at</dd>
 												
 											</dl>
 										
@@ -475,7 +366,74 @@ The function should accept 1 parameter being the node.</div>
 												
 													<dt class="heading">Returns:</dt>
 													
-														<dd><span class="light fixedFont">{DocumentFragment}</span> </dd>
+														<dd><span class="light fixedFont">{Void}</span> </dd>
+													
+												
+												
+												
+												
+												
+											
+											</dl>
+										
+										<div class="hr"></div>
+									</li>
+								
+									<li 
+										 class='item1'
+									>
+										<div class="fixedFont heading" id="callOnlyFirst">
+											<span class='lighter'>
+											
+											</span>
+											
+											<span class="light">{Mixed}</span>
+											
+											<b>callOnlyFirst</b>(signal, args)
+										</div>
+										
+										<div class="description">
+											Calls the first handler for a signal, and returns the result
+											
+											
+											
+											
+										</div>
+										
+										
+										
+										
+											<dl class="detailList params">
+												<dt class="heading">Parameters:</dt>
+												
+													<dt>
+														<span class="light fixedFont">{String}</span> <b>signal</b>
+														
+													</dt>
+													<dd></dd>
+												
+													<dt>
+														<span class="light fixedFont">{...String}</span> <b>args</b>
+														
+													</dt>
+													<dd></dd>
+												
+											</dl>
+										
+										
+										
+											<dl class="detailList nomargin">
+											
+												
+												
+												
+												
+												
+												
+												
+													<dt class="heading">Returns:</dt>
+													
+														<dd><span class="light fixedFont">{Mixed}</span> The result of calling the handler</dd>
 													
 												
 												
@@ -491,18 +449,18 @@ The function should accept 1 parameter being the node.</div>
 									<li 
 										 class='item2'
 									>
-										<div class="fixedFont heading" id=".findCommonAncestor">
+										<div class="fixedFont heading" id="deregister">
 											<span class='lighter'>
-											&lt;static&gt; 
+											
 											</span>
 											
-											<span class="light">{HTMLElement}</span>
+											<span class="light">{Boolean}</span>
 											
-											<span class="light">jQuery.sceditor.dom.</span><b>findCommonAncestor</b>(node1, node2)
+											<b>deregister</b>(plugin)
 										</div>
 										
 										<div class="description">
-											Finds the common parent of two nodes
+											Deregisters a plugin.
 											
 											
 											
@@ -516,13 +474,7 @@ The function should accept 1 parameter being the node.</div>
 												<dt class="heading">Parameters:</dt>
 												
 													<dt>
-														<span class="light fixedFont">{HTMLElement}</span> <b>node1</b>
-														
-													</dt>
-													<dd></dd>
-												
-													<dt>
-														<span class="light fixedFont">{HTMLElement}</span> <b>node2</b>
+														<span class="light fixedFont">{String}</span> <b>plugin</b>
 														
 													</dt>
 													<dd></dd>
@@ -542,7 +494,7 @@ The function should accept 1 parameter being the node.</div>
 												
 													<dt class="heading">Returns:</dt>
 													
-														<dd><span class="light fixedFont">{HTMLElement}</span> </dd>
+														<dd><span class="light fixedFont">{Boolean}</span> </dd>
 													
 												
 												
@@ -558,18 +510,20 @@ The function should accept 1 parameter being the node.</div>
 									<li 
 										 class='item3'
 									>
-										<div class="fixedFont heading" id=".fixNesting">
+										<div class="fixedFont heading" id="destroy">
 											<span class='lighter'>
-											&lt;static&gt; 
+											
 											</span>
 											
+											<span class="light">{Void}</span>
 											
-											
-											<span class="light">jQuery.sceditor.dom.</span><b>fixNesting</b>(node)
+											<b>destroy</b>()
 										</div>
 										
 										<div class="description">
-											Fixes block level elements inside in inline elements.
+											<p>Clears all plugins and removes the owner refrence.</p>
+
+<p>Calling any functions on this object after calling destroy will cause a JS error.</p>
 											
 											
 											
@@ -579,18 +533,28 @@ The function should accept 1 parameter being the node.</div>
 										
 										
 										
-											<dl class="detailList params">
-												<dt class="heading">Parameters:</dt>
+										
+										
+											<dl class="detailList nomargin">
+											
 												
-													<dt>
-														<span class="light fixedFont">{HTMLElement}</span> <b>node</b>
-														
-													</dt>
-													<dd></dd>
 												
+												
+												
+												
+												
+												
+													<dt class="heading">Returns:</dt>
+													
+														<dd><span class="light fixedFont">{Void}</span> </dd>
+													
+												
+												
+												
+												
+												
+											
 											</dl>
-										
-										
 										
 										<div class="hr"></div>
 									</li>
@@ -598,18 +562,18 @@ The function should accept 1 parameter being the node.</div>
 									<li 
 										 class='item4'
 									>
-										<div class="fixedFont heading" id=".isInline">
+										<div class="fixedFont heading" id="exsists">
 											<span class='lighter'>
-											&lt;static&gt; 
+											
 											</span>
 											
-											<span class="light">{bool}</span>
+											<span class="light">{Boolean}</span>
 											
-											<span class="light">jQuery.sceditor.dom.</span><b>isInline</b>(elm, includeCodeAsBlock)
+											<b>exsists</b>(plugin)
 										</div>
 										
 										<div class="description">
-											Checks if an element is inline
+											Checks if the plugin exists in jQuery.sceditor.plugins
 											
 											
 											
@@ -623,13 +587,7 @@ The function should accept 1 parameter being the node.</div>
 												<dt class="heading">Parameters:</dt>
 												
 													<dt>
-														<b>elm</b>
-														
-													</dt>
-													<dd></dd>
-												
-													<dt>
-														<b>includeCodeAsBlock</b>
+														<span class="light fixedFont">{String}</span> <b>plugin</b>
 														
 													</dt>
 													<dd></dd>
@@ -649,7 +607,7 @@ The function should accept 1 parameter being the node.</div>
 												
 													<dt class="heading">Returns:</dt>
 													
-														<dd><span class="light fixedFont">{bool}</span> </dd>
+														<dd><span class="light fixedFont">{Boolean}</span> </dd>
 													
 												
 												
@@ -665,18 +623,18 @@ The function should accept 1 parameter being the node.</div>
 									<li 
 										 class='item5'
 									>
-										<div class="fixedFont heading" id=".removeWhiteSpace">
+										<div class="fixedFont heading" id="hasHandler">
 											<span class='lighter'>
-											&lt;static&gt; 
+											
 											</span>
 											
+											<span class="light">{Boolean}</span>
 											
-											
-											<span class="light">jQuery.sceditor.dom.</span><b>removeWhiteSpace</b>(HTMLElement)
+											<b>hasHandler</b>(signal)
 										</div>
 										
 										<div class="description">
-											Removes unused whitespace from the root and all it's children
+											Checks if a signal has a handler
 											
 											
 											
@@ -690,10 +648,71 @@ The function should accept 1 parameter being the node.</div>
 												<dt class="heading">Parameters:</dt>
 												
 													<dt>
-														<b>HTMLElement</b>
+														<span class="light fixedFont">{String}</span> <b>signal</b>
 														
 													</dt>
-													<dd>root</dd>
+													<dd></dd>
+												
+											</dl>
+										
+										
+										
+											<dl class="detailList nomargin">
+											
+												
+												
+												
+												
+												
+												
+												
+													<dt class="heading">Returns:</dt>
+													
+														<dd><span class="light fixedFont">{Boolean}</span> </dd>
+													
+												
+												
+												
+												
+												
+											
+											</dl>
+										
+										<div class="hr"></div>
+									</li>
+								
+									<li 
+										 class='item6'
+									>
+										<div class="fixedFont heading" id="isRegistered">
+											<span class='lighter'>
+											
+											</span>
+											
+											<span class="light">{Boolean}</span>
+											
+											<b>isRegistered</b>(plugin)
+										</div>
+										
+										<div class="description">
+											Checks if the passed plugin is currrently registered.
+											
+											
+											
+											
+										</div>
+										
+										
+										
+										
+											<dl class="detailList params">
+												<dt class="heading">Parameters:</dt>
+												
+													<dt>
+														<span class="light fixedFont">{String}</span> <b>plugin</b>
+														
+													</dt>
+													<dd></dd>
 												
 											</dl>
 										
@@ -710,7 +729,7 @@ The function should accept 1 parameter being the node.</div>
 												
 													<dt class="heading">Returns:</dt>
 													
-														<dd>void</dd>
+														<dd><span class="light fixedFont">{Boolean}</span> </dd>
 													
 												
 												
@@ -724,20 +743,25 @@ The function should accept 1 parameter being the node.</div>
 									</li>
 								
 									<li 
-										 class='item6'
+										 class='item7'
 									>
-										<div class="fixedFont heading" id=".rTraverse">
+										<div class="fixedFont heading" id="iter">
 											<span class='lighter'>
-											&lt;static&gt; 
+											
 											</span>
 											
+											<span class="light">{Object}</span>
 											
-											
-											<span class="light">jQuery.sceditor.dom.</span><b>rTraverse</b>(node, func, innermostFirst, siblingsOnly)
+											<b>iter</b>(signal)
 										</div>
 										
 										<div class="description">
-											Like traverse but loops in reverse
+											<p>Returns an object which has callNext and hasNext methods.</p>
+
+<p>callNext takes arguments to pass to the handler and returns the
+result of calling the handler</p>
+
+<p>hasNext checks if there is another handler</p>
 											
 											
 											
@@ -751,25 +775,7 @@ The function should accept 1 parameter being the node.</div>
 												<dt class="heading">Parameters:</dt>
 												
 													<dt>
-														<b>node</b>
-														
-													</dt>
-													<dd></dd>
-												
-													<dt>
-														<b>func</b>
-														
-													</dt>
-													<dd></dd>
-												
-													<dt>
-														<b>innermostFirst</b>
-														
-													</dt>
-													<dd></dd>
-												
-													<dt>
-														<b>siblingsOnly</b>
+														<span class="light fixedFont">{String}</span> <b>signal</b>
 														
 													</dt>
 													<dd></dd>
@@ -787,14 +793,14 @@ The function should accept 1 parameter being the node.</div>
 												
 												
 												
-												
-												
-												
-												
-													<dt class="heading">See:</dt>
+													<dt class="heading">Returns:</dt>
 													
-														<dd>traverse</dd>
+														<dd><span class="light fixedFont">{Object}</span> Object with hasNext and callNext methods</dd>
 													
+												
+												
+												
+												
 												
 											
 											</dl>
@@ -803,23 +809,20 @@ The function should accept 1 parameter being the node.</div>
 									</li>
 								
 									<li 
-										 class='item7'
+										 class='item8'
 									>
-										<div class="fixedFont heading" id=".traverse">
+										<div class="fixedFont heading" id="register">
 											<span class='lighter'>
-											&lt;static&gt; 
+											
 											</span>
 											
+											<span class="light">{Boolean}</span>
 											
-											
-											<span class="light">jQuery.sceditor.dom.</span><b>traverse</b>(node, func, innermostFirst, siblingsOnly, reverse)
+											<b>register</b>(plugin)
 										</div>
 										
 										<div class="description">
-											Loop all child nodes of the passed node
-
-The function should accept 1 parameter being the node.
-If the function returns false the loop will be exited.
+											Registers a plugin to receive signals
 											
 											
 											
@@ -833,38 +836,35 @@ If the function returns false the loop will be exited.
 												<dt class="heading">Parameters:</dt>
 												
 													<dt>
-														<span class="light fixedFont">{HTMLElement}</span> <b>node</b>
+														<span class="light fixedFont">{String}</span> <b>plugin</b>
 														
 													</dt>
 													<dd></dd>
 												
-													<dt>
-														<span class="light fixedFont">{function}</span> <b>func</b>
-														
-													</dt>
-													<dd>Function that is called for every node, should accept 1 param for the node</dd>
-												
-													<dt>
-														<span class="light fixedFont">{bool}</span> <b>innermostFirst</b>
-														
-													</dt>
-													<dd>If the innermost node should be passed to the function before it's parents</dd>
-												
-													<dt>
-														<span class="light fixedFont">{bool}</span> <b>siblingsOnly</b>
-														
-													</dt>
-													<dd>If to only traverse the nodes siblings</dd>
-												
-													<dt>
-														<span class="light fixedFont">{bool}</span> <b>reverse</b>
-														
-													</dt>
-													<dd>If to traverse the nodes in reverse</dd>
-												
 											</dl>
 										
 										
+										
+											<dl class="detailList nomargin">
+											
+												
+												
+												
+												
+												
+												
+												
+													<dt class="heading">Returns:</dt>
+													
+														<dd><span class="light fixedFont">{Boolean}</span> </dd>
+													
+												
+												
+												
+												
+												
+											
+											</dl>
 										
 										
 									</li>
