@@ -9,7 +9,7 @@
  *
  * @fileoverview SCEditor - A lightweight WYSIWYG BBCode and HTML editor
  * @author Sam Clarke
- * @version 1.4.1
+ * @version 1.4.2
  * @requires jQuery
  */
 
@@ -274,7 +274,8 @@
 			appendNewLine,
 			checkSelectionChanged,
 			checkNodeChanged,
-			autofocus;
+			autofocus,
+			emoticonsKeyPress;
 
 		/**
 		 * All the commands supported by the editor
@@ -669,9 +670,6 @@
 		 * @private
 		 */
 		initEmoticons = function () {
-			if(base.opts.toolbar.indexOf('emoticon') < 0)
-				return;
-
 			// prefix emoticon root to emoticon urls
 			if(base.opts.emoticonsRoot && base.opts.emoticons)
 			{
@@ -690,6 +688,8 @@
 				emoticon.src = url.url || url;
 				preLoadCache.push(emoticon);
 			});
+
+			base.emoticons(base.opts.emoticonsEnabled);
 		};
 
 		/**
@@ -1644,7 +1644,7 @@
 		 * @private
 		 */
 		replaceEmoticons = function (html) {
-			if(base.opts.toolbar.indexOf('emoticon') === -1)
+			if(!base.opts.emoticonsEnabled)
 				return html;
 
 			var emoticons = $.extend({}, base.opts.emoticons.more, base.opts.emoticons.dropdown, base.opts.emoticons.hidden);
@@ -2349,6 +2349,98 @@
 			return base.bind('selectionchanged', handler, false, true);
 		};
 
+		/**
+		 * Emoticons keypress handler
+		 * @private
+		 */
+		emoticonsKeyPress = function (e) {
+			var	pos     = 0,
+				curChar = String.fromCharCode(e.which);
+
+			if(!base.emoticonsCache) {
+				base.emoticonsCache = [];
+
+				$.each($.extend({}, base.opts.emoticons.more, base.opts.emoticons.dropdown, base.opts.emoticons.hidden), function(key, url) {
+					base.emoticonsCache[pos++] = [
+						key,
+						_tmpl("emoticon", {
+							key: key,
+							url: url.url || url,
+							tooltip: url.tooltip || key
+						})
+					];
+				});
+
+				base.emoticonsCache.sort(function(a, b){
+					return a[0].length - b[0].length;
+				});
+			}
+
+			if(!base.longestEmoticonCode)
+				base.longestEmoticonCode = base.emoticonsCache[base.emoticonsCache.length - 1][0].length;
+
+			if(base.getRangeHelper().raplaceKeyword(base.emoticonsCache, true, true, base.longestEmoticonCode, base.opts.emoticonsCompat, curChar))
+			{
+				if(/^\s$/.test(curChar) && base.opts.emoticonsCompat)
+					return true;
+
+				e.preventDefault();
+				e.stopPropagation();
+				return false;
+			}
+		};
+
+		/**
+		 * Gets if emoticons are currently enabled
+		 * @return {boolean}
+		 * @function
+		 * @name emoticons
+		 * @memberOf jQuery.sceditor.prototype
+		 * @since 1.4.2
+		 */
+		/**
+		 * Enables/disables emoticons
+		 *
+		 * @param {boolean} enable
+		 * @return {this}
+		 * @function
+		 * @name emoticons^2
+		 * @memberOf jQuery.sceditor.prototype
+		 * @since 1.4.2
+		 */
+		base.emoticons = function(enable) {
+			if(!enable && enable !== false)
+				return base.opts.emoticonsEnabled;
+
+			var $body = $(getWysiwygDoc().body);
+
+			base.opts.emoticonsEnabled = enable;
+
+			if(enable)
+			{
+				$body.keypress(emoticonsKeyPress);
+
+				if(!base.sourceMode())
+				{
+					rangeHelper.saveRange();
+
+					$body.html(replaceEmoticons($body.html()));
+
+					rangeHelper.restoreRange();
+				}
+			}
+			else
+			{
+				$body.find('img[data-sceditor-emoticon]').replaceWith(function() {
+					return $(this).data('sceditor-emoticon');
+				});
+
+				$body.unbind('keypress', emoticonsKeyPress);
+			}
+
+			return this;
+		};
+
 		// run the initializer
 		init();
 	};
@@ -3015,48 +3107,6 @@
 			},
 			txtExec: function(caller) {
 				$.sceditor.command.get('emoticon').exec.call(this, caller);
-			},
-			keyPress: function (e)
-			{
-				// make sure emoticons command is in the toolbar before running
-				if(this.opts.toolbar.indexOf('emoticon') === -1)
-					return;
-
-				var	editor  = this,
-					pos     = 0,
-					curChar = String.fromCharCode(e.which);
-
-				if(!editor.EmoticonsCache) {
-					editor.EmoticonsCache = [];
-
-					$.each($.extend({}, editor.opts.emoticons.more, editor.opts.emoticons.dropdown, editor.opts.emoticons.hidden), function(key, url) {
-						editor.EmoticonsCache[pos++] = [
-							key,
-							_tmpl("emoticon", {
-								key: key,
-								url: url.url || url,
-								tooltip: url.tooltip || key
-							})
-						];
-					});
-
-					editor.EmoticonsCache.sort(function(a, b){
-						return a[0].length - b[0].length;
-					});
-				}
-
-				if(!editor.longestEmoticonCode)
-					editor.longestEmoticonCode = editor.EmoticonsCache[editor.EmoticonsCache.length - 1][0].length;
-
-				if(editor.getRangeHelper().raplaceKeyword(editor.EmoticonsCache, true, true, editor.longestEmoticonCode, editor.opts.emoticonsCompat, curChar))
-				{
-					if(/^\s$/.test(curChar) && editor.opts.emoticonsCompat)
-						return true;
-
-					e.preventDefault();
-					e.stopPropagation();
-					return false;
-				}
 			},
 			tooltip: "Insert an emoticon"
 		},
@@ -4489,6 +4539,13 @@
 		 * @type {Boolean}
 		 */
 		emoticonsCompat: false,
+
+		/**
+		 * If to enable emoticons. Can be changes at runtime using the emoticons() method.
+		 * @type {Boolean}
+		 * @since 1.4.2
+		 */
+		emoticonsEnabled: true,
 
 		/**
 		 * Emoticon root URL
