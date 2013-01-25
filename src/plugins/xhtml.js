@@ -17,7 +17,8 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 // ==/ClosureCompiler==
 
-// MAKE SURE PEOPLE KNOW NOT To RELY ON THIS AND HAVE SERVER SIDE FILTERING TOO. hAVE A LIST OF SUGGESTED FILTERS IN DOCUMENTATION
+/*jshint smarttabs: true, jquery: true, eqnull:true, curly: false */
+/*global prompt: true*/
 
 (function($, window, document) {
 	'use strict';
@@ -51,6 +52,7 @@
 			handleComment,
 			handleText,
 			indent,
+			canIndent,
 			newline;
 
 		/**
@@ -79,10 +81,21 @@
 				.replace(/[^\S|\u00A0]+/g, " ");
 		};
 
-		base.serialize = function(node) {
+		base.serialize = function(node, onlyChildren) {
 			outputStringBuilder = [];
 
-			serializeNode(node);
+			if(onlyChildren)
+			{
+				node = node.firstChild;
+
+				while(node)
+				{
+					serializeNode(node);
+					node = node.nextSibling;
+				}
+			}
+			else
+				serializeNode(node);
 
 			return outputStringBuilder.join('');
 		};
@@ -126,7 +139,6 @@
 				case 7: // processing instruction
 				case 10: // document type
 				case 12: // notation
-				default:
 					break;
 			}
 		};
@@ -149,13 +161,14 @@
 				i           = node.attributes.length,
 				selfClosing = !node.firstChild && /^(?:area|base|br|col|embed|hr|img|input|link|meta|param)$/.test(tagName);
 
-			indent();
+			if(canIndent(node))
+				indent();
 
 			outputStringBuilder.push('<' + tagName);
 			while(i--)
 			{
 				attr = node.attributes[i];
-				outputStringBuilder.push(" ", attr.name.toLowerCase(), '="', attr.value, '"');
+				outputStringBuilder.push(" ", attr.name.toLowerCase(), '="', escapeEntites(attr.value), '"');
 			}
 			outputStringBuilder.push(selfClosing ? ' />' : '>');
 
@@ -172,7 +185,7 @@
 
 			if(!selfClosing)
 			{
-				if(node.firstChild)
+				if(canIndent(node) && node.firstChild)
 					indent();
 
 				outputStringBuilder.push('</', tagName, '>');
@@ -193,9 +206,11 @@
 
 		handleText = function(node) {
 			var text = trim(node.nodeValue);
+
 			if(text)
 			{
-				indent();
+				if(canIndent(node))
+					indent();
 
 				outputStringBuilder.push(escapeEntites(text));
 			}
@@ -208,6 +223,18 @@
 
 			while(i--)
 				outputStringBuilder.push(opts.indentStr);
+		};
+
+		canIndent = function(node) {
+			if(node.nodeType !== 1)
+			{
+				if(node.previousSibling && $.sceditor.dom.isInline(node.previousSibling))
+					return false;
+
+				node = node.parentNode;
+			}
+
+			return !$.sceditor.dom.isInline(node);
 		};
 
 		newline = function() {
@@ -364,13 +391,16 @@
 		 * @return {String}
 		 */
 		base.signalToSource = function(html, domBody) {
-			domBody    = domBody[0];
+			domBody = domBody.jquery ? domBody[0] : domBody;
+
+			// remove selection markers
+			$(domBody).find('.sceditor-selection').remove();
 
 			convertTags(domBody);
 			removetags(domBody);
 			removeAttribs(domBody);
 
-			return (new $.sceditor.XHTMLSerializer()).serialize(domBody);
+			return (new $.sceditor.XHTMLSerializer()).serialize(domBody, true);
 		};
 
 		/**
@@ -648,7 +678,7 @@
 			conv: function(node) {
 				var $node = $(node);
 
-				$node.css('font-size', $node.attr('size')).removeAttr('size');
+				$node.css('font-size', $node.css('font-size')).removeAttr('size');
 			}
 		},
 		{
