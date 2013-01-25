@@ -42,7 +42,8 @@ window.onload = function() {
 			'icon-code' : '&#xe021;',
 			'icon-center' : '&#xe022;',
 			'icon-bulletlist' : '&#xe023;',
-			'icon-bold' : '&#xe024;'
+			'icon-bold' : '&#xe024;',
+			'icon-grip-rtl' : '&#xe025;'
 		},
 		els = document.getElementsByTagName('*'),
 		i, attr, html, c, el;

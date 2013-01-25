@@ -139,3 +139,6 @@
 .icon-bold:before {
 	content: "\e024";
 }
+.icon-grip-rtl:before {
+	content: "\e025";
+}

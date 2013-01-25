@@ -97,7 +97,7 @@ div.sceditor-dropdown div
 		.rounded(0);
 	}
 
-	// Used for IE 6 as it's old and bugy
+	// Used for IE 6 as it has no position fixed support
 	html.sceditor-maximize,
 	body.sceditor-maximize
 	{
@@ -341,6 +341,21 @@ div.sceditor-dropdown div
 			zoom: 1;
 		}
 
+		.ie6 .sceditor-button
+		{
+			padding: 0;
+		}
+
+			.ie6 .sceditor-button div
+			{
+				margin: 5px;
+			}
+
+			.ie7 .sceditor-button div
+			{
+				margin: 5px 0;
+			}
+
 			.sceditor-button:hover,
 			.sceditor-button:active,
 			.sceditor-button.active
@@ -411,9 +426,6 @@ div.sceditor-dropdown div
 			{
 				padding: 0 2px 0 20px;
 			}
-
-
-			// add has-text and has-icon classes? or better yet add no-icon, no-text classes
 
 .rtl
 {
