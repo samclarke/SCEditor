@@ -812,8 +812,30 @@
 		 * @private
 		 */
 		removeEmpty = function(tokens) {
-			var	token, bbcode,
+			var	token, bbcode, allWhiteSpace,
 				i = tokens.length;
+
+			/**
+			 * Checks if all children are whitespace or not
+			 * @private
+			 */
+			allWhiteSpace = function(children) {
+				var j = children.length;
+
+				while(j--)
+				{
+					if(children[j].type === tokenType.open)
+						return false;
+
+					if(children[j].type === tokenType.close)
+						return false;
+
+					if(children[j].type === tokenType.content && children[j].val && /\S|\u00A0/.test(children[j].val))
+						return false;
+				}
+
+				return true;
+			};
 
 			while(i--)
 			{
@@ -827,7 +849,7 @@
 				// removed this one doesn't think it's not empty.
 				removeEmpty(token.children);
 
-				if(token.children.length < 1 && bbcode && !bbcode.isSelfClosing && !bbcode.allowsEmpty)
+				if(allWhiteSpace(token.children) && bbcode && !bbcode.isSelfClosing && !bbcode.allowsEmpty)
 					tokens.splice(i, 1);
 			}
 		};
@@ -1212,7 +1234,6 @@
 			handleTags,
 			formatString,
 			getStyle,
-			isEmpty,
 			mergeSourceModeCommands,
 			removeFirstLastDiv;
 
@@ -1413,23 +1434,6 @@
 
 			return style[name];
 		};
-// TODO: remove duplicated by parser empty removal
-		isEmpty = function(element) {
-			var	childNodes = element.childNodes,
-				i          = childNodes.length;
-
-			if(element.nodeValue && /\S|\u00A0/.test(element.nodeValue))
-				return false;
-
-			if(childNodes.length === 0 || (childNodes.length === 1 && (/br/i.test(childNodes[0].nodeName) || isEmpty(childNodes[0]))))
-				return true;
-
-			while(i--)
-				if(!isEmpty(childNodes[i]))
-					return false;
-
-			return true;
-		};
 
 		/**
 		 * Checks if any bbcode styles match the elements styles
@@ -1454,11 +1458,8 @@
 				// so you don't end up with [i]parent[i]child[/i][/i]
 				if(!elementPropVal || getStyle(element.parent()[0], property) === elementPropVal)
 					return;
-// TODO: remove allows empty handling here
-				$.each(bbcodes, function(bbcode, values) {
-					if(!/\S|\u00A0/.test(content) && !base.bbcodes[bbcode].allowsEmpty && isEmpty(element[0]))
-						return;
 
+				$.each(bbcodes, function(bbcode, values) {
 					if(!values || $.inArray(elementPropVal.toString(), values) > -1) {
 						if($.isFunction(base.bbcodes[bbcode].format))
 							content = base.bbcodes[bbcode].format.call(base, element, content);
@@ -1490,9 +1491,6 @@
 			if(tagsToBbcodes[tag] && tagsToBbcodes[tag][blockLevel]) {
 				// loop all bbcodes for this tag
 				$.each(tagsToBbcodes[tag][blockLevel], function(bbcode, bbcodeAttribs) {
-					if(!/\S|\u00A0/.test(content) && !base.bbcodes[bbcode].allowsEmpty && isEmpty(element[0]))
-						return;
-// TODO: remove, duplicated by parser empty removal
 					// if the bbcode requires any attributes then check this has
 					// all needed
 					if(bbcodeAttribs) {
