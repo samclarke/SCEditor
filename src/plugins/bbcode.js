@@ -301,11 +301,10 @@
 						(?:.(?!\s\S+=))*.?		Anything that isn't part of [space][non-space][=] which would be a new attribute
 					)
 				)
-				 */
+				*/
 				atribsRegex = /([^\s=]+)=(?:(?:(["'])((?:\\\2|[^\2])*?)\2)|((?:.(?!\s\S+=))*.))/g,
 				ret         = {};
 
-			//
 			unquote = function(str, quote) {
 				if(quote)
 					str = str.replace('\\\\', '\\').replace('\\' + quote, quote);
@@ -402,7 +401,7 @@
 			return true;
 		};
 
-		// TODO: Tidy this parseTokens() function up a bit.
+// TODO: Tidy this parseTokens() function up a bit.
 		/**
 		 * Parses an array of tokens created by tokenize()
 		 *
@@ -1402,6 +1401,10 @@
 			});
 		};
 
+		/**
+		 * Gets the value of a style property on the passed element
+		 * @private
+		 */
 		getStyle = function(element, property) {
 			var	$elm, ret, dir, textAlign, name,
 				style = element.style;
@@ -1659,11 +1662,11 @@
 		 */
 		removeFirstLastDiv = function(html)
 		{
-			var	node, next,
+			var	node, next, removeDiv,
 				$output = $('<div />').hide().appendTo(document.body),
 				output  = $output[0];
 
-			var removeDiv = function(node) {
+			removeDiv = function(node) {
 				while((next = node.firstChild))
 					output.insertBefore(next, node);
 

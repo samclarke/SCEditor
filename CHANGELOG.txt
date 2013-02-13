@@ -2,6 +2,10 @@ Version 1.4.2:
 	Added emoticons() method which allows enabling/disabling emoticons at runtime.
 	Fixed bug with jQuery UI dialogs and SCEditor dropdowns appearing behind them.
 		- Thanks to @EugeneAksyonov for reporting
+	Fixed bug with multiple editors and maximise.
+		- Thanks to Tauno for reporting
+	Fixed whitespace handling bug causing new lines to be removed from text pasted from Word.
+		- Thanks to @lpuig for reporting
 
 Version 1.4.1:
 	Dropped GPL to match jQuery license.

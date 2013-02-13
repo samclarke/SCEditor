@@ -1104,7 +1104,7 @@
 		 *
 		 * @param {HTMLElement}	menuItem		The button to align the drop down with
 		 * @param {string}	dropDownName		Used for styling the dropown, will be a class sceditor-dropDownName
-		 * @param {string}	content			The HTML content of the dropdown
+		 * @param {HTMLElement}	content			The HTML content of the dropdown
 		 * @param {bool}	[ieUnselectable=true]	If to add the unselectable attribute to all the contents elements. Stops IE from deselecting the text in the editor
 		 * @function
 		 * @name createDropDown
@@ -3975,6 +3975,8 @@
 			if(!elm || elm.nodeType !== 1)
 				return true;
 
+
+
 			elm = elm.tagName.toLowerCase();
 
 			if(elm === 'code')
@@ -4052,15 +4054,20 @@
 		removeWhiteSpace: function(root) {
 			// 00A0 is non-breaking space which should not be striped
 			var	nodeValue,
-				regex = /[^\S|\u00A0]+/g;
+				multiWhitespace = /[^\S|\u00A0]+/g;
 
 			this.traverse(root, function(node) {
 				nodeValue = node.nodeValue;
 // TODO: have proper white-space checking for pre formatted text instead of checking for code and pre tags.
 				if(node.nodeType === 3 && $(node).parents('code, pre').length === 0 && nodeValue)
 				{
-					// new lines in text nodes are always ignored in normal handling
-					nodeValue = nodeValue.replace(/[\r\n]+/, "");
+					if(!node.previousSibling || !$.sceditor.dom.isInline(node.previousSibling))
+						nodeValue = nodeValue.replace(/^[\r\n]+/, "");
+
+					if(!node.nextSibling || !$.sceditor.dom.isInline(node.nextSibling))
+						nodeValue = nodeValue.replace(/[\r\n]+$/, "");
+
+					nodeValue = nodeValue.replace(/[\r\n]+/, " ");
 
 					//remove empty nodes
 					if(!nodeValue.length)
@@ -4071,10 +4078,12 @@
 
 					// If entirely whitespace then just set to a single space
 					if(!/\S|\u00A0/.test(nodeValue))
-						node.nodeValue = " ";
+						nodeValue = " ";
 					// replace multiple spaces inbetween non-white space with a single space
-					else if(regex.test(nodeValue))
-						node.nodeValue = nodeValue.replace(regex, " ");
+					else if(multiWhitespace.test(nodeValue))
+						nodeValue = nodeValue.replace(multiWhitespace, " ");
+
+					node.nodeValue = nodeValue;
 				}
 			});
 		},
