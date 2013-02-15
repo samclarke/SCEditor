@@ -1563,10 +1563,11 @@
 				base.focus();
 
 			rangeHelper.saveRange();
+
 			$.sceditor.dom.fixNesting($body.get(0));
-			html = $body.html();
 
 			// filter the HTML and DOM through any plugins
+			html = $body.html();
 			if(filter !== false && pluginManager.hasHandler("toSource"))
 				html = pluginManager.callOnlyFirst("toSource", html, $body);
 
@@ -3586,7 +3587,8 @@
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.insertNodeAt = function(start, node) {
-			var range = base.cloneSelected();
+			var	currentRange = base.selectedRange(),
+				range        = base.cloneSelected();
 
 			if(!range)
 				return false;
@@ -3597,6 +3599,10 @@
 				range.insertNode(node);
 			else
 				range.pasteHTML(node.outerHTML);
+
+			// Reselect the current range.
+			// Fixes issue with Chrome losing the selection.
+			base.selectRange(currentRange);
 		};
 
 		/**

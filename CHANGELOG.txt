@@ -8,6 +8,8 @@ Version 1.4.2:
 		- Thanks to @lpuig for reporting
 	Improved dropdowns to close if the button is clicked twice.
 		- Thanks to @hhy89 for updating
+	Fixed bug with Chrome losing the selection when using autoUpdate option.
+		- Thanks to @lpuig for reporting
 
 Version 1.4.1:
 	Dropped GPL to match jQuery license.
