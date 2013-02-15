@@ -3601,7 +3601,7 @@
 				range.pasteHTML(node.outerHTML);
 
 			// Reselect the current range.
-			// Fixes issue with Chrome losing the selection.
+			// Fixes issue with Chrome losing the selection. Issue#82
 			base.selectRange(currentRange);
 		};
 
