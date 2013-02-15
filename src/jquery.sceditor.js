@@ -1112,18 +1112,11 @@
 		 */
 		base.createDropDown = function (menuItem, dropDownName, content, ieUnselectable) {
 			// first click for create second click for close
-			var onlyclose = false;
-			
-			if($dropdown !== null && typeof $dropdown != "undefined")
-			{
-				var classList = $dropdown.attr('class').split(/\s+/);
-				if (classList[1].replace('sceditor-', '') == dropDownName)
-					onlyclose = true;
-			}
-			
+			var onlyclose = $dropdown && $dropdown.is('.sceditor-' + dropDownName);
+
 			base.closeDropDown();
-			
-			if (onlyclose) return;
+
+			if(onlyclose) return;
 
 			// IE needs unselectable attr to stop it from unselecting the text in the editor.
 			// The editor can cope if IE does unselect the text it's just not nice.
