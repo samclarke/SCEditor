@@ -318,9 +318,6 @@
 			initOptions();
 			initEvents();
 
-			if(base.opts.autofocus)
-				autofocus();
-
 			// force into source mode if is a browser that can't handle
 			// full editing
 			if(!$.sceditor.isWysiwygSupported)
@@ -330,13 +327,18 @@
 
 			// Can't use load event as it gets fired before the CSS
 			// is loaded in some browsers
-			if(base.opts.autoExpand)
+			if(base.opts.autoExpand || base.opts.autofocus)
 			{
 				var interval = setInterval(function() {
 					if (!document.readyState || document.readyState === "complete")
 					{
-						base.expandToContent();
 						clearInterval(interval);
+
+						if(base.opts.autofocus)
+							autofocus();
+
+						if(base.opts.autoExpand)
+							base.expandToContent();
 					}
 				}, 10);
 			}
@@ -697,22 +699,55 @@
 		 * @private
 		 */
 		autofocus = function() {
-			var	rng,
-				doc  = wysiwygEditor.contentWindow.document,
-				body = doc.body;
+			var	rng, marker, elm, txtPos,
+				doc      = getWysiwygDoc(),
+				body     = doc.body,
+				focusEnd = !!base.opts.autofocusEnd;
 
-			if(!doc.createRange)
-				return base.focus();
-
-			if(body.firstChild)
+			if(base.sourceMode())
 			{
-				rng = doc.createRange();
-				rng.setStart(body.firstChild, 0);
-				rng.setEnd(body.firstChild, 0);
+				txtPos = sourceEditor.value.length;
 
-				rangeHelper.selectRange(rng);
-				body.focus();
+				if(sourceEditor.setSelectionRange)
+					sourceEditor.setSelectionRange(txtPos, txtPos);
+				else if (sourceEditor.createTextRange)
+				{
+					rng = sourceEditor.createTextRange();
+					rng.moveEnd('character', txtPos);
+					rng.moveStart('character', txtPos);
+					rangeHelper.selectRange(rng);
+				}
 			}
+			else // WYSIWYG mode
+			{
+				if(focusEnd)
+					$(body).append((elm = doc.createElement('div')));
+				else
+					elm = body.firstChild;
+
+				if(doc.createRange)
+				{
+
+					rng = doc.createRange();
+					rng.setStart(elm, 0);
+					rng.setEnd(elm, 0);
+				}
+				else
+				{
+					rng = body.createTextRange();
+					rng.moveToElementText(elm);
+					rng.collapse(false);
+				}
+				rangeHelper.selectRange(rng);
+
+				if(focusEnd)
+				{
+					$(doc).scrollTop(body.scrollHeight);
+					$(body).scrollTop(body.scrollHeight);
+				}
+			}
+
+			base.focus();
 		};
 
 		/**
@@ -2256,6 +2291,7 @@
 				if(!base.inSourceMode())
 				{
 					wysiwygEditor.contentWindow.focus();
+					getWysiwygDoc().body.focus();
 
 					// Needed for IE < 9
 					if(lastRange)
@@ -4711,6 +4747,12 @@
 		 * @type {Boolean}
 		 */
 		autofocus: false,
+
+		/**
+		 * If to auto focus the editor to the end of the content
+		 * @type {Boolean}
+		 */
+		autofocusEnd: true,
 
 		/**
 		 * If to auto expand the editor to fix the content

@@ -10,6 +10,7 @@ Version 1.4.2:
 		- Thanks to @hhy89 for updating
 	Fixed bug with Chrome losing the selection when using autoUpdate option.
 		- Thanks to @lpuig for reporting
+	Added support for auto focus to place the cursor at the end.
 
 Version 1.4.1:
 	Dropped GPL to match jQuery license.
