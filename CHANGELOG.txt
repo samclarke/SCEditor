@@ -11,6 +11,8 @@ Version 1.4.2:
 	Fixed bug with Chrome losing the selection when using autoUpdate option.
 		- Thanks to @lpuig for reporting
 	Added support for auto focus to place the cursor at the end.
+	Fixed bug where pasted emoticons ":)" were not being converted into emoticon images.
+		- Thanks to @shaoner for reporting
 
 Version 1.4.1:
 	Dropped GPL to match jQuery license.

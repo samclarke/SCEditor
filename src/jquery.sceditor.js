@@ -1288,7 +1288,7 @@
 				pasteddata = pluginManager.callOnlyFirst("toWysiwyg", pasteddata, true);
 
 			rangeHelper.restoreRange();
-			rangeHelper.insertHTML(pasteddata);
+			rangeHelper.insertHTML(replaceEmoticons(pasteddata));
 		};
 
 		/**
