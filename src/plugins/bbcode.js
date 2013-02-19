@@ -1573,10 +1573,11 @@
 		base.elementToBbcode = function($element) {
 			return (function toBBCode(node, vChildren) {
 				var ret = '';
-
+// TODO: Move to BBCode class
 				$.sceditor.dom.traverse(node, function(node) {
 					var	$node		= $(node),
 						curTag		= '',
+						nodeType        = node.nodeType,
 						tag		= node.nodeName.toLowerCase(),
 						vChild		= validChildren[tag],
 						isValidChild	= true;
@@ -1592,8 +1593,11 @@
 							vChild = vChildren;
 					}
 
+					if(nodeType !== 3 && nodeType !== 1)
+						return;
+
 					// 3 is text element
-					if(node.nodeType !== 3)
+					if(nodeType !== 3)
 					{
 						// skip ignored elments
 						if($node.hasClass("sceditor-ignore"))
