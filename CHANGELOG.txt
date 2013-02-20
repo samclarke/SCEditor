@@ -15,6 +15,8 @@ Version 1.4.2:
 		- Thanks to @shaoner for reporting
 	Fixed bug where if the BBCode styles property was null it caused an error.
 		- Thanks to @OmarHawk for reporting
+	Fixed bug with iOS losing focus.
+		- Thanks to @coder4u for reporting.
 
 Version 1.4.1:
 	Dropped GPL to match jQuery license.
