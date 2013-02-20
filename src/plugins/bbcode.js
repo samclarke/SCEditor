@@ -1383,7 +1383,7 @@
 		 */
 		buildBbcodeCache = function() {
 			$.each(base.bbcodes, function(bbcode) {
-				if(typeof base.bbcodes[bbcode].tags !== "undefined")
+				if(base.bbcodes[bbcode].tags)
 					$.each(base.bbcodes[bbcode].tags, function(tag, values) {
 						var isBlock = base.bbcodes[bbcode].isInline === false;
 						tagsToBbcodes[tag] = (tagsToBbcodes[tag] || {});
@@ -1391,7 +1391,7 @@
 						tagsToBbcodes[tag][isBlock][bbcode] = values;
 					});
 
-				if(typeof base.bbcodes[bbcode].styles !== "undefined")
+				if(base.bbcodes[bbcode].styles)
 					$.each(base.bbcodes[bbcode].styles, function(style, values) {
 						var isBlock = base.bbcodes[bbcode].isInline === false;
 						stylesToBbcodes[isBlock] = (stylesToBbcodes[isBlock] || {});
@@ -1593,11 +1593,12 @@
 							vChild = vChildren;
 					}
 
+					// 3 = text
+					// 1 = element
 					if(nodeType !== 3 && nodeType !== 1)
 						return;
 
-					// 3 is text element
-					if(nodeType !== 3)
+					if(nodeType === 1)
 					{
 						// skip ignored elments
 						if($node.hasClass("sceditor-ignore"))
