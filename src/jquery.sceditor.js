@@ -419,7 +419,12 @@
 			// iframe overflow fix for iOS, also fixes an IE issue with the
 			// editor not getting focus when clicking inside
 			if(/iPhone|iPod|iPad| wosbrowser\//i.test(navigator.userAgent) || $.sceditor.ie)
+			{
 				$body.height("100%");
+
+				if(!$.sceditor.ie)
+					$body.bind('touchend', base.focus);
+			}
 
 			rangeHelper = new $.sceditor.rangeHelper(wysiwygEditor.contentWindow);
 
