@@ -152,7 +152,7 @@
 
 		init = function() {
 			base.opts    = $.extend({}, $.sceditor.BBCodeParser.defaults, options);
-			base.bbcodes = $.sceditorBBCodePlugin.bbcodes;
+			base.bbcodes = $.sceditor.plugins.bbcode.bbcodes;
 		};
 
 		/**
@@ -314,7 +314,7 @@
 
 			// if only one attribute then remove the = from the start and strip any quotes
 			if(attrs.charAt(0) === "=" && attrs.split("=").length <= 2)
-				ret.defaultattr = $.sceditorBBCodePlugin.stripQuotes(attrs.substr(1));
+				ret.defaultattr = $.sceditor.plugins.bbcode.stripQuotes(attrs.substr(1));
 			else
 			{
 				if(attrs.charAt(0) === "=")
@@ -893,7 +893,7 @@
 						if($.isFunction(bbcode.html))
 							html = bbcode.html.call(base, token, token.attrs, content);
 						else
-							html = $.sceditorBBCodePlugin.formatString(bbcode.html, content);
+							html = $.sceditor.plugins.bbcode.formatString(bbcode.html, content);
 					}
 					else
 						html = token.val + content + (token.closing ? token.closing.val : '');
@@ -1236,9 +1236,9 @@
 			mergeSourceModeCommands,
 			removeFirstLastDiv;
 
-		formatString     = $.sceditorBBCodePlugin.formatString;
-		base.bbcodes     = $.sceditorBBCodePlugin.bbcodes;
-		base.stripQuotes = $.sceditorBBCodePlugin.stripQuotes;
+		formatString     = $.sceditor.plugins.bbcode.formatString;
+		base.bbcodes     = $.sceditor.plugins.bbcode.bbcodes;
+		base.stripQuotes = $.sceditor.plugins.bbcode.stripQuotes;
 
 		/**
 		 * cache of all the tags pointing to their bbcodes to enable
@@ -1550,7 +1550,7 @@
 		 * @param string	html	Html string, this function ignores this, it works off domBody
 		 * @param HtmlElement	domBody	Editors dom body object to convert
 		 * @return string BBCode which has been converted from HTML
-		 * @memberOf jQuery.sceditorBBCodePlugin.prototype
+		 * @memberOf jQuery.plugins.bbcode.prototype
 		 */
 		base.signalToSource = function(html, domBody) {
 			var parser = new $.sceditor.BBCodeParser(base.opts.parserOptions);
@@ -1568,7 +1568,7 @@
 		 * @param HtmlElement	element		The element to convert to BBCode
 		 * @param array		vChildren	Valid child tags allowed
 		 * @return string BBCode
-		 * @memberOf jQuery.sceditorBBCodePlugin.prototype
+		 * @memberOf jQuery.plugins.bbcode.prototype
 		 */
 		base.elementToBbcode = function($element) {
 			return (function toBBCode(node, vChildren) {
@@ -1648,7 +1648,7 @@
 		 * @param {String} text
 		 * @param {Bool} asFragment
 		 * @return {String} HTML
-		 * @memberOf jQuery.sceditorBBCodePlugin.prototype
+		 * @memberOf jQuery.plugins.bbcode.prototype
 		 */
 		base.signalToWysiwyg = function(text, asFragment) {
 			var	parser = new $.sceditor.BBCodeParser(base.opts.parserOptions),
@@ -1704,7 +1704,7 @@
 	 * @return string
 	 * @since v1.4.0
 	 */
-	$.sceditorBBCodePlugin.stripQuotes = function(str) {
+	$.sceditor.plugins.bbcode.stripQuotes = function(str) {
 		return str.replace(/^(["'])(.*?)\1$/, "$2");
 	};
 
@@ -1717,7 +1717,7 @@
 	 * @return {String}
 	 * @since v1.4.0
 	 */
-	$.sceditorBBCodePlugin.formatString = function() {
+	$.sceditor.plugins.bbcode.formatString = function() {
 		var args = arguments;
 		return args[0].replace(/\{(\d+)\}/g, function(str, p1) {
 			return typeof args[p1-0+1] !== "undefined" ?
@@ -1733,7 +1733,7 @@
 	 * @param {String} color
 	 * @return {String}
 	 */
-	$.sceditorBBCodePlugin.normaliseColour = function(color) {
+	$.sceditor.plugins.bbcode.normaliseColour = function(color) {
 		var m;
 
 		function toHex(n) {
@@ -1758,7 +1758,7 @@
 		return color;
 	};
 
-	$.sceditorBBCodePlugin.bbcodes = {
+	$.sceditor.plugins.bbcode.bbcodes = {
 		// START_COMMAND: Bold
 		b: {
 			tags: {
@@ -1924,7 +1924,7 @@
 				if(element.nodeName.toLowerCase() !== "font" || !(color = $element.attr('color')))
 					color = element.style.color || $element.css('color');
 
-				return '[color=' + $.sceditorBBCodePlugin.normaliseColour(color) + ']' + content + '[/color]';
+				return '[color=' + $.sceditor.plugins.bbcode.normaliseColour(color) + ']' + content + '[/color]';
 			},
 			html: function(token, attrs, content) {
 				return '<font color="' + attrs.defaultattr + '">' + content + '</font>';
@@ -2274,10 +2274,10 @@
 	/**
 	 * Static BBCode helper class
 	 * @class command
-	 * @name jQuery.sceditorBBCodePlugin.bbcode
+	 * @name jQuery.plugins.bbcode.bbcode
 	 */
-	$.sceditorBBCodePlugin.bbcode =
-	/** @lends jQuery.sceditorBBCodePlugin.bbcode */
+	$.sceditor.plugins.bbcode.bbcode =
+	/** @lends jQuery.plugins.bbcode.bbcode */
 	{
 		/**
 		 * Gets a BBCode
@@ -2287,7 +2287,7 @@
 		 * @since v1.3.5
 		 */
 		get: function(name) {
-			return $.sceditorBBCodePlugin.bbcodes[name] || null;
+			return $.sceditor.plugins.bbcode.bbcodes[name] || null;
 		},
 
 		/**
@@ -2304,10 +2304,10 @@
 				return false;
 
 			// merge any existing command properties
-			bbcode        = $.extend($.sceditorBBCodePlugin.bbcodes[name] || {}, bbcode);
-			bbcode.remove = function() { $.sceditorBBCodePlugin.bbcode.remove(name); };
+			bbcode        = $.extend($.sceditor.plugins.bbcode.bbcodes[name] || {}, bbcode);
+			bbcode.remove = function() { $.sceditor.plugins.bbcode.bbcode.remove(name); };
 
-			$.sceditorBBCodePlugin.bbcodes[name] = bbcode;
+			$.sceditor.plugins.bbcode.bbcodes[name] = bbcode;
 
 			return this;
 		},
@@ -2343,13 +2343,22 @@
 		 * @since v1.3.5
 		 */
 		remove: function(name) {
-			if($.sceditorBBCodePlugin.bbcodes[name])
-				delete $.sceditorBBCodePlugin.bbcodes[name];
+			if($.sceditor.plugins.bbcode.bbcodes[name])
+				delete $.sceditor.plugins.bbcode.bbcodes[name];
 
 			return this;
 		}
 	};
 
+	/**
+	 * Deprecated, use plugins: option instead. I.e.:
+	 *
+	 * $('textarea').sceditor({
+	 * 	plugins: 'bbcode'
+	 * });
+	 *
+	 * @deprecated
+	 */
 	$.fn.sceditorBBCodePlugin = function (options) {
 		options = options || {};
 
