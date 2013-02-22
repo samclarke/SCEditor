@@ -312,6 +312,8 @@
 
 			// create the editor
 			initPlugins();
+			initEmoticons();
+
 			initToolBar();
 			initEditor();
 			initCommands();
@@ -322,8 +324,6 @@
 			// full editing
 			if(!$.sceditor.isWysiwygSupported)
 				base.toggleSourceMode();
-
-			initEmoticons();
 
 			// Can't use load event as it gets fired before the CSS
 			// is loaded in some browsers
