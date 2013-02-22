@@ -467,6 +467,8 @@
 
 			if(base.opts.id)
 				$editorContainer.attr('id', base.opts.id);
+
+			base.emoticons(base.opts.emoticonsEnabled);
 		};
 
 		/**
@@ -695,8 +697,6 @@
 				emoticon.src = url.url || url;
 				preLoadCache.push(emoticon);
 			});
-
-			base.emoticons(base.opts.emoticonsEnabled);
 		};
 
 		/**
