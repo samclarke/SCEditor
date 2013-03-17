@@ -272,6 +272,13 @@
 			else
 				name = '#';
 
+			// Treat unknown BBCodes as content
+			if((type === "open" || type === "close") && !$.sceditor.plugins.bbcode.bbcodes[name])
+			{
+				type = 'content';
+				name = '#';
+			}
+
 			return new TokenizeToken(type, name, val, attrs);
 		};
 
