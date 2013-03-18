@@ -237,43 +237,21 @@
 
 			// Extract the name and attributes from opening tags and
 			// just the name from closing tags.
-			if(type === "open")
+			if(type === "open" && (matches = val.match(/\[([^\]\s=]+)(?:([^\]]+))?\]/)))
 			{
-				matches = val.match(/\[([^\]\s=]+)(?:([^\]]+))?\]/);
+				name = lower(matches[1]);
 
-				// Make sure there was a match otherwise it must be content
-				if(matches)
-				{
-					name = lower(matches[1]);
-
-					if(matches[2] && (matches[2] = $.trim(matches[2])))
-						attrs = tokenizeAttrs(matches[2]);
-				}
-				else
-				{
-					type = 'content';
-					name = '#';
-				}
+				if(matches[2] && (matches[2] = $.trim(matches[2])))
+					attrs = tokenizeAttrs(matches[2]);
 			}
-			else if(type === "close")
-			{
-				matches = val.match(/\[\/([^\[\]]+)\]/);
-
-				if(!matches)
-				{
-					type = 'content';
-					name = '#';
-				}
-				else
-					name = lower(matches[1]);
-			}
+			// Extract the name from closing tags
+			else if(type === "close" && (matches = val.match(/\[\/([^\[\]]+)\]/)))
+				name = lower(matches[1]);
 			else if(type === "newline")
 				name = '#newline';
-			else
-				name = '#';
 
-			// Treat unknown BBCodes as content
-			if((type === "open" || type === "close") && !$.sceditor.plugins.bbcode.bbcodes[name])
+			// Treat all tokens without a name and all unknown BBCodes as content
+			if(!name || (type === "open" || type === "close") && !$.sceditor.plugins.bbcode.bbcodes[name])
 			{
 				type = 'content';
 				name = '#';
@@ -291,7 +269,7 @@
 		 * @private
 		 */
 		tokenizeAttrs = function(attrs) {
-			var	matches, unquote,
+			var	matches,
 				/*
 				([^\s=]+)					Anything that's not a space or equals
 				=						Equals =
@@ -310,18 +288,12 @@
 				)
 				*/
 				atribsRegex = /([^\s=]+)=(?:(?:(["'])((?:\\\2|[^\2])*?)\2)|((?:.(?!\s\S+=))*.))/g,
+				unquote     = $.sceditor.plugins.bbcode.stripQuotes,
 				ret         = {};
 
-			unquote = function(str, quote) {
-				if(quote)
-					str = str.replace('\\\\', '\\').replace('\\' + quote, quote);
-
-				return str;
-			};
-
 			// if only one attribute then remove the = from the start and strip any quotes
-			if(attrs.charAt(0) === "=" && attrs.split("=").length <= 2)
-				ret.defaultattr = $.sceditor.plugins.bbcode.stripQuotes(attrs.substr(1));
+			if(attrs.charAt(0) === "=" && attrs.indexOf('=', 1) < 0)
+				ret.defaultattr = unquote(attrs.substr(1));
 			else
 			{
 				if(attrs.charAt(0) === "=")
@@ -329,7 +301,7 @@
 
 				// No need to strip quotes here, the regex will do that.
 				while((matches = atribsRegex.exec(attrs)))
-					ret[lower(matches[1])] = unquote(matches[3], matches[2]) || matches[4];
+					ret[lower(matches[1])] = unquote(matches[3]) || matches[4];
 			}
 
 			return ret;
@@ -595,13 +567,13 @@
 		 * @return {void}
 		 */
 		normaliseNewLines = function(children, parent, onlyRemoveBreakAfter) {
-			var	token, left, right, bbcode, leftBBCode, rightBBCode,
+			var	token, left, right, parentBBCode, bbcode,
 				removedBreakEnd, removedBreakBefore, remove,
 				childrenLength = children.length,
 				i              = childrenLength;
 
 			if(parent)
-				bbcode = base.bbcodes[parent.name];
+				parentBBCode = base.bbcodes[parent.name];
 
 			while(i--)
 			{
@@ -615,25 +587,25 @@
 					remove = false;
 
 					// Handle the start and end new lines e.g. [tag]\n and \n[/tag]
-					if(!onlyRemoveBreakAfter && bbcode && bbcode.isSelfClosing !== true)
+					if(!onlyRemoveBreakAfter && parentBBCode && parentBBCode.isSelfClosing !== true)
 					{
 						// First child of parent so must be opening line break (breakStartBlock, breakStart) e.g. [tag]\n
-						if(i === 0)
+						if(!left)
 						{
-							if(bbcode.isInline === false && base.opts.breakStartBlock && bbcode.breakStart !== false)
+							if(parentBBCode.isInline === false && base.opts.breakStartBlock && parentBBCode.breakStart !== false)
 								remove = true;
 
-							if(bbcode.breakStart)
+							if(parentBBCode.breakStart)
 								remove = true;
 						}
 						// Last child of parent so must be end line break (breakEndBlock, breakEnd) e.g. \n[/tag]
 						// remove last line break (breakEndBlock, breakEnd)
-						else if (!removedBreakEnd && childrenLength - 1 === i)
+						else if (!removedBreakEnd && !right)
 						{
-							if(bbcode.isInline === false && base.opts.breakEndBlock && bbcode.breakEnd !== false)
+							if(parentBBCode.isInline === false && base.opts.breakEndBlock && parentBBCode.breakEnd !== false)
 								remove = true;
 
-							if(bbcode.breakEnd)
+							if(parentBBCode.breakEnd)
 								remove = true;
 
 							removedBreakEnd = remove;
@@ -642,29 +614,29 @@
 
 					if(left && left.type === tokenType.open)
 					{
-						if((leftBBCode = base.bbcodes[left.name]))
+						if((bbcode = base.bbcodes[left.name]))
 						{
 							if(!onlyRemoveBreakAfter)
 							{
-								if(leftBBCode.isInline === false && base.opts.breakAfterBlock && leftBBCode.breakAfter !== false)
+								if(bbcode.isInline === false && base.opts.breakAfterBlock && bbcode.breakAfter !== false)
 									remove = true;
 
-								if(leftBBCode.breakAfter)
+								if(bbcode.breakAfter)
 									remove = true;
 							}
-							else if(leftBBCode.isInline === false)
+							else if(bbcode.isInline === false)
 								remove = true;
 						}
 					}
 
 					if(!onlyRemoveBreakAfter && !removedBreakBefore && right && right.type === tokenType.open)
 					{
-						if((rightBBCode = base.bbcodes[right.name]))
+						if((bbcode = base.bbcodes[right.name]))
 						{
-							if(rightBBCode.isInline === false && base.opts.breakBeforeBlock && rightBBCode.breakBefore !== false)
+							if(bbcode.isInline === false && base.opts.breakBeforeBlock && bbcode.breakBefore !== false)
 								remove = true;
 
-							if(rightBBCode.breakBefore)
+							if(bbcode.breakBefore)
 								remove = true;
 
 							removedBreakBefore = remove;
@@ -1614,7 +1586,7 @@
 						// don't loop inside iframes
 						if(tag !== 'iframe')
 							curTag = toBBCode(node, vChild);
-// TODO: isValidChild no longer needed? If it is needs to be editable
+// TODO: isValidChild is no longer needed. Should use valid children bbcodes instead
 						if(isValidChild)
 						{
 							// code tags should skip most styles
@@ -1635,7 +1607,7 @@
 					}
 					else if(node.wholeText && (!node.previousSibling || node.previousSibling.nodeType !== 3))
 					{
-// TODO:This should check for CSS white-space, should pass it int the function to reduce css lookups which are SLOW!
+// TODO:This should check for CSS white-space, should pass it in the function to reduce css lookups which are SLOW!
 						if($node.parents('code').length === 0)
 							ret += node.wholeText.replace(/ +/g, " ");
 						else
@@ -1712,7 +1684,7 @@
 	 * @since v1.4.0
 	 */
 	$.sceditor.plugins.bbcode.stripQuotes = function(str) {
-		return str.replace(/^(["'])(.*?)\1$/, "$2");
+		return str ? str.replace(/\\(.)/g, "$1").replace(/^(["'])(.*?)\1$/, "$2") : str;
 	};
 
 	/**
