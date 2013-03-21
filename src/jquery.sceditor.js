@@ -631,7 +631,13 @@
 					base.width(newWidth);
 
 				if(base.opts.resizeHeight && newHeight >= minHeight && (maxHeight < 0 || newHeight <= maxHeight))
+				{
 					base.height(newHeight);
+
+					// The resize cover will not fill the container in IE6 unless a height is specified.
+					if($.sceditor.ie < 7)
+						$editorContainer.height(newHeight);
+				}
 
 				e.preventDefault();
 			};
@@ -643,7 +649,7 @@
 				dragging = false;
 
 				$cover.hide();
-				$editorContainer.removeClass('resizing');
+				$editorContainer.removeClass('resizing').height('auto');
 				$(document).unbind('touchmove mousemove', mouseMoveFunc);
 				$(document).unbind('touchend mouseup', mouseUpFunc);
 
@@ -668,6 +674,10 @@
 				$cover.show();
 				$(document).bind('touchmove mousemove', mouseMoveFunc);
 				$(document).bind('touchend mouseup', mouseUpFunc);
+
+				// The resize cover will not fill the container in IE6 unless a height is specified.
+				if($.sceditor.ie < 7)
+					$editorContainer.height(startHeight);
 
 				e.preventDefault();
 			});
@@ -952,7 +962,7 @@
 				// If the toolbar height has changed then wysiwyg and source editor heights will need to be updated
 				toolbarHeight = !base.opts.toolbarContainer ? $toolbar.outerHeight(true) : 0;
 				updateheight  = toolbarHeight !== (!base.opts.toolbarContainer ? $toolbar.outerHeight(true) : 0);
-				height        = height !== false ? height:  base.height();
+				height        = height !== false ? height : base.height();
 			}
 
 			if(height !== false && height !== base.height())
@@ -960,7 +970,6 @@
 				if(save !== false)
 					base.opts.height = height;
 
-				height  = $editorContainer.height(height).height();
 				height -= !base.opts.toolbarContainer ? $toolbar.outerHeight(true) : 0;
 				updateheight = true;
 			}
@@ -2076,19 +2085,20 @@
 		 * @ignore
 		 */
 		handleWindowResize = function() {
-			if(base.maximize())
+			var	height = base.opts.height,
+				width  = base.opts.width,
+				parent = $editorContainer.parent().height();
+
+			if(!base.maximize())
 			{
-				base.height('100%', false).width('100%', false);
-				return;
+				if(height && height.toString().indexOf("%") > -1)
+					base.height(height);
+
+				if(width && width.toString().indexOf("%") > -1)
+					base.width(width);
 			}
-
-			if(base.opts.height && base.opts.height.toString().indexOf("%") > -1)
-				base.height($editorContainer.parent().height() *
-					(parseFloat(base.opts.height) / 100));
-
-			if(base.opts.width && base.opts.width.toString().indexOf("%") > -1)
-				base.width($editorContainer.parent().width() *
-					(parseFloat(base.opts.width) / 100));
+			else
+				base.height('100%', false).width('100%', false);
 		};
 
 		/**
