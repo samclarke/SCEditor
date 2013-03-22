@@ -967,7 +967,7 @@ test("Strip Quotes", function() {
 
 
 test("New Line Handling", function() {
-	expect(3);
+	expect(4);
 
 	equal(
 		this.sb.signalToWysiwyg("[list][*]test\n[*]test2\nline\n[/list]"),
@@ -985,6 +985,12 @@ test("New Line Handling", function() {
 		this.sb.signalToWysiwyg("[quote]test\nline\n[/quote]"),
 		"<blockquote>test<br />line<br />" + ($.sceditor.ie ? '' : "<br />") + "</blockquote>",
 		"Quote test"
+	);
+
+	equal(
+		this.sb.signalToWysiwyg("[quote][center]test[/center][/quote]"),
+		"<blockquote><div align=\"center\">test" + ($.sceditor.ie ? '' : "<br />") + "</div></blockquote>",
+		"Two block-level elements together"
 	);
 });
 
