@@ -125,22 +125,22 @@
 				var	clone,
 					base          = this,
 					splitAtLength = 0,
-					i             = base.children.length;
+					childrenLen   = base.children.length;
 
 				if(typeof object !== "number")
 					splitAt = $.inArray(splitAt, base.children);
 
-				if(splitAt < 0 || splitAt > i)
+				if(splitAt < 0 || splitAt > childrenLen)
 					return null;
 
 				// Work out how many items are on the right side of the split
 				// to pass to splice()
-				while(i--)
+				while(childrenLen--)
 				{
-					if(i >= splitAt)
+					if(childrenLen >= splitAt)
 						splitAtLength++;
 					else
-						i = false;
+						childrenLen = 0;
 				}
 
 				clone          = base.clone();
@@ -244,7 +244,6 @@
 				if(matches[2] && (matches[2] = $.trim(matches[2])))
 					attrs = tokenizeAttrs(matches[2]);
 			}
-			// Extract the name from closing tags
 			else if(type === "close" && (matches = val.match(/\[\/([^\[\]]+)\]/)))
 				name = lower(matches[1]);
 			else if(type === "newline")
