@@ -297,15 +297,14 @@
 			if(base.opts.locale && base.opts.locale !== "en")
 				initLocale();
 
-			$editorContainer = $('<div class="sceditor-container" />').insertAfter($original);
-
-			if(base.opts.zIndex !== null)
-				$editorContainer.css('z-index', base.opts.zIndex);
+			$editorContainer = $('<div class="sceditor-container" />')
+				.insertAfter($original)
+				.css('z-index', base.opts.zIndex);
 
 			// Add IE version to the container to allow IE specific CSS
 			// fixes without using CSS hacks or conditional comments
 			if($.sceditor.ie)
-				$editorContainer.addClass('ie').addClass('ie' + $.sceditor.ie);
+				$editorContainer.addClass('ie ie' + $.sceditor.ie);
 
 			isRequired = !!$original.attr('required');
 			$original.removeAttr('required');
@@ -325,23 +324,19 @@
 			if(!$.sceditor.isWysiwygSupported)
 				base.toggleSourceMode();
 
-			// Can't use load event as it gets fired before the CSS
-			// is loaded in some browsers
-			if(base.opts.autoExpand || base.opts.autofocus)
-			{
-				var interval = setInterval(function() {
-					if (!document.readyState || document.readyState === "complete")
-					{
-						clearInterval(interval);
+			$(window).bind('load', function() {
+				$(window).unbind('load');
 
-						if(base.opts.autofocus)
-							autofocus();
+				if(base.opts.autofocus)
+					autofocus();
 
-						if(base.opts.autoExpand)
-							base.expandToContent();
-					}
-				}, 10);
-			}
+				if(base.opts.autoExpand)
+					base.expandToContent();
+
+				// Page width might have changed after CSS is loaded so
+				// call handleWindowResize to update any % based dimensions
+				handleWindowResize();
+			});
 
 			updateActiveButtons();
 			pluginManager.call("ready");
@@ -414,7 +409,7 @@
 			// Add IE version class to the HTML element so can apply
 			// conditional styling without CSS hacks
 			if($.sceditor.ie)
-				$doc.find("html").addClass("ie").addClass("ie" + $.sceditor.ie);
+				$doc.find("html").addClass("ie ie" + $.sceditor.ie);
 
 			// iframe overflow fix for iOS, also fixes an IE issue with the
 			// editor not getting focus when clicking inside
@@ -431,11 +426,9 @@
 			// load any textarea value into the editor
 			base.val($original.hide().val());
 
-			if(typeof (tabIndex = $original.attr("tabindex")) !== "undefined")
-			{
-				$sourceEditor.attr('tabindex', tabIndex);
-				$wysiwygEditor.attr('tabindex', tabIndex);
-			}
+			tabIndex = $original.attr("tabindex");
+			$sourceEditor.attr('tabindex', tabIndex);
+			$wysiwygEditor.attr('tabindex', tabIndex);
 		};
 
 		/**
@@ -962,7 +955,6 @@
 				// If the toolbar height has changed then wysiwyg and source editor heights will need to be updated
 				toolbarHeight = !base.opts.toolbarContainer ? $toolbar.outerHeight(true) : 0;
 				updateheight  = toolbarHeight !== (!base.opts.toolbarContainer ? $toolbar.outerHeight(true) : 0);
-				height        = height !== false ? height : base.height();
 			}
 
 			if(height !== false && height !== base.height())
