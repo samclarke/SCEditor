@@ -324,8 +324,8 @@
 			if(!$.sceditor.isWysiwygSupported)
 				base.toggleSourceMode();
 
-			$(window).bind('load', function() {
-				$(window).unbind('load');
+			var loaded = function() {
+				$(window).unbind('load', loaded);
 
 				if(base.opts.autofocus)
 					autofocus();
@@ -336,10 +336,13 @@
 				// Page width might have changed after CSS is loaded so
 				// call handleWindowResize to update any % based dimensions
 				handleWindowResize();
-			});
+			};
+			$(window).load(loaded);
+			if(document.readyState && document.readyState === 'complete')
+				loaded();
 
 			updateActiveButtons();
-			pluginManager.call("ready");
+			pluginManager.call('ready');
 		};
 
 		initPlugins = function() {
@@ -1110,11 +1113,11 @@
 			pluginManager = null;
 
 			$(document).unbind('click', handleDocumentClick);
-			$(window).unbind('resize', handleWindowResize);
+			$(window).unbind('resize orientationChanged', handleWindowResize);
 
 			$(original.form)
-				.unbind("reset", handleFormReset)
-				.unbind("submit", base.updateOriginal);
+				.unbind('reset', handleFormReset)
+				.unbind('submit', base.updateOriginal);
 
 			$(getWysiwygDoc().body).unbind();
 			$(getWysiwygDoc()).unbind().find('*').remove();
@@ -1124,8 +1127,8 @@
 			$editorContainer.remove();
 
 			$original
-				.removeData("sceditor")
-				.removeData("sceditorbbcode")
+				.removeData('sceditor')
+				.removeData('sceditorbbcode')
 				.show();
 
 			if(isRequired)
