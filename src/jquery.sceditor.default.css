@@ -67,5 +67,5 @@ blockquote cite {
 	font-size: 1em;
 	border-bottom: 1px solid #aaa;
 }
-div { min-height: 1em; }
+div { min-height: 1.25em; }
 h1, h2, h3, h4, h5, h6 { padding: 0; margin: 0; }
