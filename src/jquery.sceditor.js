@@ -449,8 +449,7 @@
 			if(base.opts.rtl === null)
 				base.opts.rtl = $sourceEditor.css('direction') === 'rtl';
 
-			if(base.opts.rtl)
-				base.rtl(true);
+			base.rtl(!!base.opts.rtl);
 
 			if(base.opts.autoExpand)
 				$doc.bind("keyup", base.expandToContent);
@@ -458,9 +457,7 @@
 			if(base.opts.resizeEnabled)
 				initResize();
 
-			if(base.opts.id)
-				$editorContainer.attr('id', base.opts.id);
-
+			$editorContainer.attr('id', base.opts.id);
 			base.emoticons(base.opts.emoticonsEnabled);
 		};
 
@@ -510,50 +507,46 @@
 		 * @private
 		 */
 		initToolBar = function () {
-			var	$group, $button, buttons, i, x, buttonClick,
+			var	$group, $button,
 				groups = base.opts.toolbar.split("|");
 
-			buttonClick = function () {
-				var $this = $(this);
-
-				if(!$this.hasClass('disabled'))
-					handleCommand($this, base.commands[$this.data("sceditor-command")]);
-
-				updateActiveButtons();
-
-				return false;
-			};
-
 			$toolbar = $('<div class="sceditor-toolbar" unselectable="on" />');
-			for (i=0; i < groups.length; i++)
-			{
+			$.each(groups, function(idx, group) {
 				$group  = $('<div class="sceditor-group" />');
-				buttons = groups[i].split(",");
 
-				for (x=0; x < buttons.length; x++)
-				{
+				$.each(group.split(","), function(idx, button) {
 					// the button must be a valid command otherwise ignore it
-					if(!base.commands[buttons[x]])
-						continue;
+					if(!base.commands[button])
+						return;
 
 					$button = _tmpl("toolbarButton", {
-							name: buttons[x],
-							dispName: base.commands[buttons[x]].tooltip || buttons[x]
-						}, true)
-						.click(buttonClick)
-						.data('sceditor-txtmode', !!base.commands[buttons[x]].txtExec)
-						.data('sceditor-wysiwygmode', !!base.commands[buttons[x]].exec);
+							name: button,
+							dispName: base.commands[button].tooltip || button
+						}, true);
 
-					if(base.commands[buttons[x]].tooltip)
-						$button.attr('title', base._(base.commands[buttons[x]].tooltip));
+					$button.data('sceditor-txtmode', !!base.commands[button].txtExec);
+					$button.data('sceditor-wysiwygmode', !!base.commands[button].exec);
+					$button.click(function () {
+						var $this = $(this);
 
-					if(!base.commands[buttons[x]].exec)
+						if(!$this.hasClass('disabled'))
+							handleCommand($this, base.commands[button]);
+
+						updateActiveButtons();
+						return false;
+					});
+
+					if(base.commands[button].tooltip)
+						$button.attr('title', base._(base.commands[button].tooltip));
+
+					if(!base.commands[button].exec)
 						$button.addClass('disabled');
 
 					$group.append($button);
-				}
+				});
+
 				$toolbar.append($group);
-			}
+			});
 
 			// append the toolbar to the toolbarContainer option if given
 			if(base.opts.toolbarContainer)
@@ -677,28 +670,27 @@
 		};
 
 		/**
-		 * Preloads the emoticon images
-		 * Idea from: http://engineeredweb.com/blog/09/12/preloading-images-jquery-and-javascript
+		 * Prefixes and preloads the emoticon images
 		 * @private
 		 */
 		initEmoticons = function () {
-			// prefix emoticon root to emoticon urls
-			if(base.opts.emoticonsRoot && base.opts.emoticons)
-			{
-				$.each(base.opts.emoticons, function (idx, emoticons) {
-					$.each(emoticons, function (key, url) {
+			var emoticon;
+
+			if(!$.isPlainObject(base.opts.emoticons))
+				return;
+
+			$.each(base.opts.emoticons, function (idx, emoticons) {
+				$.each(emoticons, function (key, url) {
+					// Prefix emoticon root to emoticon urls
+					if(base.opts.emoticonsRoot)
 						base.opts.emoticons[idx][key] = base.opts.emoticonsRoot + (url.url || url);
-					});
+
+					// Preload the emoticon
+					// Idea from: http://engineeredweb.com/blog/09/12/preloading-images-jquery-and-javascript
+					emoticon     = document.createElement('img');
+					emoticon.src = url.url || url;
+					preLoadCache.push(emoticon);
 				});
-			}
-
-			var	emoticons = $.extend({}, base.opts.emoticons.more, base.opts.emoticons.dropdown, base.opts.emoticons.hidden),
-				emoticon;
-
-			$.each(emoticons, function (key, url) {
-				emoticon     = document.createElement('img');
-				emoticon.src = url.url || url;
-				preLoadCache.push(emoticon);
 			});
 		};
 
