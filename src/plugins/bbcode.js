@@ -834,8 +834,8 @@
 
 		/**
 		 * Converts a BBCode string to HTML
-		 * @param  {String} str
-		 * @param {Bool} preserveNewLines If to preserve all new lines, not strip any based on the passed formatting options
+		 * @param {String} str
+		 * @param {Bool}   preserveNewLines If to preserve all new lines, not strip any based on the passed formatting options
 		 * @return {String}
 		 * @memberOf jQuery.sceditor.BBCodeParser.prototype
 		 */
@@ -843,10 +843,17 @@
 			return convertToHTML(base.parse(str, preserveNewLines), true);
 		};
 
+		/**
+		 * @private
+		 */
 		convertToHTML = function(tokens, isRoot) {
-			var	token, bbcode, content, html, needsBlockWrap,
-				blockWrapOpen, isInline, addLineBreak,
+			var	token, bbcode, content, html, needsBlockWrap, blockWrapOpen,
+				isInline, lastChild,
 				ret = [];
+
+			isInline = function(bbcode) {
+				return (!bbcode || (typeof bbcode.isHtmlInline !== "undefined" ? bbcode.isHtmlInline : bbcode.isInline)) !== false;
+			};
 
 			while(tokens.length > 0)
 			{
@@ -855,19 +862,21 @@
 
 				if(token.type === tokenType.open)
 				{
+					lastChild      = token.children[token.children.length - 1] || {};
 					bbcode         = base.bbcodes[token.name];
-					isInline       = !bbcode || (typeof bbcode.isHtmlInline !== "undefined" ? bbcode.isHtmlInline : bbcode.isInline);
-					needsBlockWrap = isRoot && (!bbcode || isInline !== false);
+					needsBlockWrap = isRoot && isInline(bbcode);
 					content        = convertToHTML(token.children, false);
 
 					if(bbcode && bbcode.html)
 					{
-						addLineBreak = isInline === false && !bbcode.isPreFormatted && !bbcode.skipLastLineBreak;
-
-						// Add placeholder br to end of block level elements in all browsers apart from IE < 9 which
-						// handle new lines diffrently and don't need one.
-						if(addLineBreak && !$.sceditor.ie)
-							content += "<br />";
+						// Only add a line break to the end if this is blocklevel and the last child wasn't block-level
+						if(!isInline(bbcode) && isInline(base.bbcodes[lastChild.name]) && !bbcode.isPreFormatted && !bbcode.skipLastLineBreak)
+						{
+							// Add placeholder br to end of block level elements in all browsers apart from IE < 9 which
+							// handle new lines diffrently and doesn't need one.
+							if(!$.sceditor.ie)
+								content += "<br />";
+						}
 
 						if($.isFunction(bbcode.html))
 							html = bbcode.html.call(base, token, token.attrs, content);
