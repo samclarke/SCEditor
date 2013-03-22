@@ -307,6 +307,10 @@
 				node = node.parentNode;
 			}
 
+			// first child of a block element
+			if(!node.previousSibling && !$.sceditor.dom.isInline(node.parentNode))
+				return true;
+
 			return !$.sceditor.dom.isInline(node);
 		};
 
@@ -316,7 +320,9 @@
 		 * @private
 		 */
 		newline = function() {
-			outputStringBuilder.push('\n');
+			// Don't add a new line if it's the first element
+			if(outputStringBuilder.length)
+				outputStringBuilder.push('\n');
 		};
 	};
 
