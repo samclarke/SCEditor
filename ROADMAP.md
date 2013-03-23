@@ -1,20 +1,19 @@
 # Roadmap
 
-## 1.4.2
+## 1.4.3
 
    * Add keyboard shortcut support for commands
    * Table editing plugin
    * Image resize plugin
    * Add helpers for adding commands/bbcodes.
    * Add BBCode parser helpers for BBCode-to-HTML and HTML-to-BBCode
-   * Add disable emoticons option and helper to disable/enable while editing
    * Consider adding support for BBCodes with just their BBCode and HTML replacement.
    * Add flash embedding command + BBCode
    * Add option to disable pasting, plain text pasting and allow a callback or show a message
    * Add context menu support
 
 
-## 1.4.3
+## 1.4.4
 
    * Update dropdown to be able to work from an object to generate HTML instead of requiring HTML
    * Add option to only paste plain text
