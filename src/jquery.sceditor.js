@@ -957,6 +957,13 @@
 				if(save !== false)
 					base.opts.height = height;
 
+				// Convert % based heights to px
+				if(height && height.toString().indexOf('%'))
+				{
+					height = $editorContainer.height(height).height();
+					$editorContainer.height('auto');
+				}
+
 				height -= !base.opts.toolbarContainer ? $toolbar.outerHeight(true) : 0;
 				updateheight = true;
 			}
