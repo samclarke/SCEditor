@@ -292,7 +292,7 @@
 		 */
 		init = function () {
 			$original.data("sceditor", base);
-			base.opts = $.extend({}, $.sceditor.defaultOptions, options);
+			base.opts = $.extend(true, {}, $.sceditor.defaultOptions, options);
 
 			// Load locale
 			if(base.opts.locale && base.opts.locale !== "en")

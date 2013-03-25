@@ -26,6 +26,8 @@ Version 1.4.2:
 		- Thanks to @berridgeab for reporting
 	Fixed bug with new lines and when two block level elements are next to each other.
 		- Thanks to @martec for reporting
+	Fixed bug with emoticonsRoot being preprended multiple times if more than one editor instance.
+		- Thanks to @KN4CK3R for reporting
 
 Version 1.4.1:
 	Dropped GPL to match jQuery license.
