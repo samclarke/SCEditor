@@ -1,8 +1,9 @@
+/*! SCEditor | (C) 2011-2013, Sam Clarke | sceditor.com/license */
 /**
  * SCEditor
- * http://www.samclarke.com/2011/07/sceditor/
+ * http://www.sceditor.com/
  *
- * Copyright (C) 2011-2012, Sam Clarke (samclarke.com)
+ * Copyright (C) 2011-2013, Sam Clarke (samclarke.com)
  *
  * SCEditor is licensed under the MIT license:
  *	http://www.opensource.org/licenses/mit-license.php
@@ -702,7 +703,7 @@
 		 * @private
 		 */
 		autofocus = function() {
-			var	rng, marker, elm, txtPos,
+			var	rng, elm, txtPos,
 				doc      = getWysiwygDoc(),
 				body     = doc.body,
 				focusEnd = !!base.opts.autofocusEnd;
@@ -2080,8 +2081,7 @@
 		 */
 		handleWindowResize = function() {
 			var	height = base.opts.height,
-				width  = base.opts.width,
-				parent = $editorContainer.parent().height();
+				width  = base.opts.width;
 
 			if(!base.maximize())
 			{

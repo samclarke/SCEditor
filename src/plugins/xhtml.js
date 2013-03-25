@@ -1,14 +1,15 @@
+/*!pl SCEditor | (C) 2011-2013, Sam Clarke | sceditor.com/license */
 /**
  * SCEditor XHTML Plugin
  * http://www.sceditor.com/
  *
- * Copyright (C) 2011-2012, Sam Clarke (samclarke.com)
+ * Copyright (C) 2011-2013, Sam Clarke (samclarke.com)
  *
  * SCEditor is licensed under the MIT license:
  *	http://www.opensource.org/licenses/mit-license.php
  *
  * @author Sam Clarke
- * @version 1.4.1
+ * @version 1.4.2
  * @requires jQuery
  */
 
@@ -701,7 +702,7 @@
 					{
 						attr       = node.attributes[attrsLength];
 						removeAttr = typeof attrsCache[tagName][attr.name] !== 'undefined';
-
+// this should check if only certian values so should be === null?
 						if($.isArray(attrsCache[tagName][attr.name]) && $.inArray(attr.value, attrsCache[tagName][attr.name]) > -1)
 							removeAttr = true;
 

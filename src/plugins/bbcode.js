@@ -1,15 +1,16 @@
+/*!pl SCEditor | (C) 2011-2013, Sam Clarke | sceditor.com/license */
 /**
  * SCEditor BBCode Plugin
- * http://www.samclarke.com/2011/07/sceditor/
+ * http://www.sceditor.com/
  *
- * Copyright (C) 2011-2012, Sam Clarke (samclarke.com)
+ * Copyright (C) 2011-2013, Sam Clarke (samclarke.com)
  *
  * SCEditor is licensed under the MIT license:
  *	http://www.opensource.org/licenses/mit-license.php
  *
  * @fileoverview SCEditor BBCode Plugin
  * @author Sam Clarke
- * @version 1.4.1
+ * @version 1.4.2
  * @requires jQuery
  */
 

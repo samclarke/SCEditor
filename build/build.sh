@@ -67,9 +67,9 @@ if $DO_JS; then
 	cat src/jquery.sceditor.js src/plugins/xhtml.js > minified/jquery.sceditor.xhtml.min.js
 
 	echo "Minifying SCEditor"
-	uglifyjs -nc -o minified/jquery.sceditor.min.js src/jquery.sceditor.js
-	uglifyjs -nc -o minified/jquery.sceditor.xhtml.min.js minified/jquery.sceditor.xhtml.min.js
-	uglifyjs -nc -o minified/jquery.sceditor.bbcode.min.js minified/jquery.sceditor.bbcode.min.js
+	uglifyjs --comments '/^!/' -c -m -o minified/jquery.sceditor.min.js src/jquery.sceditor.js
+	uglifyjs --comments '/^!/' -c -m -o minified/jquery.sceditor.xhtml.min.js minified/jquery.sceditor.xhtml.min.js
+	uglifyjs --comments '/^!/' -c -m -o minified/jquery.sceditor.bbcode.min.js minified/jquery.sceditor.bbcode.min.js
 
 	echo "Minifying plugins"
 	for f in src/plugins/*.js
@@ -80,7 +80,7 @@ if $DO_JS; then
 		filename="${filename%.*}"
 
 		cp $f minified/plugins/$filename.js
-		uglifyjs -nc -o minified/plugins/$filename.js minified/plugins/$filename.js
+		uglifyjs --comments '/^!p/' -c -m -o minified/plugins/$filename.js minified/plugins/$filename.js
 	done
 fi
 
