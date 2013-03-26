@@ -285,6 +285,13 @@
 		 */
 		base.commands = $.extend(true, {}, (options.commands || $.sceditor.commands));
 
+		/**
+		 * Options for this editor instance
+		 * @name opts
+		 * @memberOf jQuery.sceditor.prototype
+		 */
+		base.opts = options = $.extend({}, $.sceditor.defaultOptions, options);
+
 
 		/**
 		 * Creates the editor iframe and textarea
@@ -292,15 +299,20 @@
 		 */
 		init = function () {
 			$original.data("sceditor", base);
-			base.opts = $.extend(true, {}, $.sceditor.defaultOptions, options);
+
+			// Clone any objects in options
+			$.each(options, function(key, val) {
+				if($.isPlainObject(val))
+					options[key] = $.extend(true, {}, val);
+			});
 
 			// Load locale
-			if(base.opts.locale && base.opts.locale !== "en")
+			if(options.locale && options.locale !== "en")
 				initLocale();
 
 			$editorContainer = $('<div class="sceditor-container" />')
 				.insertAfter($original)
-				.css('z-index', base.opts.zIndex);
+				.css('z-index', options.zIndex);
 
 			// Add IE version to the container to allow IE specific CSS
 			// fixes without using CSS hacks or conditional comments
@@ -328,10 +340,10 @@
 			var loaded = function() {
 				$(window).unbind('load', loaded);
 
-				if(base.opts.autofocus)
+				if(options.autofocus)
 					autofocus();
 
-				if(base.opts.autoExpand)
+				if(options.autoExpand)
 					base.expandToContent();
 
 				// Page width might have changed after CSS is loaded so
@@ -347,7 +359,7 @@
 		};
 
 		initPlugins = function() {
-			var plugins   = base.opts.plugins;
+			var plugins   = options.plugins;
 			plugins       = plugins ? plugins.toString().split(',') : [];
 			pluginManager = new $.sceditor.PluginManager(base);
 
@@ -364,18 +376,18 @@
 		initLocale = function() {
 			var lang;
 
-			if($.sceditor.locale[base.opts.locale])
-				locale = $.sceditor.locale[base.opts.locale];
+			if($.sceditor.locale[options.locale])
+				locale = $.sceditor.locale[options.locale];
 			else
 			{
-				lang = base.opts.locale.split("-");
+				lang = options.locale.split("-");
 
 				if($.sceditor.locale[lang[0]])
 					locale = $.sceditor.locale[lang[0]];
 			}
 
 			if(locale && locale.dateFormat)
-				base.opts.dateFormat = locale.dateFormat;
+				options.dateFormat = locale.dateFormat;
 		};
 
 		/**
@@ -396,17 +408,17 @@
 			wysiwygEditor = $wysiwygEditor[0];
 			sourceEditor  = $sourceEditor[0];
 
-			base.width(base.opts.width || $original.width());
-			base.height(base.opts.height || $original.height());
+			base.width(options.width || $original.width());
+			base.height(options.height || $original.height());
 
 			doc  = getWysiwygDoc();
 			$doc = $(doc);
 
 			doc.open();
-			doc.write(_tmpl("html", { charset: base.opts.charset, style: base.opts.style }));
+			doc.write(_tmpl("html", { charset: options.charset, style: options.style }));
 			doc.close();
 
-			base.readOnly(!!base.opts.readOnly);
+			base.readOnly(!!options.readOnly);
 
 			$body = $doc.find("body");
 
@@ -444,25 +456,25 @@
 				$body = $doc.find("body");
 
 			// auto-update original textbox on blur if option set to true
-			if(base.opts.autoUpdate)
+			if(options.autoUpdate)
 			{
 				$body.bind("blur", base.updateOriginal);
 				$sourceEditor.bind("blur", base.updateOriginal);
 			}
 
-			if(base.opts.rtl === null)
-				base.opts.rtl = $sourceEditor.css('direction') === 'rtl';
+			if(options.rtl === null)
+				options.rtl = $sourceEditor.css('direction') === 'rtl';
 
-			base.rtl(!!base.opts.rtl);
+			base.rtl(!!options.rtl);
 
-			if(base.opts.autoExpand)
+			if(options.autoExpand)
 				$doc.bind("keyup", base.expandToContent);
 
-			if(base.opts.resizeEnabled)
+			if(options.resizeEnabled)
 				initResize();
 
-			$editorContainer.attr('id', base.opts.id);
-			base.emoticons(base.opts.emoticonsEnabled);
+			$editorContainer.attr('id', options.id);
+			base.emoticons(options.emoticonsEnabled);
 		};
 
 		/**
@@ -512,7 +524,7 @@
 		 */
 		initToolBar = function () {
 			var	$group, $button,
-				groups = base.opts.toolbar.split("|");
+				groups = options.toolbar.split("|");
 
 			$toolbar = $('<div class="sceditor-toolbar" unselectable="on" />');
 			$.each(groups, function(idx, group) {
@@ -553,8 +565,8 @@
 			});
 
 			// append the toolbar to the toolbarContainer option if given
-			if(base.opts.toolbarContainer)
-				$(base.opts.toolbarContainer).append($toolbar);
+			if(options.toolbarContainer)
+				$(options.toolbarContainer).append($toolbar);
 			else
 				$editorContainer.append($toolbar);
 		};
@@ -598,10 +610,10 @@
 				dragging    = false,
 				rtl         = base.rtl();
 
-			minHeight = base.opts.resizeMinHeight || origHeight / 1.5;
-			maxHeight = base.opts.resizeMaxHeight || origHeight * 2.5;
-			minWidth  = base.opts.resizeMinWidth  || origWidth  / 1.25;
-			maxWidth  = base.opts.resizeMaxWidth  || origWidth  * 1.25;
+			minHeight = options.resizeMinHeight || origHeight / 1.5;
+			maxHeight = options.resizeMaxHeight || origHeight * 2.5;
+			minWidth  = options.resizeMinWidth  || origWidth  / 1.25;
+			maxWidth  = options.resizeMaxWidth  || origWidth  * 1.25;
 
 			mouseMoveFunc = function (e) {
 				// iOS must use window.event
@@ -617,10 +629,10 @@
 				if(maxHeight > 0 && newHeight > maxHeight)
 					newHeight = maxHeight;
 
-				if(base.opts.resizeWidth && newWidth >= minWidth && (maxWidth < 0 || newWidth <= maxWidth))
+				if(options.resizeWidth && newWidth >= minWidth && (maxWidth < 0 || newWidth <= maxWidth))
 					base.width(newWidth);
 
-				if(base.opts.resizeHeight && newHeight >= minHeight && (maxHeight < 0 || newHeight <= maxHeight))
+				if(options.resizeHeight && newHeight >= minHeight && (maxHeight < 0 || newHeight <= maxHeight))
 				{
 					base.height(newHeight);
 
@@ -679,8 +691,8 @@
 		 */
 		initEmoticons = function () {
 			var	emoticon,
-				emoticons = base.opts.emoticons,
-				root      = base.opts.emoticonsRoot;
+				emoticons = options.emoticons,
+				root      = options.emoticonsRoot;
 
 			if(!$.isPlainObject(emoticons))
 				return;
@@ -715,7 +727,7 @@
 			var	rng, elm, txtPos,
 				doc      = getWysiwygDoc(),
 				body     = doc.body,
-				focusEnd = !!base.opts.autofocusEnd;
+				focusEnd = !!options.autofocusEnd;
 
 			if(base.sourceMode())
 			{
@@ -951,21 +963,21 @@
 			if(width !== false && width !== base.width())
 			{
 				if(save !== false)
-					base.opts.width = width;
+					options.width = width;
 
 				width = $editorContainer.width(width).width();
 				wysiwygEditor.style.width = width - $wysiwygEditor.data('outerWidthOffset') + 'px';
 				sourceEditor.style.width  = width - $sourceEditor.data('outerWidthOffset') + 'px';
 
 				// If the toolbar height has changed then wysiwyg and source editor heights will need to be updated
-				toolbarHeight = !base.opts.toolbarContainer ? $toolbar.outerHeight(true) : 0;
-				updateheight  = toolbarHeight !== (!base.opts.toolbarContainer ? $toolbar.outerHeight(true) : 0);
+				toolbarHeight = !options.toolbarContainer ? $toolbar.outerHeight(true) : 0;
+				updateheight  = toolbarHeight !== (!options.toolbarContainer ? $toolbar.outerHeight(true) : 0);
 			}
 
 			if(height !== false && height !== base.height())
 			{
 				if(save !== false)
-					base.opts.height = height;
+					options.height = height;
 
 				// Convert % based heights to px
 				if(height && height.toString().indexOf('%'))
@@ -974,7 +986,7 @@
 					$editorContainer.height('auto');
 				}
 
-				height -= !base.opts.toolbarContainer ? $toolbar.outerHeight(true) : 0;
+				height -= !options.toolbarContainer ? $toolbar.outerHeight(true) : 0;
 				updateheight = true;
 			}
 
@@ -1077,8 +1089,8 @@
 				$('html, body').toggleClass('sceditor-maximize', maximize);
 
 			$editorContainer.toggleClass('sceditor-maximize', maximize);
-			base.width(maximize ? '100%' : base.opts.width, false);
-			base.height(maximize ? '100%' : base.opts.height, false);
+			base.width(maximize ? '100%' : options.width, false);
+			base.height(maximize ? '100%' : options.height, false);
 
 			return this;
 		};
@@ -1101,7 +1113,7 @@
 				currentHeight = $editorContainer.height(),
 				height        = doc.body.scrollHeight || doc.documentElement.scrollHeight,
 				padding       = (currentHeight - $wysiwygEditor.height()),
-				maxHeight     = base.opts.resizeMaxHeight || ((base.opts.height || $original.height()) * 2);
+				maxHeight     = options.resizeMaxHeight || ((options.height || $original.height()) * 2);
 
 			height += padding;
 
@@ -1189,7 +1201,7 @@
 				marginTop: menuItem.outerHeight()
 			};
 
-			$.extend(css, base.opts.dropDownCss);
+			$.extend(css, options.dropDownCss);
 
 			$dropdown = $('<div class="sceditor-dropdown sceditor-' + dropDownName + '" />')
 				.css(css)
@@ -1222,10 +1234,10 @@
 				pastearea       = elm.ownerDocument.createElement('div'),
 				prePasteContent = elm.ownerDocument.createDocumentFragment();
 
-			if(base.opts.disablePasting)
+			if(options.disablePasting)
 				return false;
 
-			if(!base.opts.enablePasteFiltering)
+			if(!options.enablePasteFiltering)
 				return;
 
 			rangeHelper.saveRange();
@@ -1703,10 +1715,10 @@
 		 * @private
 		 */
 		replaceEmoticons = function (html) {
-			if(!base.opts.emoticonsEnabled)
+			if(!options.emoticonsEnabled)
 				return html;
 
-			var emoticons = $.extend({}, base.opts.emoticons.more, base.opts.emoticons.dropdown, base.opts.emoticons.hidden);
+			var emoticons = $.extend({}, options.emoticons.more, options.emoticons.dropdown, options.emoticons.hidden);
 
 			$.each(emoticons, function (key, url) {
 				// escape the key before using it as a regex
@@ -1716,7 +1728,7 @@
 					group = '';
 
 				// Make sure the emoticon is surrounded by whitespace or is at the start/end of a string or html tag
-				if(base.opts.emoticonsCompat)
+				if(options.emoticonsCompat)
 				{
 					reg   = "((>|^|\\s|\xA0|\u2002|\u2003|\u2009|&nbsp;))" + reg + "(?=(\\s|$|<|\xA0|\u2002|\u2003|\u2009|&nbsp;))";
 					group = '$1';
@@ -2089,8 +2101,8 @@
 		 * @ignore
 		 */
 		handleWindowResize = function() {
-			var	height = base.opts.height,
-				width  = base.opts.width;
+			var	height = options.height,
+				width  = options.width;
 
 			if(!base.maximize())
 			{
@@ -2420,7 +2432,7 @@
 			if(!base.emoticonsCache) {
 				base.emoticonsCache = [];
 
-				$.each($.extend({}, base.opts.emoticons.more, base.opts.emoticons.dropdown, base.opts.emoticons.hidden), function(key, url) {
+				$.each($.extend({}, options.emoticons.more, options.emoticons.dropdown, options.emoticons.hidden), function(key, url) {
 					base.emoticonsCache[pos++] = [
 						key,
 						_tmpl("emoticon", {
@@ -2439,9 +2451,9 @@
 			if(!base.longestEmoticonCode)
 				base.longestEmoticonCode = base.emoticonsCache[base.emoticonsCache.length - 1][0].length;
 
-			if(base.getRangeHelper().raplaceKeyword(base.emoticonsCache, true, true, base.longestEmoticonCode, base.opts.emoticonsCompat, curChar))
+			if(base.getRangeHelper().raplaceKeyword(base.emoticonsCache, true, true, base.longestEmoticonCode, options.emoticonsCompat, curChar))
 			{
-				if(/^\s$/.test(curChar) && base.opts.emoticonsCompat)
+				if(/^\s$/.test(curChar) && options.emoticonsCompat)
 					return true;
 
 				e.preventDefault();
@@ -2470,11 +2482,11 @@
 		 */
 		base.emoticons = function(enable) {
 			if(!enable && enable !== false)
-				return base.opts.emoticonsEnabled;
+				return options.emoticonsEnabled;
 
 			var $body = $(getWysiwygDoc().body);
 
-			base.opts.emoticonsEnabled = enable;
+			options.emoticonsEnabled = enable;
 
 			if(enable)
 			{
@@ -3137,7 +3149,7 @@
 								alt: code,
 								title: emoticon.tooltip || code
 							})
-							.click(function (e) {
+							.click(function() {
 								editor.insert($(this).attr('alt') + endSpace).closeDropDown(true);
 
 								return false;
