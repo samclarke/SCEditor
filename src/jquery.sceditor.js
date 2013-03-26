@@ -678,16 +678,25 @@
 		 * @private
 		 */
 		initEmoticons = function () {
-			var emoticon;
+			var	emoticon,
+				emoticons = base.opts.emoticons,
+				root      = base.opts.emoticonsRoot;
 
-			if(!$.isPlainObject(base.opts.emoticons))
+			if(!$.isPlainObject(emoticons))
 				return;
 
-			$.each(base.opts.emoticons, function (idx, emoticons) {
-				$.each(emoticons, function (key, url) {
+			$.each(emoticons, function (idx, val) {
+				$.each(val, function (key, url) {
 					// Prefix emoticon root to emoticon urls
-					if(base.opts.emoticonsRoot)
-						base.opts.emoticons[idx][key] = base.opts.emoticonsRoot + (url.url || url);
+					if(root)
+					{
+						url = {
+							url: root + (url.url || url),
+							tooltip: url.tooltip || key
+						};
+
+						emoticons[idx][key] = url;
+					}
 
 					// Preload the emoticon
 					// Idea from: http://engineeredweb.com/blog/09/12/preloading-images-jquery-and-javascript
@@ -3104,57 +3113,55 @@
 		// START_COMMAND: Emoticons
 		emoticon: {
 			exec: function (caller) {
-				var	appendEmoticon,
-					editor  = this,
-					end     = (editor.opts.emoticonsCompat ? ' ' : ''),
-					content = $('<div />'),
-					line    = $('<div />');
+				var editor = this;
 
-				appendEmoticon = function (code, emoticon) {
-					line.append($('<img />')
+				var createContent = function(includeMore) {
+					var	endSpace  = (editor.opts.emoticonsCompat ? ' ' : ''),
+						$content  = $('<div />'),
+						$line     = $('<div />').appendTo($content),
+						emoticons = $.extend({}, editor.opts.emoticons.dropdown, includeMore ? editor.opts.emoticons.more : {}),
+						perLine   = 0;
+
+					for(var prop in emoticons)
+					{
+						if(emoticons.hasOwnProperty(prop))
+							perLine++;
+					}
+
+					perLine = Math.sqrt(perLine);
+
+					$.each(emoticons, function(code, emoticon) {
+						$line.append($('<img />')
 							.attr({
-								src: $.isPlainObject(emoticon) ? emoticon.url : emoticon,
+								src: emoticon.url || emoticon,
 								alt: code,
-								title: $.isPlainObject(emoticon) ? emoticon.tooltip || code : code
+								title: emoticon.tooltip || code
 							})
 							.click(function (e) {
-								editor.insert($(this).attr('alt') + end);
-								editor.closeDropDown(true);
-								e.preventDefault();
+								editor.insert($(this).attr('alt') + endSpace).closeDropDown(true);
+
+								return false;
 							})
 						);
 
-					if(line.children().length > 3) {
-						content.append(line);
-						line = $('<div />');
-					}
-				};
-
-				$.each(editor.opts.emoticons.dropdown, appendEmoticon);
-
-				if(line.children().length > 0)
-					content.append(line);
-
-				if(editor.opts.emoticons.more) {
-					var more = $(
-						this._('<a class="sceditor-more">{0}</a>', this._("More"))
-					).click(function () {
-						var	emoticons = $.extend({}, editor.opts.emoticons.dropdown, editor.opts.emoticons.more);
-							content   = $('<div />');
-
-						$.each(emoticons, appendEmoticon);
-
-						if(line.children().length > 0)
-							content.append(line);
-
-						editor.createDropDown(caller, "insertemoticon", content);
-						return false;
+						if($line.children().length >= perLine)
+							$line = $('<div />').appendTo($content);
 					});
 
-					content.append(more);
-				}
+					if(!includeMore)
+					{
+						$content.append($(
+							editor._('<a class="sceditor-more">{0}</a>', editor._("More"))
+						).click(function () {
+							editor.createDropDown(caller, "more-emoticons", createContent(true));
+							return false;
+						}));
+					}
 
-				editor.createDropDown(caller, "insertemoticon", content);
+					return $content;
+				};
+
+				editor.createDropDown(caller, "emoticons", createContent(false));
 			},
 			txtExec: function(caller) {
 				$.sceditor.command.get('emoticon').exec.call(this, caller);
