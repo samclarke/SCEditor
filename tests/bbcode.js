@@ -18,7 +18,6 @@ test("White space removal", function() {
 	);
 
 	var ret = this.sb.signalToSource("", html2dom("     <div>   lots   </div>   \n of   junk   \n\n\n\n\n         \n  j", true));
-
 	ok(
 		ret === "lots \n of junk j" || ret === "lots \nof junk j",
 		"White Space Removal"
@@ -33,24 +32,72 @@ test("Invalid nesting", function() {
 
 	equal(
 		this.sb.signalToSource("", $dom),
-		"[color=#000000]this[/color][quote][color=#000000]is[/color][/quote]\n[color=#000000]a test[/color]",
+		"[color=#000000]this[/color]\n[quote][color=#000000]is[/color][/quote]\n[color=#000000]a test[/color]",
 		"Invalid block level nesting"
 	);
 });
 
-test("Newlines DOM nesting", function() {
-	expect(2);
+test("New line handling", function() {
+	expect(10);
 
 	equal(
 		this.sb.signalToSource("", html2dom("textnode<div>new line before and after </div>textnode", true)),
 		"textnode\nnew line before and after \ntextnode",
-		"textnode before and after block level element"
+		"Textnode before and after block level element"
 	);
 
 	equal(
 		this.sb.signalToSource("", html2dom("textnode <span>no new line before and after </span>textnode", true)),
 		"textnode no new line before and after textnode",
-		"textnode before and after inline element"
+		"Textnode before and after inline element"
+	);
+
+	equal(
+		this.sb.signalToSource("", html2dom("<div>text<div>text</div>text</div>", true)),
+		"text\ntext\ntext",
+		"Nested divs"
+	);
+
+	equal(
+		this.sb.signalToSource("", html2dom("<div><span>text</span><div>text</div><span>text</span></div>", true)),
+		"text\ntext\ntext",
+		"Nested div with span siblings"
+	);
+
+	equal(
+		this.sb.signalToSource("", html2dom("<div><div>text</div><div>text</div><div>text</div></div>", true)),
+		"text\ntext\ntext",
+		"Nested div with div siblings"
+	);
+
+	equal(
+		this.sb.signalToSource("", html2dom("<div><div>text</div><div>" + ($.sceditor.ie ? '' : "<br />") + "</div><div>text</div></div>", true)),
+		"text\n\ntext",
+		"Nested div with br and div siblings"
+	);
+
+	equal(
+		this.sb.signalToSource("", html2dom("<div>text</div><div>" + ($.sceditor.ie ? '' : "<br />") + "</div><ul><li>text</li></ul>", true)),
+		"text\n\n[ul]\n[li]text[/li]\n[/ul]",
+		"Div siblings with a list"
+	);
+
+	equal(
+		this.sb.signalToSource("", html2dom("<div>text</div><div>" + ($.sceditor.ie ? '' : "<br />") + "</div><div>" + ($.sceditor.ie ? '' : "<br />") + "</div><ul><li>text</li></ul>", true)),
+		"text\n\n\n[ul]\n[li]text[/li]\n[/ul]",
+		"Multiple div siblings with a list"
+	);
+
+	equal(
+		this.sb.signalToSource("", html2dom("<div>text<br />text</div>", true)),
+		"text\ntext",
+		"BR tag"
+	);
+
+	equal(
+		this.sb.signalToSource("", html2dom("<div>text<br />text<br /></div>", true)),
+		"text\ntext",
+		"Collapsed end BR tag"
 	);
 });
 
@@ -324,7 +371,7 @@ test("Font colour", function() {
 });
 
 test("List", function() {
-	expect(2);
+	expect(3);
 
 	equal(
 		this.sb.signalToSource("", html2dom("<ul><li>test" + ($.sceditor.ie ? '' : "<br />") + "</li></ul>", true)),
@@ -336,6 +383,12 @@ test("List", function() {
 		this.sb.signalToSource("", html2dom("<ol><li>test" + ($.sceditor.ie ? '' : "<br />") + "</li></ol>", true)),
 		"[ol]\n[li]test[/li]\n[/ol]",
 		"OL tag"
+	);
+
+	equal(
+		this.sb.signalToSource("", html2dom("<ul><li>test<ul><li>sub" + ($.sceditor.ie ? '' : "<br />") + "</li></ul></li></ul>", true)),
+		"[ul]\n[li]test\n[ul]\n[li]sub[/li]\n[/ul]\n[/li]\n[/ul]",
+		"Nested UL tag"
 	);
 });
 
@@ -706,7 +759,7 @@ test("Font colour", function() {
 });
 
 test("List", function() {
-	expect(2);
+	expect(3);
 
 	equal(
 		this.sb.signalToWysiwyg("[ul][li]test[/li][/ul]"),
@@ -718,6 +771,12 @@ test("List", function() {
 		this.sb.signalToWysiwyg("[ol][li]test[/li][/ol]"),
 		"<ol><li>test" + ($.sceditor.ie ? '' : "<br />") + "</li></ol>",
 		"OL"
+	);
+
+	equal(
+		this.sb.signalToWysiwyg("[ul][li]test[ul][li]sub[/li][/ul][/li][/ul]"),
+		"<ul><li>test<ul><li>sub" + ($.sceditor.ie ? '' : "<br />") + "</li></ul></li></ul>",
+		"Nested UL"
 	);
 });
 

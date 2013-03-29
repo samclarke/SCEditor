@@ -20,6 +20,7 @@
 // ==/ClosureCompiler==
 
 /*jshint smarttabs: true, scripturl: true, jquery: true, devel:true, eqnull:true, curly: false */
+/*global Range: true*/
 
 ;(function ($, window, document) {
 	'use strict';
@@ -3683,7 +3684,7 @@
 			marker.id               = id;
 			marker.style.lineHeight = "0";
 			marker.style.display    = "none";
-			marker.className        = "sceditor-selection";
+			marker.className        = "sceditor-selection sceditor-ignore";
 
 			return marker;
 		};

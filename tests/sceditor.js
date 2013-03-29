@@ -1,10 +1,13 @@
 // Using BBCode for tests as it normalises the HTML which can be very diffrent in each browser
 module("SCEditor", {
 	setup: function() {
-		var textarea = $("#qunit-fixture textarea:first");
-		textarea.sceditorBBCodePlugin();
-		this.sb = textarea.sceditorBBCodePlugin();
-		this.s = textarea.sceditor("instance");
+		if(!$.sceditor.ie)
+		{
+			var textarea = $("#qunit-fixture textarea:first");
+			textarea.sceditorBBCodePlugin();
+			this.sb = textarea.sceditorBBCodePlugin();
+			this.s = textarea.sceditor("instance");
+		}
 	}
 });
 
@@ -45,10 +48,13 @@ test("Insert HTML two parts", function() {
 
 module("SCEditor Commands", {
 	setup: function() {
-		var textarea = $("#qunit-fixture textarea:first");
-		textarea.sceditorBBCodePlugin();
-		this.sb = textarea.sceditorBBCodePlugin();
-		this.s = textarea.sceditor("instance");
+		if(!$.sceditor.ie)
+		{
+			var textarea = $("#qunit-fixture textarea:first");
+			textarea.sceditorBBCodePlugin();
+			this.sb = textarea.sceditorBBCodePlugin();
+			this.s = textarea.sceditor("instance");
+		}
 	}
 });
 

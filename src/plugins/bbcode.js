@@ -1451,7 +1451,8 @@
 					return;
 
 				$.each(bbcodes, function(bbcode, values) {
-					if(!values || $.inArray(elementPropVal.toString(), values) > -1) {
+					if(!values || $.inArray(elementPropVal.toString(), values) > -1)
+					{
 						if($.isFunction(base.bbcodes[bbcode].format))
 							content = base.bbcodes[bbcode].format.call(base, element, content);
 						else
@@ -1473,8 +1474,8 @@
 		 * @return {String} Content with any matching bbcode tags wrapped around it.
 		 * @Private
 		 */
-		handleTags = function(element, content, blockLevel) {
-			var tag = element[0].nodeName.toLowerCase();
+		handleTags = function($element, content, blockLevel) {
+			var tag = $element[0].nodeName.toLowerCase();
 
 			// convert blockLevel to boolean
 			blockLevel = !!blockLevel;
@@ -1488,11 +1489,10 @@
 						var runBbcode = false;
 
 						// loop all the bbcode attribs
-						$.each(bbcodeAttribs, function(attrib, values)
-						{
-							// if the element has the bbcodes attribute and the bbcode attribute
+						$.each(bbcodeAttribs, function(attrib, values) {
+							// if the $element has the bbcodes attribute and the bbcode attribute
 							// has values check one of the values matches
-							if(!element.attr(attrib) || (values && $.inArray(element.attr(attrib), values) < 0))
+							if(!$element.attr(attrib) || (values && $.inArray($element.attr(attrib), values) < 0))
 								return;
 
 							// break this loop as we have matched this bbcode
@@ -1505,28 +1505,31 @@
 					}
 
 					if($.isFunction(base.bbcodes[bbcode].format))
-						content = base.bbcodes[bbcode].format.call(base, element, content);
+						content = base.bbcodes[bbcode].format.call(base, $element, content);
 					else
 						content = formatString(base.bbcodes[bbcode].format, content);
 				});
 			}
 
-			if(blockLevel && (!$.sceditor.dom.isInline(element[0], true) || tag === "br"))
+			if(blockLevel && (!$.sceditor.dom.isInline($element[0], true) || tag === "br"))
 			{
-				var	parent		= element[0].parentNode,
-					previousSibling = element[0].previousSibling,
+				var	parent		= $element[0].parentNode,
+					previousSibling = $element[0].previousSibling,
 					parentIsInline	= $.sceditor.dom.isInline(parent, true) || parent.nodeName.toLowerCase() === "body";
 
-				// If this br/block element inside an inline element. Or this is an li element.
-				// Or this is not the last block level as the last block level is collapsed.
-				// Or this is IE and the tag is BR
-				if(parentIsInline || tag === "li" || parent.lastChild !== element[0] || (tag === "br" && $.sceditor.ie))
+				// skips selection makers and other ignored items
+				while(previousSibling && $(previousSibling).hasClass('sceditor-ignore'))
+					previousSibling = previousSibling.previousSibling;
+
+				// If this br/block element inside an inline element.
+				// If this is not the last block level as the last block level is collapsed.
+				// If this is an li element.
+				// If IE and the tag is BR. IE never collapses BR's
+				if(parentIsInline || parent.lastChild !== $element[0] || tag === "li" || (tag === "br" && $.sceditor.ie))
 					content += "\n";
 
-				// needed for browsers which when inside a textnode, if return is pressed they put the right half
-				// in a div instead of just inserting a br i.e.:
-				// text<div>line 2</div>
-				if("br" !== tag && !parentIsInline && previousSibling && previousSibling.nodeType === 3)
+				// Check for <div>text<div>This needs a newline prepended</div></div>
+				if("br" !== tag && previousSibling && previousSibling.nodeName.toLowerCase() != 'br' && $.sceditor.dom.isInline(previousSibling, true))
 					content = "\n" + content;
 			}
 
@@ -1561,7 +1564,7 @@
 		base.elementToBbcode = function($element) {
 			return (function toBBCode(node, vChildren) {
 				var ret = '';
-// TODO: Move to BBCode class
+// TODO: Move to BBCode class?
 				$.sceditor.dom.traverse(node, function(node) {
 					var	$node		= $(node),
 						curTag		= '',
@@ -1653,30 +1656,32 @@
 		 * @return {String}
 		 * @private
 		 */
-		removeFirstLastDiv = function(html)
-		{
+		removeFirstLastDiv = function(html) {
 			var	node, next, removeDiv,
 				$output = $('<div />').hide().appendTo(document.body),
 				output  = $output[0];
 
-			removeDiv = function(node) {
+			removeDiv = function(node, isFirst) {
 				while((next = node.firstChild))
 					output.insertBefore(next, node);
 
-				if($.sceditor.ie >= 9)
-					output.insertBefore(document.createElement('br'), node);
+				if(isFirst)
+				{
+					var lastChild = output.lastChild;
+
+					if(node !== lastChild && $(lastChild).is("div") && node.nextSibling === lastChild)
+						output.insertBefore(document.createElement('br'), node);
+				}
 
 				output.removeChild(node);
 			};
 
 			output.innerHTML = html.replace(/<\/div>\n/g, '</div>');
 
-			node = output.firstChild;
-			if(node && node.nodeName.toLowerCase() === "div")
-				removeDiv(node);
+			if((node = output.firstChild) && $(node).is("div"))
+				removeDiv(node, true);
 
-			node = output.lastChild;
-			if(node && node.nodeName.toLowerCase() === "div")
+			if((node = output.lastChild) && $(node).is("div"))
 				removeDiv(node);
 
 			output = output.innerHTML;
@@ -2342,7 +2347,7 @@
 	 * Deprecated, use plugins: option instead. I.e.:
 	 *
 	 * $('textarea').sceditor({
-	 * 	plugins: 'bbcode'
+	 *      plugins: 'bbcode'
 	 * });
 	 *
 	 * @deprecated
