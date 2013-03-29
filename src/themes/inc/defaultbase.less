@@ -333,6 +333,13 @@ div.sceditor-dropdown div
 			width: 16px;
 			height: 20px;
 			.rounded(3px);
+			/* Needed for Safari 5? */
+			text-indent: -9999px;
+		}
+
+		.ie .sceditor-button
+		{
+			text-indent: 0;
 		}
 
 		.ie6 .sceditor-button,
@@ -414,6 +421,7 @@ div.sceditor-dropdown div
 				line-height: 16px;
 				font-size: 1em;
 				color: inherit;
+				text-indent: 0;
 			}
 
 			.text .sceditor-button div,
