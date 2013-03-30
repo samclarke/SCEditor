@@ -10,7 +10,7 @@
  *
  * @fileoverview SCEditor - A lightweight WYSIWYG BBCode and HTML editor
  * @author Sam Clarke
- * @version 1.4.2
+ * @version 1.4.3
  * @requires jQuery
  */
 
@@ -243,6 +243,14 @@
 		 * @private
 		 */
 		var isRequired;
+
+		/**
+		 * The inline CSS style element. Will be undefined until css() is called
+		 * for the first time.
+		 * @type {HTMLElement}
+		 * @private
+		 */
+		var inlineCss;
 
 		/**
 		 * Private functions
@@ -2514,6 +2522,40 @@
 			return this;
 		};
 
+		/**
+		 * Gets the current WYSIWYG editors inline CSS
+		 *
+		 * @return {string}
+		 * @function
+		 * @name css
+		 * @memberOf jQuery.sceditor.prototype
+		 * @since 1.4.3
+		 */
+		/**
+		 * Sets inline CSS for the WYSIWYG editor
+		 *
+		 * @param {string} css
+		 * @return {this}
+		 * @function
+		 * @name css^2
+		 * @memberOf jQuery.sceditor.prototype
+		 * @since 1.4.3
+		 */
+		base.css = function(css) {
+			if(!inlineCss)
+				inlineCss = $('<style id="#inline" />').appendTo($(getWysiwygDoc()).find('head'))[0];
+
+			if(typeof css != 'string')
+				return inlineCss.styleSheet ? inlineCss.styleSheet.cssText : inlineCss.innerHTML;
+
+			if(inlineCss.styleSheet)
+				inlineCss.styleSheet.cssText = css;
+			else
+				inlineCss.innerHTML = css;
+
+			return this;
+		};
+
 		// run the initializer
 		init();
 	};
@@ -2564,11 +2606,11 @@
 
 		// I think blackberry supports it or will at least
 		// give a valid value for the contentEditable detection above
-		// so it's' not included here.
+		// so it's not included here.
 
 
 		// The latest WebOS does support contentEditable.
-		// But I still till need to check if all supported
+		// Still till need to check if all supported
 		// versions of WebOS support contentEditable
 
 
