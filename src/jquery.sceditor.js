@@ -546,7 +546,7 @@
 
 					$button = _tmpl("toolbarButton", {
 							name: button,
-							dispName: base.commands[button].tooltip || button
+							dispName: base._(base.commands[button].tooltip || button)
 						}, true);
 
 					$button.data('sceditor-txtmode', !!base.commands[button].txtExec);
@@ -2623,7 +2623,7 @@
 		if(/Android/i.test(userAgent))
 		{
 			isUnsupported = true;
-
+// TODO:check chrome
 			if(/Safari/.test(userAgent))
 			{
 				// android browser 534+ supports content editable
