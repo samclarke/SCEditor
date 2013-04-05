@@ -993,8 +993,8 @@
 
 			if(updateheight)
 			{
-				wysiwygEditor.style.height = height - $wysiwygEditor.data('outerHeightOffset') + 'px';
-				sourceEditor.style.height  = height - $sourceEditor.data('outerHeightOffset') + 'px';
+				wysiwygEditor.style.height = Math.max(height - $wysiwygEditor.data('outerHeightOffset'),0) + 'px';
+				sourceEditor.style.height  = Math.max(height - $sourceEditor.data('outerHeightOffset'),0) + 'px';
 			}
 
 			return this;
