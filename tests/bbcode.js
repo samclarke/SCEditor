@@ -954,6 +954,8 @@ test("Unsupported BBCodes", function() {
 });
 
 
+module("White Space");
+
 test("Stripping empty", function() {
 	expect(8);
 
