@@ -1,93 +1,122 @@
-// Using BBCode for tests as it normalises the HTML which can be very diffrent in each browser
-module("SCEditor", {
-	setup: function() {
-		if(!$.sceditor.ie)
-		{
-			var textarea = $("#qunit-fixture textarea:first");
-			textarea.sceditorBBCodePlugin();
-			this.sb = textarea.sceditorBBCodePlugin();
-			this.s = textarea.sceditor("instance");
+/*global module: true, $: true, test: true, expect: true, equal: true*/
+var tests = function() {
+	"use strict";
+
+	// Using BBCode for tests as it normalises the HTML which can be very diffrent in each browser
+	module("SCEditor", {
+		setup: function() {
+			var $textarea = $("#qunit-fixture textarea:first");
+
+			$textarea.sceditor({
+				plugins: 'bbcode'
+			});
+
+			this.sceditor = $textarea.sceditor("instance");
+		},
+		teardown: function() {
+			this.sceditor.destroy();
+			this.sceditor = null;
 		}
-	}
-});
+	});
 
-
-test("Insert HTML", function() {
-	// this unit test fails in IE so skip it.
-	// It does actually work just not in this unit test
-	if(!$.sceditor.ie)
-	{
+	test("Insert HTML", function() {
 		expect(1);
 
-		this.s.wysiwygEditorInsertHtml("<span>simple <b>test</b></span>")
+		this.sceditor.wysiwygEditorInsertHtml("<span>simple <b>test</b></span>");
 		equal(
-			this.s.getWysiwygEditorValue(),
+			this.sceditor.val(),
 			"simple [b]test[/b]"
 		);
-	}
-	else
-		expect(0);
-});
+	});
 
-test("Insert HTML two parts", function() {
-	// this unit test fails in IE so skip it.
-	// It does actually work just not in this unit test
-	if(!$.sceditor.ie)
-	{
+	test("Insert HTML two parts", function() {
 		expect(1);
 
-		this.s.wysiwygEditorInsertHtml("<span>simple ", "<b>test</b></span>")
+		this.sceditor.wysiwygEditorInsertHtml("<span>simple ", "<b>test</b></span>");
 		equal(
-			this.s.getWysiwygEditorValue(),
+			this.sceditor.val(),
 			"simple [b]test[/b]"
 		);
-	}
-	else
-		expect(0);
-});
+	});
 
-module("SCEditor Commands", {
-	setup: function() {
-		if(!$.sceditor.ie)
-		{
-			var textarea = $("#qunit-fixture textarea:first");
-			textarea.sceditorBBCodePlugin();
-			this.sb = textarea.sceditorBBCodePlugin();
-			this.s = textarea.sceditor("instance");
-		}
-	}
-});
-
-test("Quote", function() {
-	// this unit test fails in IE so skip it.
-	// It does actually work just not in this unit test
-	if(!$.sceditor.ie)
-	{
+	test("Insert HTML two parts without filter", function() {
 		expect(1);
 
-		this.s.commands.quote.exec.call(this.s, null, "Simple <b>test</b>")
+		this.sceditor.insert("<span>simple ", "<b>test</b></span>", false);
 		equal(
-			this.s.getWysiwygEditorValue(),
+			this.sceditor.val(),
+			"simple [b]test[/b]"
+		);
+	});
+
+	test("Insert BBCode two parts", function() {
+		expect(1);
+
+		this.sceditor.insert("simple ", "[b]test[/b]");
+		equal(
+			this.sceditor.val(),
+			"simple [b]test[/b]"
+		);
+	});
+
+	test("Set value", function() {
+		expect(1);
+
+		this.sceditor.val("simple [b]test[/b]");
+		equal(
+			this.sceditor.val(),
+			"simple [b]test[/b]"
+		);
+	});
+
+	test("Set value filter", function() {
+		expect(1);
+
+		this.sceditor.val("<span>simple <b>test</b></span>", false);
+		equal(
+			this.sceditor.val(),
+			"simple [b]test[/b]"
+		);
+	});
+
+
+	module("SCEditor Commands", {
+		setup: function() {
+			var $textarea = $("#qunit-fixture textarea:first");
+
+			$textarea.sceditor({
+				plugins: 'bbcode'
+			});
+
+			this.sceditor = $textarea.sceditor("instance");
+		},
+		teardown: function() {
+			this.sceditor.destroy();
+			this.sceditor = null;
+		}
+	});
+
+	test("Quote", function() {
+		expect(1);
+
+		this.sceditor.commands.quote.exec.call(this.sceditor, null, "Simple <b>test</b>");
+		equal(
+			this.sceditor.val(),
 			"[quote]Simple [b]test[/b][/quote]"
 		);
-	}
-	else
-		expect(0);
-});
+	});
 
-test("Quote with author", function() {
-	// this unit test fails in IE so skip it.
-	// It does actually work just not in this unit test
-	if(!$.sceditor.ie)
-	{
+	test("Quote with author", function() {
 		expect(1);
 
-		this.s.commands.quote.exec.call(this.s, null, "Simple <b>test</b>", "admin")
+		this.sceditor.commands.quote.exec.call(this.sceditor, null, "Simple <b>test</b>", "admin");
 		equal(
-			this.s.getWysiwygEditorValue(),
+			this.sceditor.val(),
 			"[quote=admin]Simple [b]test[/b][/quote]"
 		);
-	}
-	else
-		expect(0);
-});
+	});
+};
+
+// IE fails with these tests
+if(!$.sceditor.ie)
+	tests();
