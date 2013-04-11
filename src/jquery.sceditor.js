@@ -1592,18 +1592,15 @@
 					var	html = base.getRangeHelper().selectedHtml(),
 						frag = $('<div>').appendTo($('body')).hide().html(html);
 
-					if(filter !== false)
-					{
-						if(pluginManager.hasHandler("toSource"))
-							html = pluginManager.callOnlyFirst("toSource", html, frag);
+					if(filter !== false && pluginManager.hasHandler("toSource"))
+						html = pluginManager.callOnlyFirst("toSource", html, frag);
 
-						frag.remove();
-					}
+					frag.remove();
 
 					start += html + end;
 				}
 
-				if(pluginManager.hasHandler("toWysiwyg"))
+				if(filter !== false && pluginManager.hasHandler("toWysiwyg"))
 					start = pluginManager.callOnlyFirst("toWysiwyg", start, true);
 
 				if(convertEmoticons !== false)

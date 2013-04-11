@@ -2,6 +2,7 @@ Version 1.4.3:
 	Added css() method which allows getting/setting inline CSS for the WYSIWYG editor.
 	Added Simplified Chinese translation.
 		- Thanks to Yorgo for translating.
+	Fixed bug with insert() and setting siltering to false.
 
 Version 1.4.2:
 	Added emoticons() method which allows enabling/disabling emoticons at runtime.
