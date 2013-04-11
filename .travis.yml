@@ -1,0 +1,5 @@
+before_script:
+  - "phantomjs --version"
+notifications:
+  email:
+    - sam@sceditor.com
