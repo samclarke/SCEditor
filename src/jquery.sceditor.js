@@ -20,7 +20,7 @@
 // ==/ClosureCompiler==
 
 /*jshint smarttabs: true, scripturl: true, jquery: true, devel:true, eqnull:true, curly: false */
-/*global Range: true*/
+/*global Range: true, browser*/
 
 ;(function ($, window, document) {
 	'use strict';
@@ -1924,7 +1924,9 @@
 			isSelectionCheckPending = true;
 
 			setTimeout(function() {
-				if(!rangeHelper.compare(currentSelection))
+				// rangeHelper could be null if editor was destoryed
+				// before the timeout had finished
+				if(rangeHelper && !rangeHelper.compare(currentSelection))
 				{
 					currentSelection = rangeHelper.cloneSelected();
 					$editorContainer.trigger($.Event('selectionchanged'));
@@ -1999,7 +2001,7 @@
 								if(state > -1)
 									state = doc.queryCommandState(stateHandler.state) ? 1 : 0;
 							}
-							catch (e) {}
+							catch(ex) {}
 						}
 						else
 							state = stateHandler.state.call(base, parent, firstBlock);
@@ -4093,8 +4095,6 @@
 			if(!elm || elm.nodeType !== 1)
 				return true;
 
-
-
 			elm = elm.tagName.toLowerCase();
 
 			if(elm === 'code')
@@ -4163,47 +4163,100 @@
 			return $(node1).parents().has($(node2)).first();
 		},
 
+		getSibling: function(node, previous) {
+			var sibling;
+
+			if(!node)
+				return null;
+
+			if((sibling = node[previous ? 'previousSibling' : 'nextSibling']))
+				return sibling;
+
+			return $.sceditor.dom.getSibling(node.parentNode, previous);
+		},
+
 		/**
 		 * Removes unused whitespace from the root and all it's children
 		 *
+		 * @name removeWhiteSpace^1
 		 * @param HTMLElement root
 		 * @return void
 		 */
-		removeWhiteSpace: function(root) {
-			// 00A0 is non-breaking space which should not be striped
-			var	nodeValue,
-				multiWhitespace = /[^\S|\u00A0]+/g;
+		/**
+		 * Removes unused whitespace from the root and all it's children.
+		 *
+		 * If preserveNewLines is true, new line characters will not be removed
+		 *
+		 * @name removeWhiteSpace^2
+		 * @param HTMLElement root
+		 * @param Boolean preserveNewLines
+		 * @return void
+		 * @since 1.4.3
+		 */
+		removeWhiteSpace: function(root, preserveNewLines) {
+			var	nodeValue, nodeType, next, previous, cssWS, nextNode, trimStart, sibling,
+				getSibling        = $.sceditor.dom.getSibling,
+				isInline          = $.sceditor.dom.isInline,
+				node              = root.firstChild,
+				whitespace        = /[\t ]+/g,
+				witespaceAndLines = /[\t\n\r ]+/g;
 
-			this.traverse(root, function(node) {
+			while(node)
+			{
+				nextNode  = node.nextSibling;
 				nodeValue = node.nodeValue;
-// TODO: have proper white-space checking for pre formatted text instead of checking for code and pre tags.
-				if(node.nodeType === 3 && $(node).parents('code, pre').length === 0 && nodeValue)
+				nodeType  = node.nodeType;
+
+				// 1 = element
+				if(nodeType === 1 && node.firstChild)
 				{
-					if(!node.previousSibling || !$.sceditor.dom.isInline(node.previousSibling))
-						nodeValue = nodeValue.replace(/^[\r\n]+/, "");
+					cssWS = $(node).css('white-space');
 
-					if(!node.nextSibling || !$.sceditor.dom.isInline(node.nextSibling))
-						nodeValue = nodeValue.replace(/[\r\n]+$/, "");
+					// pre || pre-wrap with any vendor prefix
+					if(!/pre(?:\-wrap)?$/i.test(cssWS))
+						$.sceditor.dom.removeWhiteSpace(node, /line$/i.test(cssWS));
+				}
 
-					nodeValue = nodeValue.replace(/[\r\n]+/, " ");
+				// 3 = textnode
+				if(nodeType === 3 && nodeValue)
+				{
+					next      = getSibling(node);
+					previous  = getSibling(node, true);
+					sibling   = node;
+					trimStart = false;
 
-					//remove empty nodes
-					if(!nodeValue.length)
+					// If last sibling is not inline is a textnode ending in whitespace,
+					// the start whitespace should be stripped
+					if(isInline(node))
 					{
-						node.parentNode.removeChild(node);
-						return;
+						while((sibling = getSibling(sibling, true)))
+						{
+							while(sibling.lastChild)
+								sibling = sibling.lastChild;
+
+							if(!isInline(sibling) || sibling.nodeType === 3)
+							{
+								trimStart = sibling.nodeType === 3 ? /[\t\n\r ]$/.test(sibling.nodeValue) : true;
+								break;
+							}
+						}
 					}
 
-					// If entirely whitespace then just set to a single space
-					if(!/\S|\u00A0/.test(nodeValue))
-						nodeValue = " ";
-					// replace multiple spaces inbetween non-white space with a single space
-					else if(multiWhitespace.test(nodeValue))
-						nodeValue = nodeValue.replace(multiWhitespace, " ");
+					if(!isInline(node) || !previous || !isInline(previous) || trimStart)
+						nodeValue = nodeValue.replace(/^[\t\n\r ]+/, "");
 
-					node.nodeValue = nodeValue;
+					if(!isInline(node) || !next || !isInline(next))
+						nodeValue = nodeValue.replace(/[\t\n\r ]+$/, "");
+
+					// Remove empty text nodes
+					if(!nodeValue.length)
+						root.removeChild(node);
+					else
+						node.nodeValue = nodeValue.replace(preserveNewLines ? whitespace : witespaceAndLines, " ");
 				}
-			});
+
+				node = nextNode;
+			}
 		},
 
 		/**
@@ -4216,7 +4269,7 @@
 		extractContents: function(startNode, endNode) {
 			var	base            = this,
 				$commonAncestor = base.findCommonAncestor(startNode, endNode),
-				commonAncestor  = !$commonAncestor?null:$commonAncestor.get(0),
+				commonAncestor  = !$commonAncestor ? null : $commonAncestor[0],
 				startReached    = false,
 				endReached      = false;
 
