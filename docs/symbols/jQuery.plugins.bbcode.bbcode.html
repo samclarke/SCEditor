@@ -4,7 +4,7 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
-		<title>jQuery.sceditor.command | SCEditor</title>
+		<title>jQuery.plugins.bbcode.bbcode | SCEditor</title>
 
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 		<meta name="mobileoptimized" content="0" />
@@ -86,7 +86,7 @@
 			<header>
 				<h1 class="classTitle">
 					
-					Class <span>jQuery.sceditor.command</span>
+					Class <span>jQuery.plugins.bbcode.bbcode</span>
 				</h1>
 				
 				<div class="intro">
@@ -99,7 +99,7 @@
 							
 							
 							
-								<li>Defined in: <a href="../symbols/src/src_jquery.sceditor.js.html">jquery.sceditor.js</a></li>
+								<li>Defined in: <a href="../symbols/src/src_plugins_bbcode.js.html">bbcode.js</a></li>
 							
 							
 						</ul>
@@ -110,7 +110,7 @@
 			
 				<section>
 					<div class="props">
-						<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class jQuery.sceditor.command.">
+						<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class jQuery.plugins.bbcode.bbcode.">
 							<caption class="sectionTitle">Class Summary</caption>
 							<thead>
 								<tr>
@@ -123,9 +123,9 @@
 									<td class="attributes">&nbsp;</td>
 									<td class="nameDescription" >
 										<div class="fixedFont">
-											<b><a href="../symbols/jQuery.sceditor.command.html#constructor">jQuery.sceditor.command</a></b>()
+											<b><a href="../symbols/jQuery.plugins.bbcode.bbcode.html#constructor">jQuery.plugins.bbcode.bbcode</a></b>()
 										</div>
-										<div class="description">Static command helper class</div>
+										<div class="description">Static BBCode helper class</div>
 									</td>
 								</tr>
 							</tbody>
@@ -147,7 +147,7 @@
 						
 						
 							<nav>
-								<table class="summaryTable" id="MethodsList" cellspacing="0" summary="A summary of the methods documented in the class jQuery.sceditor.command.">
+								<table class="summaryTable" id="MethodsList" cellspacing="0" summary="A summary of the methods documented in the class jQuery.plugins.bbcode.bbcode.">
 									<thead>
 										<tr>
 											<th scope="col">Method Attributes</th>
@@ -163,9 +163,9 @@
 											>
 												<td class="attributes">&lt;static&gt; &nbsp;</td>
 												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditor.command.<b><a href="../symbols/jQuery.sceditor.command.html#.get">get</a></b>(name)
+													<div class="fixedFont">jQuery.plugins.bbcode.bbcode.<b><a href="../symbols/jQuery.plugins.bbcode.bbcode.html#.get">get</a></b>(name)
 													</div>
-													<div class="description">Gets a command</div>
+													<div class="description">Gets a BBCode</div>
 												</td>
 											</tr>
 										
@@ -174,9 +174,9 @@
 											>
 												<td class="attributes">&lt;static&gt; &nbsp;</td>
 												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditor.command.<b><a href="../symbols/jQuery.sceditor.command.html#.remove">remove</a></b>(name)
+													<div class="fixedFont">jQuery.plugins.bbcode.bbcode.<b><a href="../symbols/jQuery.plugins.bbcode.bbcode.html#.remove">remove</a></b>(name)
 													</div>
-													<div class="description">Removes a command</div>
+													<div class="description">Removes a BBCode</div>
 												</td>
 											</tr>
 										
@@ -185,10 +185,24 @@
 											>
 												<td class="attributes">&lt;static&gt; &nbsp;</td>
 												<td class="nameDescription">
-													<div class="fixedFont">jQuery.sceditor.command.<b><a href="../symbols/jQuery.sceditor.command.html#.set">set</a></b>(name, cmd)
+													<div class="fixedFont">jQuery.plugins.bbcode.bbcode.<b><a href="../symbols/jQuery.plugins.bbcode.bbcode.html#.rename">rename</a></b>(name, newName)
 													</div>
-													<div class="description"><p>Adds a command to the editor or updates an exisiting
-command if a command with the specified name already exists.</div>
+													<div class="description">Renames a BBCode
+
+This does not change the format or HTML handling, those must be
+changed manually.</div>
+												</td>
+											</tr>
+										
+											<tr
+												 class='item3'
+											>
+												<td class="attributes">&lt;static&gt; &nbsp;</td>
+												<td class="nameDescription">
+													<div class="fixedFont">jQuery.plugins.bbcode.bbcode.<b><a href="../symbols/jQuery.plugins.bbcode.bbcode.html#.set">set</a></b>(name, bbcode)
+													</div>
+													<div class="description"><p>Adds a BBCode to the parser or updates an existing
+BBCode if a BBCode with the specified name already exists.</div>
 												</td>
 											</tr>
 										
@@ -218,11 +232,11 @@ command if a command with the specified name already exists.</div>
 							</h2>
 							
 							<div class="fixedFont">
-								<b>jQuery.sceditor.command</b>()
+								<b>jQuery.plugins.bbcode.bbcode</b>()
 							</div>
 							
 							<div class="description">
-								Static command helper class
+								Static BBCode helper class
 								
 							</div>
 							
@@ -263,11 +277,11 @@ command if a command with the specified name already exists.</div>
 											
 											<span class="light">{Object|null}</span>
 											
-											<span class="light">jQuery.sceditor.command.</span><b>get</b>(name)
+											<span class="light">jQuery.plugins.bbcode.bbcode.</span><b>get</b>(name)
 										</div>
 										
 										<div class="description">
-											Gets a command
+											Gets a BBCode
 											
 											
 											
@@ -327,11 +341,11 @@ command if a command with the specified name already exists.</div>
 											
 											<span class="light">{this}</span>
 											
-											<span class="light">jQuery.sceditor.command.</span><b>remove</b>(name)
+											<span class="light">jQuery.plugins.bbcode.bbcode.</span><b>remove</b>(name)
 										</div>
 										
 										<div class="description">
-											Removes a command
+											Removes a BBCode
 											
 											
 											
@@ -384,6 +398,79 @@ command if a command with the specified name already exists.</div>
 									<li 
 										 class='item2'
 									>
+										<div class="fixedFont heading" id=".rename">
+											<span class='lighter'>
+											&lt;static&gt; 
+											</span>
+											
+											<span class="light">{this|false}</span>
+											
+											<span class="light">jQuery.plugins.bbcode.bbcode.</span><b>rename</b>(name, newName)
+										</div>
+										
+										<div class="description">
+											Renames a BBCode
+
+This does not change the format or HTML handling, those must be
+changed manually.
+											
+											
+											
+											
+										</div>
+										
+										
+										
+										
+											<dl class="detailList params">
+												<dt class="heading">Parameters:</dt>
+												
+													<dt>
+														<span class="light fixedFont">{String}</span> <b>name</b>
+														
+													</dt>
+													<dd>[description]</dd>
+												
+													<dt>
+														<span class="light fixedFont">{String}</span> <b>newName</b>
+														
+													</dt>
+													<dd>[description]</dd>
+												
+											</dl>
+										
+										
+										
+											<dl class="detailList nomargin">
+											
+												
+												
+												
+													<dt class="heading">Since:</dt>
+													<dd>v1.4.0</dd>
+												
+												
+												
+												
+												
+													<dt class="heading">Returns:</dt>
+													
+														<dd><span class="light fixedFont">{this|false}</span> </dd>
+													
+												
+												
+												
+												
+												
+											
+											</dl>
+										
+										<div class="hr"></div>
+									</li>
+								
+									<li 
+										 class='item3'
+									>
 										<div class="fixedFont heading" id=".set">
 											<span class='lighter'>
 											&lt;static&gt; 
@@ -391,31 +478,18 @@ command if a command with the specified name already exists.</div>
 											
 											<span class="light">{this|false}</span>
 											
-											<span class="light">jQuery.sceditor.command.</span><b>set</b>(name, cmd)
+											<span class="light">jQuery.plugins.bbcode.bbcode.</span><b>set</b>(name, bbcode)
 										</div>
 										
 										<div class="description">
-											<p>Adds a command to the editor or updates an exisiting
-command if a command with the specified name already exists.</p>
-
-<p>Once a command is add it can be included in the toolbar by
-adding it's name to the toolbar option in the constructor. It
-can also be executed manually by calling jQuery.sceditor.execCommand</p>
+											<p>Adds a BBCode to the parser or updates an existing
+BBCode if a BBCode with the specified name already exists.</p>
 											
 											
 											
 											
 										</div>
 										
-										
-											
-												<pre class="code">$.sceditor.command.set("hello",
-{
-    exec: function() {
-        alert("Hello World!");
-    }
-});</pre>
-											
 										
 										
 										
@@ -429,7 +503,7 @@ can also be executed manually by calling jQuery.sceditor.execCommand</p>
 													<dd></dd>
 												
 													<dt>
-														<span class="light fixedFont">{Object}</span> <b>cmd</b>
+														<span class="light fixedFont">{Object}</span> <b>bbcode</b>
 														
 													</dt>
 													<dd></dd>
@@ -452,7 +526,7 @@ can also be executed manually by calling jQuery.sceditor.execCommand</p>
 												
 													<dt class="heading">Returns:</dt>
 													
-														<dd><span class="light fixedFont">{this|false}</span> Returns false if name or cmd is false</dd>
+														<dd><span class="light fixedFont">{this|false}</span> Returns false if name or bbcode is false</dd>
 													
 												
 												
