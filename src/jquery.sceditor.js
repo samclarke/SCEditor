@@ -1582,11 +1582,36 @@
 		 * @name insert
 		 * @memberOf jQuery.sceditor.prototype
 		 */
-		base.insert = function (start, end, filter, convertEmoticons) {
+		/**
+		 * <p>Inserts HTML/BBCode into the editor</p>
+		 *
+		 * <p>If end is supplied any slected text will be placed between
+		 * start and end. If there is no selected text start and end
+		 * will be concated together.</p>
+		 *
+		 * <p>If the filter param is set to true, the HTML/BBCode will be
+		 * passed through any plugin filters. If using the BBCode plugin
+		 * this will convert any BBCode into HTML.</p>
+		 *
+		 * <p>If the allowMixed param is set to true, HTML any will not be escaped</p>
+		 *
+		 * @param {String} start
+		 * @param {String} [end=null]
+		 * @param {Boolean} [filter=true]
+		 * @param {Boolean} [convertEmoticons=true] If to convert emoticons
+		 * @param {Boolean} [allowMixed=false]
+		 * @return {this}
+		 * @since 1.4.3
+		 * @function
+		 * @name insert^2
+		 * @memberOf jQuery.sceditor.prototype
+		 */
+		base.insert = function (start, end, filter, convertEmoticons, allowMixed) {
 			if(base.inSourceMode())
 				base.sourceEditorInsertText(start, end);
 			else
 			{
+				// Add the selection between start and end
 				if(end)
 				{
 					var	html = base.getRangeHelper().selectedHtml(),
@@ -1602,6 +1627,14 @@
 
 				if(filter !== false && pluginManager.hasHandler("toWysiwyg"))
 					start = pluginManager.callOnlyFirst("toWysiwyg", start, true);
+
+				// Convert any escaped HTML back into HTML if mixed is allowed
+				if(filter !== false && allowMixed === true)
+				{
+					start = start.replace(/&lt;/g, "<")
+						.replace(/&gt;/g, ">")
+						.replace(/&amp;/g, "&");
+				}
 
 				if(convertEmoticons !== false)
 					start = replaceEmoticons(start);

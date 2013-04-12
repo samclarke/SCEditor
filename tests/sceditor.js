@@ -59,6 +59,37 @@ var tests = function() {
 		);
 	});
 
+	test("Insert mixed", function() {
+		expect(1);
+
+		this.sceditor.insert("<i>simple</i> [b]test[/b]", null, true, true, true);
+		equal(
+			this.sceditor.val(),
+			"[i]simple[/i] [b]test[/b]"
+		);
+	});
+
+	test("Insert mixed with escaped HTML", function() {
+		expect(1);
+
+		this.sceditor.insert("<i>simple</i>&lt;i&gt;test&lt;/i&gt; [b]test[/b]", null, true, true, true);
+		equal(
+			this.sceditor.val(),
+			// This HTML is in BBCode so it is actually escaped.
+			"[i]simple[/i]<i>test</i> [b]test[/b]"
+		);
+	});
+
+	test("Insert mixed two parts", function() {
+		expect(1);
+
+		this.sceditor.insert("<i>simple</i> ", "[b]test[/b]", true, true, true);
+		equal(
+			this.sceditor.val(),
+			"[i]simple[/i] [b]test[/b]"
+		);
+	});
+
 	test("Set value", function() {
 		expect(1);
 
