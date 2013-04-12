@@ -6,6 +6,7 @@ Version 1.4.3:
 	Added Travis-CI testing and improved tests
 	Fixed bug with emoticons preloading even if disabled.
 		- Thanks to @novadk for reporting.
+	Fixed error when editor is hidden and autofocus is enabled.
 
 Version 1.4.2:
 	Added emoticons() method which allows enabling/disabling emoticons at runtime.

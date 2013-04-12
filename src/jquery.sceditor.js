@@ -738,6 +738,10 @@
 				body     = doc.body,
 				focusEnd = !!options.autofocusEnd;
 
+			// Can't focus invislible elements
+			if(!$editorContainer.is(':visible'))
+				return;
+
 			if(base.sourceMode())
 			{
 				txtPos = sourceEditor.value.length;
@@ -761,7 +765,6 @@
 
 				if(doc.createRange)
 				{
-
 					rng = doc.createRange();
 					rng.setStart(elm, 0);
 					rng.setEnd(elm, 0);
