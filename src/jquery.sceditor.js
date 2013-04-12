@@ -703,7 +703,7 @@
 				emoticons = options.emoticons,
 				root      = options.emoticonsRoot;
 
-			if(!$.isPlainObject(emoticons))
+			if(!$.isPlainObject(emoticons) || !options.emoticonsEnabled)
 				return;
 
 			$.each(emoticons, function (idx, val) {

@@ -3,6 +3,9 @@ Version 1.4.3:
 	Added Simplified Chinese translation.
 		- Thanks to Yorgo for translating.
 	Fixed bug with insert() and setting siltering to false.
+	Added Travis-CI testing and improved tests
+	Fixed bug with emoticons preloading even if disabled.
+		- Thanks to @novadk for reporting.
 
 Version 1.4.2:
 	Added emoticons() method which allows enabling/disabling emoticons at runtime.
