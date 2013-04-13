@@ -107,7 +107,7 @@
 
 
 
-	module("HTML to BBCodes", {
+	module("HTML to BBCode", {
 		setup: function() {
 			this.sb = new $.sceditor.plugins.bbcode();
 			this.sb.init.call({
@@ -960,8 +960,84 @@
 
 
 
+	module("BBCode Insert Filter");
 
-	module("White Space", {
+	test("Removal check", function() {
+		expect(4);
+
+		var $textarea = $("#qunit-fixture textarea:first");
+
+		$.sceditor.plugins.bbcode.bbcode.set("test", {
+			format: '[test]{0}[/test]',
+			html: '<div style="font-weight:bold">{0}</div>',
+			styles: {
+				"font-weight": ["bold"]
+			},
+			tags: {
+				div: {
+					'class': ['test'],
+					'data-test': ['test']
+				}
+			},
+			isInline: false,
+			allowsEmpty: true
+		});
+		$textarea.sceditor({ plugins: 'bbcode' });
+		$textarea.sceditor("instance").insert('[test]', '[/test]');
+		equal(
+			$textarea.sceditor("instance").val(),
+			"[test][/test]",
+			"Style check"
+		);
+		$textarea.sceditor("instance").destroy();
+
+
+
+		$.sceditor.plugins.bbcode.bbcode.set("test", {
+			html: '<div class="test">{0}</div>'
+		});
+		$textarea.sceditor({ plugins: 'bbcode' });
+		$textarea.sceditor("instance").insert('[test]', '[/test]');
+		equal(
+			$textarea.sceditor("instance").val(),
+			"[test][/test]",
+			"Class check"
+		);
+		$textarea.sceditor("instance").destroy();
+
+
+
+		$.sceditor.plugins.bbcode.bbcode.set("test", {
+			html: '<div data-test="test">{0}</div>'
+		});
+		$textarea.sceditor({ plugins: 'bbcode' });
+		$textarea.sceditor("instance").insert('[test]', '[/test]');
+		equal(
+			$textarea.sceditor("instance").val(),
+			"[test][/test]",
+			"Data check"
+		);
+		$textarea.sceditor("instance").destroy();
+
+
+
+		$.sceditor.plugins.bbcode.bbcode.set("test", {
+			html: '<div>{0}</div>'
+		});
+		$textarea.sceditor({ plugins: 'bbcode' });
+		$textarea.sceditor("instance").insert('[test]', '[/test]');
+		equal(
+			$textarea.sceditor("instance").val(),
+			"",
+			"Nothing check"
+		);
+		$textarea.sceditor("instance").destroy();
+	});
+
+
+
+
+	module("BBCode White Space", {
 		setup: function() {
 			this.sb = new $.sceditor.plugins.bbcode();
 			this.sb.init.call({

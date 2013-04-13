@@ -1663,7 +1663,7 @@
 
 			removeDiv = function(node, isFirst) {
 				// Don't remove divs that have styleing
-				if(node.className || $(node).attr('style'))
+				if(node.className || $(node).attr('style') || !$.isEmptyObject($(node).data()))
 					return;
 
 				while((next = node.firstChild))
