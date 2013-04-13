@@ -1662,6 +1662,10 @@
 				output  = $output[0];
 
 			removeDiv = function(node, isFirst) {
+				// Don't remove divs that have styleing
+				if(node.className || $(node).attr('style'))
+					return;
+
 				while((next = node.firstChild))
 					output.insertBefore(next, node);
 
