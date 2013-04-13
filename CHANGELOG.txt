@@ -10,6 +10,7 @@ Version 1.4.3:
 	Fixed bug with insert() removing first or last div even if it has styling.
 	Fixed error with IE 8 height.
 		- Thanks to @arjunasuresh3 for reporting and fixing.
+	Added toBBCode() and fromBBCode() methods.
 
 Version 1.4.2:
 	Added emoticons() method which allows enabling/disabling emoticons at runtime.

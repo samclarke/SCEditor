@@ -1271,6 +1271,10 @@
 			// build the BBCode cache
 			buildBbcodeCache();
 			mergeSourceModeCommands(this);
+
+			// Add BBCode helper methods
+			this.toBBCode   = base.signalToSource;
+			this.fromBBCode = base.signalToWysiwyg;
 		};
 
 		mergeSourceModeCommands = function(editor) {
@@ -1539,16 +1543,35 @@
 		/**
 		 * Converts HTML to BBCode
 		 * @param string	html	Html string, this function ignores this, it works off domBody
-		 * @param HtmlElement	domBody	Editors dom body object to convert
+		 * @param HtmlElement	$body	Editors dom body object to convert
 		 * @return string BBCode which has been converted from HTML
 		 * @memberOf jQuery.plugins.bbcode.prototype
 		 */
-		base.signalToSource = function(html, domBody) {
-			var parser = new $.sceditor.BBCodeParser(base.opts.parserOptions);
+		base.signalToSource = function(html, $body) {
+			var	$tmpContainer, bbcode,
+				parser = new $.sceditor.BBCodeParser(base.opts.parserOptions);
 
-			$.sceditor.dom.removeWhiteSpace(domBody[0]);
+			if(!$body)
+			{
+				if(typeof html === "string")
+				{
+					$tmpContainer = $('<div />').hide().appendTo(document.body).html(html);
+					$body         = $tmpContainer;
+				}
+				else
+					$body = $(html);
+			}
 
-			return $.trim(parser.toBBCode(base.elementToBbcode(domBody), true));
+			if(!$body || !$body.jquery)
+				return '';
+
+			$.sceditor.dom.removeWhiteSpace($body[0]);
+			bbcode = base.elementToBbcode($body);
+
+			if($tmpContainer)
+				$tmpContainer.remove();
+
+			return $.trim(parser.toBBCode(bbcode, true));
 		};
 
 		/**

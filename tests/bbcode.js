@@ -1037,6 +1037,55 @@
 
 
 
+	module("BBCode Converter Methods", {
+		setup: function() {
+			var $textarea = $("#qunit-fixture textarea:first");
+			$textarea.sceditor({ plugins: 'bbcode' });
+			this.sceditor = $textarea.sceditor("instance");
+		}
+	});
+
+	test("To BBCode method", function() {
+		expect(3);
+
+		equal(
+			this.sceditor.toBBCode(html2dom('<b>test</b>')),
+			"[b]test[/b]",
+			"DOM test"
+		);
+
+		equal(
+			this.sceditor.toBBCode(html2dom('<b>test</b>', true)),
+			"[b]test[/b]",
+			"jQuery DOM test"
+		);
+
+		equal(
+			this.sceditor.toBBCode('<b>test</b>'),
+			"[b]test[/b]",
+			"HTML String test"
+		);
+	});
+
+	test("From BBCode method", function() {
+		expect(2);
+
+		equal(
+			this.sceditor.fromBBCode('[b]test[/b]'),
+			"<div><strong>test</strong></div>\n",
+			"Normal"
+		);
+
+		equal(
+			this.sceditor.fromBBCode('[b]test[/b]', true),
+			"<strong>test</strong>",
+			"As fragment"
+		);
+	});
+
+
+
+
 	module("BBCode White Space", {
 		setup: function() {
 			this.sb = new $.sceditor.plugins.bbcode();
