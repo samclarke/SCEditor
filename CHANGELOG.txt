@@ -8,6 +8,8 @@ Version 1.4.3:
 		- Thanks to @novadk for reporting.
 	Fixed error when editor is hidden and autofocus is enabled.
 	Fixed bug with insert() removing first or last div even if it has styling.
+	Fixed error with IE 8 height.
+		- Thanks to @arjunasuresh3 for reporting and fixing.
 
 Version 1.4.2:
 	Added emoticons() method which allows enabling/disabling emoticons at runtime.
