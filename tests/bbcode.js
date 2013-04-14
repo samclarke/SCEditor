@@ -1096,7 +1096,7 @@
 	});
 
 	test("Stripping empty", function() {
-		expect(8);
+		expect(10);
 
 		equal(
 			this.sb.signalToSource("", html2dom("<b><br /></b>", true)),
@@ -1126,6 +1126,18 @@
 			this.sb.signalToSource("", html2dom("<b><span><span><span></span><span></span></span><br /></span></b>", true)),
 			"",
 			"Bold tag with only whitespace content"
+		);
+
+		equal(
+			this.sb.signalToSource("", html2dom("test<b><span><br /></span></b>test", true)),
+			"test\ntest",
+			"Bold tag with only whitespace between words"
+		);
+
+		equal(
+			this.sb.signalToSource("", html2dom("test<b><i> </i></b>test", true)),
+			"test test",
+			"Bold and italic tag with only whitespace between words"
 		);
 
 		equal(

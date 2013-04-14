@@ -11,6 +11,7 @@ Version 1.4.3:
 	Fixed error with IE 8 height.
 		- Thanks to @arjunasuresh3 for reporting and fixing.
 	Added toBBCode() and fromBBCode() methods.
+	Fixed bug with spaces being removed if they are the only content of a tag.
 
 Version 1.4.2:
 	Added emoticons() method which allows enabling/disabling emoticons at runtime.

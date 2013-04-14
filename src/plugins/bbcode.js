@@ -828,7 +828,7 @@
 				removeEmpty(token.children);
 
 				if(allWhiteSpace(token.children) && bbcode && !bbcode.isSelfClosing && !bbcode.allowsEmpty)
-					tokens.splice(i, 1);
+					tokens.splice.apply(tokens, $.merge([i, 1], token.children));
 			}
 		};
 
