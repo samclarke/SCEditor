@@ -75,7 +75,7 @@
 		$.sceditor.dom.fixNesting(node);
 		equal(
 			ignoreSpaces(node.innerHTML.toLowerCase()),
-			ignoreSpaces("<span>span</span><div style=\"font-weight: bold;\">div</div><span>span</span>"),
+			ignoreSpaces("<span>span</span><div style=\"font-weight: bold" + ($.sceditor.ie ? '': ';') + "\">div</div><span>span</span>"),
 			"Simple fix"
 		);
 
@@ -83,7 +83,9 @@
 		$.sceditor.dom.fixNesting(node);
 		equal(
 			ignoreSpaces(node.innerHTML.toLowerCase()),
-			ignoreSpaces("<span style=\"font-weight: bold;\">span</span><div style=\"font-weight: bold;\">div</div><span style=\"font-weight: bold;\">span</span>"),
+			ignoreSpaces("<span style=\"font-weight: bold" + ($.sceditor.ie ? '': ';') +
+				"\">span</span><div style=\"font-weight: bold" + ($.sceditor.ie ? '': ';') +
+				"\">div</div><span style=\"font-weight: bold" + ($.sceditor.ie ? '': ';') + "\">span</span>"),
 			"Fix with CSS"
 		);
 
@@ -91,7 +93,8 @@
 		$.sceditor.dom.fixNesting(node);
 		equal(
 			ignoreSpaces(node.innerHTML.toLowerCase()),
-			ignoreSpaces("<span>span<span>span</span></span><div style=\"font-weight: bold;\">div</div><span><span>span</span>span</span>"),
+			ignoreSpaces("<span>span<span>span</span></span><div style=\"font-weight: bold" + ($.sceditor.ie ? '': ';') +
+				"\">div</div><span><span>span</span>span</span>"),
 			"Deeper fix"
 		);
 	});

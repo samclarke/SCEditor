@@ -1,5 +1,5 @@
 /*global module: true, $: true, test: true, expect: true, equal: true*/
-var tests = function() {
+(function() {
 	"use strict";
 
 	// Using BBCode for tests as it normalises the HTML which can be very diffrent in each browser
@@ -91,12 +91,18 @@ var tests = function() {
 	});
 
 	test("Set value", function() {
-		expect(1);
+		expect(2);
 
 		this.sceditor.val("simple [b]test[/b]");
 		equal(
 			this.sceditor.val(),
 			"simple [b]test[/b]"
+		);
+
+		this.sceditor.val("simple <b>test</b>");
+		equal(
+			this.sceditor.val(),
+			"simple <b>test</b>"
 		);
 	});
 
@@ -146,8 +152,4 @@ var tests = function() {
 			"[quote=admin]Simple [b]test[/b][/quote]"
 		);
 	});
-};
-
-// IE fails with these tests
-if(!$.sceditor.ie)
-	tests();
+})();
