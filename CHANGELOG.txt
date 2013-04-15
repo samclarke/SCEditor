@@ -14,6 +14,8 @@ Version 1.4.3:
 	Fixed bug with spaces being removed if they are the only content of a tag.
 	Renamed Norwegian translation from no-NB to nb-NO.
 		- Thanks to @tim-se for reporting
+	Fixed bug with jQuery UI dialogs appearing behind the editor.
+		- Thanks to @OmarHawk for reporting
 
 Version 1.4.2:
 	Added emoticons() method which allows enabling/disabling emoticons at runtime.
