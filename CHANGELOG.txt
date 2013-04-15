@@ -12,6 +12,8 @@ Version 1.4.3:
 		- Thanks to @arjunasuresh3 for reporting and fixing.
 	Added toBBCode() and fromBBCode() methods.
 	Fixed bug with spaces being removed if they are the only content of a tag.
+	Renamed Norwegian translation from no-NB to nb-NO.
+		- Thanks to @tim-se for reporting
 
 Version 1.4.2:
 	Added emoticons() method which allows enabling/disabling emoticons at runtime.
