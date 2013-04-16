@@ -3563,6 +3563,11 @@
 				}
 
 				selectAfter = toInsert.lastChild;
+
+				// If the last child is undefined then there is nothing to insert so return
+				if(!selectAfter)
+					return;
+
 				range.deleteContents();
 				range.insertNode(toInsert);
 
