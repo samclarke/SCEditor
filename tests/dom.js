@@ -71,11 +71,13 @@
 	test("Fix nesting", function() {
 		expect(3);
 
+		var removeColon = $.sceditor.ie < 10;
+
 		var node = html2dom("<span>span<div style=\"font-weight: bold;\">div</div>span</span>");
 		$.sceditor.dom.fixNesting(node);
 		equal(
 			ignoreSpaces(node.innerHTML.toLowerCase()),
-			ignoreSpaces("<span>span</span><div style=\"font-weight: bold" + ($.sceditor.ie ? '': ';') + "\">div</div><span>span</span>"),
+			ignoreSpaces("<span>span</span><div style=\"font-weight: bold" + (removeColon ? '': ';') + "\">div</div><span>span</span>"),
 			"Simple fix"
 		);
 
@@ -83,9 +85,9 @@
 		$.sceditor.dom.fixNesting(node);
 		equal(
 			ignoreSpaces(node.innerHTML.toLowerCase()),
-			ignoreSpaces("<span style=\"font-weight: bold" + ($.sceditor.ie ? '': ';') +
-				"\">span</span><div style=\"font-weight: bold" + ($.sceditor.ie ? '': ';') +
-				"\">div</div><span style=\"font-weight: bold" + ($.sceditor.ie ? '': ';') + "\">span</span>"),
+			ignoreSpaces("<span style=\"font-weight: bold" + (removeColon ? '': ';') +
+				"\">span</span><div style=\"font-weight: bold" + (removeColon ? '': ';') +
+				"\">div</div><span style=\"font-weight: bold" + (removeColon ? '': ';') + "\">span</span>"),
 			"Fix with CSS"
 		);
 
@@ -93,7 +95,7 @@
 		$.sceditor.dom.fixNesting(node);
 		equal(
 			ignoreSpaces(node.innerHTML.toLowerCase()),
-			ignoreSpaces("<span>span<span>span</span></span><div style=\"font-weight: bold" + ($.sceditor.ie ? '': ';') +
+			ignoreSpaces("<span>span<span>span</span></span><div style=\"font-weight: bold" + (removeColon ? '': ';') +
 				"\">div</div><span><span>span</span>span</span>"),
 			"Deeper fix"
 		);
