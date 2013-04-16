@@ -638,12 +638,15 @@
 				if(maxHeight > 0 && newHeight > maxHeight)
 					newHeight = maxHeight;
 
-				if(options.resizeWidth && newWidth >= minWidth && (maxWidth < 0 || newWidth <= maxWidth))
-					base.width(newWidth);
+				if(!options.resizeWidth || newWidth < minWidth || (maxWidth > 0 && newWidth > maxWidth))
+					newWidth = false;
 
-				if(options.resizeHeight && newHeight >= minHeight && (maxHeight < 0 || newHeight <= maxHeight))
+				if(!options.resizeHeight || newHeight < minHeight || (maxHeight > 0 && newHeight > maxHeight))
+					newHeight = false;
+
+				if(newWidth || newHeight)
 				{
-					base.height(newHeight);
+					base.dimensions(newWidth, newHeight);
 
 					// The resize cover will not fill the container in IE6 unless a height is specified.
 					if($.sceditor.ie < 7)
@@ -959,12 +962,9 @@
 		 * @return {this}
 		 */
 		base.dimensions = function(width, height, save) {
-			var	toolbarHeight,
-				updateheight = false;
-
 			// set undefined width/height to boolean false
-			width  = (!width && width !== 0) ? false : width;
-			height = (!height && height !== 0) ? false : height;
+			width  = (!width && width !== 0) ? false : parseInt(width, 10);
+			height = (!height && height !== 0) ? false : parseInt(height, 10);
 
 			if(width === false && height === false)
 				return { width: base.width(), height: base.height() };
@@ -972,21 +972,22 @@
 			if(typeof $wysiwygEditor.data('outerWidthOffset') === "undefined")
 				base.updateStyleCache();
 
-			if(width !== false && width !== base.width())
+			if(width !== false)
 			{
 				if(save !== false)
 					options.width = width;
 
-				width = $editorContainer.width(width).width();
-				wysiwygEditor.style.width = width - $wysiwygEditor.data('outerWidthOffset') + 'px';
-				sourceEditor.style.width  = width - $sourceEditor.data('outerWidthOffset') + 'px';
+				if(width && width.toString().indexOf('%'))
+					width = $editorContainer.width(width).width();
 
-				// If the toolbar height has changed then wysiwyg and source editor heights will need to be updated
-				toolbarHeight = !options.toolbarContainer ? $toolbar.outerHeight(true) : 0;
-				updateheight  = toolbarHeight !== (!options.toolbarContainer ? $toolbar.outerHeight(true) : 0);
+				$wysiwygEditor.width(width - $wysiwygEditor.data('outerWidthOffset'));
+				$sourceEditor.width(width - $sourceEditor.data('outerWidthOffset'));
+
+				if(height === false)
+					height = $editorContainer.height();
 			}
 
-			if(height !== false && height !== base.height())
+			if(height !== false)
 			{
 				if(save !== false)
 					options.height = height;
@@ -999,13 +1000,8 @@
 				}
 
 				height -= !options.toolbarContainer ? $toolbar.outerHeight(true) : 0;
-				updateheight = true;
-			}
-
-			if(updateheight)
-			{
-				wysiwygEditor.style.height = Math.max(height - $wysiwygEditor.data('outerHeightOffset'), 0) + 'px';
-				sourceEditor.style.height  = Math.max(height - $sourceEditor.data('outerHeightOffset'), 0) + 'px';
+				$wysiwygEditor.height(height - $wysiwygEditor.data('outerHeightOffset'));
+				$sourceEditor.height(height - $sourceEditor.data('outerHeightOffset'));
 			}
 
 			return this;
