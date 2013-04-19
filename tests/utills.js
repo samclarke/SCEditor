@@ -29,7 +29,7 @@ function equalMulti(actual, expectedArr, message) {
 function ignoreSpaces(str) {
 	'use strict';
 
-	return str.replace(/[\n\r ]+/g, '');
+	return str.replace(/[\n\r \t]+/g, '');
 }
 
 
