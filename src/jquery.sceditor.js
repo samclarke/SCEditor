@@ -533,7 +533,7 @@
 		 */
 		initToolBar = function () {
 			var	$group, $button,
-				exclude = options.toolbarExclude.split(","),
+				exclude = (options.toolbarExclude || '').split(","),
 				groups  = options.toolbar.split("|");
 
 			$toolbar = $('<div class="sceditor-toolbar" unselectable="on" />');
