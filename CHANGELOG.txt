@@ -16,6 +16,8 @@ Version 1.4.3:
 		- Thanks to @tim-se for reporting
 	Fixed bug with jQuery UI dialogs appearing behind the editor.
 		- Thanks to @OmarHawk for reporting
+	Added toolbarExclude option.
+		- Thanks to @tim-se for suggestion
 
 Version 1.4.2:
 	Added emoticons() method which allows enabling/disabling emoticons at runtime.

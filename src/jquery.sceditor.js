@@ -533,15 +533,16 @@
 		 */
 		initToolBar = function () {
 			var	$group, $button,
-				groups = options.toolbar.split("|");
+				exclude = options.toolbarExclude.split(","),
+				groups  = options.toolbar.split("|");
 
 			$toolbar = $('<div class="sceditor-toolbar" unselectable="on" />');
 			$.each(groups, function(idx, group) {
 				$group  = $('<div class="sceditor-group" />');
 
 				$.each(group.split(","), function(idx, button) {
-					// the button must be a valid command otherwise ignore it
-					if(!base.commands[button])
+					// The button must be a valid command and not excluded
+					if(!base.commands[button] || $.inArray(button, exclude) > -1)
 						return;
 
 					$button = _tmpl("toolbarButton", {
@@ -570,7 +571,9 @@
 					$group.append($button);
 				});
 
-				$toolbar.append($group);
+				// Exclude empty groups
+				if($group[0].firstChild)
+					$toolbar.append($group);
 			});
 
 			// append the toolbar to the toolbarContainer option if given
@@ -4708,6 +4711,12 @@
 				"font,size,color,removeformat|cut,copy,paste,pastetext|bulletlist,orderedlist|" +
 				"table|code,quote|horizontalrule,image,email,link,unlink|emoticon,youtube,date,time|" +
 				"ltr,rtl|print,maximize,source",
+
+		/**
+		 * Comma seperated list of commands to excludes from the toolbar
+		 * @type {String}
+		 */
+		toolbarExclude: null,
 
 		/**
 		 * Stylesheet to include in the WYSIWYG editor. Will style the WYSIWYG elements
