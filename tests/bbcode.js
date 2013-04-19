@@ -11,6 +11,77 @@
 		}
 	});
 
+	test("Invalid nesting", function() {
+		expect(1);
+
+		var $dom = html2dom("<span style='color: #000'>this<blockquote>is</blockquote>a test</span>", true);
+		$.sceditor.dom.fixNesting($dom[0]);
+
+		equal(
+			this.sb.signalToSource("", $dom),
+			"[color=#000000]this[/color]\n[quote][color=#000000]is[/color][/quote]\n[color=#000000]a test[/color]",
+			"Invalid block level nesting"
+		);
+	});
+
+	test("Tag closing", function() {
+		expect(3);
+
+		var parser = new $.sceditor.BBCodeParser($.sceditor.defaultOptions.parserOptions);
+
+		equal(
+			ignoreSpaces(parser.toBBCode('[hr] test')),
+			ignoreSpaces('[hr] test'),
+			'Self closing'
+		);
+
+		equal(
+			ignoreSpaces(parser.toBBCode('[list][*] test[*] test 2[/list]')),
+			ignoreSpaces('[list][*]test[/*][*]test2[/*][/list]'),
+			'List [*]'
+		);
+
+		equal(
+			parser.toBBCode('[b][color][/b]'),
+			'[b][color][/b]',
+			'Missing closing tag'
+		);
+	});
+
+	test("Unknown tags", function() {
+		expect(3);
+
+		var parser = new $.sceditor.BBCodeParser($.sceditor.defaultOptions.parserOptions);
+
+		equal(
+			parser.toBBCode('[b][unknown][/b]'),
+			'[b][unknown][/b]',
+			'Unknown tag missing end'
+		);
+
+		equal(
+			parser.toBBCode('[b][unknown]test[/unknown][/b]'),
+			'[b][unknown]test[/unknown][/b]',
+			'Unknown tag with end'
+		);
+
+		equal(
+			parser.toBBCode('[b][unknown][/unknown][/b]'),
+			'[b][unknown][/unknown][/b]',
+			'Empty unknown tag with end'
+		);
+	});
+
+
+	module("HTML to BBCode", {
+		setup: function() {
+			this.sb = new $.sceditor.plugins.bbcode();
+			this.sb.init.call({
+				opts: $.extend({}, $.sceditor.defaultOptions)
+			});
+		}
+	});
+
 	test("White space removal", function() {
 		expect(2);
 
@@ -25,19 +96,6 @@
 		ok(
 			ret === "lots \n of junk j" || ret === "lots \nof junk j",
 			"White Space Removal"
-		);
-	});
-
-	test("Invalid nesting", function() {
-		expect(1);
-
-		var $dom = html2dom("<span style='color: #000'>this<blockquote>is</blockquote>a test</span>", true);
-		$.sceditor.dom.fixNesting($dom[0]);
-
-		equal(
-			this.sb.signalToSource("", $dom),
-			"[color=#000000]this[/color]\n[quote][color=#000000]is[/color][/quote]\n[color=#000000]a test[/color]",
-			"Invalid block level nesting"
 		);
 	});
 
@@ -103,17 +161,6 @@
 			"text\ntext",
 			"Collapsed end BR tag"
 		);
-	});
-
-
-
-	module("HTML to BBCode", {
-		setup: function() {
-			this.sb = new $.sceditor.plugins.bbcode();
-			this.sb.init.call({
-				opts: $.extend({}, $.sceditor.defaultOptions)
-			});
-		}
 	});
 
 	test("Bold", function() {

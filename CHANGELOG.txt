@@ -18,6 +18,8 @@ Version 1.4.3:
 		- Thanks to @OmarHawk for reporting
 	Added toolbarExclude option.
 		- Thanks to @tim-se for suggestion
+	Fixed bug with unclosed BBCode tags being parsed as if they had a closing tag.
+		- Thanks to @KN4CK3R for reporting
 
 Version 1.4.2:
 	Added emoticons() method which allows enabling/disabling emoticons at runtime.

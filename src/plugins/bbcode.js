@@ -440,11 +440,12 @@
 						bbcode = base.bbcodes[token.name];
 
 						// If this tag is not self closing and it has a closing tag then it is open and has children so
-						// add it to the list of open tags. If it is a valid BBCode, e.g. in the BBCode list but is missing
-						// an end tag then just assume it's misisng and include everything as it's children.
-						if((!bbcode || !bbcode.isSelfClosing) && (bbcode || hasTag(token.name, tokenType.close, toks)))
+						// add it to the list of open tags. If has the closedBy property then it is closed by other tags
+						// so include everything as it's children until one of those tags is reached.
+						if((!bbcode || !bbcode.isSelfClosing) && (bbcode.closedBy || hasTag(token.name, tokenType.close, toks)))
 							openTags.push(token);
-
+						else if(!bbcode || !bbcode.isSelfClosing)
+							token.type = tokenType.content;
 						break;
 
 					case tokenType.close:
@@ -452,8 +453,8 @@
 						if(currentOpenTag() && token.name !== currentOpenTag().name && closesCurrentTag('/' + token.name))
 							openTags.pop();
 
-						// If this is closing the currently open tag just pop thfcloe
-						// tage off the open tags array
+						// If this is closing the currently open tag just pop the close
+						// tag off the open tags array
 						if(currentOpenTag() && token.name === currentOpenTag().name)
 						{
 							currentOpenTag().closing = token;
