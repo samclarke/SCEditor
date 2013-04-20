@@ -64,9 +64,8 @@
 			handleCdata,
 			handleComment,
 			handleText,
-			indent,
-			canIndent,
-			newline;
+			output,
+			canIndent;
 
 		/**
 		 * Escapes XHTML entities
@@ -206,35 +205,30 @@
 				i           = node.attributes.length,
 				selfClosing = !node.firstChild && /^(?:area|base|br|col|embed|hr|img|input|link|meta|param)$/.test(tagName);
 
-			if(canIndent(node))
-				indent();
+			if($(node).hasClass('sceditor-ignore'))
+				return;
 
-			outputStringBuilder.push('<' + tagName);
+			output('<' + tagName, canIndent(node));
 			while(i--)
 			{
 				attr = node.attributes[i];
-				outputStringBuilder.push(" ", attr.name.toLowerCase(), '="', escapeEntites(attr.value), '"');
+				output(" " + attr.name.toLowerCase() + '="' + escapeEntites(attr.value) + '"', false);
 			}
-			outputStringBuilder.push(selfClosing ? ' />' : '>');
-
-			currentIndent++;
+			output(selfClosing ? ' />' : '>', false);
 
 			child = node.firstChild;
 			while(child)
 			{
+				currentIndent++;
+
 				serializeNode(child);
 				child = child.nextSibling;
-			}
 
-			currentIndent--;
+				currentIndent--;
+			}
 
 			if(!selfClosing)
-			{
-				if(canIndent(node) && node.firstChild)
-					indent();
-
-				outputStringBuilder.push('</', tagName, '>');
-			}
+				output('</' + tagName + '>', canIndent(node) && node.firstChild);
 		};
 
 		/**
@@ -244,9 +238,7 @@
 		 * @private
 		 */
 		handleCdata =  function(node) {
-			indent();
-
-			outputStringBuilder.push('<![CDATA[', escapeEntites(node.nodeValue), ']]>');
+			output('<![CDATA[' + escapeEntites(node.nodeValue) + ']]>');
 		};
 
 		/**
@@ -256,9 +248,7 @@
 		 * @private
 		 */
 		handleComment = function(node) {
-			indent();
-
-			outputStringBuilder.push('<!-- ', escapeEntites(node.nodeValue), ' -->');
+			output('<!-- ' + escapeEntites(node.nodeValue) + ' -->');
 		};
 
 		/**
@@ -271,26 +261,32 @@
 			var text = trim(node.nodeValue);
 
 			if(text)
-			{
-				if(canIndent(node))
-					indent();
-
-				outputStringBuilder.push(escapeEntites(text));
-			}
+				output(escapeEntites(text), canIndent(node));
 		};
 
 		/**
-		 * Adds indent to the outputStringBuilder
+		 * Adds a string to the outputStringBuilder.
+		 *
+		 * The string will be indented unless indent is set to boolean false.
+		 * @param  {String} str
+		 * @param  {Boolean} indent
 		 * @return {void}
 		 * @private
 		 */
-		indent = function() {
+		output = function(str, indent) {
 			var i = currentIndent;
 
-			newline();
+			if(indent !== false)
+			{
+				// Don't add a new line if it's the first element
+				if(outputStringBuilder.length)
+					outputStringBuilder.push('\n');
 
-			while(i--)
-				outputStringBuilder.push(opts.indentStr);
+				while(i--)
+					outputStringBuilder.push(opts.indentStr);
+			}
+
+			outputStringBuilder.push(str);
 		};
 
 		/**
@@ -313,17 +309,6 @@
 				return true;
 
 			return !$.sceditor.dom.isInline(node);
-		};
-
-		/**
-		 * Adds a new line to the outputStringBuilder
-		 * @return {void}
-		 * @private
-		 */
-		newline = function() {
-			// Don't add a new line if it's the first element
-			if(outputStringBuilder.length)
-				outputStringBuilder.push('\n');
 		};
 	};
 
@@ -490,9 +475,6 @@
 		base.signalToSource = function(html, domBody) {
 			domBody = domBody.jquery ? domBody[0] : domBody;
 
-			// remove selection markers
-			$(domBody).find('.sceditor-selection').remove();
-
 			convertTags(domBody);
 			removetags(domBody);
 			removeAttribs(domBody);
@@ -560,11 +542,11 @@
 							if(values && $.inArray($node.attr(attr), values) < 0)
 								return;
 
-							converter.conv.call(base, $node[0]);
+							converter.conv.call(base, $node[0], $node);
 						});
 					}
 					else if(converter.conv)
-						converter.conv.call(base, $node[0]);
+						converter.conv.call(base, $node[0], $node);
 				});
 			}
 		};
@@ -642,14 +624,8 @@
 				return ret;
 
 			$.each(filtersB, function(attrName, values) {
-
-				if($.isArray(ret[attrName]))
-				{
-					if($.isArray(values))
-						ret[attrName] = $.merge(ret[attrName], values);
-				}
-				else
-					ret[attrName] = values;
+				if($.isArray(values))
+					ret[attrName] = $.merge(ret[attrName] || [], values);
 			});
 
 			return ret;
@@ -670,7 +646,7 @@
 				if(!node.attributes)
 					return;
 
-				var	attr, removeAttr,
+				var	attr, attrName,
 					tagName           = node.nodeName.toLowerCase(),
 					allowedAttribs    = $.sceditor.plugins.xhtml.allowedAttribs,
 					disallowedAttribs = $.sceditor.plugins.xhtml.disallowedAttribs,
@@ -683,14 +659,11 @@
 
 					while(attrsLength--)
 					{
-						attr       = node.attributes[attrsLength];
-						removeAttr = typeof attrsCache[tagName][attr.name] === 'undefined';
+						attr     = node.attributes[attrsLength];
+						attrName = attr.name;
 
-						if($.isArray(attrsCache[tagName][attr.name]) && $.inArray(attr.value, attrsCache[tagName][attr.name]) < 0)
-							removeAttr = true;
-
-						if(removeAttr)
-							node.removeAttribute(attr.name);
+						if($.isArray(attrsCache[tagName][attrName]) && $.inArray(attr.value, attrsCache[tagName][attrName]) < 0)
+							node.removeAttribute(attrName);
 					}
 				}
 				else if(disallowedAttribs && !$.isEmptyObject(disallowedAttribs) && attrsLength)
@@ -700,14 +673,11 @@
 
 					while(attrsLength--)
 					{
-						attr       = node.attributes[attrsLength];
-						removeAttr = typeof attrsCache[tagName][attr.name] !== 'undefined';
-// this should check if only certian values so should be === null?
-						if($.isArray(attrsCache[tagName][attr.name]) && $.inArray(attr.value, attrsCache[tagName][attr.name]) > -1)
-							removeAttr = true;
+						attr     = node.attributes[attrsLength];
+						attrName = attr.name;
 
-						if(removeAttr)
-							node.removeAttribute(attr.name);
+						if($.isArray(attrsCache[tagName][attrName]) && $.inArray(attr.value, attrsCache[tagName][attrName]) > -1)
+							node.removeAttribute(attrName);
 					}
 				}
 			});
@@ -728,9 +698,7 @@
 					width: null
 				}
 			},
-			conv: function(node) {
-				var $node = $(node);
-
+			conv: function(node, $node) {
 				$node.css('width', $node.attr('width')).removeAttr('width');
 			}
 		},
@@ -740,9 +708,7 @@
 					height: null
 				}
 			},
-			conv: function(node) {
-				var $node = $(node);
-
+			conv: function(node, $node) {
 				$node.css('height', $node.attr('height')).removeAttr('height');
 			}
 		},
@@ -752,8 +718,8 @@
 					value: null
 				}
 			},
-			conv: function(node) {
-				$(node).removeAttr('value');
+			conv: function(node, $node) {
+				$node.removeAttr('value');
 			}
 		},
 		{
@@ -762,22 +728,8 @@
 					text: null
 				}
 			},
-			conv: function(node) {
-				var $node = $(node);
-
+			conv: function(node, $node) {
 				$node.css('color', $node.attr('text')).removeAttr('text');
-			}
-		},
-		{
-			tags: {
-				'*': {
-					size: null
-				}
-			},
-			conv: function(node) {
-				var $node = $(node);
-
-				$node.css('font-size', $node.css('font-size')).removeAttr('size');
 			}
 		},
 		{
@@ -786,9 +738,7 @@
 					color: null
 				}
 			},
-			conv: function(node) {
-				var $node = $(node);
-
+			conv: function(node, $node) {
 				$node.css('color', $node.attr('color')).removeAttr('color');
 			}
 		},
@@ -798,28 +748,8 @@
 					face: null
 				}
 			},
-			conv: function(node) {
-				var $node = $(node);
-
-				$node.css('font-family', $node.attr('face')).removeAttr('face');
-			}
-		},
-		{
-			tags: {
-				'*': {
-					language: null
-				}
-			},
-			conv: function(node) {
-				var	$node = $(node),
-					lang  = $node.attr('language');
-
-				if(/jscript|javascript|js/i.test(lang))
-					$node.attr('type', 'text/javascript');
-				else if(/vb/i.test(lang))
-					$node.attr('type', 'text/vbscript');
-
-				$node.removeAttr('language');
+			conv: function(node, $node) {
+				$node.css('fontFamily', $node.attr('face')).removeAttr('face');
 			}
 		},
 		{
@@ -828,10 +758,8 @@
 					align: null
 				}
 			},
-			conv: function(node) {
-				var $node = $(node);
-
-				$node.css('text-align', $node.attr('align')).removeAttr('align');
+			conv: function(node, $node) {
+				$node.css('textAlign', $node.attr('align')).removeAttr('align');
 			}
 		},
 		{
@@ -840,10 +768,8 @@
 					border: null
 				}
 			},
-			conv: function(node) {
-				var $node = $(node);
-
-				$node.css('border-size', $node.attr('border')).removeAttr('border');
+			conv: function(node, $node) {
+				$node.css('borderWidth', $node.attr('border')).removeAttr('border');
 			}
 		},
 		{
@@ -867,8 +793,37 @@
 					name: null
 				}
 			},
-			conv: function(node) {
-				$(node).removeAttr('name');
+			conv: function(node, $node) {
+				if(!$node.attr('id'))
+					$node.attr('id', $node.attr('name'));
+
+				$node.removeAttr('name');
+			}
+		},
+		{
+			tags: {
+				'*': {
+					vspace: null
+				}
+			},
+			conv: function(node, $node) {
+				$node
+					.css('marginTop', $node.attr('vspace')-0)
+					.css('marginBottom', $node.attr('vspace')-0)
+					.removeAttr('vspace');
+			}
+		},
+		{
+			tags: {
+				'*': {
+					hspace: null
+				}
+			},
+			conv: function(node, $node) {
+				$node
+					.css('marginLeft', $node.attr('hspace')-0)
+					.css('marginRight', $node.attr('hspace')-0)
+					.removeAttr('hspace');
 			}
 		},
 		{
@@ -877,10 +832,8 @@
 					noshade: null
 				}
 			},
-			conv: function(node) {
-				var $node = $(node);
-
-				$node.css('border-style', 'solid').removeAttr('noshade');
+			conv: function(node, $node) {
+				$node.css('borderStyle', 'solid').removeAttr('noshade');
 			}
 		},
 		{
@@ -889,9 +842,7 @@
 					nowrap: null
 				}
 			},
-			conv: function(node) {
-				var $node = $(node);
-
+			conv: function(node, $node) {
 				$node.css('white-space', 'nowrap').removeAttr('nowrap');
 			}
 		},
@@ -900,7 +851,7 @@
 				big: null
 			},
 			conv: function(node) {
-				$(this.convertTagTo(node, 'span')).css('font-size', 'larger');
+				$(this.convertTagTo(node, 'span')).css('fontSize', 'larger');
 			}
 		},
 		{
@@ -908,7 +859,7 @@
 				small: null
 			},
 			conv: function(node) {
-				$(this.convertTagTo(node, 'span')).css('font-size', 'smaller');
+				$(this.convertTagTo(node, 'span')).css('fontSize', 'smaller');
 			}
 		},
 		{
@@ -924,7 +875,7 @@
 				u: null
 			},
 			conv: function(node) {
-				$(this.convertTagTo(node, 'span')).css('text-decoration', 'underline');
+				$(this.convertTagTo(node, 'span')).css('textDecoration', 'underline');
 			}
 		},
 		{
@@ -941,7 +892,7 @@
 				strike: null
 			},
 			conv: function(node) {
-				$(this.convertTagTo(node, 'span')).css('text-decoration', 'line-through');
+				$(this.convertTagTo(node, 'span')).css('textDecoration', 'line-through');
 			}
 		},
 		{
@@ -957,7 +908,17 @@
 				center: null
 			},
 			conv: function(node) {
-				$(this.convertTagTo(node, 'div')).css('text-align', 'center');
+				$(this.convertTagTo(node, 'div')).css('textAlign', 'center');
+			}
+		},
+		{
+			tags: {
+				font: {
+					size: null
+				}
+			},
+			conv: function(node, $node) {
+				$node.css('fontSize', $node.css('fontSize')).removeAttr('size');
 			}
 		},
 		{
