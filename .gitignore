@@ -8,3 +8,4 @@ _site/*
 .settings*
 sceditor.sublime-project
 sceditor.sublime-workspace
+node_modules/*
