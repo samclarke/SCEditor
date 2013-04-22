@@ -513,7 +513,7 @@
 			$doc
 				.keypress(handleKeyPress)
 				.mousedown(handleMouseDown)
-				.bind($.sceditor.ie ? "selectionchange" : "focus blur contextmenu mouseup click", checkSelectionChanged)
+				.bind($.sceditor.ie < 9 ? "selectionchange" : "focus blur contextmenu mouseup click", checkSelectionChanged)
 				.bind("beforedeactivate keyup", saveRange)
 				.keyup(appendNewLine)
 				.focus(function() {

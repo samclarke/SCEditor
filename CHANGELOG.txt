@@ -22,6 +22,8 @@ Version 1.4.3:
 		- Thanks to @KN4CK3R for reporting
 	Added Polish translation.
 		- Thanks to @TheKerimek for translating
+	Fixed bug with IE 10 not being able to select outside of the editor.
+		- Thanks to @novadk for reporting
 
 Version 1.4.2:
 	Added emoticons() method which allows enabling/disabling emoticons at runtime.
