@@ -3924,11 +3924,14 @@
 
 		/**
 		 * Selects the text left and right of the current selection
-		 * @param int left
-		 * @param int right
-		 * @private
+		 * @param {int} left
+		 * @param {int} right
+		 * @since 1.4.3
+		 * @function
+		 * @name selectOuterText
+		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
-		_selectOuterText = function(left, right) {
+		base.selectOuterText = function(left, right) {
 			var range = base.cloneSelected();
 
 			if(!range)
@@ -3952,11 +3955,14 @@
 
 		/**
 		 * Gets the text left or right of the current selection
-		 * @param bool before
-		 * @param int length
-		 * @private
+		 * @param {Boolean} before
+		 * @param {Int} length
+		 * @since 1.4.3
+		 * @function
+		 * @name selectOuterText
+		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
-		_getOuterText = function(before, length) {
+		base.getOuterText = function(before, length) {
 			var	ret   = "",
 				range = base.cloneSelected();
 

@@ -26,6 +26,7 @@ Version 1.4.3:
 		- Thanks to @novadk for reporting
 	Added getBody() method which gets the WYSIWYG body node.
 		- Thanks to @arjunasuresh3 for adding
+	Made selectOuterText() and getOuterText() methods on the rangeHelper accessible.
 
 Version 1.4.2:
 	Added emoticons() method which allows enabling/disabling emoticons at runtime.
