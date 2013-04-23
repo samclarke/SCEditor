@@ -140,6 +140,18 @@
 		var wysiwygEditor;
 
 		/**
+		 * The WYSIWYG editors body element
+		 * @private
+		 */
+		var $wysiwygBody;
+
+		/**
+		 * The WYSIWYG editors document
+		 * @private
+		 */
+		var $wysiwygDoc;
+
+		/**
 		 * The editors textarea for viewing source
 		 * @private
 		 */
@@ -404,7 +416,7 @@
 		 * @private
 		 */
 		initEditor = function () {
-			var $body, doc, $doc, tabIndex;
+			var doc, tabIndex;
 
 			$sourceEditor  = $('<textarea></textarea>').hide();
 			$wysiwygEditor = $('<iframe frameborder="0"></iframe>');
@@ -420,30 +432,30 @@
 			base.width(options.width || $original.width());
 			base.height(options.height || $original.height());
 
-			doc  = getWysiwygDoc();
-			$doc = $(doc);
+			doc = getWysiwygDoc();
 
 			doc.open();
 			doc.write(_tmpl("html", { charset: options.charset, style: options.style }));
 			doc.close();
 
-			base.readOnly(!!options.readOnly);
+			$wysiwygDoc  = $(doc);
+			$wysiwygBody = $(doc.body);
 
-			$body = base.getBody();
+			base.readOnly(!!options.readOnly);
 
 			// Add IE version class to the HTML element so can apply
 			// conditional styling without CSS hacks
 			if($.sceditor.ie)
-				$doc.find("html").addClass("ie ie" + $.sceditor.ie);
+				$wysiwygDoc.find("html").addClass("ie ie" + $.sceditor.ie);
 
 			// iframe overflow fix for iOS, also fixes an IE issue with the
 			// editor not getting focus when clicking inside
 			if(/iPhone|iPod|iPad| wosbrowser\//i.test(navigator.userAgent) || $.sceditor.ie)
 			{
-				$body.height("100%");
+				$wysiwygBody.height("100%");
 
 				if(!$.sceditor.ie)
-					$body.bind('touchend', base.focus);
+					$wysiwygBody.bind('touchend', base.focus);
 			}
 
 			rangeHelper = new $.sceditor.rangeHelper(wysiwygEditor.contentWindow);
@@ -461,13 +473,10 @@
 		 * @private
 		 */
 		initOptions = function() {
-			var	$doc  = $(getWysiwygDoc()),
-				$body = base.getBody();
-
 			// auto-update original textbox on blur if option set to true
 			if(options.autoUpdate)
 			{
-				$body.bind("blur", base.updateOriginal);
+				$wysiwygBody.bind("blur", base.updateOriginal);
 				$sourceEditor.bind("blur", base.updateOriginal);
 			}
 
@@ -477,7 +486,7 @@
 			base.rtl(!!options.rtl);
 
 			if(options.autoExpand)
-				$doc.bind("keyup", base.expandToContent);
+				$wysiwygDoc.bind("keyup", base.expandToContent);
 
 			if(options.resizeEnabled)
 				initResize();
@@ -491,8 +500,6 @@
 		 * @private
 		 */
 		initEvents = function() {
-			var $doc = $(getWysiwygDoc());
-
 			$(document).click(handleDocumentClick);
 
 			$(original.form)
@@ -501,7 +508,7 @@
 
 			$(window).bind('resize orientationChanged', handleWindowResize);
 
-			base.getBody()
+			$wysiwygBody
 				.keypress(handleKeyPress)
 				.keyup(appendNewLine)
 				.bind("paste", handlePasteEvt)
@@ -510,7 +517,7 @@
 
 			$sourceEditor.bind("keydown keyup keypress focus blur contextmenu", handleEvent);
 
-			$doc
+			$wysiwygDoc
 				.keypress(handleKeyPress)
 				.mousedown(handleMouseDown)
 				.bind($.sceditor.ie <= 9 ? "selectionchange" : "focus blur contextmenu mouseup click", checkSelectionChanged)
@@ -740,8 +747,8 @@
 		 */
 		autofocus = function() {
 			var	rng, elm, txtPos,
-				doc      = getWysiwygDoc(),
-				body     = doc.body,
+				doc      = $wysiwygDoc[0],
+				body     = $wysiwygBody[0],
 				focusEnd = !!options.autofocusEnd;
 
 			// Can't focus invislible elements
@@ -765,7 +772,7 @@
 			else // WYSIWYG mode
 			{
 				if(focusEnd)
-					$(body).append((elm = doc.createElement('div')));
+					$wysiwygBody.append((elm = doc.createElement('div')));
 				else
 					elm = body.firstChild;
 
@@ -785,8 +792,8 @@
 
 				if(focusEnd)
 				{
-					$(doc).scrollTop(body.scrollHeight);
-					$(body).scrollTop(body.scrollHeight);
+					$wysiwygDoc.scrollTop(body.scrollHeight);
+					$wysiwygBody.scrollTop(body.scrollHeight);
 				}
 			}
 
@@ -816,7 +823,7 @@
 			if(typeof readOnly !== 'boolean')
 				return $sourceEditor.attr('readonly') === 'readonly';
 
-			getWysiwygDoc().body.contentEditable = !readOnly;
+			$wysiwygBody[0].contentEditable = !readOnly;
 
 			if(!readOnly)
 				$sourceEditor.removeAttr('readonly');
@@ -853,7 +860,7 @@
 			if(typeof rtl !== 'boolean')
 				return $sourceEditor.attr('dir') === 'rtl';
 
-			$(getWysiwygDoc().body).attr('dir', dir);
+			$wysiwygBody.attr('dir', dir);
 			$sourceEditor.attr('dir', dir);
 
 			$editorContainer
@@ -1120,9 +1127,8 @@
 		 * @see #resizeToContent
 		 */
 		base.expandToContent = function(ignoreMaxHeight) {
-			var	doc           = getWysiwygDoc(),
-				currentHeight = $editorContainer.height(),
-				height        = doc.body.scrollHeight || doc.documentElement.scrollHeight,
+			var	currentHeight = $editorContainer.height(),
+				height        = $wysiwygBody[0].scrollHeight || $wysiwygDoc[0].documentElement.scrollHeight,
 				padding       = (currentHeight - $wysiwygEditor.height()),
 				maxHeight     = options.resizeMaxHeight || ((options.height || $original.height()) * 2);
 
@@ -1159,8 +1165,8 @@
 				.unbind('reset', handleFormReset)
 				.unbind('submit', base.updateOriginal);
 
-			$(getWysiwygDoc().body).unbind();
-			$(getWysiwygDoc()).unbind().find('*').remove();
+			$wysiwygBody.unbind();
+			$wysiwygDoc.unbind().find('*').remove();
 
 			$sourceEditor.unbind().remove();
 			$editorContainer.unbind().find('*').unbind().remove();
@@ -1240,7 +1246,7 @@
 		 */
 		handlePasteEvt = function(e) {
 			var	html,
-				elm             = getWysiwygDoc().body,
+				elm             = $wysiwygBody[0],
 				checkCount      = 0,
 				pastearea       = elm.ownerDocument.createElement('div'),
 				prePasteContent = elm.ownerDocument.createDocumentFragment();
@@ -1661,8 +1667,7 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.getWysiwygEditorValue = function (filter) {
-			var	html,
-				$body = base.getBody();
+			var html;
 
 			// Must focus the editor for IE before saving the range
 			if($.sceditor.ie)
@@ -1670,12 +1675,12 @@
 
 			rangeHelper.saveRange();
 
-			$.sceditor.dom.fixNesting($body[0]);
+			$.sceditor.dom.fixNesting($wysiwygBody[0]);
 
 			// filter the HTML and DOM through any plugins
-			html = $body.html();
+			html = $wysiwygBody.html();
 			if(filter !== false && pluginManager.hasHandler("toSource"))
-				html = pluginManager.callOnlyFirst("toSource", html, $body);
+				html = pluginManager.callOnlyFirst("toSource", html, $wysiwygBody);
 
 			// remove the last stored range for IE as it no longer applies
 			rangeHelper.restoreRange();
@@ -1694,7 +1699,7 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.getBody = function () {
-			return $wysiwygEditor.contents().find("body");
+			return $wysiwygBody;
 		};
 
 		/**
@@ -1747,7 +1752,7 @@
 			if(!value)
 				value = '<p>' + ($.sceditor.ie ? '' : '<br />') + '</p>';
 
-			getWysiwygDoc().body.innerHTML = replaceEmoticons(value);
+			$wysiwygBody[0].innerHTML = replaceEmoticons(value);
 
 			appendNewLine();
 		};
@@ -1956,14 +1961,11 @@
 			if($parentNode.is('code') || $parentNode.parents('code').length !== 0)
 				return;
 
-			if(getWysiwygDoc())
+			try
 			{
-				try
-				{
-					executed = getWysiwygDoc().execCommand(command, false, param);
-				}
-				catch (e) {}
+				executed = $wysiwygDoc[0].execCommand(command, false, param);
 			}
+			catch (e) {}
 
 			// show error if execution failed and an error message exists
 			if(!executed && base.commands[command] && base.commands[command].errorMessage)
@@ -2029,7 +2031,7 @@
 		 */
 		updateActiveButtons = function(e) {
 			var	state, stateHandler, firstBlock, $button, parent,
-				doc          = getWysiwygDoc(),
+				doc          = $wysiwygDoc[0],
 				i            = btnStateHandlers.length,
 				inSourceMode = base.sourceMode();
 
@@ -2123,10 +2125,9 @@
 		 * @private
 		 */
 		appendNewLine = function() {
-			var	name, inBlock,
-				doc = getWysiwygDoc();
+			var name, inBlock;
 
-			$.sceditor.dom.rTraverse(doc.body, function(node) {
+			$.sceditor.dom.rTraverse($wysiwygBody, function(node) {
 				name = node.nodeName.toLowerCase();
 
 				if($.inArray(name, requireNewLineFix) > -1)
@@ -2140,7 +2141,7 @@
 					// this is the last text or br node, if its in a code or quote tag
 					// then add a newline to the end of the editor
 					if(inBlock)
-						$(doc.body).append($('<div>' + (!$.sceditor.ie ? '<br />' : '') + '</div>\n'));
+						$($wysiwygBody).append($('<div>' + (!$.sceditor.ie ? '<br />' : '') + '</div>\n'));
 
 					return false;
 				}
@@ -2390,7 +2391,7 @@
 				if(!base.inSourceMode())
 				{
 					wysiwygEditor.contentWindow.focus();
-					getWysiwygDoc().body.focus();
+					$wysiwygBody[0].focus();
 
 					// Needed for IE < 9
 					if(lastRange)
@@ -2553,30 +2554,28 @@
 			if(!enable && enable !== false)
 				return options.emoticonsEnabled;
 
-			var $body = $(getWysiwygDoc().body);
-
 			options.emoticonsEnabled = enable;
 
 			if(enable)
 			{
-				$body.keypress(emoticonsKeyPress);
+				$wysiwygBody.keypress(emoticonsKeyPress);
 
 				if(!base.sourceMode())
 				{
 					rangeHelper.saveRange();
 
-					$body.html(replaceEmoticons($body.html()));
+					$wysiwygBody.html(replaceEmoticons($wysiwygBody.html()));
 
 					rangeHelper.restoreRange();
 				}
 			}
 			else
 			{
-				$body.find('img[data-sceditor-emoticon]').replaceWith(function() {
+				$wysiwygBody.find('img[data-sceditor-emoticon]').replaceWith(function() {
 					return $(this).data('sceditor-emoticon');
 				});
 
-				$body.unbind('keypress', emoticonsKeyPress);
+				$wysiwygBody.unbind('keypress', emoticonsKeyPress);
 			}
 
 			return this;
@@ -2603,7 +2602,7 @@
 		 */
 		base.css = function(css) {
 			if(!inlineCss)
-				inlineCss = $('<style id="#inline" />').appendTo($(getWysiwygDoc()).find('head'))[0];
+				inlineCss = $('<style id="#inline" />').appendTo($wysiwygDoc.find('head'))[0];
 
 			if(typeof css != 'string')
 				return inlineCss.styleSheet ? inlineCss.styleSheet.cssText : inlineCss.innerHTML;
