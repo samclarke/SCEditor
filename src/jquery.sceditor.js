@@ -429,7 +429,7 @@
 
 			base.readOnly(!!options.readOnly);
 
-			$body = $doc.find("body");
+			$body = base.getBody();
 
 			// Add IE version class to the HTML element so can apply
 			// conditional styling without CSS hacks
@@ -462,7 +462,7 @@
 		 */
 		initOptions = function() {
 			var	$doc  = $(getWysiwygDoc()),
-				$body = $doc.find("body");
+				$body = base.getBody();
 
 			// auto-update original textbox on blur if option set to true
 			if(options.autoUpdate)
@@ -501,7 +501,7 @@
 
 			$(window).bind('resize orientationChanged', handleWindowResize);
 
-			$doc.find("body")
+			base.getBody()
 				.keypress(handleKeyPress)
 				.keyup(appendNewLine)
 				.bind("paste", handlePasteEvt)
@@ -1662,7 +1662,7 @@
 		 */
 		base.getWysiwygEditorValue = function (filter) {
 			var	html,
-				$body = $wysiwygEditor.contents().find("body");
+				$body = base.getBody();
 
 			// Must focus the editor for IE before saving the range
 			if($.sceditor.ie)
@@ -1670,7 +1670,7 @@
 
 			rangeHelper.saveRange();
 
-			$.sceditor.dom.fixNesting($body.get(0));
+			$.sceditor.dom.fixNesting($body[0]);
 
 			// filter the HTML and DOM through any plugins
 			html = $body.html();
@@ -1687,20 +1687,22 @@
 		/**
 		 * Gets the WYSIWYG editor's iFrame Body.
 		 *
-		 * @return {obj}
+		 * @return {jQuery}
 		 * @function
+		 * @since 1.4.3
 		 * @name getBody
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.getBody = function () {
-		    return $wysiwygEditor.contents().find("body");
+			return $wysiwygEditor.contents().find("body");
 		};
 
 		/**
 		 * Gets the WYSIWYG editors container area (whole iFrame).
 		 *
-		 * @return {obj}
+		 * @return {Node}
 		 * @function
+		 * @since 1.4.3
 		 * @name getContentAreaContainer
 		 * @memberOf jQuery.sceditor.prototype
 		 */
