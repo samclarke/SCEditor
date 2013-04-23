@@ -1685,6 +1685,30 @@
 		};
 
 		/**
+		 * Gets the WYSIWYG editor's iFrame Body.
+		 *
+		 * @return {obj}
+		 * @function
+		 * @name getBody
+		 * @memberOf jQuery.sceditor.prototype
+		 */
+		base.getBody = function () {
+		    return $wysiwygEditor.contents().find("body");
+		};
+
+		/**
+		 * Gets the WYSIWYG editors container area (whole iFrame).
+		 *
+		 * @return {obj}
+		 * @function
+		 * @name getContentAreaContainer
+		 * @memberOf jQuery.sceditor.prototype
+		 */
+		base.getContentAreaContainer = function () {
+			return $wysiwygEditor;
+		};
+
+		/**
 		 * Gets the text editor value
 		 *
 		 * If using a plugin that filters the text like the BBCode plugin
