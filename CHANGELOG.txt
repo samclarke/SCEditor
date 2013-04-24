@@ -2,7 +2,7 @@ Version 1.4.3:
 	Added css() method which allows getting/setting inline CSS for the WYSIWYG editor.
 	Added Simplified Chinese translation.
 		- Thanks to Yorgo for translating.
-	Fixed bug with insert() and setting siltering to false.
+	Fixed bug with insert() and setting filtering to false.
 	Added Travis-CI testing and improved tests
 	Fixed bug with emoticons preloading even if disabled.
 		- Thanks to @novadk for reporting.
@@ -30,6 +30,8 @@ Version 1.4.3:
 	Greatly increased the number of tests.
 	Improved the XHTML plugin.
 	Fixed bug with XHTML plugin outputting <br /> when editor is empty.
+		- Thanks to @tim-se for reporting
+	Fixed Mozilla's junk attributes, type="_moz", _moz_dirty="" and _moz_editor_bogus_node.
 		- Thanks to @tim-se for reporting
 
 Version 1.4.2:

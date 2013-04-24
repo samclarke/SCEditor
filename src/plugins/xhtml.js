@@ -976,6 +976,36 @@
 				// All it's attributes will be converted by the attribute converters
 				this.convertTagTo(node, 'span');
 			}
+		},
+		{
+			tags: {
+				'*': {
+					type: ['_moz']
+				}
+			},
+			conv: function(node, $node) {
+				$node.removeAttr('type');
+			}
+		},
+		{
+			tags: {
+				'*': {
+					'_moz_dirty': null
+				}
+			},
+			conv: function(node, $node) {
+				$node.removeAttr('_moz_dirty');
+			}
+		},
+		{
+			tags: {
+				'*': {
+					'_moz_editor_bogus_node': null
+				}
+			},
+			conv: function(node, $node) {
+				$node.remove();
+			}
 		}
 	];
 

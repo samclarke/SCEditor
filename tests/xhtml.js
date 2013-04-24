@@ -608,4 +608,32 @@
 			'With size attribute'
 		);
 	});
+
+	test("Mozilla's junk attributes fix", function() {
+		expect(4);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<br type="_moz">', true)),
+			'<br />',
+			'Type _moz on br'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div type="_moz">Bad Mozilla!</div>', true)).ignoreSpace(),
+			'<div>Bad Mozilla!</div>'.ignoreSpace(),
+			'Type _moz on div'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div _moz_dirty="">Mozilla attributes!</div>', true)).ignoreSpace(),
+			'<div>Mozilla attributes!</div>'.ignoreSpace(),
+			'_moz_dirty attribute on div'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div _moz_editor_bogus_node="">Shhh, I\'m not really here.</div>', true)).ignoreSpace(),
+			''.ignoreSpace(),
+			'_moz_editor_bogus_node attribute on div'
+		);
+	});
 })();
