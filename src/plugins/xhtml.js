@@ -602,7 +602,7 @@
 				return false;
 
 			while(childrenLength--)
-				if(!isEmpty(childNodes[childrenLength], true))
+				if(!isEmpty(childNodes[childrenLength], !node.previousSibling && !node.nextSibling))
 					return false;
 
 			return true;

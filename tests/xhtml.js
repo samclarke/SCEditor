@@ -13,7 +13,7 @@
 	});
 
 	test("Remove empty tags", function() {
-		expect(9);
+		expect(10);
 
 		equal(
 			this.plugin.signalToSource('', html2dom('<div></div>', true)),
@@ -67,6 +67,12 @@
 			ignoreSpaces(this.plugin.signalToSource('', html2dom('<div>test</div>', true))),
 			ignoreSpaces('<div>test</div>'),
 			'Single div with text'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div>test</div><div><br /></div>', true)).ignoreSpace(),
+			'<div>test</div><div><br /></div>'.ignoreSpace(),
+			'Div with br as line seperator'
 		);
 	});
 
