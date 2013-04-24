@@ -3497,7 +3497,7 @@
 	 * @name jQuery.sceditor.rangeHelper
 	 */
 	$.sceditor.rangeHelper = function(w, d) {
-		var	win, doc, init, _createMarker, _getOuterText, _selectOuterText,
+		var	win, doc, init, _createMarker,
 			isW3C        = true,
 			startMarker  = "sceditor-start-marker",
 			endMarker    = "sceditor-end-marker",
@@ -4032,10 +4032,10 @@
 				++maxKeyLen;
 			}
 
-			before = _getOuterText(true, maxKeyLen);
+			before = base.getOuterText(true, maxKeyLen);
 
 			if(includeAfter)
-				after = _getOuterText(false, maxKeyLen);
+				after = base.getOuterText(false, maxKeyLen);
 
 			str = before + (curChar!=null?curChar:"") + after;
 			i   = rep.length;
@@ -4061,7 +4061,7 @@
 						continue;
 
 					left = before.length - start;
-					_selectOuterText(left, rep[i][0].length-left-(curChar!=null&&/^\S/.test(curChar)?1:0));
+					base.selectOuterText(left, rep[i][0].length-left-(curChar!=null&&/^\S/.test(curChar)?1:0));
 					base.insertHTML(rep[i][1]);
 					return true;
 				}
