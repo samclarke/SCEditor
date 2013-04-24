@@ -252,7 +252,7 @@
 	});
 
 	test("Indentation", function() {
-		expect(6);
+		expect(9);
 
 		equal(
 			this.plugin.signalToSource('', html2dom('<div>test</div>', true)),
@@ -288,6 +288,24 @@
 			this.plugin.signalToSource('', html2dom('<span>test<div>test</div>test</span>', true)),
 			'<span>test\n\t<div>\n\t\ttest\n\t</div>\n\ttest</span>',
 			'Nested span with text'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<pre>  test  </pre>', true)),
+			'<pre>  test  </pre>',
+			'Pre tag'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div>test<pre>  test  </pre>test</div>', true)),
+			'<div>\n\ttest\n\t<pre>  test  </pre>\n\ttest\n</div>',
+			'Div with pre tag'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<pre>  <div>test</div>  </pre>', true)),
+			'<pre>  <div>test</div>  </pre>',
+			'Pre tag with div child'
 		);
 	});
 

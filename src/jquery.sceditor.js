@@ -4278,7 +4278,7 @@
 				// 1 = element
 				if(nodeType === 1 && node.firstChild)
 				{
-					cssWS = $(node).css('white-space');
+					cssWS = $(node).css('whiteSpace');
 
 					// pre || pre-wrap with any vendor prefix
 					if(!/pre(?:\-wrap)?$/i.test(cssWS))

@@ -132,7 +132,7 @@
 		 * @return {Void}
 		 * @private
 		 */
-		serializeNode = function(node) {
+		serializeNode = function(node, parentIsPre) {
 			switch(node.nodeType)
 			{
 				case 1: // element
@@ -141,13 +141,12 @@
 					// IE comment
 					if(tagName === '!')
 						handleComment(node);
-
-
-					handleElement(node);
+					else
+						handleElement(node, parentIsPre);
 					break;
 
 				case 3: // text
-					handleText(node);
+					handleText(node, parentIsPre);
 					break;
 
 				case 4: // cdata section
@@ -199,16 +198,18 @@
 		 * @return {void}
 		 * @private
 		 */
-		handleElement = function(node) {
+		handleElement = function(node, parentIsPre) {
 			var	child, attr,
 				tagName     = node.nodeName.toLowerCase(),
 				i           = node.attributes.length,
+				// pre || pre-wrap with any vendor prefix
+				isPre       = parentIsPre || /pre(?:\-wrap)?$/i.test($(node).css('whiteSpace')),
 				selfClosing = !node.firstChild && $.sceditor.XHTMLSerializer.emptyTags.indexOf('|' + tagName + '|') > -1;
 
 			if($(node).hasClass('sceditor-ignore'))
 				return;
 
-			output('<' + tagName, canIndent(node));
+			output('<' + tagName, !parentIsPre && canIndent(node));
 			while(i--)
 			{
 				attr = node.attributes[i];
@@ -221,14 +222,14 @@
 			{
 				currentIndent++;
 
-				serializeNode(child);
+				serializeNode(child, isPre);
 				child = child.nextSibling;
 
 				currentIndent--;
 			}
 
 			if(!selfClosing)
-				output('</' + tagName + '>', canIndent(node) && node.firstChild && canIndent(node.firstChild));
+				output('</' + tagName + '>', !isPre && canIndent(node) && node.firstChild && canIndent(node.firstChild));
 		};
 
 		/**
@@ -257,11 +258,14 @@
 		 * @return {void}
 		 * @private
 		 */
-		handleText = function(node) {
-			var text = trim(node.nodeValue);
-// TODO: Should always trim?
+		handleText = function(node, parentIsPre) {
+			var text = node.nodeValue;
+
+			if(!parentIsPre)
+				text = trim(text);
+
 			if(text)
-				output(escapeEntites(text), canIndent(node));
+				output(escapeEntites(text), !parentIsPre && canIndent(node));
 		};
 
 		/**
@@ -626,6 +630,10 @@
 					allowedtags    = $.sceditor.plugins.xhtml.allowedTags,
 					disallowedTags = $.sceditor.plugins.xhtml.disallowedTags;
 
+				// text node
+				if(nodeType === 3)
+					return;
+
 				// cdata section
 				if(nodeType === 4)
 					tagName = '!cdata';
@@ -636,9 +644,9 @@
 				if(empty)
 					remove = true;
 				// 3 is text node which do not get filtered
-				else if(allowedtags && allowedtags.length && nodeType !== 3)
+				else if(allowedtags && allowedtags.length)
 					remove = ($.inArray(tagName, allowedtags) < 0);
-				else if(disallowedTags && disallowedTags.length && nodeType !== 3)
+				else if(disallowedTags && disallowedTags.length)
 					remove = ($.inArray(tagName, disallowedTags) > -1);
 
 				if(remove)
