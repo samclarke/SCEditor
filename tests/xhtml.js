@@ -2,6 +2,290 @@
 (function() {
 	'use strict';
 
+
+	module("XHTML Plugin", {
+		setup: function() {
+			this.plugin = new $.sceditor.plugins.xhtml();
+			this.plugin.init.call({
+				opts: $.extend({}, $.sceditor.defaultOptions)
+			});
+		}
+	});
+
+	test("Remove empty tags", function() {
+		expect(9);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div></div>', true)),
+			'',
+			'Single div'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div><br /></div>', true)),
+			'',
+			'Single div with br'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<span><br /></span>', true)),
+			'',
+			'Single span with br'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div><div></div></div>', true)),
+			'',
+			'Nested div'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<span> <br /></span>', true)),
+			'',
+			'Single span with space and br'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div> <br />		</div>', true)),
+			'',
+			'Single div with spaces and br'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<input name="test" />', true)),
+			'<input name="test" />',
+			'Input tag'
+		);
+
+		equal(
+			ignoreSpaces(this.plugin.signalToSource('', html2dom('<span>test<br /></span>', true))),
+			ignoreSpaces('<span>test<br /></span>'),
+			'Single span with text and br'
+		);
+
+		equal(
+			ignoreSpaces(this.plugin.signalToSource('', html2dom('<div>test</div>', true))),
+			ignoreSpaces('<div>test</div>'),
+			'Single div with text'
+		);
+	});
+
+
+	test("Allowed tags", function() {
+		expect(5);
+
+		$.sceditor.plugins.xhtml.allowedTags = ['strong', 'a'];
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div><strong>test</strong><a href="#">test link</a></div>', true)).ignoreSpace(),
+			'<strong>test</strong><a href="#">test link</a>'.ignoreSpace(),
+			'Allowed tags in disallowed tag'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div><div><strong>test</strong></div></div>', true)).ignoreSpace(),
+			'<strong>test</strong>'.ignoreSpace(),
+			'Allowed tags in nested disallowed tag'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<strong>test</strong><div>test</div>', true)).ignoreSpace(),
+			'<strong>test</strong>test'.ignoreSpace(),
+			'Allowed tag and disallowed tag'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div>test</div>test', true)).ignoreSpace(),
+			'test test'.ignoreSpace(),
+			'Disallowed tag with text sibling'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div>test</div><div>test</div>', true)).ignoreSpace(),
+			'test test'.ignoreSpace(),
+			'Sibling disallowed tags'
+		);
+
+		// Reset for next test
+		$.sceditor.plugins.xhtml.allowedTags = [];
+	});
+
+	test("Disallowed tags", function() {
+		expect(4);
+
+		$.sceditor.plugins.xhtml.disallowedTags = ['div'];
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div><strong>test</strong><a href="#">test link</a></div>', true)).ignoreSpace(),
+			'<strong>test</strong><a href="#">test link</a>'.ignoreSpace(),
+			'Allowed tags in disallowed tag'
+		);
+
+		equal(
+			ignoreSpaces(this.plugin.signalToSource('', html2dom('<div><div><strong>test</strong></div></div>', true))).ignoreSpace(),
+			'<strong>test</strong>'.ignoreSpace(),
+			'Allowed tags in nested disallowed tag'
+		);
+
+		equal(
+			ignoreSpaces(this.plugin.signalToSource('', html2dom('<strong>test</strong><div>test</div>', true))).ignoreSpace(),
+			'<strong>test</strong> test'.ignoreSpace(),
+			'Allowed tag and disallowed tag'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div>test<div>test', true)).ignoreSpace(),
+			'test test'.ignoreSpace(),
+			'All disallowed tag'
+		);
+
+		// Reset for next test
+		$.sceditor.plugins.xhtml.disallowedTags = [];
+	});
+
+	test("Allowed attributes", function() {
+		expect(6);
+
+		$.sceditor.plugins.xhtml.allowedAttribs['*'] = {
+			'data-allowed': null,
+			'data-only-a': ['a']
+		};
+		$.sceditor.plugins.xhtml.allowedAttribs.a = {
+			'href': null
+		};
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div data-test="not allowed">test</div>', true)).ignoreSpace(),
+			'<div>test</div>'.ignoreSpace(),
+			'Disallowed attributes'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div data-allowed="allowed">test</div>', true)).ignoreSpace(),
+			'<div data-allowed="allowed">test</div>'.ignoreSpace(),
+			'Allowed attribute'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div data-test="not allowed" data-allowed="allowed">test</div>', true)).ignoreSpace(),
+			'<div data-allowed="allowed">test</div>'.ignoreSpace(),
+			'Allowed and disallowed attributes'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<a href="#">test</a><div href="#">test</div>', true)).ignoreSpace(),
+			'<a href="#">test</a><div>test</div>'.ignoreSpace(),
+			'Allowed and disallowed attributes for specific tag'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div data-only-a="a">test</div>', true)).ignoreSpace(),
+			'<div data-only-a="a">test</div>'.ignoreSpace(),
+			'Allowed attribute with specific value'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div data-only-a="aaaaaa">test</div>', true)).ignoreSpace(),
+			'<div>test</div>'.ignoreSpace(),
+			'Disallowed attribute with specific value'
+		);
+
+		// Reset for next test
+		$.sceditor.plugins.xhtml.allowedAttribs = {};
+	});
+
+	test("Disallowed attributes", function() {
+		expect(6);
+
+		$.sceditor.plugins.xhtml.disallowedAttribs['*'] = {
+			'data-test': null,
+			'data-only-a': ['aaaaaa']
+		};
+		$.sceditor.plugins.xhtml.disallowedAttribs.div = {
+			'href': null
+		};
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div data-test="not allowed">test</div>', true)).ignoreSpace(),
+			'<div>test</div>'.ignoreSpace(),
+			'Disallowed attributes'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div data-allowed="allowed">test</div>', true)).ignoreSpace(),
+			'<div data-allowed="allowed">test</div>'.ignoreSpace(),
+			'Allowed attribute'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div data-test="not allowed" data-allowed="allowed">test</div>', true)).ignoreSpace(),
+			'<div data-allowed="allowed">test</div>'.ignoreSpace(),
+			'Allowed and disallowed attributes'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<a href="#">test</a><div href="#">test</div>', true)).ignoreSpace(),
+			'<a href="#">test</a><div>test</div>'.ignoreSpace(),
+			'Allowed and disallowed attributes for specific tag'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div data-only-a="a">test</div>', true)).ignoreSpace(),
+			'<div data-only-a="a">test</div>'.ignoreSpace(),
+			'Allowed attribute with specific value'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div data-only-a="aaaaaa">test</div>', true)).ignoreSpace(),
+			'<div>test</div>'.ignoreSpace(),
+			'Disallowed attribute with specific value'
+		);
+
+		// Reset for next test
+		$.sceditor.plugins.xhtml.disallowedAttribs = {};
+	});
+
+	test("Indentation", function() {
+		expect(6);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div>test</div>', true)),
+			'<div>\n\ttest\n</div>',
+			'Div with text'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<span>test</span>', true)),
+			'<span>test</span>',
+			'Span with text'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div><div>test</div></div>', true)),
+			'<div>\n\t<div>\n\t\ttest\n\t</div>\n</div>',
+			'Nested div with text'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<span><span>test</span></span>', true)),
+			'<span><span>test</span></span>',
+			'Nested span with text'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div><span>test</span></div>', true)),
+			'<div>\n\t<span>test</span>\n</div>',
+			'Span with text in a div'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<span>test<div>test</div>test</span>', true)),
+			'<span>test\n\t<div>\n\t\ttest\n\t</div>\n\ttest</span>',
+			'Nested span with text'
+		);
+	});
+
+
 	module("XHTML Converters", {
 		setup: function() {
 			this.plugin = new $.sceditor.plugins.xhtml();
@@ -144,29 +428,184 @@
 			'Center'
 		);
 	});
-/*
+
 	test("Border", function() {
 		expect(2);
 
-		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<div border="1">test</div>', true))),
-			ignoreSpaces('<div style="border-width: 1px;">test</div>'),
-			'border=1'
+		var ret;
+
+		ret = ignoreSpaces(this.plugin.signalToSource('', html2dom('<div border="1">test</div>', true)));
+		ok(
+			!/border=/.test(ret) && /-width:1/.test(ret)
 		);
 
-		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<div border="0">test</div>', true))),
-			ignoreSpaces('<div style="border-width: 0px;">test</div>'),
-			'border=0'
+		ret = ignoreSpaces(this.plugin.signalToSource('', html2dom('<div border="0">test</div>', true)));
+		ok(
+			!/border=/.test(ret) && /-width:0/.test(ret)
 		);
 	});
 
 	test("HR noshade", function() {
 		expect(1);
 
-		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<hr noshade />', true))),
-			ignoreSpaces('<hr style="border-style: solid;" />')
+		var ret = this.plugin.signalToSource('', html2dom('<hr noshade />', true));
+		ok(
+			!/noshade/.test(ret) && /solid/.test(ret)
 		);
-	});*/
+	});
+
+	test("Name", function() {
+		expect(2);
+
+		equal(
+			ignoreSpaces(this.plugin.signalToSource('', html2dom('<img name="test" />', true))),
+			ignoreSpaces('<img id="test" />'),
+			'Image with name'
+		);
+
+		equal(
+			ignoreSpaces(this.plugin.signalToSource('', html2dom('<img name="test" id="one" />', true))),
+			ignoreSpaces('<img id="one" />'),
+			'Image with name and id'
+		);
+	});
+
+	test("VSpace", function() {
+		expect(1);
+
+		equal(
+			ignoreSpaces(this.plugin.signalToSource('', html2dom('<img vspace="20" />', true))),
+			ignoreSpaces('<img style="margin-top:20px;margin-bottom:20px;" />')
+		);
+	});
+
+	test("HSpace", function() {
+		expect(1);
+
+		equal(
+			ignoreSpaces(this.plugin.signalToSource('', html2dom('<img hspace="20" />', true))),
+			ignoreSpaces('<img style="margin-left:20px;margin-right:20px;" />')
+		);
+	});
+
+	test("Big", function() {
+		expect(2);
+
+		equal(
+			ignoreSpaces(this.plugin.signalToSource('', html2dom('<big>test</big>', true))),
+			ignoreSpaces('<span style="font-size:larger;">test</span>'),
+			'Single <big>'
+		);
+
+		equal(
+			ignoreSpaces(this.plugin.signalToSource('', html2dom('<big><big>test</big></big>', true))),
+			ignoreSpaces('<span style="font-size:larger;"><span style="font-size:larger;">test</span></span>'),
+			'Nested <big>'
+		);
+	});
+
+	test("Small", function() {
+		expect(2);
+
+		equal(
+			ignoreSpaces(this.plugin.signalToSource('', html2dom('<small>test</small>', true))),
+			ignoreSpaces('<span style="font-size:smaller;">test</span>'),
+			'Single <small>'
+		);
+
+		equal(
+			ignoreSpaces(this.plugin.signalToSource('', html2dom('<small><small>test</small></small>', true))),
+			ignoreSpaces('<span style="font-size:smaller;"><span style="font-size:smaller;">test</span></span>'),
+			'Nested <small>'
+		);
+	});
+
+	test("B - Bold", function() {
+		expect(1);
+
+		equal(
+			ignoreSpaces(this.plugin.signalToSource('', html2dom('<b>test</b>', true))),
+			ignoreSpaces('<strong>test</strong>')
+		);
+	});
+
+	test("U - Underline", function() {
+		expect(1);
+
+		equal(
+			ignoreSpaces(this.plugin.signalToSource('', html2dom('<u>test</u>', true))),
+			ignoreSpaces('<span style="text-decoration: underline;">test</span>')
+		);
+	});
+
+	test("I - Italic", function() {
+		expect(1);
+
+		equal(
+			ignoreSpaces(this.plugin.signalToSource('', html2dom('<i>test</i>', true))),
+			ignoreSpaces('<em>test</em>')
+		);
+	});
+
+	test("Strikethrough", function() {
+		expect(2);
+
+		equal(
+			ignoreSpaces(this.plugin.signalToSource('', html2dom('<s>test</s>', true))),
+			ignoreSpaces('<span style="text-decoration: line-through;">test</span>'),
+			'S tag'
+		);
+
+		equal(
+			ignoreSpaces(this.plugin.signalToSource('', html2dom('<strike>test</strike>', true))),
+			ignoreSpaces('<span style="text-decoration: line-through;">test</span>'),
+			'Strike tag'
+		);
+	});
+
+	test("Dir tag", function() {
+		expect(1);
+
+		equal(
+			ignoreSpaces(this.plugin.signalToSource('', html2dom('<dir><li>test</li></dir>', true))),
+			ignoreSpaces('<ul><li>test</li></ul>')
+		);
+	});
+
+	test("Center tag", function() {
+		expect(1);
+
+		equal(
+			ignoreSpaces(this.plugin.signalToSource('', html2dom('<center>test</center>', true))),
+			ignoreSpaces('<div style="text-align: center;">test</div>')
+		);
+	});
+
+	test("Font", function() {
+		expect(4);
+
+		equal(
+			ignoreSpaces(this.plugin.signalToSource('', html2dom('<font>test</font>', true))),
+			ignoreSpaces('<span>test</span>'),
+			'Without attributes'
+		);
+
+		equal(
+			ignoreSpaces(this.plugin.signalToSource('', html2dom('<font face="arial">test</font>', true))),
+			ignoreSpaces('<span style="font-family: arial;">test</span>'),
+			'With font attribute'
+		);
+
+		equal(
+			ignoreSpaces(this.plugin.signalToSource('', html2dom('<font color="red">test</font>', true))),
+			ignoreSpaces('<span style="color: red;">test</span>'),
+			'With color attribute'
+		);
+
+		equal(
+			ignoreSpaces(this.plugin.signalToSource('', html2dom('<font size="5">test</font>', true))),
+			ignoreSpaces('<span style="font-size:24px;">test</span>'),
+			'With size attribute'
+		);
+	});
 })();

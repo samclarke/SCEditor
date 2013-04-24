@@ -203,7 +203,7 @@
 			var	child, attr,
 				tagName     = node.nodeName.toLowerCase(),
 				i           = node.attributes.length,
-				selfClosing = !node.firstChild && /^(?:area|base|br|col|embed|hr|img|input|link|meta|param)$/.test(tagName);
+				selfClosing = !node.firstChild && $.sceditor.XHTMLSerializer.emptyTags.indexOf('|' + tagName + '|') > -1;
 
 			if($(node).hasClass('sceditor-ignore'))
 				return;
@@ -228,7 +228,7 @@
 			}
 
 			if(!selfClosing)
-				output('</' + tagName + '>', canIndent(node) && node.firstChild);
+				output('</' + tagName + '>', canIndent(node) && node.firstChild && canIndent(node.firstChild));
 		};
 
 		/**
@@ -252,14 +252,14 @@
 		};
 
 		/**
-		 * Handles test nodes
+		 * Handles text nodes
 		 * @param  {Node} node
 		 * @return {void}
 		 * @private
 		 */
 		handleText = function(node) {
 			var text = trim(node.nodeValue);
-
+// TODO: Should always trim?
 			if(text)
 				output(escapeEntites(text), canIndent(node));
 		};
@@ -296,21 +296,26 @@
 		 * @private
 		 */
 		canIndent = function(node) {
-			if(node.nodeType !== 1)
-			{
-				if(node.previousSibling && $.sceditor.dom.isInline(node.previousSibling))
-					return false;
+			var prev = node.previousSibling;
 
-				node = node.parentNode;
-			}
+			if(node.nodeType !== 1 && prev)
+				return !$.sceditor.dom.isInline(prev);
 
 			// first child of a block element
-			if(!node.previousSibling && !$.sceditor.dom.isInline(node.parentNode))
+			if(!prev && !$.sceditor.dom.isInline(node.parentNode))
 				return true;
 
 			return !$.sceditor.dom.isInline(node);
 		};
 	};
+
+	/**
+	 * List of empty HTML tags seperated by bar (|) character.
+	 * Source: http://www.w3.org/TR/html4/index/elements.html
+	 * Source: http://www.w3.org/TR/html5/syntax.html#void-elements
+	 * @type {String}
+	 */
+	$.sceditor.XHTMLSerializer.emptyTags = '|area|base|basefont|br|col|frame|hr|img|input|isindex|link|meta|param|command|embed|keygen|source|track|wbr|';
 
 	/**
 	 * SCEditor XHTML plugin
@@ -342,6 +347,7 @@
 		var	mergeSourceModeCommands,
 			convertTags,
 			convertNode,
+			isEmpty,
 			removetags,
 			mergeAttribsFilters,
 			removeAttribs;
@@ -550,6 +556,7 @@
 				});
 			}
 		};
+
 		/**
 		 * Converts any tags/attributes to their XHTML equivalents
 		 * @param  {Node} node
@@ -573,6 +580,35 @@
 		};
 
 		/**
+		 * Tests if a node is empty and can be removed.
+		 * @param  {Node} node
+		 * @return {Boolean}
+		 * @private
+		 */
+		isEmpty = function(node, excludeBr) {
+			var	childNodes     = node.childNodes,
+				tagName        = node.nodeName.toLowerCase(),
+				nodeValue      = node.nodeValue,
+				childrenLength = childNodes.length;
+
+			if(excludeBr && tagName === 'br')
+				return true;
+
+			if($.sceditor.XHTMLSerializer.emptyTags.indexOf('|' + tagName + '|') > -1)
+				return false;
+
+			// \S|\u00A0 = any non space char
+			if(nodeValue && /\S|\u00A0/.test(nodeValue))
+				return false;
+
+			while(childrenLength--)
+				if(!isEmpty(childNodes[childrenLength], true))
+					return false;
+
+			return true;
+		};
+
+		/**
 		 * Removes any tags that are not white listed or if no
 		 * tags are white listed it will remove any tags that
 		 * are black listed.
@@ -582,29 +618,37 @@
 		 */
 		removetags = function(node) {
 			$.sceditor.dom.traverse(node, function(node) {
-				var	tagName        = node.nodeName.toLowerCase(),
+				var	remove,
+					empty          = isEmpty(node),
+					tagName        = node.nodeName.toLowerCase(),
+					parentNode     = node.parentNode,
+					nodeType       = node.nodeType,
 					allowedtags    = $.sceditor.plugins.xhtml.allowedTags,
 					disallowedTags = $.sceditor.plugins.xhtml.disallowedTags;
 
 				// cdata section
-				if(node.nodeType === 4)
+				if(nodeType === 4)
 					tagName = '!cdata';
 				// comment
-				else if(tagName === '!' || node.nodeType === 8)
+				else if(tagName === '!' || nodeType === 8)
 					tagName = '!comment';
 
+				if(empty)
+					remove = true;
 				// 3 is text node which do not get filtered
-				if(allowedtags && allowedtags.length && node.nodeType !== 3)
+				else if(allowedtags && allowedtags.length && nodeType !== 3)
+					remove = ($.inArray(tagName, allowedtags) < 0);
+				else if(disallowedTags && disallowedTags.length && nodeType !== 3)
+					remove = ($.inArray(tagName, disallowedTags) > -1);
+
+				if(remove)
 				{
-					if($.inArray(tagName, allowedtags) < 0 && node.parentNode)
-						node.parentNode.removeChild(node);
+					while(!empty && node.firstChild)
+						parentNode.insertBefore(node.firstChild, node);
+
+					parentNode.removeChild(node);
 				}
-				else if(disallowedTags && disallowedTags.length && node.nodeType !== 3)
-				{
-					if($.inArray(tagName, disallowedTags) > -1 && node.parentNode)
-						node.parentNode.removeChild(node);
-				}
-			});
+			}, true);
 		};
 
 		/**
@@ -626,6 +670,8 @@
 			$.each(filtersB, function(attrName, values) {
 				if($.isArray(values))
 					ret[attrName] = $.merge(ret[attrName] || [], values);
+				else if(!ret[attrName])
+					ret[attrName] = null;
 			});
 
 			return ret;
@@ -640,43 +686,44 @@
 		 * @private
 		 */
 		removeAttribs = function(node) {
+			var	tagName, attr, attrName, attrsLength, validValues, remove,
+				allowedAttribs    = $.sceditor.plugins.xhtml.allowedAttribs,
+				isAllowed         = allowedAttribs && !$.isEmptyObject(allowedAttribs),
+				disallowedAttribs = $.sceditor.plugins.xhtml.disallowedAttribs,
+				isDisallowed      = disallowedAttribs && !$.isEmptyObject(disallowedAttribs);
+
 			attrsCache = {};
 
 			$.sceditor.dom.traverse(node, function(node) {
 				if(!node.attributes)
 					return;
 
-				var	attr, attrName,
-					tagName           = node.nodeName.toLowerCase(),
-					allowedAttribs    = $.sceditor.plugins.xhtml.allowedAttribs,
-					disallowedAttribs = $.sceditor.plugins.xhtml.disallowedAttribs,
-					attrsLength       = node.attributes.length;
+				tagName     = node.nodeName.toLowerCase(),
+				attrsLength = node.attributes.length;
 
-				if(allowedAttribs && !$.isEmptyObject(allowedAttribs) && attrsLength)
+				if(attrsLength)
 				{
 					if(!attrsCache[tagName])
-						attrsCache[tagName] = mergeAttribsFilters(allowedAttribs['*'], allowedAttribs[tagName]);
-
-					while(attrsLength--)
 					{
-						attr     = node.attributes[attrsLength];
-						attrName = attr.name;
-
-						if($.isArray(attrsCache[tagName][attrName]) && $.inArray(attr.value, attrsCache[tagName][attrName]) < 0)
-							node.removeAttribute(attrName);
+						if(isAllowed)
+							attrsCache[tagName] = mergeAttribsFilters(allowedAttribs['*'], allowedAttribs[tagName]);
+						else
+							attrsCache[tagName] = mergeAttribsFilters(disallowedAttribs['*'], disallowedAttribs[tagName]);
 					}
-				}
-				else if(disallowedAttribs && !$.isEmptyObject(disallowedAttribs) && attrsLength)
-				{
-					if(!attrsCache[tagName])
-						attrsCache[tagName] = mergeAttribsFilters(disallowedAttribs['*'], disallowedAttribs[tagName]);
 
 					while(attrsLength--)
 					{
-						attr     = node.attributes[attrsLength];
-						attrName = attr.name;
+						attr        = node.attributes[attrsLength];
+						attrName    = attr.name;
+						validValues = attrsCache[tagName][attrName];
+						remove      = false;
 
-						if($.isArray(attrsCache[tagName][attrName]) && $.inArray(attr.value, attrsCache[tagName][attrName]) > -1)
+						if(isAllowed)
+							remove = validValues !== null && (!$.isArray(validValues) || $.inArray(attr.value, validValues) < 0);
+						else if(isDisallowed)
+							remove = validValues === null || ($.isArray(validValues) && $.inArray(attr.value, validValues) > -1);
+
+						if(remove)
 							node.removeAttribute(attrName);
 					}
 				}
@@ -943,8 +990,7 @@
 	 * @name jQuery.sceditor.plugins.xhtml.allowedAttribs
 	 * @since v1.4.1
 	 */
-	$.sceditor.plugins.xhtml.allowedAttribs = {
-	};
+	$.sceditor.plugins.xhtml.allowedAttribs = {};
 
 	/**
 	 * Attributes that are not allowed.
@@ -954,7 +1000,7 @@
 	 * @name jQuery.sceditor.plugins.xhtml.disallowedAttribs
 	 * @since v1.4.1
 	 */
-	$.sceditor.plugins.xhtml.disallowedAttribs = { };
+	$.sceditor.plugins.xhtml.disallowedAttribs = {};
 
 	/**
 	 * Array containing all the allowed tags.

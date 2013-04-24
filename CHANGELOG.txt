@@ -27,6 +27,10 @@ Version 1.4.3:
 	Added getBody() method which gets the WYSIWYG body node.
 		- Thanks to @arjunasuresh3 for adding
 	Made selectOuterText() and getOuterText() methods on the rangeHelper accessible.
+	Greatly increased the number of tests.
+	Improved the XHTML plugin.
+	Fixed bug with XHTML plugin outputting <br /> when editor is empty.
+		- Thanks to @tim-se for reporting
 
 Version 1.4.2:
 	Added emoticons() method which allows enabling/disabling emoticons at runtime.

@@ -32,6 +32,11 @@ function ignoreSpaces(str) {
 	return str.replace(/[\n\r \t]+/g, '');
 }
 
+String.prototype.ignoreSpace = function (str) {
+	'use strict';
+
+	return this.replace(/[\n\r \t]+/g, '');
+};
 
 var eventMatchers = {
 	'HTMLEvents': /^(?:load|unload|abort|error|select|change|submit|reset|focus|blur|resize|scroll)$/,
