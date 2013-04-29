@@ -265,6 +265,13 @@
 		var inlineCss;
 
 		/**
+		 * Object containing a list of shortcut handlers
+		 * @type {Object}
+		 * @private
+		 */
+		var shortcutHandlers = {};
+
+		/**
 		 * Private functions
 		 * @private
 		 */
@@ -284,6 +291,7 @@
 			getWysiwygDoc,
 			handlePasteEvt,
 			handlePasteData,
+			handleKeyDown,
 			handleKeyPress,
 			handleFormReset,
 			handleMouseDown,
@@ -510,6 +518,7 @@
 
 			$wysiwygBody
 				.keypress(handleKeyPress)
+				.keydown(handleKeyDown)
 				.keyup(appendNewLine)
 				.bind("paste", handlePasteEvt)
 				.bind($.sceditor.ie ? "selectionchange" : "keyup focus blur contextmenu mouseup touchend click", checkSelectionChanged)
@@ -559,9 +568,8 @@
 
 					$button.data('sceditor-txtmode', !!base.commands[button].txtExec);
 					$button.data('sceditor-wysiwygmode', !!base.commands[button].exec);
-					$button.click(function () {
+					$button.click(function() {
 						var $this = $(this);
-
 						if(!$this.hasClass('disabled'))
 							handleCommand($this, base.commands[button]);
 
@@ -575,6 +583,9 @@
 					if(!base.commands[button].exec)
 						$button.addClass('disabled');
 
+					if(base.commands[button].shortcut)
+						base.addShortcut(base.commands[button].shortcut, button);
+
 					$group.append($button);
 				});
 
@@ -584,10 +595,7 @@
 			});
 
 			// append the toolbar to the toolbarContainer option if given
-			if(options.toolbarContainer)
-				$(options.toolbarContainer).append($toolbar);
-			else
-				$editorContainer.append($toolbar);
+			$(options.toolbarContainer || $editorContainer).append($toolbar);
 		};
 
 		/**
@@ -2611,6 +2619,88 @@
 				inlineCss.styleSheet.cssText = css;
 			else
 				inlineCss.innerHTML = css;
+
+			return this;
+		};
+
+		handleKeyDown = function(e) {
+			var	shortcut   = [],
+				shift_keys = {
+					'`':'~', '1':'!', '2':'@', '3':'#', '4':'$', '5':'%', '6':'^',
+					'7':'&', '8':'*', '9':'(', '0':')', '-':'_', '=':'+', ';':':',
+					'\'':'"', ',':'<', '.':'>', '/':'?', '\\':'|', '[':'{', ']':'}'
+				},
+				special_keys = {
+					8:'backspace', 9:'tab', 13:'enter', 19:'pause', 20:'capslock', 27:'esc',
+					32:'space', 33:'pageup', 34:'pagedown', 35:'end', 36:'home', 37:'left',
+					38:'up', 39:'right', 40:'down', 45:'insert', 46:'del', 91: 'win', 92: 'win',
+					93:'select', 96:'0', 97:'1', 98:'2', 99:'3', 100:'4', 101:'5', 102:'6',
+					103:'7', 104:'8', 105:'9', 106:'*', 107:'+', 109:'-', 110:'.', 111:'/',
+					112:'f1', 113:'f2', 114:'f3', 115:'f4', 116:'f5', 117:'f6', 118:'f7',
+					119:'f8', 120:'f9', 121:'f10', 122:'f11', 123:'f12', 144:'numlock',
+					145:'scrolllock', 186:';', 187:'=', 188:',', 189:'-', 190:'.', 191:'/',
+					192:'`', 219:'[', 220:'\\', 221:']', 222:'\''
+				},
+				numpad_shift_keys = {
+					109:'-', 110:'del', 111:'/', 96:'0', 97:'1', 98:'2', 99:'3',
+					100:'4', 101:'5', 102:'6', 103:'7', 104:'8', 105:'9'
+				},
+				which     = e.which,
+				character = special_keys[which] || String.fromCharCode(which).toLowerCase();
+
+			if(e.ctrlKey)
+				shortcut.push('ctrl');
+
+			if(e.altKey)
+				shortcut.push('alt');
+
+			if(e.shiftKey)
+			{
+				shortcut.push('shift');
+
+				if(numpad_shift_keys[which])
+					character = numpad_shift_keys[which];
+				else if(shift_keys[character])
+					character = shift_keys[character];
+			}
+
+			// Shift is 16, ctrl is 17 and alt is 18
+			if(character && (which < 16 || which > 18))
+				shortcut.push(character);
+
+			shortcut = shortcut.join('+');
+			if(shortcutHandlers[shortcut])
+				return shortcutHandlers[shortcut].call(base);
+		};
+
+		/**
+		 * Adds a shortcut handler to the editor
+		 * @param  {String}          shortcut
+		 * @param  {String|Function} cmd
+		 * @return {jQuery.sceditor}
+		 */
+		base.addShortcut = function(shortcut, cmd) {
+			if(typeof cmd === "string")
+			{
+				shortcutHandlers[shortcut] = function() {
+					handleCommand($toolbar.find('.sceditor-button-' + cmd), base.commands[cmd]);
+
+					return false;
+				};
+			}
+			else
+				shortcutHandlers[shortcut] = cmd;
+
+			return this;
+		};
+
+		/**
+		 * Removes a shortcut handler
+		 * @param  {String} shortcut
+		 * @return {jQuery.sceditor}
+		 */
+		base.removeShortcut = function(shortcut) {
+			delete shortcutHandlers[shortcut];
 
 			return this;
 		};
