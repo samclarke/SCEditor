@@ -2681,11 +2681,12 @@
 
 		if(/Android/i.test(userAgent))
 		{
+
 			isUnsupported = true;
-// TODO:check chrome
 			if(/Safari/.test(userAgent))
 			{
-				// android browser 534+ supports content editable
+				// Android browser 534+ supports content editable
+				// This also matches Chrome which supports content editable too
 				match = /Safari\/(\d+)/.exec(userAgent);
 				isUnsupported = (!match || !match[1] ? true : match[1] < 534);
 			}
