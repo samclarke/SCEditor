@@ -199,7 +199,7 @@
 		 * @private
 		 */
 		handleElement = function(node, parentIsPre) {
-			var	child, attr,
+			var	child, attr, attrValue,
 				tagName     = node.nodeName.toLowerCase(),
 				i           = node.attributes.length,
 				// pre || pre-wrap with any vendor prefix
@@ -213,7 +213,18 @@
 			while(i--)
 			{
 				attr = node.attributes[i];
-				output(" " + attr.name.toLowerCase() + '="' + escapeEntites(attr.value) + '"', false);
+
+				// IE < 8 returns all possible attribtues, not just specified ones
+				if(!$.sceditor.ie || attr.specified)
+				{
+					// IE < 8 doesn't return the CSS for the style attribute
+					if($.sceditor.ie < 8 && /style/i.test(attr.name))
+						attrValue = node.style.cssText;
+					else
+						attrValue = attr.value;
+
+					output(" " + attr.name.toLowerCase() + '="' + escapeEntites(attrValue) + '"', false);
+				}
 			}
 			output(selfClosing ? ' />' : '>', false);
 
@@ -521,7 +532,16 @@
 			while(i--)
 			{
 				attr = elm.attributes[i];
-				newTag.setAttribute(attr.name, attr.value);
+
+				// IE < 8 returns all possible attribtues, not just specified ones
+				if(!$.sceditor.ie || attr.specified)
+				{
+					// IE < 8 doesn't return the CSS for the style attribute
+					if($.sceditor.ie < 8 && /style/i.test(attr.name))
+						elm.style.cssText = elm.style.cssText;
+					else
+						newTag.setAttribute(attr.name, attr.value);
+				}
 			}
 
 			while((child = elm.firstChild))
@@ -533,30 +553,38 @@
 		};
 
 		/**
-		 * [convertNode description]
-		 * @param  {[type]} tagName [description]
-		 * @param  {[type]} $node   [description]
-		 * @return {[type]}         [description]
+		 * Runs all converters for the specified tagName
+		 * against the DOM node.
+		 * @param  {String} tagName
+		 * @param  {jQuery} $node
+		 * @return {Node} node
 		 * @private
 		 */
-		convertNode = function(tagName, $node) {
+		convertNode = function(tagName, $node, node) {
 			if(tagConvertersCache[tagName])
 			{
 				$.each(tagConvertersCache[tagName], function(idx, converter) {
 					if(converter.tags[tagName])
 					{
 						$.each(converter.tags[tagName], function(attr, values) {
-							if(typeof $node.attr(attr) === 'undefined')
+							if(!node.getAttributeNode)
 								return;
 
-							if(values && $.inArray($node.attr(attr), values) < 0)
+							attr = node.getAttributeNode(attr);
+
+							// IE < 8 always returns an attribute regardless of if
+							// it has been specified so must check it.
+							if(!attr || ($.sceditor.ie < 8 && !attr.specified))
 								return;
 
-							converter.conv.call(base, $node[0], $node);
+							if(values && $.inArray(attr.value, values) < 0)
+								return;
+
+							converter.conv.call(base, node, $node);
 						});
 					}
 					else if(converter.conv)
-						converter.conv.call(base, $node[0], $node);
+						converter.conv.call(base, node, $node);
 				});
 			}
 		};
@@ -578,8 +606,8 @@
 				if(!tagConvertersCache)
 					return;
 
-				convertNode('*', $node);
-				convertNode(tagName, $node);
+				convertNode('*', $node, node);
+				convertNode(tagName, $node, node);
 			}, true);
 		};
 

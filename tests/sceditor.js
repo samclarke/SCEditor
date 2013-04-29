@@ -90,7 +90,7 @@
 		);
 	});
 
-	test("Set value", function() {
+	test("Val", function() {
 		expect(2);
 
 		this.sceditor.val("simple [b]test[/b]");
@@ -106,7 +106,7 @@
 		);
 	});
 
-	test("Set value filter", function() {
+	test("Val filter", function() {
 		expect(1);
 
 		this.sceditor.val("<span>simple <b>test</b></span>", false);

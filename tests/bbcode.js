@@ -1124,7 +1124,7 @@
 		);
 
 		equal(
-			this.sceditor.fromBBCode('[b]test[/b]', true),
+			this.sceditor.fromBBCode('[b]test[/b]', true).ignoreCase(),
 			"<strong>test</strong>",
 			"As fragment"
 		);

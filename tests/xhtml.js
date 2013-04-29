@@ -323,8 +323,8 @@
 		expect(1);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<div width="200">test</div>', true))),
-			ignoreSpaces('<div style="width: 200px;">test</div>'),
+			this.plugin.signalToSource('', html2dom('<div width="200">test</div>', true)).ignoreAll(),
+			'<div style="width: 200px;">test</div>'.ignoreAll(),
 			"Div width"
 		);
 	});
@@ -333,8 +333,8 @@
 		expect(1);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<div height="200">test</div>', true))),
-			ignoreSpaces('<div style="height: 200px;">test</div>'),
+			this.plugin.signalToSource('', html2dom('<div height="200">test</div>', true)).ignoreAll(),
+			'<div style="height: 200px;">test</div>'.ignoreAll(),
 			"Div height"
 		);
 	});
@@ -345,28 +345,29 @@
 		var result;
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<div text="red">test</div>', true))),
-			ignoreSpaces('<div style="color: red;">test</div>'),
+			this.plugin.signalToSource('', html2dom('<div text="red">test</div>', true)).ignoreAll(),
+			'<div style="color: red;">test</div>'.ignoreAll(),
 			'Div named colour'
 		);
 
-		result = ignoreSpaces(this.plugin.signalToSource('', html2dom('<div text="#f00">test</div>', true)));
+		result = this.plugin.signalToSource('', html2dom('<div text="#f00">test</div>', true)).ignoreAll();
 		ok(
-			result === ignoreSpaces('<div style="color: #ff0000;">test</div>') ||
-			result === ignoreSpaces('<div style="color: rgb(255,0,0);">test</div>'),
+			result === '<div style="color: #f00;">test</div>'.ignoreAll() ||
+			result === '<div style="color: #ff0000;">test</div>'.ignoreAll() ||
+			result === '<div style="color: rgb(255,0,0);">test</div>'.ignoreAll(),
 			'Div short hex colour'
 		);
 
-		result = ignoreSpaces(this.plugin.signalToSource('', html2dom('<div text="#ff0000">test</div>', true)));
+		result = this.plugin.signalToSource('', html2dom('<div text="#ff0000">test</div>', true)).ignoreAll();
 		ok(
-			result === ignoreSpaces('<div style="color: #ff0000;">test</div>') ||
-			result === ignoreSpaces('<div style="color: rgb(255,0,0);">test</div>'),
+			result === '<div style="color: #ff0000;">test</div>'.ignoreAll() ||
+			result === '<div style="color: rgb(255,0,0);">test</div>'.ignoreAll(),
 			'Div hex colour'
 		);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<div text="rgb(255,0,0)">test</div>', true))),
-			ignoreSpaces('<div style="color: rgb(255,0,0);">test</div>'),
+			this.plugin.signalToSource('', html2dom('<div text="rgb(255,0,0)">test</div>', true)).ignoreAll(),
+			'<div style="color: rgb(255,0,0);">test</div>'.ignoreAll(),
 			"Div rgb colour"
 		);
 	});
@@ -377,28 +378,29 @@
 		var result;
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<div color="red">test</div>', true))),
-			ignoreSpaces('<div style="color: red;">test</div>'),
+			this.plugin.signalToSource('', html2dom('<div color="red">test</div>', true)).ignoreAll(),
+			'<div style="color: red;">test</div>'.ignoreAll(),
 			'Div named colour'
 		);
 
-		result = ignoreSpaces(this.plugin.signalToSource('', html2dom('<div color="#f00">test</div>', true)));
+		result = this.plugin.signalToSource('', html2dom('<div color="#f00">test</div>', true)).ignoreAll();
 		ok(
-			result === ignoreSpaces('<div style="color: #ff0000;">test</div>') ||
-			result === ignoreSpaces('<div style="color: rgb(255,0,0);">test</div>'),
+			result === '<div style="color: #f00;">test</div>'.ignoreAll() ||
+			result === '<div style="color: #ff0000;">test</div>'.ignoreAll() ||
+			result === '<div style="color: rgb(255,0,0);">test</div>'.ignoreAll(),
 			'Div short hex colour'
 		);
 
-		result = ignoreSpaces(this.plugin.signalToSource('', html2dom('<div color="#ff0000">test</div>', true)));
+		result = this.plugin.signalToSource('', html2dom('<div color="#ff0000">test</div>', true)).ignoreAll();
 		ok(
-			result === ignoreSpaces('<div style="color: #ff0000;">test</div>') ||
-			result === ignoreSpaces('<div style="color: rgb(255,0,0);">test</div>'),
+			result === '<div style="color: #ff0000;">test</div>'.ignoreAll() ||
+			result === '<div style="color: rgb(255,0,0);">test</div>'.ignoreAll(),
 			'Div hex colour'
 		);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<div color="rgb(255,0,0)">test</div>', true))),
-			ignoreSpaces('<div style="color: rgb(255,0,0);">test</div>'),
+			this.plugin.signalToSource('', html2dom('<div color="rgb(255,0,0)">test</div>', true)).ignoreAll(),
+			'<div style="color: rgb(255,0,0);">test</div>'.ignoreAll(),
 			"Div rgb colour"
 		);
 	});
@@ -407,32 +409,15 @@
 		expect(2);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<div face="Arial">test</div>', true))),
-			ignoreSpaces('<div style="font-family: Arial;">test</div>'),
+			this.plugin.signalToSource('', html2dom('<div face="Arial">test</div>', true)).ignoreAll(),
+			'<div style="font-family: Arial;">test</div>'.ignoreAll(),
 			'Div font'
 		);
 
-		var result = ignoreSpaces(this.plugin.signalToSource('', html2dom('<div face="Arial Black">test</div>', true)));
+		var result = this.plugin.signalToSource('', html2dom('<div face="Arial Black">test</div>', true)).ignoreAll();
 		ok(
-			result === ignoreSpaces('<div style="font-family: Arial Black;">test</div>') ||
-			result === ignoreSpaces('<div style="font-family: \'Arial Black\';">test</div>'),
-			'Div font with space'
-		);
-	});
-
-	test("Face", function() {
-		expect(2);
-
-		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<div face="Arial">test</div>', true))),
-			ignoreSpaces('<div style="font-family: Arial;">test</div>'),
-			'Div font'
-		);
-
-		var result = ignoreSpaces(this.plugin.signalToSource('', html2dom('<div face="Arial Black">test</div>', true)));
-		ok(
-			result === ignoreSpaces('<div style="font-family: Arial Black;">test</div>') ||
-			result === ignoreSpaces('<div style="font-family: \'Arial Black\';">test</div>'),
+			result === '<div style="font-family: Arial Black;">test</div>'.ignoreAll() ||
+			result === '<div style="font-family: \'Arial Black\';">test</div>'.ignoreAll(),
 			'Div font with space'
 		);
 	});
@@ -441,14 +426,14 @@
 		expect(2);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<div align="left">test</div>', true))),
-			ignoreSpaces('<div style="text-align: left;">test</div>'),
+			this.plugin.signalToSource('', html2dom('<div align="left">test</div>', true)).ignoreAll(),
+			'<div style="text-align: left;">test</div>'.ignoreAll(),
 			'Left'
 		);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<div align="center">test</div>', true))),
-			ignoreSpaces('<div style="text-align: center;">test</div>'),
+			this.plugin.signalToSource('', html2dom('<div align="center">test</div>', true)).ignoreAll(),
+			'<div style="text-align: center;">test</div>'.ignoreAll(),
 			'Center'
 		);
 	});
@@ -460,12 +445,12 @@
 
 		ret = ignoreSpaces(this.plugin.signalToSource('', html2dom('<div border="1">test</div>', true)));
 		ok(
-			!/border=/.test(ret) && /-width:1/.test(ret)
+			!/border=/i.test(ret) && /-width:1/i.test(ret)
 		);
 
 		ret = ignoreSpaces(this.plugin.signalToSource('', html2dom('<div border="0">test</div>', true)));
 		ok(
-			!/border=/.test(ret) && /-width:0/.test(ret)
+			!/border=/i.test(ret) && /-width:0/i.test(ret)
 		);
 	});
 
@@ -498,8 +483,8 @@
 		expect(1);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<img vspace="20" />', true))),
-			ignoreSpaces('<img style="margin-top:20px;margin-bottom:20px;" />')
+			this.plugin.signalToSource('', html2dom('<img vspace="20" />', true)).ignoreAll(),
+			'<img style="margin-top:20px;margin-bottom:20px;" />'.ignoreAll()
 		);
 	});
 
@@ -507,8 +492,8 @@
 		expect(1);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<img hspace="20" />', true))),
-			ignoreSpaces('<img style="margin-left:20px;margin-right:20px;" />')
+			this.plugin.signalToSource('', html2dom('<img hspace="20" />', true)).ignoreAll(),
+			'<img style="margin-left:20px;margin-right:20px;" />'.ignoreAll()
 		);
 	});
 
@@ -516,14 +501,14 @@
 		expect(2);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<big>test</big>', true))),
-			ignoreSpaces('<span style="font-size:larger;">test</span>'),
+			this.plugin.signalToSource('', html2dom('<big>test</big>', true)).ignoreAll(),
+			'<span style="font-size:larger;">test</span>'.ignoreAll(),
 			'Single <big>'
 		);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<big><big>test</big></big>', true))),
-			ignoreSpaces('<span style="font-size:larger;"><span style="font-size:larger;">test</span></span>'),
+			this.plugin.signalToSource('', html2dom('<big><big>test</big></big>', true)).ignoreAll(),
+			'<span style="font-size:larger;"><span style="font-size:larger;">test</span></span>'.ignoreAll(),
 			'Nested <big>'
 		);
 	});
@@ -532,14 +517,14 @@
 		expect(2);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<small>test</small>', true))),
-			ignoreSpaces('<span style="font-size:smaller;">test</span>'),
+			this.plugin.signalToSource('', html2dom('<small>test</small>', true)).ignoreAll(),
+			'<span style="font-size:smaller;">test</span>'.ignoreAll(),
 			'Single <small>'
 		);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<small><small>test</small></small>', true))),
-			ignoreSpaces('<span style="font-size:smaller;"><span style="font-size:smaller;">test</span></span>'),
+			this.plugin.signalToSource('', html2dom('<small><small>test</small></small>', true)).ignoreAll(),
+			'<span style="font-size:smaller;"><span style="font-size:smaller;">test</span></span>'.ignoreAll(),
 			'Nested <small>'
 		);
 	});
@@ -557,8 +542,8 @@
 		expect(1);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<u>test</u>', true))),
-			ignoreSpaces('<span style="text-decoration: underline;">test</span>')
+			this.plugin.signalToSource('', html2dom('<u>test</u>', true)).ignoreAll(),
+			'<span style="text-decoration: underline;">test</span>'.ignoreAll()
 		);
 	});
 
@@ -575,14 +560,14 @@
 		expect(2);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<s>test</s>', true))),
-			ignoreSpaces('<span style="text-decoration: line-through;">test</span>'),
+			this.plugin.signalToSource('', html2dom('<s>test</s>', true)).ignoreAll(),
+			'<span style="text-decoration: line-through;">test</span>'.ignoreAll(),
 			'S tag'
 		);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<strike>test</strike>', true))),
-			ignoreSpaces('<span style="text-decoration: line-through;">test</span>'),
+			this.plugin.signalToSource('', html2dom('<strike>test</strike>', true)).ignoreAll(),
+			'<span style="text-decoration: line-through;">test</span>'.ignoreAll(),
 			'Strike tag'
 		);
 	});
@@ -600,8 +585,8 @@
 		expect(1);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<center>test</center>', true))),
-			ignoreSpaces('<div style="text-align: center;">test</div>')
+			this.plugin.signalToSource('', html2dom('<center>test</center>', true)).ignoreAll(),
+			'<div style="text-align: center;">test</div>'.ignoreAll()
 		);
 	});
 
@@ -609,26 +594,26 @@
 		expect(4);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<font>test</font>', true))),
-			ignoreSpaces('<span>test</span>'),
+			this.plugin.signalToSource('', html2dom('<font>test</font>', true)).ignoreAll(),
+			'<span>test</span>'.ignoreAll(),
 			'Without attributes'
 		);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<font face="arial">test</font>', true))),
-			ignoreSpaces('<span style="font-family: arial;">test</span>'),
+			this.plugin.signalToSource('', html2dom('<font face="arial">test</font>', true)).ignoreAll(),
+			'<span style="font-family: arial;">test</span>'.ignoreAll(),
 			'With font attribute'
 		);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<font color="red">test</font>', true))),
-			ignoreSpaces('<span style="color: red;">test</span>'),
+			this.plugin.signalToSource('', html2dom('<font color="red">test</font>', true)).ignoreAll(),
+			'<span style="color: red;">test</span>'.ignoreAll(),
 			'With color attribute'
 		);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<font size="5">test</font>', true))),
-			ignoreSpaces('<span style="font-size:24px;">test</span>'),
+			this.plugin.signalToSource('', html2dom('<font size="5">test</font>', true)).ignoreAll(),
+			'<span style="font-size:24px;">test</span>'.ignoreAll(),
 			'With size attribute'
 		);
 	});
