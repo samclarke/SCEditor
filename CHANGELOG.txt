@@ -33,6 +33,7 @@ Version 1.4.3:
 		- Thanks to @tim-se for reporting
 	Fixed Mozilla's junk attributes, type="_moz", _moz_dirty="" and _moz_editor_bogus_node.
 		- Thanks to @tim-se for reporting
+	Added XHTML format plugin.
 
 Version 1.4.2:
 	Added emoticons() method which allows enabling/disabling emoticons at runtime.

@@ -147,7 +147,7 @@ div.sceditor-dropdown div
 		div.sceditor-dropdown a,
 		div.sceditor-dropdown a:link
 		{
-			color:#333;
+			color: #333;
 		}
 
 		div.sceditor-dropdown form
@@ -208,7 +208,8 @@ div.sceditor-dropdown div
 		}
 
 		div.sceditor-font-picker,
-		div.sceditor-fontsize-picker
+		div.sceditor-fontsize-picker,
+		div.sceditor-format
 		{
 			padding: 6px 0;
 		}
@@ -229,6 +230,7 @@ div.sceditor-dropdown div
 		.sceditor-emoticons img,
 		.sceditor-more-emoticons img
 		{
+			padding: 0;
 			cursor: pointer;
 			margin: 2px;
 		}
@@ -243,15 +245,17 @@ div.sceditor-dropdown div
 			padding: 6px 0;
 		}
 
-		.sceditor-more:hover
+		.sceditor-dropdown a:hover
 		{
 			background: #eee;
 		}
 
-		.sceditor-fontsize-option, .sceditor-font-option
+		.sceditor-fontsize-option,
+		.sceditor-font-option,
+		.sceditor-format a
 		{
 			display: block;
-			padding: 4px 10px;
+			padding: 7px 10px;
 			cursor: pointer;
 			text-decoration: none;
 			color: #222;
@@ -259,13 +263,7 @@ div.sceditor-dropdown div
 
 		.sceditor-fontsize-option
 		{
-			padding: 4px 13px;
-		}
-
-		.sceditor-fontsize-option:hover,
-		.sceditor-font-option:hover
-		{
-			background: #eee;
+			padding: 7px 13px;
 		}
 
 		.sceditor-color-column
@@ -286,6 +284,7 @@ div.sceditor-dropdown div
 			{
 				border: 1px solid #333;
 			}
+
 
 	/**
 	 * Toolbar styleing
