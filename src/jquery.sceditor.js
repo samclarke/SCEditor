@@ -524,7 +524,7 @@
 				.bind($.sceditor.ie ? "selectionchange" : "keyup focus blur contextmenu mouseup touchend click", checkSelectionChanged)
 				.bind("keydown keyup keypress focus blur contextmenu", handleEvent);
 
-			$sourceEditor.bind("keydown keyup keypress focus blur contextmenu", handleEvent);
+			$sourceEditor.bind("keydown keyup keypress focus blur contextmenu", handleEvent).keydown(handleKeyDown);
 
 			$wysiwygDoc
 				.keypress(handleKeyPress)
@@ -2623,6 +2623,10 @@
 			return this;
 		};
 
+		/**
+		 * Handles the keydown event, used for shortcuts
+		 * @private
+		 */
 		handleKeyDown = function(e) {
 			var	shortcut   = [],
 				shift_keys = {
@@ -2680,6 +2684,8 @@
 		 * @return {jQuery.sceditor}
 		 */
 		base.addShortcut = function(shortcut, cmd) {
+			shortcut = shortcut.toLowerCase();
+
 			if(typeof cmd === "string")
 			{
 				shortcutHandlers[shortcut] = function() {
@@ -2700,7 +2706,7 @@
 		 * @return {jQuery.sceditor}
 		 */
 		base.removeShortcut = function(shortcut) {
-			delete shortcutHandlers[shortcut];
+			delete shortcutHandlers[shortcut.toLowerCase()];
 
 			return this;
 		};
@@ -2855,19 +2861,22 @@
 		// START_COMMAND: Bold
 		bold: {
 			exec: "bold",
-			tooltip: "Bold"
+			tooltip: "Bold",
+			shortcut: 'ctrl+b'
 		},
 		// END_COMMAND
 		// START_COMMAND: Italic
 		italic: {
 			exec: "italic",
-			tooltip: "Italic"
+			tooltip: "Italic",
+			shortcut: 'ctrl+i'
 		},
 		// END_COMMAND
 		// START_COMMAND: Underline
 		underline: {
 			exec: "underline",
-			tooltip: "Underline"
+			tooltip: "Underline",
+			shortcut: 'ctrl+u'
 		},
 		// END_COMMAND
 		// START_COMMAND: Strikethrough
