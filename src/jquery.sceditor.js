@@ -529,7 +529,7 @@
 			$wysiwygDoc
 				.keypress(handleKeyPress)
 				.mousedown(handleMouseDown)
-				.bind($.sceditor.ie <= 9 ? "selectionchange" : "focus blur contextmenu mouseup click", checkSelectionChanged)
+				.bind($.sceditor.ie ? "selectionchange" : "focus blur contextmenu mouseup click", checkSelectionChanged)
 				.bind("beforedeactivate keyup", saveRange)
 				.keyup(appendNewLine)
 				.focus(function() {
@@ -1982,16 +1982,14 @@
 
 		/**
 		 * Checks if the current selection has changed and tirggers
-		 * the selectionchanged event if it has
+		 * the selectionchanged event if it has.
+		 *
+		 * In browsers other than IE, it will check at most once every 100ms.
+		 * This is because only IE has a selection changed event.
 		 * @private
 		 */
 		checkSelectionChanged = function() {
-			if(isSelectionCheckPending)
-				return;
-
-			isSelectionCheckPending = true;
-
-			setTimeout(function() {
+			var check = function() {
 				// rangeHelper could be null if editor was destoryed
 				// before the timeout had finished
 				if(rangeHelper && !rangeHelper.compare(currentSelection))
@@ -2001,7 +1999,19 @@
 				}
 
 				isSelectionCheckPending = false;
-			}, 100);
+			};
+
+			if(isSelectionCheckPending)
+				return;
+
+			isSelectionCheckPending = true;
+
+			// In IE, this is only called on the selectionchanged event so no need to
+			// limit checking as it should always be valid to do.
+			if($.sceditor.ie)
+				check();
+			else
+				setTimeout(check, 100);
 		};
 
 		/**
@@ -2862,21 +2872,21 @@
 		bold: {
 			exec: "bold",
 			tooltip: "Bold",
-			shortcut: 'ctrl+b'
+			shortcut: "ctrl+b"
 		},
 		// END_COMMAND
 		// START_COMMAND: Italic
 		italic: {
 			exec: "italic",
 			tooltip: "Italic",
-			shortcut: 'ctrl+i'
+			shortcut: "ctrl+i"
 		},
 		// END_COMMAND
 		// START_COMMAND: Underline
 		underline: {
 			exec: "underline",
 			tooltip: "Underline",
-			shortcut: 'ctrl+u'
+			shortcut: "ctrl+u"
 		},
 		// END_COMMAND
 		// START_COMMAND: Strikethrough
@@ -3567,7 +3577,8 @@
 			txtExec: function () {
 				this.maximize(!this.maximize());
 			},
-			tooltip: "Maximize"
+			tooltip: "Maximize",
+			shortcut: "ctrl+shift+m"
 		},
 		// END_COMMAND
 
@@ -3581,7 +3592,8 @@
 				this.toggleSourceMode();
 				this.blur();
 			},
-			tooltip: "View source"
+			tooltip: "View source",
+			shortcut: "ctrl+shift+s"
 		},
 		// END_COMMAND
 
