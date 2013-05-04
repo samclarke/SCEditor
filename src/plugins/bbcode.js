@@ -1556,8 +1556,8 @@
 			{
 				if(typeof html === "string")
 				{
-					$tmpContainer = $('<div />').hide().appendTo(document.body).html(html);
-					$body         = $tmpContainer;
+					$tmpContainer = $('<div />').css('visibility', 'hidden').appendTo(document.body).html(html);
+					$body = $tmpContainer;
 				}
 				else
 					$body = $(html);
