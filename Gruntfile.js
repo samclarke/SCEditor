@@ -90,7 +90,7 @@ module.exports = function(grunt) {
 		compress: {
 			dist: {
 				options: {
-					archive: 'sceditor-<%= pkg.version %>.zip'
+					archive: 'distributable/sceditor-<%= pkg.version %>.zip'
 				},
 				files: [
 					{expand: true, cwd: 'dist/', src: ['**'], dest: '/'}
@@ -133,6 +133,7 @@ module.exports = function(grunt) {
 		'concat:dist',
 		'copy:dist',
 		'less:dist',
-		'compress:dist'
+		'compress:dist',
+		'clean:dist'
 	]);
 };
