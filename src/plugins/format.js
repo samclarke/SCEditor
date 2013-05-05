@@ -47,8 +47,7 @@
 		 * Private functions
 		 * @private
 		 */
-		var	addBBCodes,
-			insertTag,
+		var	insertTag,
 			formatCmd;
 
 
