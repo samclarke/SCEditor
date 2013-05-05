@@ -20,6 +20,7 @@
 }
 
 .old-ie-icon(@inner) {
+	// add check to see if set and if it is, skip it
 	*zoom: ~"expression(this.runtimeStyle['zoom'] = '1', this.innerHTML = '@{inner}')";
 }
 
@@ -61,6 +62,8 @@
 .sceditor-button-code div { .old-ie-icon("\e025"); }
 .sceditor-button-center div { .old-ie-icon("\e026"); }
 .sceditor-button-bulletlist div { .old-ie-icon("\e027"); }
+div.sceditor-grip { .old-ie-icon("\e01b"); }
+.rtl div.sceditor-grip { .old-ie-icon("\e01a"); }
 
 
 .sceditor-button-youtube div:before { content: "\e000"; }
