@@ -1,27 +1,24 @@
 # Roadmap
 
-## 1.4.3
-
-   * Add keyboard shortcut support for commands
-   * Table editing plugin
-   * Image resize plugin
-   * Add helpers for adding commands/bbcodes.
-   * Add BBCode parser helpers for BBCode-to-HTML and HTML-to-BBCode
-   * Consider adding support for BBCodes with just their BBCode and HTML replacement.
-   * Add flash embedding command + BBCode
-   * Add option to disable pasting, plain text pasting and allow a callback or show a message
-   * Add context menu support
-
-
 ## 1.4.4
 
-   * Update dropdown to be able to work from an object to generate HTML instead of requiring HTML
-   * Add option to only paste plain text
-   * Add build page to website so only the commands and BBCodes needed are included
-   * Add wget (or similar) support for build page so updating can be automated
-   * Add localstorage/cookie support to build page to remember last options
-   * Spell checker plugin?
-   * HTML5 drag-drop file upload options with callbacks to handle the upload
+- [ ] Table editing plugin
+- [ ] Image resize plugin
+- [ ] Add support for BBCodes with just their BBCode and HTML replacement.
+- [ ] Add flash embedding command + BBCode
+- [ ] Add option to disable pasting, plain text pasting and allow a callback or show a message
+- [ ] Add context menu support
+
+
+## 1.4.5
+
+- [ ] Update dropdown to be able to work from an object to generate HTML instead of requiring HTML
+- [ ] Add option to only paste plain text
+- [ ] Add build page to website so only the commands and BBCodes needed are included
+- [ ] Add wget (or similar) support for build page so updating can be automated
+- [ ] Add localstorage/cookie support to build page to remember last options
+- [ ] Spell checker plugin?
+- [ ] HTML5 drag-drop file upload options with callbacks to handle the upload
 
 
 ## Future
