@@ -1,12 +1,10 @@
-# SCEditor v1.4.3
+# [SCEditor](http://www.sceditor.com/) v1.4.3
 
-Copyright (C) 2011-2013, [Sam Clarke](http://www.samclarke.com).
+[![Build Status](https://travis-ci.org/samclarke/SCEditor.png?branch=master)](https://travis-ci.org/samclarke/SCEditor)
 
-For more information visit: http://www.sceditor.com/
+A lightweight WYSIWYG BBCode and XHTML editor.
 
-If you find any bugs please report them using the [issues page on GitHub](https://github.com/samclarke/SCEditor/issues/new)
-or by [contacting me](http://www.samclarke.com/contact).
-
+For more information visit [sceditor.com](http://www.sceditor.com/)
 
 
 ## Usage
