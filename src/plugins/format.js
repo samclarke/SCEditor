@@ -1,3 +1,4 @@
+/*!pl SCEditor | (C) 2011-2013, Sam Clarke | sceditor.com/license */
 /**
  * SCEditor Paragraph Formatting Plugin
  * http://www.sceditor.com/
