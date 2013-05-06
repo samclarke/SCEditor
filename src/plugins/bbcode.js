@@ -2074,21 +2074,26 @@
 				}
 			},
 			quoteType: $.sceditor.BBCodeParser.QuoteType.never,
-			format: function(element, content) {
-				var	attribs = '',
-					style = function(name) {
+			format: function($element, content) {
+				var	w, h,
+					attribs   = '',
+					element   = $element[0],
+					style     = function(name) {
 						return element.style ? element.style[name] : null;
 					};
 
 				// check if this is an emoticon image
-				if(typeof element.attr('data-sceditor-emoticon') !== "undefined")
+				if(typeof $element.attr('data-sceditor-emoticon') !== "undefined")
 					return content;
 
-				// only add width and height if one is specified
-				if(element.attr('width') || element.attr('height') || style('width') || style('height'))
-					attribs = "=" + $(element).width() + "x" + $(element).height();
+				w = $element.attr('width') || style('width');
+				h = $element.attr('height') || style('height');
 
-				return '[img' + attribs + ']' + element.attr('src') + '[/img]';
+				// only add width and height if one is specified
+				if((element.complete && (w || h)) || (w && h))
+					attribs = "=" + $element.width() + "x" + $element.height();
+
+				return '[img' + attribs + ']' + $element.attr('src') + '[/img]';
 			},
 			html: function(token, attrs, content) {
 				var	parts,
@@ -2101,7 +2106,7 @@
 					attribs += ' height="' + attrs.height + '"';
 
 				// handle [img=340x240]url[/img]
-				if(typeof attrs.defaultattr !== "undefined") {
+				if(attrs.defaultattr) {
 					parts = attrs.defaultattr.split(/x/i);
 
 					attribs = ' width="' + parts[0] + '"' +

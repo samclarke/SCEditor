@@ -1,4 +1,4 @@
-/*global module, $, test, expect, equal, html2dom, ignoreSpaces, ok*/
+/*global module, $, test, expect, equal, html2dom, ignoreSpaces, ok, asyncTest, start*/
 (function() {
 	'use strict';
 
@@ -1093,7 +1093,7 @@
 	});
 
 	test("To BBCode method", function() {
-		expect(3);
+		expect(7);
 
 		equal(
 			this.sceditor.toBBCode(html2dom('<b>test</b>')),
@@ -1112,6 +1112,54 @@
 			"[b]test[/b]",
 			"HTML String test"
 		);
+
+		equal(
+			this.sceditor.toBBCode('<img src="http://www.sceditor.com/emoticons/smile.png" />'),
+			"[img]http://www.sceditor.com/emoticons/smile.png[/img]",
+			"Image test"
+		);
+
+		equal(
+			this.sceditor.toBBCode(html2dom('<img src="http://www.sceditor.com/emoticons/smile.png" />')),
+			"[img]http://www.sceditor.com/emoticons/smile.png[/img]",
+			"Image DOM test"
+		);
+
+		equal(
+			this.sceditor.toBBCode(html2dom('<img src="http://www.sceditor.com/emoticons/smile.png" />', true)),
+			"[img]http://www.sceditor.com/emoticons/smile.png[/img]",
+			"Image jQuery test"
+		);
+
+
+
+		equal(
+			this.sceditor.toBBCode('<img src="http://www.sceditor.com/does/not/exist/smile.png" width="200" />'),
+			"[img]http://www.sceditor.com/does/not/exist/smile.png[/img]",
+			"Non-loaded image width test"
+		);
+	});
+
+	asyncTest("ToBBCode loaded image width test", function() {
+		expect(1);
+
+		var img      = html2dom('<img src="http://www.sceditor.com/emoticons/smile.png" width="200" />');
+		var sceditor = this.sceditor;
+
+		var loaded = function() {
+			ok(
+				sceditor.toBBCode(img),
+				"[img=200x200]http://www.sceditor.com/emoticons/smile.png[/img]"
+			);
+
+			start();
+		};
+
+		if(!img.firstChild.complete)
+			img.firstChild.onload = loaded;
+
+		if(img.firstChild.complete)
+			loaded();
 	});
 
 	test("From BBCode method", function() {
