@@ -1002,7 +1002,10 @@
 				$sourceEditor.width(width - $sourceEditor.data('outerWidthOffset'));
 
 				if(height === false)
+				{
 					height = $editorContainer.height();
+					save   = false;
+				}
 			}
 
 			if(height !== false)
