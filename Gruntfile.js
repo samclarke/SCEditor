@@ -21,11 +21,14 @@ module.exports = function(grunt) {
 			dist: {
 				files: [
 					{expand: true, src: ['minified/**'], dest: 'dist/'},
+					{expand: true, src: ['languages/**'], dest: 'dist/'},
 					{expand: true, cwd: 'src/', src: ['plugins/**.js'], dest: 'dist/development/'},
 					{expand: true, cwd: 'src/', src: 'jquery.sceditor.js', dest: 'dist/development/'},
 					{expand: true, cwd: 'src/', src: 'jquery.sceditor.default.css', dest: 'dist/development/'},
 					{expand: true, cwd: 'src/themes/icons/', src: '*.png', dest: 'dist/development/themes/'},
 					{expand: true, cwd: 'src/themes/icons/', src: 'monocons/**', dest: 'dist/development/themes/'},
+					{expand: true, src: 'README.md', dest: 'dist/'},
+					{expand: true, src: 'MIT.txt', dest: 'dist/'},
 					{expand: true, cwd: 'distributable/data/', src: 'example.html', dest: 'dist/'},
 					{expand: true, src: 'emoticons/**', dest: 'dist/'}
 				]
