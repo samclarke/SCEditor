@@ -981,8 +981,8 @@
 		 */
 		base.dimensions = function(width, height, save) {
 			// set undefined width/height to boolean false
-			width  = (!width && width !== 0) ? false : parseInt(width, 10);
-			height = (!height && height !== 0) ? false : parseInt(height, 10);
+			width  = (!width && width !== 0) ? false : width;
+			height = (!height && height !== 0) ? false : height;
 
 			if(width === false && height === false)
 				return { width: base.width(), height: base.height() };
