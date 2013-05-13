@@ -78,7 +78,7 @@
 
 
 	test("Allowed tags", function() {
-		expect(5);
+		expect(6);
 
 		$.sceditor.plugins.xhtml.allowedTags = ['strong', 'a'];
 
@@ -112,12 +112,18 @@
 			'Sibling disallowed tags'
 		);
 
+		equal(
+			this.plugin.signalToSource('', html2dom('<div>test</div>', true)).ignoreSpace(),
+			'test'.ignoreSpace(),
+			'Only disallowed tag'
+		);
+
 		// Reset for next test
 		$.sceditor.plugins.xhtml.allowedTags = [];
 	});
 
 	test("Disallowed tags", function() {
-		expect(4);
+		expect(7);
 
 		$.sceditor.plugins.xhtml.disallowedTags = ['div'];
 
@@ -142,7 +148,25 @@
 		equal(
 			this.plugin.signalToSource('', html2dom('<div>test<div>test', true)).ignoreSpace(),
 			'test test'.ignoreSpace(),
-			'All disallowed tag'
+			'Disallowed tag'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('test<div>test<div>', true)).ignoreSpace(),
+			'test test'.ignoreSpace(),
+			'Disallowed tag as last child'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div>test</div><div>test</div>', true)).ignoreSpace(),
+			'test test'.ignoreSpace(),
+			'Sibling disallowed tags'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div>test</div>', true)).ignoreSpace(),
+			'test'.ignoreSpace(),
+			'Only disallowed tag'
 		);
 
 		// Reset for next test
