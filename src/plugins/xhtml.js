@@ -679,8 +679,9 @@
 
 				if(remove)
 				{
-					while(!empty && node.firstChild)
-						parentNode.insertBefore(node.firstChild, node);
+					// Insert all the childen after node
+					while(!empty && node.lastChild)
+						parentNode.insertBefore(node.lastChild, node.nextSibling);
 
 					parentNode.removeChild(node);
 				}
