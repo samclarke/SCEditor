@@ -995,17 +995,17 @@
 				if(save !== false)
 					options.width = width;
 
-				if(width && width.toString().indexOf('%'))
-					width = $editorContainer.width(width).width();
-
-				$wysiwygEditor.width(width - $wysiwygEditor.data('outerWidthOffset'));
-				$sourceEditor.width(width - $sourceEditor.data('outerWidthOffset'));
-
 				if(height === false)
 				{
 					height = $editorContainer.height();
 					save   = false;
 				}
+
+				if(width && width.toString().indexOf('%'))
+					width = $editorContainer.width(width).width();
+
+				$wysiwygEditor.width(width - $wysiwygEditor.data('outerWidthOffset'));
+				$sourceEditor.width(width - $sourceEditor.data('outerWidthOffset'));
 			}
 
 			if(height !== false)
@@ -2204,7 +2204,7 @@
 					base.width(width);
 			}
 			else
-				base.height('100%', false).width('100%', false);
+				base.dimensions('100%', '100%', false);
 		};
 
 		/**
