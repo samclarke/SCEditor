@@ -759,7 +759,7 @@
 				body     = $wysiwygBody[0],
 				focusEnd = !!options.autofocusEnd;
 
-			// Can't focus invislible elements
+			// Can't focus invisible elements
 			if(!$editorContainer.is(':visible'))
 				return;
 
@@ -1583,7 +1583,7 @@
 		/**
 		 * <p>Inserts HTML/BBCode into the editor</p>
 		 *
-		 * <p>If end is supplied any slected text will be placed between
+		 * <p>If end is supplied any selected text will be placed between
 		 * start and end. If there is no selected text start and end
 		 * will be concated together.</p>
 		 *
@@ -1604,7 +1604,7 @@
 		/**
 		 * <p>Inserts HTML/BBCode into the editor</p>
 		 *
-		 * <p>If end is supplied any slected text will be placed between
+		 * <p>If end is supplied any selected text will be placed between
 		 * start and end. If there is no selected text start and end
 		 * will be concated together.</p>
 		 *
@@ -1667,7 +1667,7 @@
 		/**
 		 * Gets the WYSIWYG editors HTML value.
 		 *
-		 * If using a plugin that filters the HTMl like the BBCode plugin
+		 * If using a plugin that filters the Ht Ml like the BBCode plugin
 		 * it will return the result of the filtering (BBCode) unless the
 		 * filter param is set to false.
 		 *
@@ -1807,7 +1807,7 @@
 				// escape the key before using it as a regex
 				// and append the regex to only find emoticons outside
 				// of HTML tags
-				var	reg   = $.sceditor.regexEscape(key) + "(?=([^\\<\\>]*?<(?!/code)|[^\\<\\>]*?$))",
+				var	reg   = $.sceditor.regexEscape($.sceditor.escapeEntities(key)) + "(?=([^\\<\\>]*?<(?!/code)|[^\\<\\>]*?$))",
 					group = '';
 
 				// Make sure the emoticon is surrounded by whitespace or is at the start/end of a string or html tag
@@ -1968,7 +1968,7 @@
 
 			base.focus();
 
-			// don't apply any comannds to code elements
+			// don't apply any commands to code elements
 			if($parentNode.is('code') || $parentNode.parents('code').length !== 0)
 				return;
 
@@ -1984,7 +1984,7 @@
 		};
 
 		/**
-		 * Checks if the current selection has changed and tirggers
+		 * Checks if the current selection has changed and triggers
 		 * the selectionchanged event if it has.
 		 *
 		 * In browsers other than IE, it will check at most once every 100ms.
@@ -1993,7 +1993,7 @@
 		 */
 		checkSelectionChanged = function() {
 			var check = function() {
-				// rangeHelper could be null if editor was destoryed
+				// rangeHelper could be null if editor was destroyed
 				// before the timeout had finished
 				if(rangeHelper && !rangeHelper.compare(currentSelection))
 				{
@@ -2018,12 +2018,12 @@
 		};
 
 		/**
-		 * Checks if the current node has changed and tirggers
+		 * Checks if the current node has changed and triggers
 		 * the nodechanged event if it has
 		 * @private
 		 */
 		checkNodeChanged = function() {
-			// check if node has chnaged
+			// check if node has changed
 			var node = rangeHelper.parentNode();
 
 			if(currentNode !== node)
@@ -2116,7 +2116,7 @@
 
 			$parentNode = $(rangeHelper.parentNode());
 
-			// "Fix" (ok it's a cludge) for blocklevel elements being duplicated in some browsers when
+			// "Fix" (OK it's a cludge) for blocklevel elements being duplicated in some browsers when
 			// enter is pressed instead of inserting a newline
 			if(e.which === 13)
 			{
@@ -2278,7 +2278,7 @@
 		 * </p>
 		 *
 		 * <p>The events param should be a string containing the event(s)
-		 * to bind this handler to. If multiple, they should be seperated
+		 * to bind this handler to. If multiple, they should be separated
 		 * by spaces.</p>
 		 *
 		 * @param  {String} events
@@ -2499,7 +2499,7 @@
 		/**
 		 * <p>Adds a handler to the selection changed event</p>
 		 *
-		 * <p>Happends whenever the selection changes in WYSIWYG mode.</p>
+		 * <p>Happens whenever the selection changes in WYSIWYG mode.</p>
 		 *
 		 * @param  {Function} handler
 		 * @return {this}
@@ -2829,14 +2829,12 @@
 	 * @name regexEscape
 	 * @memberOf jQuery.sceditor
 	 */
-	$.sceditor.regexEscape = function (str) {
-		return str.replace(/[\$\?\[\]\.\*\(\)\|\\]/g, "\\$&")
-			.replace("<", "&lt;")
-			.replace(">", "&gt;");
+	$.sceditor.regexEscape = function(str) {
+		return str.replace(/[\$\?\[\]\.\*\(\)\|\\]/g, "\\$&");
 	};
 
 	/**
-	 * Escapes all HTML entites in a string
+	 * Escapes all HTML entities in a string
 	 *
 	 * @param {String} str
 	 * @return {String}
@@ -3843,7 +3841,7 @@
 		 * Gets the first block level parent of the selected
 		 * contents of the range.
 		 *
-		 * @param {Node} n The element to get the first block level parent frmo
+		 * @param {Node} n The element to get the first block level parent from
 		 * @return {HTMLElement}
 		 * @function
 		 * @name getFirstBlockParent^2
@@ -4114,70 +4112,70 @@
 		};
 
 		/**
-		 * Replaces keys with values based on the current range
+		 * Replaces keywords with values based on the current caret position
 		 *
-		 * @param {Array} rep
-		 * @param {Bool} includePrev If to include text before or just text after
-		 * @param {Bool} repSorted If the keys array is pre sorted
-		 * @param {Int} longestKey Length of the longest key
-		 * @param {Bool} requireWhiteSpace If the key must be surrounded by whitespace
+		 * @param {Array}   keywords
+		 * @param {Boolean} includeAfter      If to include the text after the current caret position or just text before
+		 * @param {Boolean} keywordsSorted    If the keywords array is pre sorted shortest to longest
+		 * @param {Int}     longestKeyword    Length of the longest keyword
+		 * @param {Boolean} requireWhiteSpace If the key must be surrounded by whitespace
+		 * @param {String}  currrentChar      If this is being called from a keypress event, this should be set to the pressed character
+		 * @return {Boolean}
 		 * @function
 		 * @name raplaceKeyword
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
-		base.raplaceKeyword = function(rep, includeAfter, repSorted, longestKey, requireWhiteSpace, curChar) {
-			if(!repSorted)
-				rep.sort(function(a, b){
+		base.raplaceKeyword = function(keywords, includeAfter, keywordsSorted, longestKeyword, requireWhiteSpace, currrentChar) {
+			if(!keywordsSorted)
+			{
+				keywords.sort(function(a, b){
 					return a.length - b.length;
 				});
+			}
 
-			var	before, after, str, i, start, left, pat, lookStart,
-				maxKeyLen = longestKey || rep[rep.length-1][0].length;
-
-			before = after = str = "";
+			var	beforeStr, str, keywordIdx, numberCharsLeft, keywordRegex, startIdx, keyword,
+				i         = keywords.length,
+				maxKeyLen = longestKeyword || keywords[i-1][0].length;
 
 			if(requireWhiteSpace)
 			{
-				// forcing spaces around doesn't work with textRanges as they will select text
-				// on the other side of an image causing space-img-key to be returned as
-				// space-key which would be valid when it's not.
+				// requireWhiteSpace doesn't work with textRanges as they select text on the
+				// other side of elements causing space-img-key to match when it shouldn't.
 				if(!isW3C)
 					return false;
 
 				++maxKeyLen;
 			}
 
-			before = base.getOuterText(true, maxKeyLen);
+			beforeStr = base.getOuterText(true, maxKeyLen);
+			str       = beforeStr + (currrentChar != null ? currrentChar : "");
 
 			if(includeAfter)
-				after = base.getOuterText(false, maxKeyLen);
+				str += base.getOuterText(false, maxKeyLen);
 
-			str = before + (curChar!=null?curChar:"") + after;
-			i   = rep.length;
 			while(i--)
 			{
-				pat       = new RegExp("(?:[\\s\xA0\u2002\u2003\u2009])" + $.sceditor.regexEscape(rep[i][0]) + "(?=[\\s\xA0\u2002\u2003\u2009])");
-				lookStart = before.length - 1 - rep[i][0].length;
+				keyword      = keywords[i][0];
+				keywordRegex = new RegExp("(?:[\\s\xA0\u2002\u2003\u2009])" + $.sceditor.regexEscape(keyword) + "(?=[\\s\xA0\u2002\u2003\u2009])");
+				startIdx     = beforeStr.length - 1 - keyword.length;
 
 				if(requireWhiteSpace)
-					--lookStart;
+					--startIdx;
 
-				lookStart = Math.max(0, lookStart);
+				startIdx = Math.max(0, startIdx);
 
-				if((!requireWhiteSpace && (start = str.indexOf(rep[i][0], lookStart)) > -1) ||
-					(requireWhiteSpace && (start = str.substr(lookStart).search(pat)) > -1))
+				if((keywordIdx = requireWhiteSpace ? str.substr(startIdx).search(keywordRegex) : str.indexOf(keyword, startIdx)) > -1)
 				{
 					if(requireWhiteSpace)
-						start += lookStart + 1;
+						keywordIdx += startIdx + 1;
 
-					// make sure the substr is between before and after not entierly in one
-					// or the other
-					if(start > before.length || start+rep[i][0].length + (requireWhiteSpace?1:0) < before.length)
+					// Make sure the substr is between beforeStr and after not entirely in one or the other
+					if(keywordIdx > beforeStr.length || (keywordIdx + keyword.length + (requireWhiteSpace ? 1 : 0)) < beforeStr.length)
 						continue;
 
-					left = before.length - start;
-					base.selectOuterText(left, rep[i][0].length-left-(curChar!=null&&/^\S/.test(curChar)?1:0));
-					base.insertHTML(rep[i][1]);
+					numberCharsLeft = beforeStr.length - keywordIdx;
+					base.selectOuterText(numberCharsLeft, keyword.length - numberCharsLeft - (currrentChar != null && /^\S/.test(currrentChar) ? 1 : 0));
+					base.insertHTML(keywords[i][1]);
 					return true;
 				}
 			}
@@ -4623,21 +4621,21 @@
 				var i = plugins.length;
 
 				return {
-						callNext: function(args) {
-							while(i--)
-								if(plugins[i] && signal in plugins[i])
-									return plugins[i].apply(editorInstance, args);
-						},
-						hasNext: function() {
-							var j = i;
+					callNext: function(args) {
+						while(i--)
+							if(plugins[i] && signal in plugins[i])
+								return plugins[i].apply(editorInstance, args);
+					},
+					hasNext: function() {
+						var j = i;
 
-							while(j--)
-								if(plugins[j] && signal in plugins[j])
-									return true;
+						while(j--)
+							if(plugins[j] && signal in plugins[j])
+								return true;
 
-							return false;
-						}
-					};
+						return false;
+					}
+				};
 			}());
 		};
 
@@ -4665,7 +4663,7 @@
 		 * @param  {String} plugin
 		 * @return {Boolean}
 		 * @function
-		 * @name exsists
+		 * @name exists
 		 * @memberOf jQuery.sceditor.PluginManager.prototype
 		 */
 		base.exsists = function(plugin) {
@@ -4680,7 +4678,7 @@
 		};
 
 		/**
-		 * Checks if the passed plugin is currrently registered.
+		 * Checks if the passed plugin is currently registered.
 		 * @param  {String} plugin
 		 * @return {Boolean}
 		 * @function
@@ -4753,7 +4751,7 @@
 		};
 
 		/**
-		 * <p>Clears all plugins and removes the owner refrence.</p>
+		 * <p>Clears all plugins and removes the owner reference.</p>
 		 *
 		 * <p>Calling any functions on this object after calling destroy will cause a JS error.</p>
 		 * @return {Void}
@@ -4793,7 +4791,7 @@
 		},
 
 		/**
-		 * <p>Adds a command to the editor or updates an exisiting
+		 * <p>Adds a command to the editor or updates an existing
 		 * command if a command with the specified name already exists.</p>
 		 *
 		 * <p>Once a command is add it can be included in the toolbar by
@@ -4859,7 +4857,7 @@
 				"ltr,rtl|print,maximize,source",
 
 		/**
-		 * Comma seperated list of commands to excludes from the toolbar
+		 * Comma separated list of commands to excludes from the toolbar
 		 * @type {String}
 		 */
 		toolbarExclude: null,
@@ -5024,7 +5022,7 @@
 		dateFormat: "year-month-day",
 
 		/**
-		 * Element to inset the toobar into.
+		 * Element to inset the toolbar into.
 		 * @type {HTMLElement}
 		 */
 		toolbarContainer: null,
@@ -5092,7 +5090,7 @@
 		id: null,
 
 		/**
-		 * Comma seperated list of plugins
+		 * Comma separated list of plugins
 		 * @type {String}
 		 */
 		plugins: '',
@@ -5132,7 +5130,7 @@
 	 * If options is set to "instance" it will return the
 	 * current editor instance for the textarea(s). Like the
 	 * state option, if only one textarea is matched this will
-	 * return just the instace for that textarea. If more than
+	 * return just the instance for that textarea. If more than
 	 * one textarea is matched it will return an array of
 	 * instances each textarea.
 	 *
