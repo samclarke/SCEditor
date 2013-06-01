@@ -3,6 +3,8 @@ Version 1.4.4:
 		- Thanks to @TimWardC3 for reporting
 	Fixed emoticons with greater than (>) not being converted.
 		- Thanks to @imansa for reporting.
+	Improved emoticonsCompat support so emoticons are converted to text if whitespace is removed.
+		- Thanks to @ostinelli for reporting
 
 Version 1.4.3:
 	Added css() method which allows getting/setting inline CSS for the WYSIWYG editor.

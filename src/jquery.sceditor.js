@@ -235,6 +235,13 @@
 		var currentNode;
 
 		/**
+		 * The first block level parent of the current node
+		 * @type {node}
+		 * @private
+		 */
+		var currentBlockNode;
+
+		/**
 		 * The current node selection/caret
 		 * @type {Object}
 		 * @private
@@ -272,6 +279,15 @@
 		var shortcutHandlers = {};
 
 		/**
+		 * An array of all the current emoticons.
+		 *
+		 * Only used or populated when emoticonsCompat is enabled.
+		 * @type {Array}
+		 * @private
+		 */
+		var currentEmoticons = [];
+
+		/**
 		 * Private functions
 		 * @private
 		 */
@@ -305,7 +321,8 @@
 			checkSelectionChanged,
 			checkNodeChanged,
 			autofocus,
-			emoticonsKeyPress;
+			emoticonsKeyPress,
+			emoticonsCheckWhitespace;
 
 		/**
 		 * All the commands supported by the editor
@@ -523,6 +540,9 @@
 				.bind("paste", handlePasteEvt)
 				.bind($.sceditor.ie ? "selectionchange" : "keyup focus blur contextmenu mouseup touchend click", checkSelectionChanged)
 				.bind("keydown keyup keypress focus blur contextmenu", handleEvent);
+
+			if(options.emoticonsCompat && window.getSelection)
+				$wysiwygBody.keyup(emoticonsCheckWhitespace);
 
 			$sourceEditor.bind("keydown keyup keypress focus blur contextmenu", handleEvent).keydown(handleKeyDown);
 
@@ -1827,6 +1847,9 @@
 				);
 			});
 
+			if(options.emoticonsCompat)
+				currentEmoticons = $wysiwygBody.find('img[data-sceditor-emoticon]');
+
 			return html;
 		};
 
@@ -2029,7 +2052,8 @@
 			if(currentNode !== node)
 			{
 				$editorContainer.trigger($.Event('nodechanged', { oldNode: currentNode, newNode: node }));
-				currentNode = node;
+				currentNode      = node;
+				currentBlockNode = rangeHelper.getFirstBlockParent(node);
 			}
 		};
 
@@ -2044,6 +2068,20 @@
 		 */
 		base.currentNode = function() {
 			return currentNode;
+		};
+
+		/**
+		 * <p>Gets the first block level node that contains the selection/caret in WYSIWYG mode.</p>
+		 *
+		 * <p>Will be null in sourceMode or if there is no selection.</p>
+		 * @return {Node}
+		 * @function
+		 * @name currentBlockNode
+		 * @memberOf jQuery.sceditor.prototype
+		 * @since 1.4.4
+		 */
+		base.currentBlockNode = function() {
+			return currentBlockNode;
 		};
 
 		/**
@@ -2520,7 +2558,8 @@
 			var	pos     = 0,
 				curChar = String.fromCharCode(e.which);
 
-			if(!base.emoticonsCache) {
+			if(!base.emoticonsCache)
+			{
 				base.emoticonsCache = [];
 
 				$.each($.extend({}, options.emoticons.more, options.emoticons.dropdown, options.emoticons.hidden), function(key, url) {
@@ -2534,23 +2573,75 @@
 					];
 				});
 
-				base.emoticonsCache.sort(function(a, b){
+				base.emoticonsCache.sort(function(a, b) {
 					return a[0].length - b[0].length;
 				});
-			}
 
-			if(!base.longestEmoticonCode)
 				base.longestEmoticonCode = base.emoticonsCache[base.emoticonsCache.length - 1][0].length;
+			}
 
 			if(base.getRangeHelper().raplaceKeyword(base.emoticonsCache, true, true, base.longestEmoticonCode, options.emoticonsCompat, curChar))
 			{
-				if(/^\s$/.test(curChar) && options.emoticonsCompat)
-					return true;
+				if(options.emoticonsCompat)
+					currentEmoticons = $wysiwygBody.find('img[data-sceditor-emoticon]');
 
-				e.preventDefault();
-				e.stopPropagation();
-				return false;
+				return (/^\s$/.test(curChar) && options.emoticonsCompat);
 			}
+		};
+
+		/**
+		 * Makes sure emoticons are surrounded by whitespace
+		 * @private
+		 */
+		emoticonsCheckWhitespace = function(e) {
+			if(!currentEmoticons.length)
+				return;
+
+			var	prev, next, parent, range, previousText, rangeStartContainer,
+				currentBlock = base.currentBlockNode(),
+				rangeStart   = false,
+				noneWsRegex  = /[^\s\xA0\u2002\u2003\u2009]+/;
+
+			$.each(currentEmoticons, function(idx, emoticon) {
+				if(!$.contains(currentBlock, emoticon))
+					return;
+
+				prev = emoticon.previousSibling;
+				next = emoticon.nextSibling;
+
+				if((!prev || !noneWsRegex.test(prev.nodeValue.slice(-1))) && (!next || !noneWsRegex.test(next.nodeValue[0] || '')))
+					return;
+
+				parent              = emoticon.parentNode;
+				range               = rangeHelper.cloneSelected();
+				rangeStartContainer = range.startContainer;
+				previousText        = prev.nodeValue + $(emoticon).data('sceditor-emoticon');
+
+				// Store current caret position
+				if(rangeStartContainer === next)
+					rangeStart = previousText.length + range.startOffset;
+				else if(rangeStartContainer === currentBlock && currentBlock.childNodes[range.startOffset] === next)
+					rangeStart = previousText.length;
+				else if(rangeStartContainer === prev)
+					rangeStart = range.startOffset;
+
+				if(!next)
+					next = parent.appendChild(parent.ownerDocument.createTextNode(''));
+
+				next.insertData(0, previousText);
+				parent.removeChild(prev);
+				parent.removeChild(emoticon);
+
+				currentEmoticons.splice(idx, 1);
+
+				// Need to update the range starting position if it has been modified
+				if(rangeStart !== false)
+				{
+					range.setStart(next, rangeStart);
+					range.collapse(true);
+					rangeHelper.selectRange(range);
+				}
+			});
 		};
 
 		/**
@@ -2586,6 +2677,7 @@
 					rangeHelper.saveRange();
 
 					$wysiwygBody.html(replaceEmoticons($wysiwygBody.html()));
+					currentEmoticons = $wysiwygBody.find('img[data-sceditor-emoticon]');
 
 					rangeHelper.restoreRange();
 				}
@@ -2596,6 +2688,7 @@
 					return $(this).data('sceditor-emoticon');
 				});
 
+				currentEmoticons = [];
 				$wysiwygBody.unbind('keypress', emoticonsKeyPress);
 			}
 
@@ -4166,6 +4259,7 @@
 
 				if((keywordIdx = requireWhiteSpace ? str.substr(startIdx).search(keywordRegex) : str.indexOf(keyword, startIdx)) > -1)
 				{
+
 					if(requireWhiteSpace)
 						keywordIdx += startIdx + 1;
 
