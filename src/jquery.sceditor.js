@@ -1200,6 +1200,7 @@
 			$wysiwygDoc.unbind().find('*').remove();
 
 			$sourceEditor.unbind().remove();
+			$toolbar.remove();
 			$editorContainer.unbind().find('*').unbind().remove();
 			$editorContainer.remove();
 
@@ -2593,7 +2594,7 @@
 		 * Makes sure emoticons are surrounded by whitespace
 		 * @private
 		 */
-		emoticonsCheckWhitespace = function(e) {
+		emoticonsCheckWhitespace = function() {
 			if(!currentEmoticons.length)
 				return;
 
