@@ -5,6 +5,8 @@ Version 1.4.4:
 		- Thanks to @imansa for reporting.
 	Improved emoticonsCompat support so emoticons are converted to text if whitespace is removed.
 		- Thanks to @ostinelli for reporting
+	Fixed bug causing spaces to not be inserted when an emoticon is inserted in emoticonsCompat mode.
+		- Thanks to @ostinelli for reporting
 
 Version 1.4.3:
 	Added css() method which allows getting/setting inline CSS for the WYSIWYG editor.

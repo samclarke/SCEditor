@@ -3434,30 +3434,32 @@
 				var editor = this;
 
 				var createContent = function(includeMore) {
-					var	endSpace  = (editor.opts.emoticonsCompat ? ' ' : ''),
-						$content  = $('<div />'),
-						$line     = $('<div />').appendTo($content),
-						emoticons = $.extend({}, editor.opts.emoticons.dropdown, includeMore ? editor.opts.emoticons.more : {}),
-						perLine   = 0;
+					var	startSpace, endSpace,
+						rangeHelper = editor.getRangeHelper(),
+						$content    = $('<div />'),
+						$line       = $('<div />').appendTo($content),
+						emoticons   = $.extend({}, editor.opts.emoticons.dropdown, includeMore ? editor.opts.emoticons.more : {}),
+						perLine     = 0;
 
-					for(var prop in emoticons)
-					{
-						if(emoticons.hasOwnProperty(prop))
-							perLine++;
-					}
-
+					$.each(emoticons, function() {
+						perLine++;
+					});
 					perLine = Math.sqrt(perLine);
 
+					if(editor.opts.emoticonsCompat)
+					{
+						startSpace = rangeHelper.getOuterText(true, 1)  !== ' ' ? ' ' : '';
+						endSpace   = rangeHelper.getOuterText(false, 1) !== ' ' ? ' ' : '';
+					}
+
 					$.each(emoticons, function(code, emoticon) {
-						$line.append($('<img />')
-							.attr({
+						$line.append(
+							$('<img />').attr({
 								src: emoticon.url || emoticon,
 								alt: code,
 								title: emoticon.tooltip || code
-							})
-							.click(function() {
-								editor.insert($(this).attr('alt') + endSpace).closeDropDown(true);
-
+							}).click(function() {
+								editor.insert(startSpace + $(this).attr('alt') + endSpace, null, false).closeDropDown(true);
 								return false;
 							})
 						);
@@ -3468,12 +3470,12 @@
 
 					if(!includeMore)
 					{
-						$content.append($(
-							editor._('<a class="sceditor-more">{0}</a>', editor._("More"))
-						).click(function () {
-							editor.createDropDown(caller, "more-emoticons", createContent(true));
-							return false;
-						}));
+						$content.append(
+							$(editor._('<a class="sceditor-more">{0}</a>', editor._("More"))).click(function () {
+								editor.createDropDown(caller, "more-emoticons", createContent(true));
+								return false;
+							})
+						);
 					}
 
 					return $content;
