@@ -78,7 +78,7 @@
 		 *
 		 * @param  {String} type The type of token this is, should be one of tokenType
 		 * @param  {String} name The name of this token
-		 * @param  {String} val The originaly matched string
+		 * @param  {String} val The originally matched string
 		 * @param  {Array} attrs Any attributes. Only set on tokenType.open tokens
 		 * @param  {Array} children Any children of this token
 		 * @param  {TokenizeToken} closing This tokens closing tag. Only set on tokenType.open tokens
@@ -96,7 +96,7 @@
 			base.closing  = closing || null;
 		};
 
-		// Declaring mthods via prototype instead of in the constructor
+		// Declaring methods via prototype instead of in the constructor
 		// to reduce memory usage as there could be a lot or these
 		// objects created.
 		TokenizeToken.prototype = {
@@ -559,7 +559,7 @@
 		 * with a line break [*] list item two [/list]
 		 *
 		 * Which makes it easier to convert to HTML or add
-		 * the formmating new lines back in when converting
+		 * the formatting new lines back in when converting
 		 * back to BBCode
 		 *
 		 * @param  {Array} children
@@ -677,7 +677,7 @@
 		 *
 		 * @param {Array} children
 		 * @param {Array} [parents] Null if there is no parents
-		 * @param {Array} [insideInline] Boolean, if insdie an inline element
+		 * @param {Array} [insideInline] Boolean, if inside an inline element
 		 * @param {Array} [rootArr] Root array if there is one
 		 * @return {Array}
 		 * @private
@@ -711,7 +711,7 @@
 					if((parentIndex = $.inArray(parent, parentParentChildren)) > -1)
 					{
 						// remove the block level token from the right side of the split
-						// inlnie element
+						// inline element
 						right.children.splice($.inArray(token, right.children), 1);
 
 						// insert the block level token and the right side after the left
@@ -874,7 +874,7 @@
 						if(!isInline(bbcode) && isInline(base.bbcodes[lastChild.name]) && !bbcode.isPreFormatted && !bbcode.skipLastLineBreak)
 						{
 							// Add placeholder br to end of block level elements in all browsers apart from IE < 9 which
-							// handle new lines diffrently and doesn't need one.
+							// handle new lines differently and doesn't need one.
 							if(!$.sceditor.ie)
 								content += "<br />";
 						}
@@ -1130,7 +1130,7 @@
 		never: 2,
 
 		/**
-		 * Only quote the attributes value when it contains spaces ot equals
+		 * Only quote the attributes value when it contains spaces to equals
 		 * @type {Number}
 		 */
 		auto: 3
@@ -1279,6 +1279,8 @@
 		};
 
 		mergeSourceModeCommands = function(editor) {
+			var getCommand = $.sceditor.command.get;
+
 			var merge = {
 				bold: { txtExec: ["[b]", "[/b]"] },
 				italic: { txtExec: ["[i]", "[/i]"] },
@@ -1290,78 +1292,114 @@
 				center: { txtExec: ["[center]", "[/center]"] },
 				right: { txtExec: ["[right]", "[/right]"] },
 				justify: { txtExec: ["[justify]", "[/justify]"] },
-				font: { txtExec: function(caller) {
-					var editor = this;
+				font: {
+					txtExec: function(caller) {
+						var editor = this;
 
-					$.sceditor.command.get('font')._dropDown(
-						editor,
-						caller,
-						function(fontName) {
-							editor.insertText("[font="+fontName+"]", "[/font]");
-						}
-					);
-				} },
-				size: { txtExec: function(caller) {
-					var editor = this;
+						getCommand('font')._dropDown(
+							editor,
+							caller,
+							function(fontName) {
+								editor.insertText("[font="+fontName+"]", "[/font]");
+							}
+						);
+					}
+				},
+				size: {
+					txtExec: function(caller) {
+						var editor = this;
 
-					$.sceditor.command.get('size')._dropDown(
-						editor,
-						caller,
-						function(fontSize) {
-							editor.insertText("[size="+fontSize+"]", "[/size]");
-						}
-					);
-				} },
-				color: { txtExec: function(caller) {
-					var editor = this;
+						getCommand('size')._dropDown(
+							editor,
+							caller,
+							function(fontSize) {
+								editor.insertText("[size="+fontSize+"]", "[/size]");
+							}
+						);
+					}
+				},
+				color: {
+					txtExec: function(caller) {
+						var editor = this;
 
-					$.sceditor.command.get('color')._dropDown(
-						editor,
-						caller,
-						function(color) {
-							editor.insertText("[color="+color+"]", "[/color]");
-						}
-					);
-				} },
-				bulletlist: { txtExec: ["[ul][li]", "[/li][/ul]"] },
-				orderedlist: { txtExec: ["[ol][li]", "[/li][/ol]"] },
+						getCommand('color')._dropDown(
+							editor,
+							caller,
+							function(color) {
+								editor.insertText("[color="+color+"]", "[/color]");
+							}
+						);
+					}
+				},
+				bulletlist: {
+					txtExec: function(caller, selected) {
+						var content = '';
+
+						$.each(selected.split(/\r?\n/), function() {
+							content += (content ? '\n' : '') + '[li]' + this + '[/li]';
+						});
+
+						editor.insertText('[ul]\n' + content + '\n[/ul]');
+					}
+				},
+				orderedlist: {
+					txtExec: function(caller, selected) {
+						var content = '';
+
+						$.each(selected.split(/\r?\n/), function() {
+							content += (content ? '\n' : '') + '[li]' + this + '[/li]';
+						});
+
+						$.sceditor.plugins.bbcode.bbcode.get('');
+
+						editor.insertText('[ol]\n' + content + '\n[/ol]');
+					}
+				},
 				table: { txtExec: ["[table][tr][td]", "[/td][/tr][/table]"] },
 				horizontalrule: { txtExec: ["[hr]"] },
 				code: { txtExec: ["[code]", "[/code]"] },
-				image: { txtExec: function(caller, selected) {
-					var url = prompt(this._("Enter the image URL:"), selected);
+				image: {
+					txtExec: function(caller, selected) {
+						var url = prompt(this._("Enter the image URL:"), selected);
 
-					if(url)
-						this.insertText("[img]" + url + "[/img]");
-				} },
-				email: { txtExec: function(caller, selected) {
-					var	display = selected && selected.indexOf('@') > -1 ? null : selected,
-						email	= prompt(this._("Enter the e-mail address:"), (display ? '' : selected)),
-						text	= prompt(this._("Enter the displayed text:"), display || email) || email;
+						if(url)
+							this.insertText("[img]" + url + "[/img]");
+					}
+				},
+				email: {
+					txtExec: function(caller, selected) {
+						var	display = selected && selected.indexOf('@') > -1 ? null : selected,
+							email	= prompt(this._("Enter the e-mail address:"), (display ? '' : selected)),
+							text	= prompt(this._("Enter the displayed text:"), display || email) || email;
 
-					if(email)
-						this.insertText("[email=" + email + "]" + text + "[/email]");
-				} },
-				link: { txtExec: function(caller, selected) {
-					var	display = selected && selected.indexOf('http://') > -1 ? null : selected,
-						url	= prompt(this._("Enter URL:"), (display ? 'http://' : selected)),
-						text	= prompt(this._("Enter the displayed text:"), display || url) || url;
+						if(email)
+							this.insertText("[email=" + email + "]" + text + "[/email]");
+					}
+				},
+				link: {
+					txtExec: function(caller, selected) {
+						var	display = selected && selected.indexOf('http://') > -1 ? null : selected,
+							url	= prompt(this._("Enter URL:"), (display ? 'http://' : selected)),
+							text	= prompt(this._("Enter the displayed text:"), display || url) || url;
 
-					if(url)
-						this.insertText("[url=" + url + "]" + text + "[/url]");
-				} },
+						if(url)
+							this.insertText("[url=" + url + "]" + text + "[/url]");
+					}
+				},
 				quote: { txtExec: ["[quote]", "[/quote]"] },
-				youtube: { txtExec: function(caller) {
-					var editor = this;
+				youtube: {
+					txtExec: function(caller) {
+						var editor = this;
 
-					$.sceditor.command.get('youtube')._dropDown(
-						editor,
-						caller,
-						function(id) {
-							editor.insertText("[youtube]" + id + "[/youtube]");
-						}
-					);
-				} },
+						getCommand('youtube')._dropDown(
+							editor,
+							caller,
+							function(id) {
+								editor.insertText("[youtube]" + id + "[/youtube]");
+							}
+						);
+					}
+				},
 				rtl: { txtExec: ["[rtl]", "[/rtl]"] },
 				ltr: { txtExec: ["[ltr]", "[/ltr]"] }
 			};
@@ -1615,7 +1653,7 @@
 
 					if(nodeType === 1)
 					{
-						// skip ignored elments
+						// skip ignored elements
 						if($node.hasClass("sceditor-ignore"))
 							return;
 
@@ -1686,7 +1724,7 @@
 				output  = $output[0];
 
 			removeDiv = function(node, isFirst) {
-				// Don't remove divs that have styleing
+				// Don't remove divs that have styling
 				if(node.className || $(node).attr('style') || !$.isEmptyObject($(node).data()))
 					return;
 

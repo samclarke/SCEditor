@@ -10,6 +10,8 @@ Version 1.4.4:
 	Fixed bug with toolbar not being removed by destroy() when in a custom toolbarContainer.
 		- Thanks to @imansa for reporting.
 	Added currentBlockNode() method.
+	Improved multiline lists in source mode.
+		- Thanks to @liamdawe for reporting.
 
 Version 1.4.3:
 	Added css() method which allows getting/setting inline CSS for the WYSIWYG editor.
