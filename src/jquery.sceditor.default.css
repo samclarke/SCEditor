@@ -55,14 +55,14 @@ code:before, code {
 	text-align: left;
 }
 
-blockquote {
+blockquote[data-type="quote"] {
 	position: relative;
 	background: #fff6c7;
 	margin: .25em 0;
 	border: 1px solid #aaa;
 	padding: .25em;
 }
-blockquote cite {
+blockquote[data-type="quote"] cite {
 	font-weight: bold;
 	display: block;
 	font-size: 1em;
