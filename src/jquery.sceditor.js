@@ -2898,6 +2898,18 @@
 			tooltip: "Strikethrough"
 		},
 		// END_COMMAND
+		// START_COMMAND: outdent
+		outdent: {
+			exec: "outdent",
+			tooltip: "Outdent"
+		},
+		// END_COMMAND
+		// START_COMMAND: Indent
+		indent: {
+			exec: "indent",
+			tooltip: "Indent"
+		},
+		// END_COMMAND
 		// START_COMMAND: Subscript
 		subscript: {
 			exec: "subscript",
@@ -3074,9 +3086,89 @@
 			tooltip: "Font Color"
 		},
 		// END_COMMAND
+		// START_COMMAND: backColour
+		bgcolor: {
+			_dropDown: function(editor, caller, callback) {
+				var	i, x, bgcolor, bgcolors,
+				genBGColor     = {r: 255, g: 255, b: 255},
+				content      = $("<div />"),
+				bgColorColumns = editor.opts.bgcolors?editor.opts.bgcolors.split("|"):new Array(21),
+						// IE is slow at string concation so use an array
+						html         = [],
+						cmd          = $.sceditor.command.get('bgcolor');
+				
+				if(!cmd._htmlCache)
+				{
+					for (i=0; i < bgColorColumns.length; ++i)
+					{
+						bgcolors = bgColorColumns[i]?bgColorColumns[i].split(","):new Array(21);
+						
+						html.push('<div class="sceditor-color-column">');
+						for (x=0; x < bgcolors.length; ++x)
+						{
+							// use pre defined bgcolour if can otherwise use the generated bgcolor
+							bgcolor = bgcolors[x] || "#" + genBGColor.r.toString(16) + genBGColor.g.toString(16) + genBGColor.b.toString(16);
+							
+							html.push('<a href="#" class="sceditor-color-option" style="background-color: '+bgcolor+'" data-color="'+bgcolor+'"></a>');
+							
+							// calculate the next generated color
+							if(x%5===0)
+							{
+								genBGColor.g -= 51;
+								genBGColor.b = 255;
+							}
+							else
+								genBGColor.b -= 51;
+						}
+						html.push('</div>');
+						
+						// calculate the next generated color
+						if(i%5===0)
+						{
+							genBGColor.r -= 51;
+							genBGColor.g = 255;
+							genBGColor.b = 255;
+						}
+						else
+						{
+							genBGColor.g = 255;
+							genBGColor.b = 255;
+						}
+					}
+					
+					cmd._htmlCache = html.join('');
+				}
+				
+				content.append(cmd._htmlCache)
+				.find('a')
+				.click(function (e) {
+					callback($(this).attr('data-color'));
+					editor.closeDropDown(true);
+					e.preventDefault();
+				});
+				
+				editor.createDropDown(caller, "color-picker", content);
+			},
+			exec: function (caller) {
+				var editor = this;
+				
+				$.sceditor.command.get('bgcolor')._dropDown(
+						editor,
+						caller,
+						function(color) {
+							editor.execCommand("backcolor", color);
+						}
+				);
+			},
+			tooltip: "Back Color"
+		},
+		// END_COMMAND
 		// START_COMMAND: Remove Format
 		removeformat: {
-			exec: "removeformat",
+			exec: function() {
+				this.execCommand("removeformat");
+				this.execCommand("backcolor", 'transparent');
+			},
 			tooltip: "Remove Formatting"
 		},
 		// END_COMMAND
@@ -3316,7 +3408,7 @@
 		quote: {
 			forceNewLineAfter: ['blockquote'],
 			exec: function (caller, html, author) {
-				var	before = '<blockquote>',
+				var	before = '<blockquote data-type="quote">',
 					end    = '</blockquote>';
 
 				// if there is HTML passed set end to null so any selected
@@ -4853,8 +4945,8 @@
 		 * Toolbar buttons order and groups. Should be comma separated and have a bar | to separate groups
 		 * @type {String}
 		 */
-		toolbar:	"bold,italic,underline,strike,subscript,superscript|left,center,right,justify|" +
-				"font,size,color,removeformat|cut,copy,paste,pastetext|bulletlist,orderedlist|" +
+		toolbar:	"bold,italic,underline,strike,subscript,superscript|left,center,right,justify,indent,outdent|" +
+				"font,size,color,bgcolor,removeformat|cut,copy,paste,pastetext|bulletlist,orderedlist|" +
 				"table|code,quote|horizontalrule,image,email,link,unlink|emoticon,youtube,date,time|" +
 				"ltr,rtl|print,maximize,source",
 
@@ -4883,6 +4975,16 @@
 		 * @type {string}
 		 */
 		colors: null,
+		
+		/**
+		 * BGColors should be comma separated and have a bar | to signal a new column.
+		 *
+		 * If null the bgcolors will be auto generated.
+		 * @type {string}
+		 */
+		bgcolors: null,
+
+		/**
 
 		/**
 		 * The locale to use.
