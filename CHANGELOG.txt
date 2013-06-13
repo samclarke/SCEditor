@@ -12,6 +12,7 @@ Version 1.4.4:
 	Added currentBlockNode() method.
 	Improved multiline lists in source mode.
 		- Thanks to @liamdawe for reporting.
+	Improve theme compatibility.
 
 Version 1.4.3:
 	Added css() method which allows getting/setting inline CSS for the WYSIWYG editor.
