@@ -475,7 +475,7 @@
 
 			// iframe overflow fix for iOS, also fixes an IE issue with the
 			// editor not getting focus when clicking inside
-			if(/iPhone|iPod|iPad| wosbrowser\//i.test(navigator.userAgent) || $.sceditor.ie)
+			if($.sceditor.ios || $.sceditor.ie)
 			{
 				$wysiwygBody.height("100%");
 
@@ -1026,6 +1026,9 @@
 
 				$wysiwygEditor.width(width - $wysiwygEditor.data('outerWidthOffset'));
 				$sourceEditor.width(width - $sourceEditor.data('outerWidthOffset'));
+				// Fix overflow issue with iOS not breaking words unless a width is set
+				if($.sceditor.ios && $wysiwygBody)
+					$wysiwygBody.width(width - $wysiwygEditor.data('outerWidthOffset') - ($wysiwygBody.outerWidth(true) - $wysiwygBody.width()));
 			}
 
 			if(height !== false)
@@ -2851,6 +2854,18 @@
 	}());
 
 	/**
+	 * <p>Detects if the browser is iOS</p>
+	 *
+	 * <p>Needed to fix iOS specific bugs/</p>
+	 *
+	 * @function
+	 * @name ios
+	 * @memberOf jQuery.sceditor
+	 * @type {Boolean}
+	 */
+	$.sceditor.ios = /iPhone|iPod|iPad| wosbrowser\//i.test(navigator.userAgent);
+
+	/**
 	 * If the browser supports WYSIWYG editing (e.g. older mobile browsers).
 	 * @function
 	 * @name isWysiwygSupported
@@ -2904,7 +2919,7 @@
 		}
 
 		// iOS 5+ supports content editable
-		if(/iPhone|iPod|iPad/i.test(userAgent))
+		if($.sceditor.ios)
 			isUnsupported = !/OS [5-9](_\d)+ like Mac OS X/i.test(userAgent);
 
 		// FireFox does support WYSIWYG on mobiles so override

@@ -9,7 +9,7 @@ html, body, p, code:before, table {
 html {
 	height: 100%;
 
-	/* Needed for iOS scrolling bug fix*/
+	/* Needed for iOS scrolling bug fix */
 	overflow: auto;
 	-webkit-overflow-scrolling: touch;
 }
@@ -18,7 +18,7 @@ body {
 	min-height: 100%;
 	word-wrap: break-word;
 
-	/* Needed for iOS scrolling bug fix*/
+	/* Needed for iOS scrolling bug fix */
 	overflow: auto;
 }
 
