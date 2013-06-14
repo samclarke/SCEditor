@@ -2606,20 +2606,29 @@
 				rangeStart   = false,
 				noneWsRegex  = /[^\s\xA0\u2002\u2003\u2009]+/;
 
-			$.each(currentEmoticons, function(idx, emoticon) {
+			currentEmoticons = $.map(currentEmoticons, function(emoticon, idx) {
+				// Ignore emotiocons that have been removed from DOM
+				if(!emoticon || !emoticon.parentNode)
+					return null;
+
 				if(!$.contains(currentBlock, emoticon))
-					return;
+					return emoticon;
 
-				prev = emoticon.previousSibling;
-				next = emoticon.nextSibling;
+				prev         = emoticon.previousSibling;
+				next         = emoticon.nextSibling;
+				previousText = prev.nodeValue;
 
-				if((!prev || !noneWsRegex.test(prev.nodeValue.slice(-1))) && (!next || !noneWsRegex.test(next.nodeValue[0] || '')))
-					return;
+				// For IE's HTMLPhraseElement
+				if(previousText === null)
+					previousText = prev.innerText || '';
+
+				if((!prev || !noneWsRegex.test(prev.nodeValue.slice(-1))) && (!next || !noneWsRegex.test((next.nodeValue || '')[0])))
+					return emoticon;
 
 				parent              = emoticon.parentNode;
 				range               = rangeHelper.cloneSelected();
 				rangeStartContainer = range.startContainer;
-				previousText        = prev.nodeValue + $(emoticon).data('sceditor-emoticon');
+				previousText        = previousText + $(emoticon).data('sceditor-emoticon');
 
 				// Store current caret position
 				if(rangeStartContainer === next)
@@ -2629,14 +2638,12 @@
 				else if(rangeStartContainer === prev)
 					rangeStart = range.startOffset;
 
-				if(!next)
-					next = parent.appendChild(parent.ownerDocument.createTextNode(''));
+				if(!next || next.nodeType !== 3)
+					next = parent.insertBefore(parent.ownerDocument.createTextNode(''), next);
 
 				next.insertData(0, previousText);
 				parent.removeChild(prev);
 				parent.removeChild(emoticon);
-
-				currentEmoticons.splice(idx, 1);
 
 				// Need to update the range starting position if it has been modified
 				if(rangeStart !== false)
@@ -2645,6 +2652,8 @@
 					range.collapse(true);
 					rangeHelper.selectRange(range);
 				}
+
+				return null;
 			});
 		};
 
