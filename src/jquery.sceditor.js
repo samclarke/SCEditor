@@ -1702,24 +1702,35 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.getWysiwygEditorValue = function (filter) {
-			var html;
+			var	html, ieBookmark,
+				hasSelection = rangeHelper.hasSelection();
 
-			// Must focus the editor for IE before saving the range
-			if($.sceditor.ie)
-				base.focus();
-
-			rangeHelper.saveRange();
+			if(hasSelection)
+				rangeHelper.saveRange();
+			// IE <= 8 bookmark the current TextRange position
+			// and restore it after
+			else if(lastRange && lastRange.getBookmark)
+				ieBookmark = lastRange.getBookmark();
 
 			$.sceditor.dom.fixNesting($wysiwygBody[0]);
 
 			// filter the HTML and DOM through any plugins
 			html = $wysiwygBody.html();
+
 			if(filter !== false && pluginManager.hasHandler("toSource"))
 				html = pluginManager.callOnlyFirst("toSource", html, $wysiwygBody);
 
-			// remove the last stored range for IE as it no longer applies
-			rangeHelper.restoreRange();
-			lastRange = null;
+			if(hasSelection)
+			{
+				// remove the last stored range for IE as it no longer applies
+				rangeHelper.restoreRange();
+				lastRange = null;
+			}
+			else if(ieBookmark)
+			{
+				lastRange.moveToBookmark(ieBookmark);
+				lastRange = null;
+			}
 
 			return html;
 		};
@@ -2606,7 +2617,7 @@
 				rangeStart   = false,
 				noneWsRegex  = /[^\s\xA0\u2002\u2003\u2009]+/;
 
-			currentEmoticons = $.map(currentEmoticons, function(emoticon, idx) {
+			currentEmoticons = $.map(currentEmoticons, function(emoticon) {
 				// Ignore emotiocons that have been removed from DOM
 				if(!emoticon || !emoticon.parentNode)
 					return null;
@@ -3730,7 +3741,7 @@
 	 * @name jQuery.sceditor.rangeHelper
 	 */
 	$.sceditor.rangeHelper = function(w, d) {
-		var	win, doc, init, _createMarker,
+		var	win, doc, init, _createMarker, _isOwner,
 			isW3C        = true,
 			startMarker  = "sceditor-start-marker",
 			endMarker    = "sceditor-end-marker",
@@ -3870,7 +3881,7 @@
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.selectedRange = function() {
-			var	range, parent,
+			var	range,
 				sel = isW3C ? win.getSelection() : doc.selection;
 
 			if(!sel)
@@ -3888,11 +3899,46 @@
 			range = isW3C ? sel.getRangeAt(0) : sel.createRange();
 
 			// IE fix to make sure only return selections that are part of the WYSIWYG iframe
-			if(range.parentElement && (parent = range.parentElement()))
-				if(parent.ownerDocument !== doc)
-					return;
+			return _isOwner(range) ? range : null;
+		};
 
-			return range;
+		/**
+		 * Checks if an IE TextRange range belongs to
+		 * this document or not.
+		 *
+		 * Returns true if the range isn't an IE range or
+		 * if the range is null.
+		 *
+		 * @private
+		 */
+		_isOwner = function(range) {
+			var parent;
+
+			// IE fix to make sure only return selections that are part of the WYSIWYG iframe
+			return (range && range.parentElement && (parent = range.parentElement())) ?
+				parent.ownerDocument === doc :
+				true;
+		};
+
+		/**
+		 * Gets if there is currently a selection
+		 *
+		 * @return {Boolean}
+		 * @function
+		 * @name hasSelection
+		 * @since 1.4.4
+		 * @memberOf jQuery.sceditor.rangeHelper.prototype
+		 */
+		base.hasSelection = function() {
+			var	range,
+				sel = isW3C ? win.getSelection() : doc.selection;
+
+			if(isW3C || !sel)
+				return sel && sel.rangeCount > 0;
+
+			range = sel.createRange();
+
+			return range && _isOwner(range);
 		};
 
 		/**
@@ -3939,13 +3985,7 @@
 			var range = base.selectedRange();
 
 			if(range)
-			{
-				if(isW3C)
-					return range.commonAncestorContainer;
-
-				if(range.parentElement)
-					return range.parentElement();
-			}
+				return range.parentElement ? range.parentElement() : range.commonAncestorContainer;
 		};
 
 		/**
@@ -3973,9 +4013,9 @@
 				if(!$.sceditor.dom.isInline(node))
 					return node;
 
-				var p = node ? node.parentNode : null;
+				node = node ? node.parentNode : null;
 
-				return p ? func(p) : null;
+				return node ? func(node) : null;
 			};
 
 			return func(n || base.parentNode());
@@ -4102,13 +4142,13 @@
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.selectRange = function(range) {
-			if(!isW3C)
-				range.select();
-			else
+			if(isW3C)
 			{
 				win.getSelection().removeAllRanges();
 				win.getSelection().addRange(range);
 			}
+			else
+				range.select();
 		};
 
 		/**
