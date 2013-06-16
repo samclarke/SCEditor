@@ -1,11 +1,12 @@
 // add locale:'fa', to your config options.
 // Translated By Ebad Ghafoory [info@ghafoory.com]
 // 2013/05/01
+// editor : parsadev 16 June 2013
 (function ($) {
   'use strict';
 
 	$.sceditor.locale["fa"] = {
-		"Bold": "تیره",
+		"Bold": "ضخیم",
 		"Italic": "مورب",
 		"Underline": "زیرخط",
 		"Strikethrough": "خط خورده",
@@ -16,9 +17,9 @@
 		"Align right": "راست چین",
 		"Justify": "همخط",
 		"Font Name": "نام قلم",
-		"Font Size": "اندازه‌ی نوشته",
-		"Font Color": "رنگ نوشته",
-		"Remove Formatting": "پاکسازی فرمت نوشته",
+		"Font Size": "اندازه‌ی قلم",
+		"Font Color": "رنگ قلم",
+		"Remove Formatting": "پاکسازی فرمت متن",
 		"Cut": "برش",
 		"Your browser does not allow the cut command. Please use the keyboard shortcut Ctrl/Cmd-X": "مرورگر شما اجازه برش توسط نرم‌افزار را نمی‌دهد. لطفا از دکمه‌های ترکیبی Ctrl / Cmd-X استفاده کنید",
 		"Copy": "کپی",
@@ -27,7 +28,7 @@
 		"Your browser does not allow the paste command. Please use the keyboard shortcut Ctrl/Cmd-V": "مرورگر شما اجازه چسباندن توسط نرم‌افزار را نمی‌دهد. لطفا از دکمه‌های ترکیبی  Ctrl / Cmd-V استفاده کنید",
 		"Paste your text inside the following box:": "متن خود را در داخل کادر زیر بچسبانید",
 		"Paste Text": "چسباندن متن",
-		"Bullet list": "لیست",
+		"Bullet list": "لیست نقطه ای",
 		"Numbered list": "لیست عددی",
 		"Undo": "حرکت قبل",
 		"Redo": "حرکت بعد",
@@ -53,7 +54,7 @@
 		"Insert current date": "افزودن تاریخ اکنون",
 		"Insert current time": "افزودن زمان اکنون",
 		"Print": "چاپ",
-		"View source": "مشاهده سورس",
+		"View source": "مشاهده کد منبع",
 		"Description (optional):": "توضیحات (دلخواه):",
 		"Enter the image URL:": "آدرس اینترنتی عکس را وارد کنید:",
 		"Enter the e-mail address:": "آدرس ایمیل را وارد کنید:",
@@ -63,6 +64,6 @@
 		"Invalid YouTube video": "فیلم یوتوب غیر معتبر است",
 		"Right-to-Left": "راست به چپ",
 		"Left-to-Right": "چپ به راست",
-		dateFormat: "year.month.day"
+		dateFormat: "year/month/day"
 	};
 })(jQuery);
