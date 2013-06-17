@@ -17,6 +17,8 @@ Version 1.4.4:
 		- Thanks to Francesco for reporting.
 	Fixed bug with IE not releasing focus when autoUpdate is enabled.
 		- Thanks to @LeeMcNeil for reporting.
+	Improved IE range handling.
+	Fixed IE height bug where blur() method increased the editors height.
 
 Version 1.4.3:
 	Added css() method which allows getting/setting inline CSS for the WYSIWYG editor.
