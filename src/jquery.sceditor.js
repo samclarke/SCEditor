@@ -1021,11 +1021,13 @@
 					save   = false;
 				}
 
-				if(width && width.toString().indexOf('%'))
-					width = $editorContainer.width(width).width();
+				$editorContainer.width(width);
+				if(width && width.toString().indexOf('%') > -1)
+					width = $editorContainer.width();
 
 				$wysiwygEditor.width(width - $wysiwygEditor.data('outerWidthOffset'));
 				$sourceEditor.width(width - $sourceEditor.data('outerWidthOffset'));
+
 				// Fix overflow issue with iOS not breaking words unless a width is set
 				if($.sceditor.ios && $wysiwygBody)
 					$wysiwygBody.width(width - $wysiwygEditor.data('outerWidthOffset') - ($wysiwygBody.outerWidth(true) - $wysiwygBody.width()));
@@ -1037,7 +1039,7 @@
 					options.height = height;
 
 				// Convert % based heights to px
-				if(height && height.toString().indexOf('%'))
+				if(height && height.toString().indexOf('%') > -1)
 				{
 					height = $editorContainer.height(height).height();
 					$editorContainer.height('auto');
@@ -3896,7 +3898,11 @@
 				sel.addRange(range);
 			}
 
-			range = isW3C ? sel.getRangeAt(0) : sel.createRange();
+			if(isW3C)
+				range = sel.getRangeAt(0);
+
+			if(!isW3C && sel.type !== "Control")
+				range = sel.createRange();
 
 			// IE fix to make sure only return selections that are part of the WYSIWYG iframe
 			return _isOwner(range) ? range : null;
@@ -4359,7 +4365,8 @@
 
 			if(!isW3C)
 			{
-				return rangeA.compareEndPoints('EndToEnd', rangeB)  === 0 &&
+				return _isOwner(rangeA) && _isOwner(rangeB) &&
+					rangeA.compareEndPoints('EndToEnd', rangeB)  === 0 &&
 					rangeA.compareEndPoints('StartToStart', rangeB) === 0;
 			}
 
