@@ -1824,7 +1824,7 @@
 		 * @since 1.4.0
 		 * @memberOf jQuery.sceditor.prototype
 		 */
-		base.updateOriginal = function () {
+		base.updateOriginal = function() {
 			$original.val(base.val());
 		};
 
@@ -1919,6 +1919,8 @@
 			// don't allow switching to WYSIWYG if doesn't support it
 			if(!$.sceditor.isWysiwygSupported && base.inSourceMode())
 				return;
+
+			base.blur();
 
 			if(base.inSourceMode())
 				base.setWysiwygEditorValue(base.getSourceEditorValue());
@@ -3718,11 +3720,9 @@
 		source: {
 			exec: function () {
 				this.toggleSourceMode();
-				this.blur();
 			},
 			txtExec: function () {
 				this.toggleSourceMode();
-				this.blur();
 			},
 			tooltip: "View source",
 			shortcut: "ctrl+shift+s"
