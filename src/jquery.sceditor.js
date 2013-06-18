@@ -2209,7 +2209,7 @@
 		appendNewLine = function() {
 			var name, inBlock;
 
-			$.sceditor.dom.rTraverse($wysiwygBody, function(node) {
+			$.sceditor.dom.rTraverse($wysiwygBody[0], function(node) {
 				name = node.nodeName.toLowerCase();
 
 				if($.inArray(name, requireNewLineFix) > -1)

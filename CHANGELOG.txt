@@ -20,6 +20,8 @@ Version 1.4.4:
 	Improved IE range handling.
 	Fixed IE height bug where blur() method increased the editors height.
 	Fixed IE6/7 bug where there was a 2px height difference between WYSIWYG and source modes.
+	Fixed new line auto appending after code/quote blocks not working.
+		- Thanks to @Dr1ks for reporting.
 
 Version 1.4.3:
 	Added css() method which allows getting/setting inline CSS for the WYSIWYG editor.
