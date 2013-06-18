@@ -1000,6 +1000,10 @@
 		 * @return {this}
 		 */
 		base.dimensions = function(width, height, save) {
+			// IE6 & IE7 add 2 pixels to the source mode textarea height which must be ignored.
+			// Doesn't seem to be any way to fix it with only CSS
+			var ieBorderBox = $.sceditor.ie < 8 || document.documentMode < 8 ? 2 : 0;
+
 			// set undefined width/height to boolean false
 			width  = (!width && width !== 0) ? false : width;
 			height = (!height && height !== 0) ? false : height;
@@ -1047,7 +1051,7 @@
 
 				height -= !options.toolbarContainer ? $toolbar.outerHeight(true) : 0;
 				$wysiwygEditor.height(height - $wysiwygEditor.data('outerHeightOffset'));
-				$sourceEditor.height(height - $sourceEditor.data('outerHeightOffset'));
+				$sourceEditor.height(height - ieBorderBox - $sourceEditor.data('outerHeightOffset'));
 			}
 
 			return this;
@@ -2433,7 +2437,7 @@
 				if(!$blurElm)
 					$blurElm = $('<input style="position:absolute;width:0;height:0;opacity:0;border:0;padding:0;filter:alpha(opacity=0)" type="text" />').appendTo($editorContainer);
 
-				$blurElm.removeAttr("disabled").show().focus().blur().hide().attr("disabled", "disabled");
+				$blurElm.removeAttr('disabled').show().focus().blur().hide().attr('disabled', 'disabled');
 			}
 			else
 				$sourceEditor.blur();
