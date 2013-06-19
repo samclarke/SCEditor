@@ -1654,7 +1654,7 @@
 					if(nodeType === 1)
 					{
 						// skip ignored elements
-						if($node.hasClass("sceditor-ignore"))
+						if($node.hasClass('sceditor-ignore'))
 							return;
 
 						// don't loop inside iframes
@@ -1664,7 +1664,7 @@
 						if(isValidChild)
 						{
 							// code tags should skip most styles
-							if(tag !== "code")
+							if(tag !== 'code')
 							{
 								// handle inline bbcodes
 								curTag = handleStyles($node, curTag);

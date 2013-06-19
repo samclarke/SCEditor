@@ -22,6 +22,8 @@ Version 1.4.4:
 	Fixed IE6/7 bug where there was a 2px height difference between WYSIWYG and source modes.
 	Fixed new line auto appending after code/quote blocks not working.
 		- Thanks to @Dr1ks for reporting.
+	Fixed issue with Opera adding blank lines.
+		- Thanks to @Dr1ks for reporting.
 
 Version 1.4.3:
 	Added css() method which allows getting/setting inline CSS for the WYSIWYG editor.

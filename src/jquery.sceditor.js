@@ -3887,7 +3887,7 @@
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.selectedRange = function() {
-			var	range,
+			var	range, firstChild,
 				sel = isW3C ? win.getSelection() : doc.selection;
 
 			if(!sel)
@@ -3897,8 +3897,12 @@
 			// element to avoid errors in FF.
 			if(sel.getRangeAt && sel.rangeCount <= 0)
 			{
+				firstChild = doc.body;
+				while(firstChild.firstChild)
+					firstChild = firstChild.firstChild;
+
 				range = doc.createRange();
-				range.setStart(doc.body, 0);
+				range.setStart(firstChild, 0);
 				sel.addRange(range);
 			}
 
@@ -4069,11 +4073,12 @@
 		_createMarker = function(id) {
 			base.removeMarker(id);
 
-			var marker              = doc.createElement("span");
+			var marker              = doc.createElement('span');
 			marker.id               = id;
-			marker.style.lineHeight = "0";
-			marker.style.display    = "none";
-			marker.className        = "sceditor-selection sceditor-ignore";
+			marker.style.lineHeight = '0';
+			marker.style.display    = 'none';
+			marker.className        = 'sceditor-selection sceditor-ignore';
+			marker.innerHTML        = ' ';
 
 			return marker;
 		};
@@ -4246,7 +4251,7 @@
 		 * @memberOf jQuery.sceditor.rangeHelper.prototype
 		 */
 		base.getOuterText = function(before, length) {
-			var	ret   = "",
+			var	ret   = '',
 				range = base.cloneSelected();
 
 			if(!range)
