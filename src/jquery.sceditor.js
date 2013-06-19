@@ -4578,21 +4578,14 @@
 					sibling   = node;
 					trimStart = false;
 
-					// If last sibling is not inline is a textnode ending in whitespace,
+					// If last sibling is not inline or is a textnode ending in whitespace,
 					// the start whitespace should be stripped
-					if(isInline(node))
+					if(isInline(node) && (sibling = getSibling(sibling, true)))
 					{
-						while((sibling = getSibling(sibling, true)))
-						{
-							while(sibling.lastChild)
-								sibling = sibling.lastChild;
+						while(sibling.lastChild)
+							sibling = sibling.lastChild;
 
-							if(!isInline(sibling) || sibling.nodeType === 3)
-							{
-								trimStart = sibling.nodeType === 3 ? /[\t\n\r ]$/.test(sibling.nodeValue) : true;
-								break;
-							}
-						}
+						trimStart = sibling.nodeType === 3 ? /[\t\n\r ]$/.test(sibling.nodeValue) : !isInline(sibling);
 					}
 
 					if(!isInline(node) || !previous || !isInline(previous) || trimStart)
