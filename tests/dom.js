@@ -1,4 +1,4 @@
-/*global module, $, test, expect, equal, html2dom, ignoreSpaces*/
+/*global module, $, test, expect, equal, html2dom */
 (function() {
 	'use strict';
 
@@ -77,8 +77,8 @@
 		var node        = html2dom('<span>span<div style="font-weight: bold;">div</div>span</span>');
 		$.sceditor.dom.fixNesting(node);
 		equal(
-			ignoreSpaces(node.innerHTML.toLowerCase()),
-			ignoreSpaces('<span>span</span><div style="font-weight: bold' + (removeColon ? '': ';') + '">div</div><span>span</span>'),
+			node.innerHTML.toLowerCase().ignoreSpace(),
+			('<span>span</span><div style="font-weight: bold' + (removeColon ? '': ';') + '">div</div><span>span</span>').ignoreSpace(),
 			'Simple fix'
 		);
 
@@ -86,10 +86,10 @@
 		node = html2dom('<span style="font-weight: bold;">span<div>div</div>span</span>');
 		$.sceditor.dom.fixNesting(node);
 		equal(
-			ignoreSpaces(node.innerHTML.toLowerCase()),
-			ignoreSpaces('<span style="font-weight: bold' + (removeColon ? '': ';') +
-				'">span</span><div style="font-weight: bold' + (removeColon ? '': ';') +
-				'">div</div><span style="font-weight: bold' + (removeColon ? '': ';') + '">span</span>'),
+			node.innerHTML.toLowerCase().ignoreSpace(),
+			('<span style="font-weight: bold' + (removeColon ? '': ';') +
+							'">span</span><div style="font-weight: bold' + (removeColon ? '': ';') +
+							'">div</div><span style="font-weight: bold' + (removeColon ? '': ';') + '">span</span>').ignoreSpace(),
 			'Fix with CSS'
 		);
 
@@ -97,9 +97,9 @@
 		node = html2dom('<span>span<span>span<div style="font-weight: bold;">div</div>span</span>span</span>');
 		$.sceditor.dom.fixNesting(node);
 		equal(
-			ignoreSpaces(node.innerHTML.toLowerCase()),
-			ignoreSpaces('<span>span<span>span</span></span><div style="font-weight: bold' + (removeColon ? '': ';') +
-				'">div</div><span><span>span</span>span</span>'),
+			node.innerHTML.toLowerCase().ignoreSpace(),
+			('<span>span<span>span</span></span><div style="font-weight: bold' + (removeColon ? '': ';') +
+							'">div</div><span><span>span</span>span</span>').ignoreSpace(),
 			'Deeper fix'
 		);
 	});

@@ -1,4 +1,4 @@
-/*global module, $, test, expect, equal, html2dom, ignoreSpaces, ok*/
+/*global module, $, test, expect, equal, html2dom, ok*/
 (function() {
 	'use strict';
 
@@ -58,14 +58,14 @@
 		);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<span>test<br /></span>', true))),
-			ignoreSpaces('<span>test<br /></span>'),
+			this.plugin.signalToSource('', html2dom('<span>test<br /></span>', true)).ignoreSpace(),
+			'<span>test<br /></span>'.ignoreSpace(),
 			'Single span with text and br'
 		);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<div>test</div>', true))),
-			ignoreSpaces('<div>test</div>'),
+			this.plugin.signalToSource('', html2dom('<div>test</div>', true)).ignoreSpace(),
+			'<div>test</div>'.ignoreSpace(),
 			'Single div with text'
 		);
 
@@ -134,13 +134,13 @@
 		);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<div><div><strong>test</strong></div></div>', true))).ignoreSpace(),
+			this.plugin.signalToSource('', html2dom('<div><div><strong>test</strong></div></div>', true)).ignoreSpace(),
 			'<strong>test</strong>'.ignoreSpace(),
 			'Allowed tags in nested disallowed tag'
 		);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<strong>test</strong><div>test</div>', true))).ignoreSpace(),
+			this.plugin.signalToSource('', html2dom('<strong>test</strong><div>test</div>', true)).ignoreSpace(),
 			'<strong>test</strong> test'.ignoreSpace(),
 			'Allowed tag and disallowed tag'
 		);
@@ -467,12 +467,12 @@
 
 		var ret;
 
-		ret = ignoreSpaces(this.plugin.signalToSource('', html2dom('<div border="1">test</div>', true)));
+		ret = this.plugin.signalToSource('', html2dom('<div border="1">test</div>', true)).ignoreSpace();
 		ok(
 			!/border=/i.test(ret) && /-width:1/i.test(ret)
 		);
 
-		ret = ignoreSpaces(this.plugin.signalToSource('', html2dom('<div border="0">test</div>', true)));
+		ret = this.plugin.signalToSource('', html2dom('<div border="0">test</div>', true)).ignoreSpace();
 		ok(
 			!/border=/i.test(ret) && /-width:0/i.test(ret)
 		);
@@ -491,14 +491,14 @@
 		expect(2);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<img name="test" />', true))),
-			ignoreSpaces('<img id="test" />'),
+			this.plugin.signalToSource('', html2dom('<img name="test" />', true)).ignoreSpace(),
+			'<img id="test" />'.ignoreSpace(),
 			'Image with name'
 		);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<img name="test" id="one" />', true))),
-			ignoreSpaces('<img id="one" />'),
+			this.plugin.signalToSource('', html2dom('<img name="test" id="one" />', true)).ignoreSpace(),
+			'<img id="one" />'.ignoreSpace(),
 			'Image with name and id'
 		);
 	});
@@ -557,8 +557,8 @@
 		expect(1);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<b>test</b>', true))),
-			ignoreSpaces('<strong>test</strong>')
+			this.plugin.signalToSource('', html2dom('<b>test</b>', true)).ignoreSpace(),
+			'<strong>test</strong>'.ignoreSpace()
 		);
 	});
 
@@ -575,8 +575,8 @@
 		expect(1);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<i>test</i>', true))),
-			ignoreSpaces('<em>test</em>')
+			this.plugin.signalToSource('', html2dom('<i>test</i>', true)).ignoreSpace(),
+			'<em>test</em>'.ignoreSpace()
 		);
 	});
 
@@ -600,8 +600,8 @@
 		expect(1);
 
 		equal(
-			ignoreSpaces(this.plugin.signalToSource('', html2dom('<dir><li>test</li></dir>', true))),
-			ignoreSpaces('<ul><li>test</li></ul>')
+			this.plugin.signalToSource('', html2dom('<dir><li>test</li></dir>', true)).ignoreSpace(),
+			'<ul><li>test</li></ul>'.ignoreSpace()
 		);
 	});
 

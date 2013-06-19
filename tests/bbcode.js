@@ -1,4 +1,4 @@
-/*global module, $, test, expect, equal, html2dom, ignoreSpaces, ok, asyncTest, start*/
+/*global module, $, test, expect, equal, html2dom, ok, asyncTest, start*/
 (function() {
 	'use strict';
 
@@ -30,14 +30,14 @@
 		var parser = new $.sceditor.BBCodeParser($.sceditor.defaultOptions.parserOptions);
 
 		equal(
-			ignoreSpaces(parser.toBBCode('[hr] test')),
-			ignoreSpaces('[hr] test'),
+			parser.toBBCode('[hr] test').ignoreSpace(),
+			'[hr] test'.ignoreSpace(),
 			'Self closing'
 		);
 
 		equal(
-			ignoreSpaces(parser.toBBCode('[list][*] test[*] test 2[/list]')),
-			ignoreSpaces('[list][*]test[/*][*]test2[/*][/list]'),
+			parser.toBBCode('[list][*] test[*] test 2[/list]').ignoreSpace(),
+			'[list][*]test[/*][*]test2[/*][/list]'.ignoreSpace(),
 			'List [*]'
 		);
 

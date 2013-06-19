@@ -25,10 +25,6 @@
 		QUnit.push(matched, actual, expectedArr, message);
 	};
 
-	window.ignoreSpaces = function(str) {
-		return str.replace(/[\n\r \t]+/g, '');
-	};
-
 	String.prototype.ignoreSpace = function (str) {
 		return this.replace(/[\n\r \t]+/g, '');
 	};
