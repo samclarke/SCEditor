@@ -637,6 +637,8 @@
 				else if(typeof cmd.exec === "string")
 					btnStateHandlers.push({ name: name, state: cmd.exec });
 			});
+
+			appendNewLine();
 		};
 
 		/**
@@ -799,21 +801,39 @@
 			}
 			else // WYSIWYG mode
 			{
+				$.sceditor.dom.removeWhiteSpace(body);
+
 				if(focusEnd)
-					$wysiwygBody.append((elm = doc.createElement('div')));
+				{
+					if(!(elm = body.lastChild))
+						$wysiwygBody.append((elm = doc.createElement('div')));
+
+					while(elm.lastChild)
+					{
+						elm = elm.lastChild;
+
+						if(/br/i.test(elm.nodeName) && elm.previousSibling)
+							elm = elm.previousSibling;
+					}
+				}
 				else
 					elm = body.firstChild;
 
 				if(doc.createRange)
 				{
 					rng = doc.createRange();
-					rng.setStart(elm, 0);
-					rng.setEnd(elm, 0);
+
+					if(/br/i.test(elm.nodeName))
+						rng.setStartBefore(elm);
+					else
+						rng.selectNodeContents(elm);
+
+					rng.collapse(false);
 				}
 				else
 				{
 					rng = body.createTextRange();
-					rng.moveToElementText(elm);
+					rng.moveToElementText(elm.nodeType !== 3 ? elm : elm.parentNode);
 					rng.collapse(false);
 				}
 				rangeHelper.selectRange(rng);
@@ -2210,7 +2230,7 @@
 		 * @private
 		 */
 		appendNewLine = function() {
-			var name, inBlock;
+			var name, inBlock, div;
 
 			$.sceditor.dom.rTraverse($wysiwygBody[0], function(node) {
 				name = node.nodeName.toLowerCase();
@@ -2226,7 +2246,11 @@
 					// this is the last text or br node, if its in a code or quote tag
 					// then add a newline to the end of the editor
 					if(inBlock)
-						$($wysiwygBody).append($('<div>' + (!$.sceditor.ie ? '<br />' : '') + '</div>\n'));
+					{
+						div = $wysiwygBody[0].ownerDocument.createElement('div');
+						div.innerHTML = !$.sceditor.ie ? '<br />' : '';
+						$wysiwygBody[0].appendChild(div);
+					}
 
 					return false;
 				}

@@ -1705,7 +1705,7 @@
 		 */
 		base.signalToWysiwyg = function(text, asFragment) {
 			var	parser = new $.sceditor.BBCodeParser(base.opts.parserOptions),
-				html   = parser.toHTML($.trim(text));
+				html   = parser.toHTML(text);
 
 			return asFragment ? removeFirstLastDiv(html) : html;
 		};

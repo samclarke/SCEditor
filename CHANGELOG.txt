@@ -26,6 +26,8 @@ Version 1.4.4:
 		- Thanks to @Dr1ks for reporting.
 	Improved unlink to remove links without selecing the whole link.
 		- Thanks to @liamdawe for reporting.
+	Fixed newline after [quote] being stripped.
+		- thanks to @liamdawe for reporting.
 
 Version 1.4.3:
 	Added css() method which allows getting/setting inline CSS for the WYSIWYG editor.

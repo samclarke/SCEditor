@@ -1079,6 +1079,9 @@
 			"Nothing check"
 		);
 		$textarea.sceditor("instance").destroy();
+
+
+		$.sceditor.plugins.bbcode.bbcode.remove("test");
 	});
 
 
