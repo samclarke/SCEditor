@@ -557,8 +557,8 @@
 				});
 
 			$editorContainer
-				.bind('selectionchanged', updateActiveButtons)
 				.bind('selectionchanged', checkNodeChanged)
+				.bind('selectionchanged', updateActiveButtons)
 				.bind('selectionchanged', handleEvent)
 				.bind('nodechanged', handleEvent);
 		};
@@ -2070,13 +2070,16 @@
 		 */
 		checkNodeChanged = function() {
 			// check if node has changed
-			var node = rangeHelper.parentNode();
+			var	oldNode,
+				node = rangeHelper.parentNode();
 
 			if(currentNode !== node)
 			{
-				$editorContainer.trigger($.Event('nodechanged', { oldNode: currentNode, newNode: node }));
+				oldNode          = currentNode;
 				currentNode      = node;
 				currentBlockNode = rangeHelper.getFirstBlockParent(node);
+
+				$editorContainer.trigger($.Event('nodechanged', { oldNode: oldNode, newNode: currentNode }));
 			}
 		};
 
@@ -3441,7 +3444,17 @@
 
 		// START_COMMAND: Unlink
 		unlink: {
-			exec: "unlink",
+			state: function() {
+				var $current = $(this.currentNode());
+				return $current.is('a') || $current.parents('a').length > 0 ? 0 : -1;
+			},
+			exec: function() {
+				var	$current = $(this.currentNode()),
+					$anchor  = $current.is('a') ? $current : $current.parents('a').first();
+
+				if($anchor.length)
+					$anchor.replaceWith($anchor.contents());
+			},
 			tooltip: "Unlink"
 		},
 		// END_COMMAND
