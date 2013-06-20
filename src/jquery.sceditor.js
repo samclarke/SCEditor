@@ -3478,23 +3478,19 @@
 				var editor = this;
 
 				var createContent = function(includeMore) {
-					var	startSpace, endSpace,
-						rangeHelper = editor.getRangeHelper(),
-						$content    = $('<div />'),
-						$line       = $('<div />').appendTo($content),
-						emoticons   = $.extend({}, editor.opts.emoticons.dropdown, includeMore ? editor.opts.emoticons.more : {}),
-						perLine     = 0;
+					var	emoticonsCompat = editor.opts.emoticonsCompat,
+						rangeHelper     = editor.getRangeHelper(),
+						startSpace      = emoticonsCompat && rangeHelper.getOuterText(true, 1)  !== ' ' ? ' ' : '',
+						endSpace        = emoticonsCompat && rangeHelper.getOuterText(false, 1) !== ' ' ? ' ' : '',
+						$content        = $('<div />'),
+						$line           = $('<div />').appendTo($content),
+						emoticons       = $.extend({}, editor.opts.emoticons.dropdown, includeMore ? editor.opts.emoticons.more : {}),
+						perLine         = 0;
 
 					$.each(emoticons, function() {
 						perLine++;
 					});
 					perLine = Math.sqrt(perLine);
-
-					if(editor.opts.emoticonsCompat)
-					{
-						startSpace = rangeHelper.getOuterText(true, 1)  !== ' ' ? ' ' : '';
-						endSpace   = rangeHelper.getOuterText(false, 1) !== ' ' ? ' ' : '';
-					}
 
 					$.each(emoticons, function(code, emoticon) {
 						$line.append(
