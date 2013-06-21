@@ -1255,15 +1255,16 @@
 		 */
 		base.createDropDown = function (menuItem, dropDownName, content, ieUnselectable) {
 			// first click for create second click for close
-			var onlyclose = $dropdown && $dropdown.is('.sceditor-' + dropDownName);
+			var	css,
+				onlyclose = $dropdown && $dropdown.is('.sceditor-' + dropDownName);
 
 			base.closeDropDown();
 
-			if(onlyclose) return;
+			if (onlyclose) return;
 
 			// IE needs unselectable attr to stop it from unselecting the text in the editor.
 			// The editor can cope if IE does unselect the text it's just not nice.
-			if(ieUnselectable !== false)
+			if (ieUnselectable !== false)
 			{
 				$(content)
 					.find(':not(input,textarea)')
@@ -1273,7 +1274,7 @@
 					.attr('unselectable', 'on');
 			}
 
-			var css = {
+			css = {
 				top: menuItem.offset().top,
 				left: menuItem.offset().left,
 				marginTop: menuItem.outerHeight()
@@ -1306,16 +1307,17 @@
 		 * @private
 		 */
 		handlePasteEvt = function(e) {
-			var	html,
+			var	html, handlePaste,
 				elm             = $wysiwygBody[0],
+				doc             = $wysiwygDoc[0],
 				checkCount      = 0,
-				pastearea       = elm.ownerDocument.createElement('div'),
-				prePasteContent = elm.ownerDocument.createDocumentFragment();
+				pastearea       = document.createElement('div'),
+				prePasteContent = doc.createDocumentFragment();
 
-			if(options.disablePasting)
+			if (options.disablePasting)
 				return false;
 
-			if(!options.enablePasteFiltering)
+			if (!options.enablePasteFiltering)
 				return;
 
 			rangeHelper.saveRange();
@@ -1326,19 +1328,16 @@
 				if ((html = e.clipboardData.getData('text/html')) || (html = e.clipboardData.getData('text/plain')))
 				{
 					pastearea.innerHTML = html;
-
 					handlePasteData(elm, pastearea);
-
-					e.stopPropagation();
-					e.preventDefault();
 					return false;
 				}
 			}
 
 			while(elm.firstChild)
 				prePasteContent.appendChild(elm.firstChild);
-
-			function handlePaste(elm, pastearea) {
+// try make pastearea contenteditable and redirect to that? Might work.
+// Check the tests if still exist, if not re-0create
+			handlePaste = function (elm, pastearea) {
 				if (elm.childNodes.length > 0)
 				{
 					while(elm.firstChild)
@@ -1352,7 +1351,7 @@
 				else
 				{
 					// Allow max 25 checks before giving up.
-					// Needed inscase empty input is pasted or
+					// Needed in case an empty string is pasted or
 					// something goes wrong.
 					if(checkCount > 25)
 					{
@@ -1368,7 +1367,7 @@
 						handlePaste(elm, pastearea);
 					}, 20);
 				}
-			}
+			};
 			handlePaste(elm, pastearea);
 
 			base.focus();
@@ -1384,7 +1383,7 @@
 		handlePasteData = function(elm, pastearea) {
 			// fix any invalid nesting
 			$.sceditor.dom.fixNesting(pastearea);
-
+// Trigger custom paste event to allow filtering (pre and post converstion?)
 			var pasteddata = pastearea.innerHTML;
 
 			if(pluginManager.hasHandler("toSource"))

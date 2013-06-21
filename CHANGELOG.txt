@@ -27,7 +27,9 @@ Version 1.4.4:
 	Improved unlink to remove links without selecing the whole link.
 		- Thanks to @liamdawe for reporting.
 	Fixed newline after [quote] being stripped.
-		- thanks to @liamdawe for reporting.
+		- Thanks to @liamdawe for reporting.
+	Fixed IE bug loading initially loading shorthand colors.
+		- Thanks to @Olive140 for reporting.
 
 Version 1.4.3:
 	Added css() method which allows getting/setting inline CSS for the WYSIWYG editor.

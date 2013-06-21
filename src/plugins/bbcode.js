@@ -1792,19 +1792,19 @@
 	 * @param {String} color
 	 * @return {String}
 	 */
-	$.sceditor.plugins.bbcode.normaliseColour = function(color) {
-		var m;
+	var normaliseColour = $.sceditor.plugins.bbcode.normaliseColour = function(color) {
+		var m, toHex;
 
-		function toHex(n) {
+		toHex = function (n) {
 			n = parseInt(n, 10);
 
 			if(isNaN(n))
-				return "00";
+				return '00';
 
-			n = Math.max(0,Math.min(n,255)).toString(16);
+			n = Math.max(0, Math.min(n, 255)).toString(16);
 
-			return n.length<2 ? '0'+n : n;
-		}
+			return n.length < 2 ? '0' + n : n;
+		};
 
 		// rgb(n,n,n);
 		if((m = color.match(/rgb\((\d{1,3}),\s*?(\d{1,3}),\s*?(\d{1,3})\)/i)))
@@ -1983,10 +1983,10 @@
 				if(element.nodeName.toLowerCase() !== "font" || !(color = $element.attr('color')))
 					color = element.style.color || $element.css('color');
 
-				return '[color=' + $.sceditor.plugins.bbcode.normaliseColour(color) + ']' + content + '[/color]';
+				return '[color=' + normaliseColour(color) + ']' + content + '[/color]';
 			},
 			html: function(token, attrs, content) {
-				return '<font color="' + attrs.defaultattr + '">' + content + '</font>';
+				return '<font color="' + normaliseColour(attrs.defaultattr) + '">' + content + '</font>';
 			}
 		},
 		// END_COMMAND

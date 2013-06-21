@@ -799,7 +799,7 @@
 
 		equal(
 			this.sb.signalToWysiwyg("[color=#000]test[/color]"),
-			"<div><font color=\"#000\">test</font></div>\n",
+			"<div><font color=\"#000000\">test</font></div>\n",
 			"Normal"
 		);
 
