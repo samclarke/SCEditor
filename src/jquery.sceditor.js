@@ -2927,7 +2927,7 @@
 	 * @return {Boolean}
 	 */
 	$.sceditor.isWysiwygSupported = (function() {
-		var	match,
+		var	match, isUnsupported,
 			contentEditable          = $('<div contenteditable="true">')[0].contentEditable,
 			contentEditableSupported = typeof contentEditable !== 'undefined' && contentEditable !== 'inherit',
 			userAgent                = navigator.userAgent;
@@ -2939,22 +2939,16 @@
 		// give a valid value for the contentEditable detection above
 		// so it's not included here.
 
-
-		// The latest WebOS does support contentEditable.
-		// Still till need to check if all supported
-		// versions of WebOS support contentEditable
-
-
 		// I hate having to use UA sniffing but some mobile browsers say they support
 		// contentediable/design mode when it isn't usable (i.e. you can't enter text, ect.).
 		// This is the only way I can think of to detect them which is also how every other
 		// editor I've seen deals with this
-		var isUnsupported = /Opera Mobi|Opera Mini/i.test(userAgent);
+		isUnsupported = /Opera Mobi|Opera Mini/i.test(userAgent);
 
 		if(/Android/i.test(userAgent))
 		{
-
 			isUnsupported = true;
+
 			if(/Safari/.test(userAgent))
 			{
 				// Android browser 534+ supports content editable
