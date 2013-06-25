@@ -31,6 +31,7 @@ Version 1.4.4:
 	Fixed IE bug loading initially loading shorthand colors.
 		- Thanks to @Olive140 for reporting.
 	Added bbcodeTrim option.
+	Fixed bug with stripWhiteSpace and saved ranges causing a space after the caret to be removed.
 
 Version 1.4.3:
 	Added css() method which allows getting/setting inline CSS for the WYSIWYG editor.

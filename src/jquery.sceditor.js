@@ -4606,12 +4606,15 @@
 				{
 					next      = getSibling(node);
 					previous  = getSibling(node, true);
-					sibling   = node;
+					sibling   = previous;
 					trimStart = false;
+
+					while($(sibling).hasClass('sceditor-ignore'))
+						sibling = getSibling(sibling, true);
 
 					// If last sibling is not inline or is a textnode ending in whitespace,
 					// the start whitespace should be stripped
-					if(isInline(node) && (sibling = getSibling(sibling, true)))
+					if(isInline(node) && sibling)
 					{
 						while(sibling.lastChild)
 							sibling = sibling.lastChild;
