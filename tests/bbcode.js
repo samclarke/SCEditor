@@ -2,7 +2,7 @@
 (function() {
 	'use strict';
 
-	module("BBCode Parser", {
+	module('BBCode Parser', {
 		setup: function() {
 			this.sb = new $.sceditor.plugins.bbcode();
 			this.sb.init.call({
@@ -11,16 +11,16 @@
 		}
 	});
 
-	test("Invalid nesting", function() {
+	test('Invalid nesting', function() {
 		expect(1);
 
-		var $dom = html2dom("<span style='color: #000'>this<blockquote>is</blockquote>a test</span>", true);
+		var $dom = html2dom('<span style="color: #000">this<blockquote>is</blockquote>a test</span>', true);
 		$.sceditor.dom.fixNesting($dom[0]);
 
 		equal(
 			this.sb.signalToSource("", $dom),
-			"[color=#000000]this[/color]\n[quote][color=#000000]is[/color][/quote]\n[color=#000000]a test[/color]",
-			"Invalid block level nesting"
+			'[color=#000000]this[/color]\n[quote][color=#000000]is[/color][/quote]\n[color=#000000]a test[/color]',
+			'Invalid block level nesting'
 		);
 	});
 
@@ -88,7 +88,7 @@
 		// pre used to populate the code tag in IE, could you a style.
 		equal(
 			this.sb.signalToSource("", html2dom("<code><pre>Some            White \n      \n     space</pre></code>", true)).replace(/\r/g, '\n'),
-			"[code]Some            White \n      \n     space[/code]",
+			"[code]Some            White \n      \n     space[/code]\n",
 			"Leave code spaces"
 		);
 
@@ -99,67 +99,67 @@
 		);
 	});
 
-	test("New line handling", function() {
+	test('New line handling', function() {
 		expect(10);
 
 		equal(
-			this.sb.signalToSource("", html2dom("textnode<div>new line before and after </div>textnode", true)),
-			"textnode\nnew line before and after \ntextnode",
-			"Textnode before and after block level element"
+			this.sb.signalToSource('', html2dom('textnode<div>new line before and after </div>textnode', true)),
+			'textnode\nnew line before and after \ntextnode',
+			'Textnode before and after block level element'
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("textnode <span>no new line before and after </span>textnode", true)),
-			"textnode no new line before and after textnode",
-			"Textnode before and after inline element"
+			this.sb.signalToSource('', html2dom('textnode <span>no new line before and after </span>textnode', true)),
+			'textnode no new line before and after textnode',
+			'Textnode before and after inline element'
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<div>text<div>text</div>text</div>", true)),
-			"text\ntext\ntext",
-			"Nested divs"
+			this.sb.signalToSource('', html2dom('<div>text<div>text</div>text</div>', true)),
+			'text\ntext\ntext',
+			'Nested divs'
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<div><span>text</span><div>text</div><span>text</span></div>", true)),
-			"text\ntext\ntext",
-			"Nested div with span siblings"
+			this.sb.signalToSource('', html2dom('<div><span>text</span><div>text</div><span>text</span></div>', true)),
+			'text\ntext\ntext',
+			'Nested div with span siblings'
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<div><div>text</div><div>text</div><div>text</div></div>", true)),
-			"text\ntext\ntext",
-			"Nested div with div siblings"
+			this.sb.signalToSource('', html2dom('<div><div>text</div><div>text</div><div>text</div></div>', true)),
+			'text\ntext\ntext',
+			'Nested div with div siblings'
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<div><div>text</div><div>" + ($.sceditor.ie ? '' : "<br />") + "</div><div>text</div></div>", true)),
-			"text\n\ntext",
-			"Nested div with br and div siblings"
+			this.sb.signalToSource('', html2dom('<div><div>text</div><div>' + ($.sceditor.ie ? '' : '<br />') + '</div><div>text</div></div>', true)),
+			'text\n\ntext',
+			'Nested div with br and div siblings'
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<div>text</div><div>" + ($.sceditor.ie ? '' : "<br />") + "</div><ul><li>text</li></ul>", true)),
-			"text\n\n[ul]\n[li]text[/li]\n[/ul]",
-			"Div siblings with a list"
+			this.sb.signalToSource('', html2dom('<div>text</div><div>' + ($.sceditor.ie ? '' : '<br />') + '</div><ul><li>text</li></ul>', true)),
+			'text\n\n[ul]\n[li]text[/li]\n[/ul]\n',
+			'Div siblings with a list'
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<div>text</div><div>" + ($.sceditor.ie ? '' : "<br />") + "</div><div>" + ($.sceditor.ie ? '' : "<br />") + "</div><ul><li>text</li></ul>", true)),
-			"text\n\n\n[ul]\n[li]text[/li]\n[/ul]",
-			"Multiple div siblings with a list"
+			this.sb.signalToSource('', html2dom('<div>text</div><div>' + ($.sceditor.ie ? '' : '<br />') + '</div><div>' + ($.sceditor.ie ? '' : '<br />') + '</div><ul><li>text</li></ul>', true)),
+			'text\n\n\n[ul]\n[li]text[/li]\n[/ul]\n',
+			'Multiple div siblings with a list'
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<div>text<br />text</div>", true)),
-			"text\ntext",
-			"BR tag"
+			this.sb.signalToSource('', html2dom('<div>text<br />text</div>', true)),
+			'text\ntext',
+			'BR tag'
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<div>text<br />text<br /></div>", true)),
-			"text\ntext",
-			"Collapsed end BR tag"
+			this.sb.signalToSource('', html2dom('<div>text<br />text' + ($.sceditor.ie ? '' : '<br />') + '</div>', true)),
+			'text\ntext',
+			'Collapsed end BR tag'
 		);
 	});
 
@@ -426,19 +426,19 @@
 
 		equal(
 			this.sb.signalToSource("", html2dom("<ul><li>test" + ($.sceditor.ie ? '' : "<br />") + "</li></ul>", true)),
-			"[ul]\n[li]test[/li]\n[/ul]",
+			"[ul]\n[li]test[/li]\n[/ul]\n",
 			"UL tag"
 		);
 
 		equal(
 			this.sb.signalToSource("", html2dom("<ol><li>test" + ($.sceditor.ie ? '' : "<br />") + "</li></ol>", true)),
-			"[ol]\n[li]test[/li]\n[/ol]",
+			"[ol]\n[li]test[/li]\n[/ol]\n",
 			"OL tag"
 		);
 
 		equal(
 			this.sb.signalToSource("", html2dom("<ul><li>test<ul><li>sub" + ($.sceditor.ie ? '' : "<br />") + "</li></ul></li></ul>", true)),
-			"[ul]\n[li]test\n[ul]\n[li]sub[/li]\n[/ul]\n[/li]\n[/ul]",
+			"[ul]\n[li]test\n[ul]\n[li]sub[/li]\n[/ul]\n[/li]\n[/ul]\n",
 			"Nested UL tag"
 		);
 	});
@@ -448,7 +448,7 @@
 
 		equal(
 			this.sb.signalToSource("", html2dom("<table><tr><th>test</th></tr><tr><td>data1</td></tr></table>", true)),
-			"[table][tr][th]test[/th]\n[/tr]\n[tr][td]data1[/td]\n[/tr]\n[/table]",
+			"[table][tr][th]test[/th]\n[/tr]\n[tr][td]data1[/td]\n[/tr]\n[/table]\n",
 			"Table tag"
 		);
 	});
@@ -468,7 +468,7 @@
 
 		equal(
 			this.sb.signalToSource("", html2dom("<hr />", true)),
-			"[hr]",
+			"[hr]\n",
 			"HR tag"
 		);
 	});
@@ -532,25 +532,25 @@
 
 		equal(
 			this.sb.signalToSource("", html2dom("<blockquote>Testing 1.2.3....</blockquote>", true)),
-			"[quote]Testing 1.2.3....[/quote]",
+			"[quote]Testing 1.2.3....[/quote]\n",
 			"Simple quote"
 		);
 
 		equal(
 			this.sb.signalToSource("", html2dom("<blockquote><cite>admin</cite>Testing 1.2.3....</blockquote>", true)),
-			"[quote=admin]Testing 1.2.3....[/quote]",
+			"[quote=admin]Testing 1.2.3....[/quote]\n",
 			"Quote with cite (author)"
 		);
 
 		equal(
 			this.sb.signalToSource("", html2dom("<blockquote><cite>admin</cite>Testing 1.2.3....<blockquote><cite>admin</cite>Testing 1.2.3....</blockquote></blockquote>", true)),
-			"[quote=admin]Testing 1.2.3....\n[quote=admin]Testing 1.2.3....[/quote]\n[/quote]",
+			"[quote=admin]Testing 1.2.3....\n[quote=admin]Testing 1.2.3....[/quote]\n[/quote]\n",
 			"Nested quote with cite (author)"
 		);
 
 		equal(
 			this.sb.signalToSource("", html2dom("<blockquote><cite>admin</cite><cite>this should be ignored</cite> Testing 1.2.3....</blockquote>", true)),
-			"[quote=admin]this should be ignored Testing 1.2.3....[/quote]",
+			"[quote=admin]this should be ignored Testing 1.2.3....[/quote]\n",
 			"Quote with 2 cites (author)"
 		);
 	});
@@ -560,13 +560,13 @@
 
 		equal(
 			this.sb.signalToSource("", html2dom("<code>Testing 1.2.3....</code>", true)),
-			"[code]Testing 1.2.3....[/code]",
+			"[code]Testing 1.2.3....[/code]\n",
 			"Simple code"
 		);
 
 		equal(
 			this.sb.signalToSource("", html2dom("<code><b>ignore this</b> Testing 1.2.3....</code>", true)),
-			"[code]ignore this Testing 1.2.3....[/code]",
+			"[code]ignore this Testing 1.2.3....[/code]\n",
 			"Code with styling"
 		);
 	});
@@ -576,13 +576,13 @@
 
 		var ret = this.sb.signalToSource("", html2dom("<div style='text-align: left'>test</div>", true));
 		ok(
-			ret === "[left]test[/left]" || ret === 'test',
+			ret === "[left]test[/left]\n" || ret === 'test',
 			"Div CSS text-align"
 		);
 
 		ret = this.sb.signalToSource("", html2dom("<p style='text-align: left'>test</p>", true));
 		ok(
-			ret === "[left]test[/left]" || ret === 'test',
+			ret === "[left]test[/left]\n" || ret === 'test',
 			"P CSS text-align"
 		);
 	});
@@ -592,25 +592,25 @@
 
 		equal(
 			this.sb.signalToSource("", html2dom("<div style='text-align: right'>test</div>", true)),
-			"[right]test[/right]",
+			"[right]test[/right]\n",
 			"Div CSS text-align"
 		);
 
 		equal(
 			this.sb.signalToSource("", html2dom("<p style='text-align: right'>test</p>", true)),
-			"[right]test[/right]",
+			"[right]test[/right]\n",
 			"P CSS text-align"
 		);
 
 		equal(
 			this.sb.signalToSource("", html2dom("<p align='right'>test</p>", true)),
-			"[right]test[/right]",
+			"[right]test[/right]\n",
 			"P align"
 		);
 
 		equal(
 			this.sb.signalToSource("", html2dom("<div align='right'>test</div>", true)),
-			"[right]test[/right]",
+			"[right]test[/right]\n",
 			"Div align"
 		);
 	});
@@ -620,25 +620,25 @@
 
 		equal(
 			this.sb.signalToSource("", html2dom("<div style='text-align: center'>test</div>", true)),
-			"[center]test[/center]",
+			"[center]test[/center]\n",
 			"Div CSS text-align"
 		);
 
 		equal(
 			this.sb.signalToSource("", html2dom("<p style='text-align: center'>test</p>", true)),
-			"[center]test[/center]",
+			"[center]test[/center]\n",
 			"P CSS text-align"
 		);
 
 		equal(
 			this.sb.signalToSource("", html2dom("<p align='center'>test</p>", true)),
-			"[center]test[/center]",
+			"[center]test[/center]\n",
 			"P align"
 		);
 
 		equal(
 			this.sb.signalToSource("", html2dom("<div align='center'>test</div>", true)),
-			"[center]test[/center]",
+			"[center]test[/center]\n",
 			"Div align"
 		);
 	});
@@ -648,25 +648,25 @@
 
 		equal(
 			this.sb.signalToSource("", html2dom("<div style='text-align: justify'>test</div>", true)),
-			"[justify]test[/justify]",
+			"[justify]test[/justify]\n",
 			"Div CSS text-align"
 		);
 
 		equal(
 			this.sb.signalToSource("", html2dom("<p style='text-align: justify'>test</p>", true)),
-			"[justify]test[/justify]",
+			"[justify]test[/justify]\n",
 			"P CSS text-align"
 		);
 
 		equal(
 			this.sb.signalToSource("", html2dom("<p align='justify'>test</p>", true)),
-			"[justify]test[/justify]",
+			"[justify]test[/justify]\n",
 			"P align"
 		);
 
 		equal(
 			this.sb.signalToSource("", html2dom("<div align='justify'>test</div>", true)),
-			"[justify]test[/justify]",
+			"[justify]test[/justify]\n",
 			"Div align"
 		);
 	});
@@ -686,7 +686,7 @@
 
 		equal(
 			this.sb.signalToSource("", html2dom("<ul><li>newline<br />" + ($.sceditor.ie ? '' : "<br />") + "</li></ul>", true)),
-			"[ul]\n[li]newline\n[/li]\n[/ul]",
+			"[ul]\n[li]newline\n[/li]\n[/ul]\n",
 			"List item last child block level"
 		);
 
@@ -1007,18 +1007,18 @@
 
 
 
-	module("BBCode Insert Filter");
+	module('BBCode Insert Filter');
 
-	test("Removal check", function() {
+	test('Removal check', function() {
 		expect(4);
 
-		var $textarea = $("#qunit-fixture textarea:first");
+		var $textarea = $('#qunit-fixture textarea:first');
 
-		$.sceditor.plugins.bbcode.bbcode.set("test", {
+		$.sceditor.plugins.bbcode.bbcode.set('test', {
 			format: '[test]{0}[/test]',
 			html: '<div style="font-weight:bold">{0}</div>',
 			styles: {
-				"font-weight": ["bold"]
+				'font-weight': ['bold']
 			},
 			tags: {
 				div: {
@@ -1030,55 +1030,55 @@
 			allowsEmpty: true
 		});
 		$textarea.sceditor({ plugins: 'bbcode' });
-		$textarea.sceditor("instance").insert('[test]', '[/test]');
+		$textarea.sceditor('instance').insert('[test]', '[/test]');
 		equal(
-			$textarea.sceditor("instance").val(),
-			"[test][/test]",
-			"Style check"
+			$textarea.sceditor('instance').val(),
+			'[test][/test]\n',
+			'Style check'
 		);
-		$textarea.sceditor("instance").destroy();
+		$textarea.sceditor('instance').destroy();
 
 
 
-		$.sceditor.plugins.bbcode.bbcode.set("test", {
+		$.sceditor.plugins.bbcode.bbcode.set('test', {
 			html: '<div class="test">{0}</div>'
 		});
 		$textarea.sceditor({ plugins: 'bbcode' });
-		$textarea.sceditor("instance").insert('[test]', '[/test]');
+		$textarea.sceditor('instance').insert('[test]', '[/test]');
 		equal(
-			$textarea.sceditor("instance").val(),
-			"[test][/test]",
-			"Class check"
+			$textarea.sceditor('instance').val(),
+			'[test][/test]\n',
+			'Class check'
 		);
-		$textarea.sceditor("instance").destroy();
+		$textarea.sceditor('instance').destroy();
 
 
 
-		$.sceditor.plugins.bbcode.bbcode.set("test", {
+		$.sceditor.plugins.bbcode.bbcode.set('test', {
 			html: '<div data-test="test">{0}</div>'
 		});
 		$textarea.sceditor({ plugins: 'bbcode' });
-		$textarea.sceditor("instance").insert('[test]', '[/test]');
+		$textarea.sceditor('instance').insert('[test]', '[/test]');
 		equal(
-			$textarea.sceditor("instance").val(),
-			"[test][/test]",
-			"Data check"
+			$textarea.sceditor('instance').val(),
+			'[test][/test]\n',
+			'Data check'
 		);
-		$textarea.sceditor("instance").destroy();
+		$textarea.sceditor('instance').destroy();
 
 
 
-		$.sceditor.plugins.bbcode.bbcode.set("test", {
+		$.sceditor.plugins.bbcode.bbcode.set('test', {
 			html: '<div>{0}</div>'
 		});
 		$textarea.sceditor({ plugins: 'bbcode' });
-		$textarea.sceditor("instance").insert('[test]', '[/test]');
+		$textarea.sceditor('instance').insert('[test]', '[/test]');
 		equal(
-			$textarea.sceditor("instance").val(),
-			"",
-			"Nothing check"
+			$textarea.sceditor('instance').val(),
+			'',
+			'Nothing check'
 		);
-		$textarea.sceditor("instance").destroy();
+		$textarea.sceditor('instance').destroy();
 
 
 		$.sceditor.plugins.bbcode.bbcode.remove("test");
@@ -1198,7 +1198,7 @@
 
 		equal(
 			this.sb.signalToSource("", html2dom("<b><br /></b>", true)),
-			"",
+			"\n",
 			"Bold tag with newline"
 		);
 
@@ -1216,13 +1216,13 @@
 
 		equal(
 			this.sb.signalToSource("", html2dom("<b><span><br /></span></b>", true)),
-			"",
+			"\n",
 			"Bold tag with only whitespace content"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<b><span><span><span></span><span></span></span><br /></span></b>", true)),
-			"",
+			this.sb.signalToSource("", html2dom("<b><span><span><span></span><span></span></span>   </span></b>", true)),
+			" ",
 			"Bold tag with only whitespace content"
 		);
 
@@ -1272,6 +1272,21 @@
 			ret === "[font='Arial Black', Arial]test[/font]" || ret === '[font="Arial Black", Arial]test[/font]' ||
 			ret === "[font='Arial Black',Arial]test[/font]" || ret === "[font=Arial Black]test[/font]",
 			"Quotes that shouldn't be stripped"
+		);
+	});
+
+
+	test('Don\'t strip start and end spaces', function() {
+		expect(1);
+
+		equal(
+			this.sb.signalToWysiwyg('\n\n[quote]test[/quote]\n\n\n\n'),
+			'<div>' + ($.sceditor.ie ? '' : '<br />') + '</div>\n' +
+			'<div>' + ($.sceditor.ie ? '' : '<br />') + '</div>\n' +
+			'<blockquote>test' + ($.sceditor.ie ? '' : '<br />') + '</blockquote>' +
+			'<div>' + ($.sceditor.ie ? '' : '<br />') + '</div>\n' +
+			'<div>' + ($.sceditor.ie ? '' : '<br />') + '</div>\n' +
+			'<div><br />' + ($.sceditor.ie ? '' : '<br />') + '</div>\n'
 		);
 	});
 
@@ -1479,6 +1494,55 @@
 			"[quote quoted='anything that does not have an equals after it date=1353794172\\' link=anythingEvenEquals=as long as no space up to the equals' " +
 			"author='anything that does not have an equals after it' date='1353794172' link='anythingEvenEquals=as long as no space up to the equals' test='la']asd[/quote]\n",
 			"Multi-Attribute test"
+		);
+	});
+
+
+
+
+	module('BBCode triming', {
+		setup: function() {
+			this.sb = new $.sceditor.plugins.bbcode();
+			this.sb.init.call({
+				opts: $.extend({}, $.sceditor.defaultOptions, { bbcodeTrim: true })
+			});
+		}
+	});
+
+	test('BBcode to HTML trim', function() {
+		expect(2);
+
+		equal(
+			this.sb.signalToWysiwyg(
+				'\n\n[quote]test[/quote]\n\n'
+			),
+			'<blockquote>test' + (!$.sceditor.ie ? '<br />': '') +'</blockquote>',
+			'Block level'
+		);
+
+		equal(
+			this.sb.signalToWysiwyg(
+				'\n\n[b]test[/b]\n\n'
+			),
+			'<div><strong>test</strong></div>\n',
+			'Inline'
+		);
+	});
+
+	test('HTML to BBCode trim', function() {
+		expect(2);
+
+		equal(
+			this.sb.signalToSource('', html2dom('<div><br /><br /></div><blockquote>test</blockquote><div><br /><br /></div>', true)),
+			'[quote]test[/quote]',
+			'Block level'
+		);
+
+
+		equal(
+			this.sb.signalToSource('', html2dom('<div><br /><br /><strong>test</strong><br /><br /><br /></div>', true)),
+			'[b]test[/b]',
+			'Inline'
 		);
 	});
 })();

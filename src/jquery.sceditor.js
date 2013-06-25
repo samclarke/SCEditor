@@ -2229,24 +2229,24 @@
 		 * @private
 		 */
 		appendNewLine = function() {
-			var name, inBlock, div;
+			var name, requiresNewLine, div;
 
 			$.sceditor.dom.rTraverse($wysiwygBody[0], function(node) {
 				name = node.nodeName.toLowerCase();
 
 				if($.inArray(name, requireNewLineFix) > -1)
-					inBlock = true;
+					requiresNewLine = true;
 
 				// find the last non-empty text node or line break.
-				if((node.nodeType === 3 && !/^\s*$/.test(node.nodeValue)) ||
-					node.nodeName.toLowerCase() === 'br' ||
+				if((node.nodeType === 3 && !/^\s*$/.test(node.nodeValue)) || name === 'br' ||
 					($.sceditor.ie && !node.firstChild && !$.sceditor.dom.isInline(node, false)))
 				{
 					// this is the last text or br node, if its in a code or quote tag
 					// then add a newline to the end of the editor
-					if(inBlock)
+					if(requiresNewLine)
 					{
 						div = $wysiwygBody[0].ownerDocument.createElement('div');
+						div.className = 'sceditor-nlf';
 						div.innerHTML = !$.sceditor.ie ? '<br />' : '';
 						$wysiwygBody[0].appendChild(div);
 					}
@@ -3489,16 +3489,16 @@
 				if(html)
 				{
 					author = (author ? '<cite>' + author + '</cite>' : '');
-					before = before + author + html + end + '<br />';
+					before = before + author + html + end;
 					end    = null;
 				}
 				// if not add a newline to the end of the inserted quote
-				else if(this.getRangeHelper().selectedHtml() === "")
-					end = '<br />' + end;
+				else if(this.getRangeHelper().selectedHtml() === '')
+					end = $.sceditor.ie ? '' : '<br />' + end;
 
 				this.wysiwygEditorInsertHtml(before, end);
 			},
-			tooltip: "Insert a Quote"
+			tooltip: 'Insert a Quote'
 		},
 		// END_COMMAND
 
@@ -5296,6 +5296,12 @@
 		 * @type {Int}
 		 */
 		zIndex: null,
+
+		/**
+		 * If to trim the BBCode. Removes any spaces at the start and end of the BBCode string.
+		 * @type {Boolean}
+		 */
+		bbcodeTrim: false,
 
 		/**
 		 * BBCode parser options, only applies if using the editor in BBCode mode.

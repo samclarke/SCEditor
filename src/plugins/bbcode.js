@@ -791,14 +791,14 @@
 		 * @private
 		 */
 		removeEmpty = function(tokens) {
-			var	token, bbcode, allWhiteSpace,
+			var	token, bbcode, isTokenWhiteSpace,
 				i = tokens.length;
 
 			/**
 			 * Checks if all children are whitespace or not
 			 * @private
 			 */
-			allWhiteSpace = function(children) {
+			isTokenWhiteSpace = function(children) {
 				var j = children.length;
 
 				while(j--)
@@ -828,7 +828,7 @@
 				// removed this one doesn't think it's not empty.
 				removeEmpty(token.children);
 
-				if(allWhiteSpace(token.children) && bbcode && !bbcode.isSelfClosing && !bbcode.allowsEmpty)
+				if(isTokenWhiteSpace(token.children) && bbcode && !bbcode.isSelfClosing && !bbcode.allowsEmpty)
 					tokens.splice.apply(tokens, $.merge([i, 1], token.children));
 			}
 		};
@@ -895,34 +895,37 @@
 						continue;
 					}
 
-					// if already in a block wrap then just closing it
-					// will act as a line-break.
-					if(blockWrapOpen)
+					// If not already in a block wrap then start a new block
+					if(!blockWrapOpen)
 					{
-						ret.push('</div>\n');
-						blockWrapOpen = false;
-						continue;
+						ret.push('<div>');
+
+						// If it's an empty DIV and compatibility mode is below IE8 then
+						// we must add a non-breaking space to the div otherwise the div
+						// will be collapsed. Adding a BR works but when you press enter
+						// to make a newline it suddenly goes back to the normal IE div
+						// behaviour and creates two lines, one for the newline and one
+						// for the BR. I'm sure there must be a better fix but I've yet to
+						// find one.
+						// Cannot do zoom: 1; or set a height on the div to fix it as that
+						// causes resize handles to be added to the div when it's clicked on/
+						if((document.documentMode && document.documentMode < 8) || $.sceditor.ie < 8)
+							ret.push('\u00a0');
 					}
 
-					ret.push('<div>');
-
-					// Putting BR in a div in IE9 causes it to do a double line break.
+					// Putting BR in a div in IE causes it to do a double line break.
 					if(!$.sceditor.ie)
 						ret.push('<br />');
 
-					// If it's an empty DIV and compatibility mode is below IE8 then
-					// we must add a non-breaking space to the div otherwise the div
-					// will be collapsed. Adding a BR works but when you press enter
-					// to make a newline it suddenly goes back to the normal IE div
-					// behaviour and creates two lines, one for the newline and one
-					// for the BR. I'm sure there must be a better fix but I've yet to
-					// find one.
-					// Cannot do zoom: 1; or set a height on the div to fix it as that
-					// causes resize handles to be added to the div when it's clicked on/
-					if((document.documentMode && document.documentMode < 8) || $.sceditor.ie < 8)
-						ret.push('\u00a0');
+					// Normally the div acts as a line-break with by moving whatever comes
+					// after onto a new line.
+					// If this is the last token, add an extra line-break so it shows as
+					// there will be nothing after it.
+					if(!tokens.length)
+						ret.push('<br />');
 
 					ret.push('</div>\n');
+					blockWrapOpen = false;
 					continue;
 				}
 				else // content
@@ -1472,11 +1475,10 @@
 		/**
 		 * Checks if any bbcode styles match the elements styles
 		 *
-		 * @private
 		 * @return string Content with any matching bbcode tags wrapped around it.
-		 * @Private
+		 * @private
 		 */
-		handleStyles = function(element, content, blockLevel) {
+		handleStyles = function($element, content, blockLevel) {
 			var	elementPropVal;
 
 			// convert blockLevel to boolean
@@ -1486,18 +1488,18 @@
 				return content;
 
 			$.each(stylesToBbcodes[blockLevel], function(property, bbcodes) {
-				elementPropVal = getStyle(element[0], property);
+				elementPropVal = getStyle($element[0], property);
 
 				// if the parent has the same style use that instead of this one
 				// so you don't end up with [i]parent[i]child[/i][/i]
-				if(!elementPropVal || getStyle(element.parent()[0], property) === elementPropVal)
+				if(!elementPropVal || getStyle($element.parent()[0], property) === elementPropVal)
 					return;
 
 				$.each(bbcodes, function(bbcode, values) {
 					if(!values || $.inArray(elementPropVal.toString(), values) > -1)
 					{
 						if($.isFunction(base.bbcodes[bbcode].format))
-							content = base.bbcodes[bbcode].format.call(base, element, content);
+							content = base.bbcodes[bbcode].format.call(base, $element, content);
 						else
 							content = formatString(base.bbcodes[bbcode].format, content);
 					}
@@ -1510,15 +1512,15 @@
 		/**
 		 * Handles a HTML tag and finds any matching bbcodes
 		 *
-		 * @private
 		 * @param {jQuery} element The element to convert
 		 * @param {String} content The Tags text content
 		 * @param {Bool} blockLevel If to convert block level tags
 		 * @return {String} Content with any matching bbcode tags wrapped around it.
-		 * @Private
+		 * @private
 		 */
 		handleTags = function($element, content, blockLevel) {
-			var tag = $element[0].nodeName.toLowerCase();
+			var	element = $element[0],
+				tag     = element.nodeName.toLowerCase();
 
 			// convert blockLevel to boolean
 			blockLevel = !!blockLevel;
@@ -1554,26 +1556,31 @@
 				});
 			}
 
-			if(blockLevel && (!$.sceditor.dom.isInline($element[0], true) || tag === "br"))
+			if(blockLevel && (!$.sceditor.dom.isInline(element, true) || tag === 'br'))
 			{
-				var	parent		= $element[0].parentNode,
-					previousSibling = $element[0].previousSibling,
-					parentIsInline	= $.sceditor.dom.isInline(parent, true) || parent.nodeName.toLowerCase() === "body";
+				var	parent		= element.parentNode,
+					parentLastChild = parent.lastChild,
+					previousSibling = element.previousSibling,
+					parentIsInline	= $.sceditor.dom.isInline(parent, true);
 
 				// skips selection makers and other ignored items
 				while(previousSibling && $(previousSibling).hasClass('sceditor-ignore'))
 					previousSibling = previousSibling.previousSibling;
 
-				// If this br/block element inside an inline element.
-				// If this is not the last block level as the last block level is collapsed.
-				// If this is an li element.
-				// If IE and the tag is BR. IE never collapses BR's
-				if(parentIsInline || parent.lastChild !== $element[0] || tag === "li" || (tag === "br" && $.sceditor.ie))
-					content += "\n";
+				while($(parentLastChild).hasClass('sceditor-ignore'))
+					parentLastChild = parentLastChild.previousSibling;
+
+				// If this is
+				//	A br/block element inside an inline element.
+				//	The last block level as the last block level is collapsed.
+				//	Is an li element.
+				//	Is IE and the tag is BR. IE never collapses BR's
+				if(parentIsInline || parentLastChild !== element || tag === 'li' || (tag === 'br' && $.sceditor.ie))
+					content += '\n';
 
 				// Check for <div>text<div>This needs a newline prepended</div></div>
-				if("br" !== tag && previousSibling && previousSibling.nodeName.toLowerCase() != 'br' && $.sceditor.dom.isInline(previousSibling, true))
-					content = "\n" + content;
+				if('br' !== tag && previousSibling && previousSibling.nodeName.toLowerCase() !== 'br' && $.sceditor.dom.isInline(previousSibling, true))
+					content = '\n' + content;
 			}
 
 			return content;
@@ -1610,7 +1617,12 @@
 			if($tmpContainer)
 				$tmpContainer.remove();
 
-			return $.trim(parser.toBBCode(bbcode, true));
+			bbcode = parser.toBBCode(bbcode, true);
+
+			if(base.opts.bbcodeTrim)
+				bbcode = $.trim(bbcode);
+
+			return bbcode;
 		};
 
 		/**
@@ -1628,12 +1640,13 @@
 				var ret = '';
 // TODO: Move to BBCode class?
 				$.sceditor.dom.traverse(node, function(node) {
-					var	$node		= $(node),
-						curTag		= '',
-						nodeType        = node.nodeType,
-						tag		= node.nodeName.toLowerCase(),
-						vChild		= validChildren[tag],
-						isValidChild	= true;
+					var	$node        = $(node),
+						curTag       = '',
+						nodeType     = node.nodeType,
+						tag          = node.nodeName.toLowerCase(),
+						vChild       = validChildren[tag],
+						firstChild   = node.firstChild,
+						isValidChild = true;
 
 					if(typeof vChildren === 'object')
 					{
@@ -1646,8 +1659,7 @@
 							vChild = vChildren;
 					}
 
-					// 3 = text
-					// 1 = element
+					// 3 = text and 1 = element
 					if(nodeType !== 3 && nodeType !== 1)
 						return;
 
@@ -1657,9 +1669,19 @@
 						if($node.hasClass('sceditor-ignore'))
 							return;
 
+						if($node.hasClass('sceditor-nlf'))
+						{
+							if(!firstChild ||
+								(!$.sceditor.ie && (node.childNodes.length > 1 || firstChild.nodeName.toLowerCase() !== 'br')))
+							{
+								return;
+							}
+						}
+
 						// don't loop inside iframes
 						if(tag !== 'iframe')
 							curTag = toBBCode(node, vChild);
+
 // TODO: isValidChild is no longer needed. Should use valid children bbcodes instead
 						if(isValidChild)
 						{
@@ -1692,7 +1714,7 @@
 				}, false, true);
 
 				return ret;
-			}($element.get(0)));
+			}($element[0]));
 		};
 
 		/**
@@ -1705,7 +1727,7 @@
 		 */
 		base.signalToWysiwyg = function(text, asFragment) {
 			var	parser = new $.sceditor.BBCodeParser(base.opts.parserOptions),
-				html   = parser.toHTML(text);
+				html   = parser.toHTML(base.opts.bbcodeTrim ? $.trim(text) : text);
 
 			return asFragment ? removeFirstLastDiv(html) : html;
 		};
@@ -1728,14 +1750,17 @@
 				if(node.className || $(node).attr('style') || !$.isEmptyObject($(node).data()))
 					return;
 
-				while((next = node.firstChild))
-					output.insertBefore(next, node);
+				if($.sceditor.ie || (node.childNodes.length !== 1 || !$(node.firstChild).is('br')))
+				{
+					while((next = node.firstChild))
+						output.insertBefore(next, node);
+				}
 
 				if(isFirst)
 				{
 					var lastChild = output.lastChild;
 
-					if(node !== lastChild && $(lastChild).is("div") && node.nextSibling === lastChild)
+					if(node !== lastChild && $(lastChild).is('div') && node.nextSibling === lastChild)
 						output.insertBefore(document.createElement('br'), node);
 				}
 
@@ -1744,10 +1769,10 @@
 
 			output.innerHTML = html.replace(/<\/div>\n/g, '</div>');
 
-			if((node = output.firstChild) && $(node).is("div"))
+			if((node = output.firstChild) && $(node).is('div'))
 				removeDiv(node, true);
 
-			if((node = output.lastChild) && $(node).is("div"))
+			if((node = output.lastChild) && $(node).is('div'))
 				removeDiv(node);
 
 			output = output.innerHTML;
@@ -1805,6 +1830,8 @@
 
 			return n.length < 2 ? '0' + n : n;
 		};
+
+		color = color || '#000';
 
 		// rgb(n,n,n);
 		if((m = color.match(/rgb\((\d{1,3}),\s*?(\d{1,3}),\s*?(\d{1,3})\)/i)))
@@ -2121,7 +2148,7 @@
 					};
 
 				// check if this is an emoticon image
-				if(typeof $element.attr('data-sceditor-emoticon') !== "undefined")
+				if(typeof $element.attr('data-sceditor-emoticon') !== 'undefined')
 					return content;
 
 				w = $element.attr('width') || style('width');
@@ -2175,10 +2202,7 @@
 				return '[url=' + decodeURI(url) + ']' + content + '[/url]';
 			},
 			html: function(token, attrs, content) {
-				if(typeof attrs.defaultattr === "undefined" || attrs.defaultattr.length === 0)
-					attrs.defaultattr = content;
-
-				return '<a href="' + encodeURI(attrs.defaultattr) + '">' + content + '</a>';
+				return '<a href="' + encodeURI(attrs.defaultattr || content) + '">' + content + '</a>';
 			}
 		},
 		// END_COMMAND
@@ -2187,10 +2211,7 @@
 		email: {
 			quoteType: $.sceditor.BBCodeParser.QuoteType.never,
 			html: function(token, attrs, content) {
-				if(typeof attrs.defaultattr === "undefined")
-					attrs.defaultattr = content;
-
-				return '<a href="mailto:' + attrs.defaultattr + '">' + content + '</a>';
+				return '<a href="mailto:' + (attrs.defaultattr || content) + '">' + content + '</a>';
 			}
 		},
 		// END_COMMAND
@@ -2205,15 +2226,16 @@
 			format: function(element, content) {
 				var	author = '',
 					$elm  = $(element),
-					$cite = $elm.children("cite").first();
+					$cite = $elm.children('cite').first();
 
-				if($cite.length === 1 || $elm.data("author")) {
-					author = $cite.text() || $elm.data("author");
+				if($cite.length === 1 || $elm.data('author'))
+				{
+					author = $cite.text() || $elm.data('author');
 
-					$elm.data("author", author);
+					$elm.data('author', author);
 					$cite.remove();
 
-					$elm.children("cite").replaceWith(function() {
+					$elm.children('cite').replaceWith(function() {
 						return $(this).text();
 					});
 
@@ -2224,7 +2246,7 @@
 				return '[quote' + author + ']' + content + '[/quote]';
 			},
 			html: function(token, attrs, content) {
-				if(typeof attrs.defaultattr !== "undefined")
+				if(attrs.defaultattr)
 					content = '<cite>' + attrs.defaultattr + '</cite>' + content;
 
 				return '<blockquote>' + content + '</blockquote>';
@@ -2239,7 +2261,7 @@
 			},
 			isInline: false,
 			allowedChildren: ['#', '#newline'],
-			format: "[code]{0}[/code]",
+			format: '[code]{0}[/code]',
 			html: '<code>{0}</code>'
 		},
 		// END_COMMAND
@@ -2248,10 +2270,10 @@
 		// START_COMMAND: Left
 		left: {
 			styles: {
-				"text-align": ["left", "-webkit-left", "-moz-left", "-khtml-left"]
+				'text-align': ['left', '-webkit-left', '-moz-left', '-khtml-left']
 			},
 			isInline: false,
-			format: "[left]{0}[/left]",
+			format: '[left]{0}[/left]',
 			html: '<div align="left">{0}</div>'
 		},
 		// END_COMMAND
@@ -2259,10 +2281,10 @@
 		// START_COMMAND: Centre
 		center: {
 			styles: {
-				"text-align": ["center", "-webkit-center", "-moz-center", "-khtml-center"]
+				'text-align': ['center', '-webkit-center', '-moz-center', '-khtml-center']
 			},
 			isInline: false,
-			format: "[center]{0}[/center]",
+			format: '[center]{0}[/center]',
 			html: '<div align="center">{0}</div>'
 		},
 		// END_COMMAND
@@ -2270,10 +2292,10 @@
 		// START_COMMAND: Right
 		right: {
 			styles: {
-				"text-align": ["right", "-webkit-right", "-moz-right", "-khtml-right"]
+				'text-align': ['right', '-webkit-right', '-moz-right', '-khtml-right']
 			},
 			isInline: false,
-			format: "[right]{0}[/right]",
+			format: '[right]{0}[/right]',
 			html: '<div align="right">{0}</div>'
 		},
 		// END_COMMAND
@@ -2281,10 +2303,10 @@
 		// START_COMMAND: Justify
 		justify: {
 			styles: {
-				"text-align": ["justify", "-webkit-justify", "-moz-justify", "-khtml-justify"]
+				'text-align': ['justify', '-webkit-justify', '-moz-justify', '-khtml-justify']
 			},
 			isInline: false,
-			format: "[justify]{0}[/justify]",
+			format: '[justify]{0}[/justify]',
 			html: '<div align="justify">{0}</div>'
 		},
 		// END_COMMAND
@@ -2298,10 +2320,9 @@
 				}
 			},
 			format: function(element, content) {
-				if(!(element = element.attr('data-youtube-id')))
-					return content;
+				element = element.attr('data-youtube-id');
 
-				return '[youtube]' + element + '[/youtube]';
+				return element ? '[youtube]' + element + '[/youtube]' : content;
 			},
 			html: '<iframe width="560" height="315" src="http://www.youtube.com/embed/{0}?wmode=opaque' +
 				'" data-youtube-id="{0}" frameborder="0" allowfullscreen></iframe>'
@@ -2312,9 +2333,9 @@
 		// START_COMMAND: Rtl
 		rtl: {
 			styles: {
-				"direction": ["rtl"]
+				'direction': ['rtl']
 			},
-			format: "[rtl]{0}[/rtl]",
+			format: '[rtl]{0}[/rtl]',
 			html: '<div style="direction: rtl">{0}</div>'
 		},
 		// END_COMMAND
@@ -2322,9 +2343,9 @@
 		// START_COMMAND: Ltr
 		ltr: {
 			styles: {
-				"direction": ["ltr"]
+				'direction': ['ltr']
 			},
-			format: "[ltr]{0}[/ltr]",
+			format: '[ltr]{0}[/ltr]',
 			html: '<div style="direction: ltr">{0}</div>'
 		},
 		// END_COMMAND
