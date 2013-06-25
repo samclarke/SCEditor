@@ -1222,7 +1222,7 @@
 
 		equal(
 			this.sb.signalToSource("", html2dom("<b><span><span><span></span><span></span></span>   </span></b>", true)),
-			" ",
+			$.sceditor.ie < 9 ? '' : ' ',
 			"Bold tag with only whitespace content"
 		);
 
