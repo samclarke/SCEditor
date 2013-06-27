@@ -69,10 +69,6 @@
 			close:   'close'
 		};
 
-		// Make tokenType enum read-only in browsers that support it.
-		if(Object.freeze)
-			Object.freeze(tokenType);
-
 		/**
 		 * Tokenize token class
 		 *
@@ -1138,10 +1134,6 @@
 		 */
 		auto: 3
 	};
-
-	// Make AttributeQuoteType enum read-only in browsers that support it.
-	if(Object.freeze)
-		Object.freeze($.sceditor.BBCodeParser.QuoteType);
 
 	/**
 	 * Default BBCode parser options
