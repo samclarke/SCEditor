@@ -2975,6 +2975,13 @@
 		if(/fennec/i.test(userAgent))
 			isUnsupported = false;
 
+		if(/OneBrowser/i.test(userAgent))
+			isUnsupported = false;
+
+		// UCBrowser works but doesn't give a unique user agent
+		if(navigator.vendor === 'UCWEB')
+			isUnsupported = false;
+
 		return !isUnsupported;
 	}());
 
