@@ -2901,8 +2901,12 @@
 		} while (all[0]);
 
 		// Detect IE 10 as it doesn't support conditional comments.
-		if((document.all && window.atob))
+		if((document.documentMode && document.all && window.atob))
 			v = 10;
+
+		// Detect IE 11
+		if(v === 3 && document.documentMode)
+			v = 11;
 
 		return v > 4 ? v : undef;
 	}());
