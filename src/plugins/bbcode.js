@@ -1921,13 +1921,13 @@
 				}
 			},
 			styles: {
-				"font-family": null
+				'font-family': null
 			},
 			quoteType: $.sceditor.BBCodeParser.QuoteType.never,
 			format: function(element, content) {
 				var font;
 
-				if(element[0].nodeName.toLowerCase() !== "font" || !(font = element.attr('face')))
+				if(element[0].nodeName.toLowerCase() !== 'font' || !(font = element.attr('face')))
 					font = element.css('font-family');
 
 				return '[font=' + this.stripQuotes(font) + ']' + content + '[/font]';
@@ -1946,7 +1946,7 @@
 				}
 			},
 			styles: {
-				"font-size": null
+				'font-size': null
 			},
 			format: function(element, content) {
 				var	fontSize = element.attr('size'),
@@ -1956,9 +1956,9 @@
 					fontSize = element.css('fontSize');
 
 				// Most browsers return px value but IE returns 1-7
-				if(fontSize.indexOf("px") > -1) {
+				if(fontSize.indexOf('px') > -1) {
 					// convert size to an int
-					fontSize = fontSize.replace("px", "") - 0;
+					fontSize = fontSize.replace('px', '') - 0;
 
 					if(fontSize > 12)
 						size = 2;
@@ -1999,7 +1999,7 @@
 				var	color,
 					element = $element[0];
 
-				if(element.nodeName.toLowerCase() !== "font" || !(color = $element.attr('color')))
+				if(element.nodeName.toLowerCase() !== 'font' || !(color = $element.attr('color')))
 					color = element.style.color || $element.css('color');
 
 				return '[color=' + normaliseColour(color) + ']' + content + '[/color]';
