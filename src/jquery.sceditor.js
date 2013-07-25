@@ -353,7 +353,7 @@
 			});
 
 			// Load locale
-			if(options.locale && options.locale !== "en")
+			if(options.locale && options.locale !== 'en')
 				initLocale();
 
 			$editorContainer = $('<div class="sceditor-container" />')
@@ -426,7 +426,7 @@
 				locale = $.sceditor.locale[options.locale];
 			else
 			{
-				lang = options.locale.split("-");
+				lang = options.locale.split('-');
 
 				if($.sceditor.locale[lang[0]])
 					locale = $.sceditor.locale[lang[0]];
@@ -530,7 +530,7 @@
 			$(document).click(handleDocumentClick);
 
 			$(original.form)
-				.bind("reset", handleFormReset)
+				.bind('reset', handleFormReset)
 				.submit(base.updateOriginal);
 
 			$(window).bind('resize orientationChanged', handleWindowResize);
@@ -539,20 +539,20 @@
 				.keypress(handleKeyPress)
 				.keydown(handleKeyDown)
 				.keyup(appendNewLine)
-				.bind("paste", handlePasteEvt)
-				.bind($.sceditor.ie ? "selectionchange" : "keyup focus blur contextmenu mouseup touchend click", checkSelectionChanged)
-				.bind("keydown keyup keypress focus blur contextmenu", handleEvent);
+				.bind('paste', handlePasteEvt)
+				.bind($.sceditor.ie ? 'selectionchange' : 'keyup focus blur contextmenu mouseup touchend click', checkSelectionChanged)
+				.bind('keydown keyup keypress focus blur contextmenu', handleEvent);
 
 			if(options.emoticonsCompat && window.getSelection)
 				$wysiwygBody.keyup(emoticonsCheckWhitespace);
 
-			$sourceEditor.bind("keydown keyup keypress focus blur contextmenu", handleEvent).keydown(handleKeyDown);
+			$sourceEditor.bind('keydown keyup keypress focus blur contextmenu', handleEvent).keydown(handleKeyDown);
 
 			$wysiwygDoc
 				.keypress(handleKeyPress)
 				.mousedown(handleMouseDown)
-				.bind($.sceditor.ie ? "selectionchange" : "focus blur contextmenu mouseup click", checkSelectionChanged)
-				.bind("beforedeactivate keyup", saveRange)
+				.bind($.sceditor.ie ? 'selectionchange' : 'focus blur contextmenu mouseup click', checkSelectionChanged)
+				.bind('beforedeactivate keyup', saveRange)
 				.keyup(appendNewLine)
 				.focus(function() {
 					lastRange = null;
@@ -571,19 +571,19 @@
 		 */
 		initToolBar = function () {
 			var	$group, $button,
-				exclude = (options.toolbarExclude || '').split(","),
-				groups  = options.toolbar.split("|");
+				exclude = (options.toolbarExclude || '').split(','),
+				groups  = options.toolbar.split('|');
 
 			$toolbar = $('<div class="sceditor-toolbar" unselectable="on" />');
 			$.each(groups, function(idx, group) {
 				$group  = $('<div class="sceditor-group" />');
 
-				$.each(group.split(","), function(idx, button) {
+				$.each(group.split(','), function(idx, button) {
 					// The button must be a valid command and not excluded
 					if(!base.commands[button] || $.inArray(button, exclude) > -1)
 						return;
 
-					$button = _tmpl("toolbarButton", {
+					$button = _tmpl('toolbarButton', {
 							name: button,
 							dispName: base._(base.commands[button].tooltip || button)
 						}, true);
@@ -636,7 +636,7 @@
 				if(cmd.state)
 					btnStateHandlers.push({ name: name, state: cmd.state });
 				// exec string commands can be passed to queryCommandState
-				else if(typeof cmd.exec === "string")
+				else if(typeof cmd.exec === 'string')
 					btnStateHandlers.push({ name: name, state: cmd.exec });
 			});
 
@@ -1033,7 +1033,7 @@
 			if(width === false && height === false)
 				return { width: base.width(), height: base.height() };
 
-			if(typeof $wysiwygEditor.data('outerWidthOffset') === "undefined")
+			if(typeof $wysiwygEditor.data('outerWidthOffset') === 'undefined')
 				base.updateStyleCache();
 
 			if(width !== false)
@@ -1388,13 +1388,13 @@
 // Trigger custom paste event to allow filtering (pre and post converstion?)
 			var pasteddata = pastearea.innerHTML;
 
-			if(pluginManager.hasHandler("toSource"))
-				pasteddata = pluginManager.callOnlyFirst("toSource", pasteddata, $(pastearea));
+			if(pluginManager.hasHandler('toSource'))
+				pasteddata = pluginManager.callOnlyFirst('toSource', pasteddata, $(pastearea));
 
 			pastearea.parentNode.removeChild(pastearea);
 
-			if(pluginManager.hasHandler("toWysiwyg"))
-				pasteddata = pluginManager.callOnlyFirst("toWysiwyg", pasteddata, true);
+			if(pluginManager.hasHandler('toWysiwyg'))
+				pasteddata = pluginManager.callOnlyFirst('toWysiwyg', pasteddata, true);
 
 			rangeHelper.restoreRange();
 			rangeHelper.insertHTML(replaceEmoticons(pasteddata));
@@ -1531,7 +1531,7 @@
 			scrollTop = sourceEditor.scrollTop;
 			sourceEditor.focus();
 
-			if(typeof sourceEditor.selectionStart !== "undefined")
+			if(typeof sourceEditor.selectionStart !== 'undefined')
 			{
 				start  = sourceEditor.selectionStart;
 				end    = sourceEditor.selectionEnd;
@@ -1545,7 +1545,7 @@
 				sourceEditor.selectionStart = (start + text.length) - (endText ? endText.length : 0);
 				sourceEditor.selectionEnd = sourceEditor.selectionStart;
 			}
-			else if(typeof document.selection.createRange !== "undefined")
+			else if(typeof document.selection.createRange !== 'undefined')
 			{
 				range = document.selection.createRange();
 
@@ -1617,8 +1617,8 @@
 					base.setSourceEditorValue(val);
 				else
 				{
-					if(filter !== false && pluginManager.hasHandler("toWysiwyg"))
-						val = pluginManager.callOnlyFirst("toWysiwyg", val);
+					if(filter !== false && pluginManager.hasHandler('toWysiwyg'))
+						val = pluginManager.callOnlyFirst('toWysiwyg', val);
 
 					base.setWysiwygEditorValue(val);
 				}
@@ -1687,23 +1687,23 @@
 					var	html = base.getRangeHelper().selectedHtml(),
 						frag = $('<div>').appendTo($('body')).hide().html(html);
 
-					if(filter !== false && pluginManager.hasHandler("toSource"))
-						html = pluginManager.callOnlyFirst("toSource", html, frag);
+					if(filter !== false && pluginManager.hasHandler('toSource'))
+						html = pluginManager.callOnlyFirst('toSource', html, frag);
 
 					frag.remove();
 
 					start += html + end;
 				}
 
-				if(filter !== false && pluginManager.hasHandler("toWysiwyg"))
-					start = pluginManager.callOnlyFirst("toWysiwyg", start, true);
+				if(filter !== false && pluginManager.hasHandler('toWysiwyg'))
+					start = pluginManager.callOnlyFirst('toWysiwyg', start, true);
 
 				// Convert any escaped HTML back into HTML if mixed is allowed
 				if(filter !== false && allowMixed === true)
 				{
-					start = start.replace(/&lt;/g, "<")
-						.replace(/&gt;/g, ">")
-						.replace(/&amp;/g, "&");
+					start = start.replace(/&lt;/g, '<')
+						.replace(/&gt;/g, '>')
+						.replace(/&amp;/g, '&');
 				}
 
 				if(convertEmoticons !== false)
@@ -1744,8 +1744,8 @@
 			// filter the HTML and DOM through any plugins
 			html = $wysiwygBody.html();
 
-			if(filter !== false && pluginManager.hasHandler("toSource"))
-				html = pluginManager.callOnlyFirst("toSource", html, $wysiwygBody);
+			if(filter !== false && pluginManager.hasHandler('toSource'))
+				html = pluginManager.callOnlyFirst('toSource', html, $wysiwygBody);
 
 			if(hasSelection)
 			{
@@ -1806,8 +1806,8 @@
 		base.getSourceEditorValue = function (filter) {
 			var val = $sourceEditor.val();
 
-			if(filter !== false && pluginManager.hasHandler("toWysiwyg"))
-				val = pluginManager.callOnlyFirst("toWysiwyg", val);
+			if(filter !== false && pluginManager.hasHandler('toWysiwyg'))
+				val = pluginManager.callOnlyFirst('toWysiwyg', val);
 
 			return val;
 		};
@@ -1869,13 +1869,13 @@
 				// escape the key before using it as a regex
 				// and append the regex to only find emoticons outside
 				// of HTML tags
-				var	reg   = $.sceditor.regexEscape($.sceditor.escapeEntities(key)) + "(?=([^\\<\\>]*?<(?!/code)|[^\\<\\>]*?$))",
+				var	reg   = $.sceditor.regexEscape($.sceditor.escapeEntities(key)) + '(?=([^\\<\\>]*?<(?!/code)|[^\\<\\>]*?$))',
 					group = '';
 
 				// Make sure the emoticon is surrounded by whitespace or is at the start/end of a string or html tag
 				if(options.emoticonsCompat)
 				{
-					reg   = "((>|^|\\s|\xA0|\u2002|\u2003|\u2009|&nbsp;))" + reg + "(?=(\\s|$|<|\xA0|\u2002|\u2003|\u2009|&nbsp;))";
+					reg   = '((>|^|\\s|\xA0|\u2002|\u2003|\u2009|&nbsp;))' + reg + '(?=(\\s|$|<|\xA0|\u2002|\u2003|\u2009|&nbsp;))';
 					group = '$1';
 				}
 
@@ -2006,7 +2006,7 @@
 			if($.isFunction(command.exec))
 				command.exec.call(base, caller);
 			else
-				base.execCommand(command.exec, command.hasOwnProperty("execParam") ? command.execParam : null);
+				base.execCommand(command.exec, command.hasOwnProperty('execParam') ? command.execParam : null);
 		};
 
 		/**
@@ -2315,7 +2315,7 @@
 				args[0] = locale[args[0]];
 
 			return args[0].replace(/\{(\d+)\}/g, function(str, p1) {
-				return typeof args[p1-0+1] !== "undefined" ?
+				return typeof args[p1-0+1] !== 'undefined' ?
 					args[p1-0+1] :
 					'{' + p1 + '}';
 			});
@@ -2616,7 +2616,7 @@
 				$.each($.extend({}, options.emoticons.more, options.emoticons.dropdown, options.emoticons.hidden), function(key, url) {
 					base.emoticonsCache[pos++] = [
 						key,
-						_tmpl("emoticon", {
+						_tmpl('emoticon', {
 							key: key,
 							url: url.url || url,
 							tooltip: url.tooltip || key
@@ -3000,7 +3000,7 @@
 	 * @memberOf jQuery.sceditor
 	 */
 	$.sceditor.regexEscape = function(str) {
-		return str.replace(/[\$\?\[\]\.\*\(\)\|\\]/g, "\\$&");
+		return str.replace(/[\$\?\[\]\.\*\(\)\|\\]/g, '\\$&');
 	};
 
 	/**
@@ -3016,12 +3016,12 @@
 		if(!str)
 			return str;
 
-		return str.replace(/&/g, "&amp;")
-			.replace(/</g, "&lt;")
-			.replace(/>/g, "&gt;")
-			.replace(/ {2}/g, " &nbsp;")
-			.replace(/\r\n|\r/g, "\n")
-			.replace(/\n/g, "<br />");
+		return str.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/ {2}/g, ' &nbsp;')
+			.replace(/\r\n|\r/g, '\n')
+			.replace(/\n/g, '<br />');
 	};
 
 	/**
@@ -3041,74 +3041,74 @@
 	$.sceditor.commands = {
 		// START_COMMAND: Bold
 		bold: {
-			exec: "bold",
-			tooltip: "Bold",
-			shortcut: "ctrl+b"
+			exec: 'bold',
+			tooltip: 'Bold',
+			shortcut: 'ctrl+b'
 		},
 		// END_COMMAND
 		// START_COMMAND: Italic
 		italic: {
-			exec: "italic",
-			tooltip: "Italic",
-			shortcut: "ctrl+i"
+			exec: 'italic',
+			tooltip: 'Italic',
+			shortcut: 'ctrl+i'
 		},
 		// END_COMMAND
 		// START_COMMAND: Underline
 		underline: {
-			exec: "underline",
-			tooltip: "Underline",
-			shortcut: "ctrl+u"
+			exec: 'underline',
+			tooltip: 'Underline',
+			shortcut: 'ctrl+u'
 		},
 		// END_COMMAND
 		// START_COMMAND: Strikethrough
 		strike: {
-			exec: "strikethrough",
-			tooltip: "Strikethrough"
+			exec: 'strikethrough',
+			tooltip: 'Strikethrough'
 		},
 		// END_COMMAND
 		// START_COMMAND: Subscript
 		subscript: {
-			exec: "subscript",
-			tooltip: "Subscript"
+			exec: 'subscript',
+			tooltip: 'Subscript'
 		},
 		// END_COMMAND
 		// START_COMMAND: Superscript
 		superscript: {
-			exec: "superscript",
-			tooltip: "Superscript"
+			exec: 'superscript',
+			tooltip: 'Superscript'
 		},
 		// END_COMMAND
 
 		// START_COMMAND: Left
 		left: {
-			exec: "justifyleft",
-			tooltip: "Align left"
+			exec: 'justifyleft',
+			tooltip: 'Align left'
 		},
 		// END_COMMAND
 		// START_COMMAND: Centre
 		center: {
-			exec: "justifycenter",
-			tooltip: "Center"
+			exec: 'justifycenter',
+			tooltip: 'Center'
 		},
 		// END_COMMAND
 		// START_COMMAND: Right
 		right: {
-			exec: "justifyright",
-			tooltip: "Align right"
+			exec: 'justifyright',
+			tooltip: 'Align right'
 		},
 		// END_COMMAND
 		// START_COMMAND: Justify
 		justify: {
-			exec: "justifyfull",
-			tooltip: "Justify"
+			exec: 'justifyfull',
+			tooltip: 'Justify'
 		},
 		// END_COMMAND
 
 		// START_COMMAND: Font
 		font: {
 			_dropDown: function(editor, caller, callback) {
-				var	fonts   = editor.opts.fonts.split(","),
-					content = $("<div />"),
+				var	fonts   = editor.opts.fonts.split(','),
+					content = $('<div />'),
 					/** @private */
 					clickFunc = function () {
 						callback($(this).data('font'));
@@ -3119,7 +3119,7 @@
 				for (var i=0; i < fonts.length; i++)
 					content.append(_tmpl('fontOpt', {font: fonts[i]}, true).click(clickFunc));
 
-				editor.createDropDown(caller, "font-picker", content);
+				editor.createDropDown(caller, 'font-picker', content);
 			},
 			exec: function (caller) {
 				var editor = this;
@@ -3128,17 +3128,17 @@
 					editor,
 					caller,
 					function(fontName) {
-						editor.execCommand("fontname", fontName);
+						editor.execCommand('fontname', fontName);
 					}
 				);
 			},
-			tooltip: "Font Name"
+			tooltip: 'Font Name'
 		},
 		// END_COMMAND
 		// START_COMMAND: Size
 		size: {
 			_dropDown: function(editor, caller, callback) {
-				var	content   = $("<div />"),
+				var	content   = $('<div />'),
 					/** @private */
 					clickFunc = function (e) {
 						callback($(this).data('size'));
@@ -3149,7 +3149,7 @@
 				for (var i=1; i<= 7; i++)
 					content.append(_tmpl('sizeOpt', {size: i}, true).click(clickFunc));
 
-				editor.createDropDown(caller, "fontsize-picker", content);
+				editor.createDropDown(caller, 'fontsize-picker', content);
 			},
 			exec: function (caller) {
 				var editor = this;
@@ -3158,11 +3158,11 @@
 					editor,
 					caller,
 					function(fontSize) {
-						editor.execCommand("fontsize", fontSize);
+						editor.execCommand('fontsize', fontSize);
 					}
 				);
 			},
-			tooltip: "Font Size"
+			tooltip: 'Font Size'
 		},
 		// END_COMMAND
 		// START_COMMAND: Colour
@@ -3170,8 +3170,8 @@
 			_dropDown: function(editor, caller, callback) {
 				var	i, x, color, colors,
 					genColor     = {r: 255, g: 255, b: 255},
-					content      = $("<div />"),
-					colorColumns = editor.opts.colors?editor.opts.colors.split("|"):new Array(21),
+					content      = $('<div />'),
+					colorColumns = editor.opts.colors?editor.opts.colors.split('|'):new Array(21),
 					// IE is slow at string concation so use an array
 					html         = [],
 					cmd          = $.sceditor.command.get('color');
@@ -3180,7 +3180,7 @@
 				{
 					for (i=0; i < colorColumns.length; ++i)
 					{
-						colors = colorColumns[i]?colorColumns[i].split(","):new Array(21);
+						colors = colorColumns[i]?colorColumns[i].split(','):new Array(21);
 
 						html.push('<div class="sceditor-color-column">');
 						for (x=0; x < colors.length; ++x)
@@ -3226,7 +3226,7 @@
 						e.preventDefault();
 					});
 
-				editor.createDropDown(caller, "color-picker", content);
+				editor.createDropDown(caller, 'color-picker', content);
 			},
 			exec: function (caller) {
 				var editor = this;
@@ -3235,39 +3235,39 @@
 					editor,
 					caller,
 					function(color) {
-						editor.execCommand("forecolor", color);
+						editor.execCommand('forecolor', color);
 					}
 				);
 			},
-			tooltip: "Font Color"
+			tooltip: 'Font Color'
 		},
 		// END_COMMAND
 		// START_COMMAND: Remove Format
 		removeformat: {
-			exec: "removeformat",
-			tooltip: "Remove Formatting"
+			exec: 'removeformat',
+			tooltip: 'Remove Formatting'
 		},
 		// END_COMMAND
 
 		// START_COMMAND: Cut
 		cut: {
-			exec: "cut",
-			tooltip: "Cut",
-			errorMessage: "Your browser does not allow the cut command. Please use the keyboard shortcut Ctrl/Cmd-X"
+			exec: 'cut',
+			tooltip: 'Cut',
+			errorMessage: 'Your browser does not allow the cut command. Please use the keyboard shortcut Ctrl/Cmd-X'
 		},
 		// END_COMMAND
 		// START_COMMAND: Copy
 		copy: {
-			exec: "copy",
-			tooltip: "Copy",
-			errorMessage: "Your browser does not allow the copy command. Please use the keyboard shortcut Ctrl/Cmd-C"
+			exec: 'copy',
+			tooltip: 'Copy',
+			errorMessage: 'Your browser does not allow the copy command. Please use the keyboard shortcut Ctrl/Cmd-C'
 		},
 		// END_COMMAND
 		// START_COMMAND: Paste
 		paste: {
-			exec: "paste",
-			tooltip: "Paste",
-			errorMessage: "Your browser does not allow the paste command. Please use the keyboard shortcut Ctrl/Cmd-V"
+			exec: 'paste',
+			tooltip: 'Paste',
+			errorMessage: 'Your browser does not allow the paste command. Please use the keyboard shortcut Ctrl/Cmd-V'
 		},
 		// END_COMMAND
 		// START_COMMAND: Paste Text
@@ -3275,13 +3275,13 @@
 			exec: function (caller) {
 				var	val,
 					editor  = this,
-					content = _tmpl("pastetext", {
-						label: editor._("Paste your text inside the following box:"),
-						insert: editor._("Insert")
+					content = _tmpl('pastetext', {
+						label: editor._('Paste your text inside the following box:'),
+						insert: editor._('Insert')
 					}, true);
 
 				content.find('.button').click(function (e) {
-					val = content.find("#txt").val();
+					val = content.find('#txt').val();
 
 					if(val)
 						editor.wysiwygEditorInsertText(val);
@@ -3290,21 +3290,21 @@
 					e.preventDefault();
 				});
 
-				editor.createDropDown(caller, "pastetext", content);
+				editor.createDropDown(caller, 'pastetext', content);
 			},
-			tooltip: "Paste Text"
+			tooltip: 'Paste Text'
 		},
 		// END_COMMAND
 		// START_COMMAND: Bullet List
 		bulletlist: {
-			exec: "insertunorderedlist",
-			tooltip: "Bullet list"
+			exec: 'insertunorderedlist',
+			tooltip: 'Bullet list'
 		},
 		// END_COMMAND
 		// START_COMMAND: Ordered List
 		orderedlist: {
-			exec: "insertorderedlist",
-			tooltip: "Numbered list"
+			exec: 'insertorderedlist',
+			tooltip: 'Numbered list'
 		},
 		// END_COMMAND
 
@@ -3312,15 +3312,15 @@
 		table: {
 			exec: function (caller) {
 				var	editor  = this,
-					content = _tmpl("table", {
-						rows: editor._("Rows:"),
-						cols: editor._("Cols:"),
-						insert: editor._("Insert")
+					content = _tmpl('table', {
+						rows: editor._('Rows:'),
+						cols: editor._('Cols:'),
+						insert: editor._('Insert')
 					}, true);
 
 				content.find('.button').click(function (e) {
-					var	rows = content.find("#rows").val() - 0,
-						cols = content.find("#cols").val() - 0,
+					var	rows = content.find('#rows').val() - 0,
+						cols = content.find('#cols').val() - 0,
 						html = '<table>';
 
 					if(rows < 1 || cols < 1)
@@ -3342,16 +3342,16 @@
 					e.preventDefault();
 				});
 
-				editor.createDropDown(caller, "inserttable", content);
+				editor.createDropDown(caller, 'inserttable', content);
 			},
-			tooltip: "Insert a table"
+			tooltip: 'Insert a table'
 		},
 		// END_COMMAND
 
 		// START_COMMAND: Horizontal Rule
 		horizontalrule: {
-			exec: "inserthorizontalrule",
-			tooltip: "Insert a horizontal rule"
+			exec: 'inserthorizontalrule',
+			tooltip: 'Insert a horizontal rule'
 		},
 		// END_COMMAND
 
@@ -3361,7 +3361,7 @@
 			exec: function () {
 				this.wysiwygEditorInsertHtml('<code>', '<br /></code>');
 			},
-			tooltip: "Code"
+			tooltip: 'Code'
 		},
 		// END_COMMAND
 
@@ -3369,17 +3369,17 @@
 		image: {
 			exec: function (caller) {
 				var	editor  = this,
-					content = _tmpl("image", {
-						url: editor._("URL:"),
-						width: editor._("Width (optional):"),
-						height: editor._("Height (optional):"),
-						insert: editor._("Insert")
+					content = _tmpl('image', {
+						url: editor._('URL:'),
+						width: editor._('Width (optional):'),
+						height: editor._('Height (optional):'),
+						insert: editor._('Insert')
 					}, true);
 
 				content.find('.button').click(function (e) {
-					var	val    = content.find("#image").val(),
-						width  = content.find("#width").val(),
-						height = content.find("#height").val(),
+					var	val    = content.find('#image').val(),
+						width  = content.find('#width').val(),
+						height = content.find('#height').val(),
 						attrs  = '';
 
 					if(width)
@@ -3387,16 +3387,16 @@
 					if(height)
 						attrs += ' height="' + height + '"';
 
-					if(val && val !== "http://")
+					if(val && val !== 'http://')
 						editor.wysiwygEditorInsertHtml('<img' + attrs + ' src="' + val + '" />');
 
 					editor.closeDropDown(true);
 					e.preventDefault();
 				});
 
-				editor.createDropDown(caller, "insertimage", content);
+				editor.createDropDown(caller, 'insertimage', content);
 			},
-			tooltip: "Insert an image"
+			tooltip: 'Insert an image'
 		},
 		// END_COMMAND
 
@@ -3404,13 +3404,13 @@
 		email: {
 			exec: function (caller) {
 				var	editor  = this,
-					content = _tmpl("email", {
-						label: editor._("E-mail:"),
-						insert: editor._("Insert")
+					content = _tmpl('email', {
+						label: editor._('E-mail:'),
+						insert: editor._('Insert')
 					}, true);
 
 				content.find('.button').click(function (e) {
-					var val = content.find("#email").val();
+					var val = content.find('#email').val();
 
 					if(val)
 					{
@@ -3420,16 +3420,16 @@
 						if(!editor.getRangeHelper().selectedHtml())
 							editor.wysiwygEditorInsertHtml('<a href="' + 'mailto:' + val + '">' + val + '</a>');
 						else
-							editor.execCommand("createlink", 'mailto:' + val);
+							editor.execCommand('createlink', 'mailto:' + val);
 					}
 
 					editor.closeDropDown(true);
 					e.preventDefault();
 				});
 
-				editor.createDropDown(caller, "insertemail", content);
+				editor.createDropDown(caller, 'insertemail', content);
 			},
-			tooltip: "Insert an email"
+			tooltip: 'Insert an email'
 		},
 		// END_COMMAND
 
@@ -3437,17 +3437,17 @@
 		link: {
 			exec: function (caller) {
 				var	editor  = this,
-					content = _tmpl("link", {
-						url: editor._("URL:"),
-						desc: editor._("Description (optional):"),
-						ins: editor._("Insert")
+					content = _tmpl('link', {
+						url: editor._('URL:'),
+						desc: editor._('Description (optional):'),
+						ins: editor._('Insert')
 					}, true);
 
 				content.find('.button').click(function (e) {
-					var	val         = content.find("#link").val(),
-						description = content.find("#des").val();
+					var	val         = content.find('#link').val(),
+						description = content.find('#des').val();
 
-					if(val && val !== "http://") {
+					if(val && val !== 'http://') {
 						// needed for IE to reset the last range
 						editor.focus();
 
@@ -3459,16 +3459,16 @@
 							editor.wysiwygEditorInsertHtml('<a href="' + val + '">' + description + '</a>');
 						}
 						else
-							editor.execCommand("createlink", val);
+							editor.execCommand('createlink', val);
 					}
 
 					editor.closeDropDown(true);
 					e.preventDefault();
 				});
 
-				editor.createDropDown(caller, "insertlink", content);
+				editor.createDropDown(caller, 'insertlink', content);
 			},
-			tooltip: "Insert a link"
+			tooltip: 'Insert a link'
 		},
 		// END_COMMAND
 
@@ -3485,7 +3485,7 @@
 				if($anchor.length)
 					$anchor.replaceWith($anchor.contents());
 			},
-			tooltip: "Unlink"
+			tooltip: 'Unlink'
 		},
 		// END_COMMAND
 
@@ -3554,8 +3554,8 @@
 					if(!includeMore)
 					{
 						$content.append(
-							$(editor._('<a class="sceditor-more">{0}</a>', editor._("More"))).click(function () {
-								editor.createDropDown(caller, "more-emoticons", createContent(true));
+							$(editor._('<a class="sceditor-more">{0}</a>', editor._('More'))).click(function () {
+								editor.createDropDown(caller, 'more-emoticons', createContent(true));
 								return false;
 							})
 						);
@@ -3564,12 +3564,12 @@
 					return $content;
 				};
 
-				editor.createDropDown(caller, "emoticons", createContent(false));
+				editor.createDropDown(caller, 'emoticons', createContent(false));
 			},
 			txtExec: function(caller) {
 				$.sceditor.command.get('emoticon').exec.call(this, caller);
 			},
-			tooltip: "Insert an emoticon"
+			tooltip: 'Insert an emoticon'
 		},
 		// END_COMMAND
 
@@ -3577,15 +3577,15 @@
 		youtube: {
 			_dropDown: function (editor, caller, handleIdFunc) {
 				var	matches,
-					content = _tmpl("youtubeMenu", {
-						label: editor._("Video URL:"),
-						insert: editor._("Insert")
+					content = _tmpl('youtubeMenu', {
+						label: editor._('Video URL:'),
+						insert: editor._('Insert')
 					}, true);
 
 				content.find('.button').click(function (e) {
-					var val = content.find("#link").val().replace("http://", "");
+					var val = content.find('#link').val().replace('http://', '');
 
-					if (val !== "") {
+					if (val !== '') {
 						matches = val.match(/(?:v=|v\/|embed\/|youtu.be\/)(.{11})/);
 
 						if (matches)
@@ -3601,7 +3601,7 @@
 					e.preventDefault();
 				});
 
-				editor.createDropDown(caller, "insertlink", content);
+				editor.createDropDown(caller, 'insertlink', content);
 			},
 			exec: function (caller) {
 				var editor = this;
@@ -3610,11 +3610,11 @@
 					editor,
 					caller,
 					function(id) {
-						editor.wysiwygEditorInsertHtml(_tmpl("youtube", { id: id }));
+						editor.wysiwygEditorInsertHtml(_tmpl('youtube', { id: id }));
 					}
 				);
 			},
-			tooltip: "Insert a YouTube video"
+			tooltip: 'Insert a YouTube video'
 		},
 		// END_COMMAND
 
@@ -3629,9 +3629,9 @@
 				if(year < 2000)
 					year = 1900 + year;
 				if(month < 10)
-					month = "0" + month;
+					month = '0' + month;
 				if(day < 10)
-					day = "0" + day;
+					day = '0' + day;
 
 				return editor.opts.dateFormat.replace(/year/i, year).replace(/month/i, month).replace(/day/i, day);
 			},
@@ -3641,7 +3641,7 @@
 			txtExec: function () {
 				this.insertText($.sceditor.command.get('date')._date(this));
 			},
-			tooltip: "Insert current date"
+			tooltip: 'Insert current date'
 		},
 		// END_COMMAND
 
@@ -3654,11 +3654,11 @@
 					secs  = now.getSeconds();
 
 				if(hours < 10)
-					hours = "0" + hours;
+					hours = '0' + hours;
 				if(mins < 10)
-					mins = "0" + mins;
+					mins = '0' + mins;
 				if(secs < 10)
-					secs = "0" + secs;
+					secs = '0' + secs;
 
 				return hours + ':' + mins + ':' + secs;
 			},
@@ -3668,7 +3668,7 @@
 			txtExec: function () {
 				this.insertText($.sceditor.command.get('time')._time());
 			},
-			tooltip: "Insert current time"
+			tooltip: 'Insert current time'
 		},
 		// END_COMMAND
 
@@ -3687,7 +3687,7 @@
 
 				if(!elm || $elm.is('body'))
 				{
-					editor.execCommand("formatBlock", "p");
+					editor.execCommand('formatBlock', 'p');
 
 					elm  = editor.getRangeHelper().getFirstBlockParent();
 					$elm = $(elm);
@@ -3701,7 +3701,7 @@
 				else
 					$elm.css('direction', 'ltr');
 			},
-			tooltip: "Left-to-Right"
+			tooltip: 'Left-to-Right'
 		},
 		// END_COMMAND
 
@@ -3719,7 +3719,7 @@
 
 				if(!elm || $elm.is('body'))
 				{
-					editor.execCommand("formatBlock", "p");
+					editor.execCommand('formatBlock', 'p');
 
 					elm  = editor.getRangeHelper().getFirstBlockParent();
 					$elm = $(elm);
@@ -3733,15 +3733,15 @@
 				else
 					$elm.css('direction', 'rtl');
 			},
-			tooltip: "Right-to-Left"
+			tooltip: 'Right-to-Left'
 		},
 		// END_COMMAND
 
 
 		// START_COMMAND: Print
 		print: {
-			exec: "print",
-			tooltip: "Print"
+			exec: 'print',
+			tooltip: 'Print'
 		},
 		// END_COMMAND
 
@@ -3756,8 +3756,8 @@
 			txtExec: function () {
 				this.maximize(!this.maximize());
 			},
-			tooltip: "Maximize",
-			shortcut: "ctrl+shift+m"
+			tooltip: 'Maximize',
+			shortcut: 'ctrl+shift+m'
 		},
 		// END_COMMAND
 
@@ -3769,8 +3769,8 @@
 			txtExec: function () {
 				this.toggleSourceMode();
 			},
-			tooltip: "View source",
-			shortcut: "ctrl+shift+s"
+			tooltip: 'View source',
+			shortcut: 'ctrl+shift+s'
 		},
 		// END_COMMAND
 
@@ -3788,8 +3788,8 @@
 	$.sceditor.rangeHelper = function(w, d) {
 		var	win, doc, init, _createMarker, _isOwner,
 			isW3C        = true,
-			startMarker  = "sceditor-start-marker",
-			endMarker    = "sceditor-end-marker",
+			startMarker  = 'sceditor-start-marker',
+			endMarker    = 'sceditor-end-marker',
 			characterStr = 'character', // Used to improve minification
 			base         = this;
 
@@ -3948,7 +3948,7 @@
 			if(isW3C)
 				range = sel.getRangeAt(0);
 
-			if(!isW3C && sel.type !== "Control")
+			if(!isW3C && sel.type !== 'Control')
 				range = sel.createRange();
 
 			// IE fix to make sure only return selections that are part of the WYSIWYG iframe
@@ -4362,7 +4362,7 @@
 			}
 
 			beforeStr = base.getOuterText(true, maxKeyLen);
-			str       = beforeStr + (currrentChar != null ? currrentChar : "");
+			str       = beforeStr + (currrentChar != null ? currrentChar : '');
 
 			if(includeAfter)
 				str += base.getOuterText(false, maxKeyLen);
@@ -4370,7 +4370,7 @@
 			while(i--)
 			{
 				keyword      = keywords[i][0];
-				keywordRegex = new RegExp("(?:[\\s\xA0\u2002\u2003\u2009])" + $.sceditor.regexEscape(keyword) + "(?=[\\s\xA0\u2002\u2003\u2009])");
+				keywordRegex = new RegExp('(?:[\\s\xA0\u2002\u2003\u2009])' + $.sceditor.regexEscape(keyword) + '(?=[\\s\xA0\u2002\u2003\u2009])');
 				startIdx     = beforeStr.length - 1 - keyword.length;
 
 				if(requireWhiteSpace)
@@ -4481,7 +4481,7 @@
 		 * List of block level elements separated by bars (|)
 		 * @type {string}
 		 */
-		blockLevelList: "|body|hr|p|div|h1|h2|h3|h4|h5|h6|address|pre|form|table|tbody|thead|tfoot|th|tr|td|li|ol|ul|blockquote|center|",
+		blockLevelList: '|body|hr|p|div|h1|h2|h3|h4|h5|h6|address|pre|form|table|tbody|thead|tfoot|th|tr|td|li|ol|ul|blockquote|center|',
 
 		/**
 		 * Checks if an element is inline
@@ -4497,7 +4497,7 @@
 			if(elm === 'code')
 				return !includeCodeAsBlock;
 
-			return $.sceditor.dom.blockLevelList.indexOf("|" + elm + "|") < 0;
+			return $.sceditor.dom.blockLevelList.indexOf('|' + elm + '|') < 0;
 		},
 
 		/**
@@ -4636,16 +4636,16 @@
 					}
 
 					if(!isInline(node) || !previous || !isInline(previous) || trimStart)
-						nodeValue = nodeValue.replace(/^[\t\n\r ]+/, "");
+						nodeValue = nodeValue.replace(/^[\t\n\r ]+/, '');
 
 					if(!isInline(node) || !next || !isInline(next))
-						nodeValue = nodeValue.replace(/[\t\n\r ]+$/, "");
+						nodeValue = nodeValue.replace(/[\t\n\r ]+$/, '');
 
 					// Remove empty text nodes
 					if(!nodeValue.length)
 						root.removeChild(node);
 					else
-						node.nodeValue = nodeValue.replace(preserveNewLines ? whitespace : witespaceAndLines, " ");
+						node.nodeValue = nodeValue.replace(preserveNewLines ? whitespace : witespaceAndLines, ' ');
 				}
 
 				node = nextNode;
@@ -4883,7 +4883,7 @@
 			{
 				plugin = $.sceditor.plugins[plugin];
 
-				return typeof plugin === "function" && typeof plugin.prototype === "object";
+				return typeof plugin === 'function' && typeof plugin.prototype === 'object';
 			}
 
 			return false;
@@ -5063,10 +5063,10 @@
 		 * Toolbar buttons order and groups. Should be comma separated and have a bar | to separate groups
 		 * @type {String}
 		 */
-		toolbar:	"bold,italic,underline,strike,subscript,superscript|left,center,right,justify|" +
-				"font,size,color,removeformat|cut,copy,paste,pastetext|bulletlist,orderedlist|" +
-				"table|code,quote|horizontalrule,image,email,link,unlink|emoticon,youtube,date,time|" +
-				"ltr,rtl|print,maximize,source",
+		toolbar:	'bold,italic,underline,strike,subscript,superscript|left,center,right,justify|' +
+				'font,size,color,removeformat|cut,copy,paste,pastetext|bulletlist,orderedlist|' +
+				'table|code,quote|horizontalrule,image,email,link,unlink|emoticon,youtube,date,time|' +
+				'ltr,rtl|print,maximize,source',
 
 		/**
 		 * Comma separated list of commands to excludes from the toolbar
@@ -5078,13 +5078,13 @@
 		 * Stylesheet to include in the WYSIWYG editor. Will style the WYSIWYG elements
 		 * @type {String}
 		 */
-		style: "jquery.sceditor.default.css",
+		style: 'jquery.sceditor.default.css',
 
 		/**
 		 * Comma separated list of fonts for the font selector
 		 * @type {String}
 		 */
-		fonts: "Arial,Arial Black,Comic Sans MS,Courier New,Georgia,Impact,Sans-serif,Serif,Times New Roman,Trebuchet MS,Verdana",
+		fonts: 'Arial,Arial Black,Comic Sans MS,Courier New,Georgia,Impact,Sans-serif,Serif,Times New Roman,Trebuchet MS,Verdana',
 
 		/**
 		 * Colors should be comma separated and have a bar | to signal a new column.
@@ -5098,13 +5098,13 @@
 		 * The locale to use.
 		 * @type {String}
 		 */
-		locale: "en",
+		locale: 'en',
 
 		/**
 		 * The Charset to use
 		 * @type {String}
 		 */
-		charset: "utf-8",
+		charset: 'utf-8',
 
 		/**
 		 * Compatibility mode for emoticons.
@@ -5133,43 +5133,43 @@
 		emoticonsRoot: '',
 		emoticons: {
 			dropdown: {
-				":)": "emoticons/smile.png",
-				":angel:": "emoticons/angel.png",
-				":angry:": "emoticons/angry.png",
-				"8-)": "emoticons/cool.png",
-				":'(": "emoticons/cwy.png",
-				":ermm:": "emoticons/ermm.png",
-				":D": "emoticons/grin.png",
-				"<3": "emoticons/heart.png",
-				":(": "emoticons/sad.png",
-				":O": "emoticons/shocked.png",
-				":P": "emoticons/tongue.png",
-				";)": "emoticons/wink.png"
+				':)': 'emoticons/smile.png',
+				':angel:': 'emoticons/angel.png',
+				':angry:': 'emoticons/angry.png',
+				'8-)': 'emoticons/cool.png',
+				":'(": 'emoticons/cwy.png',
+				':ermm:': 'emoticons/ermm.png',
+				':D': 'emoticons/grin.png',
+				'<3': 'emoticons/heart.png',
+				':(': 'emoticons/sad.png',
+				':O': 'emoticons/shocked.png',
+				':P': 'emoticons/tongue.png',
+				';)': 'emoticons/wink.png'
 			},
 			more: {
-				":alien:": "emoticons/alien.png",
-				":blink:": "emoticons/blink.png",
-				":blush:": "emoticons/blush.png",
-				":cheerful:": "emoticons/cheerful.png",
-				":devil:": "emoticons/devil.png",
-				":dizzy:": "emoticons/dizzy.png",
-				":getlost:": "emoticons/getlost.png",
-				":happy:": "emoticons/happy.png",
-				":kissing:": "emoticons/kissing.png",
-				":ninja:": "emoticons/ninja.png",
-				":pinch:": "emoticons/pinch.png",
-				":pouty:": "emoticons/pouty.png",
-				":sick:": "emoticons/sick.png",
-				":sideways:": "emoticons/sideways.png",
-				":silly:": "emoticons/silly.png",
-				":sleeping:": "emoticons/sleeping.png",
-				":unsure:": "emoticons/unsure.png",
-				":woot:": "emoticons/w00t.png",
-				":wassat:": "emoticons/wassat.png"
+				':alien:': 'emoticons/alien.png',
+				':blink:': 'emoticons/blink.png',
+				':blush:': 'emoticons/blush.png',
+				':cheerful:': 'emoticons/cheerful.png',
+				':devil:': 'emoticons/devil.png',
+				':dizzy:': 'emoticons/dizzy.png',
+				':getlost:': 'emoticons/getlost.png',
+				':happy:': 'emoticons/happy.png',
+				':kissing:': 'emoticons/kissing.png',
+				':ninja:': 'emoticons/ninja.png',
+				':pinch:': 'emoticons/pinch.png',
+				':pouty:': 'emoticons/pouty.png',
+				':sick:': 'emoticons/sick.png',
+				':sideways:': 'emoticons/sideways.png',
+				':silly:': 'emoticons/silly.png',
+				':sleeping:': 'emoticons/sleeping.png',
+				':unsure:': 'emoticons/unsure.png',
+				':woot:': 'emoticons/w00t.png',
+				':wassat:': 'emoticons/wassat.png'
 			},
 			hidden: {
-				":whistling:": "emoticons/whistling.png",
-				":love:": "emoticons/wub.png"
+				':whistling:': 'emoticons/whistling.png',
+				':love:': 'emoticons/wub.png'
 			}
 		},
 
@@ -5231,7 +5231,7 @@
 		 * The words year, month and day will be replaced with the users current year, month and day.
 		 * @type {String}
 		 */
-		dateFormat: "year-month-day",
+		dateFormat: 'year-month-day',
 
 		/**
 		 * Element to inset the toolbar into.
@@ -5378,9 +5378,9 @@
 				return;
 
 			// Add state of instance to ret if that is what options is set to
-			if(options === "state")
+			if(options === 'state')
 				ret.push(!!$this.data('sceditor'));
-			else if(options === "instance")
+			else if(options === 'instance')
 				ret.push($this.data('sceditor'));
 			else if(!$this.data('sceditor'))
 				(new $.sceditor(this, options));
