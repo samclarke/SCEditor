@@ -38,7 +38,7 @@
 						'<meta http-equiv="Content-Type" content="text/html;charset={charset}" />' +
 						'<link rel="stylesheet" type="text/css" href="{style}" />' +
 					'</head>' +
-					'<body contenteditable="true"></body>' +
+					'<body contenteditable="true" {spellcheck}></body>' +
 				'</html>',
 
 		toolbarButton:	'<a class="sceditor-button sceditor-button-{name}" data-sceditor-command="{name}" unselectable="on"><div unselectable="on">{dispName}</div></a>',
@@ -446,8 +446,11 @@
 			$sourceEditor  = $('<textarea></textarea>').hide();
 			$wysiwygEditor = $('<iframe frameborder="0"></iframe>');
 
-			if(window.location.protocol === "https:")
-				$wysiwygEditor.attr("src", "javascript:false");
+			if(!options.spellcheck)
+				$sourceEditor.attr('spellcheck', 'false');
+
+			if(window.location.protocol === 'https:')
+				$wysiwygEditor.attr('src', 'javascript:false');
 
 			// add the editor to the HTML and store the editors element
 			$editorContainer.append($wysiwygEditor).append($sourceEditor);
@@ -458,9 +461,8 @@
 			base.height(options.height || $original.height());
 
 			doc = getWysiwygDoc();
-
 			doc.open();
-			doc.write(_tmpl("html", { charset: options.charset, style: options.style }));
+			doc.write(_tmpl('html', { spellcheck: options.spellcheck ? '' : 'spellcheck="false"', charset: options.charset, style: options.style }));
 			doc.close();
 
 			$wysiwygDoc  = $(doc);
@@ -471,13 +473,13 @@
 			// Add IE version class to the HTML element so can apply
 			// conditional styling without CSS hacks
 			if($.sceditor.ie)
-				$wysiwygDoc.find("html").addClass("ie ie" + $.sceditor.ie);
+				$wysiwygDoc.find('html').addClass('ie ie' + $.sceditor.ie);
 
 			// iframe overflow fix for iOS, also fixes an IE issue with the
 			// editor not getting focus when clicking inside
 			if($.sceditor.ios || $.sceditor.ie)
 			{
-				$wysiwygBody.height("100%");
+				$wysiwygBody.height('100%');
 
 				if(!$.sceditor.ie)
 					$wysiwygBody.bind('touchend', base.focus);
@@ -488,7 +490,7 @@
 			// load any textarea value into the editor
 			base.val($original.hide().val());
 
-			tabIndex = $original.attr("tabindex");
+			tabIndex = $original.attr('tabindex');
 			$sourceEditor.attr('tabindex', tabIndex);
 			$wysiwygEditor.attr('tabindex', tabIndex);
 		};
@@ -501,8 +503,8 @@
 			// auto-update original textbox on blur if option set to true
 			if(options.autoUpdate)
 			{
-				$wysiwygBody.bind("blur", base.updateOriginal);
-				$sourceEditor.bind("blur", base.updateOriginal);
+				$wysiwygBody.bind('blur', base.updateOriginal);
+				$sourceEditor.bind('blur', base.updateOriginal);
 			}
 
 			if(options.rtl === null)
@@ -511,7 +513,7 @@
 			base.rtl(!!options.rtl);
 
 			if(options.autoExpand)
-				$wysiwygDoc.bind("keyup", base.expandToContent);
+				$wysiwygDoc.bind('keyup', base.expandToContent);
 
 			if(options.resizeEnabled)
 				initResize();
@@ -5286,6 +5288,12 @@
 		 * @type {Boolean}
 		 */
 		autoUpdate: false,
+
+		/**
+		 * If to enable the browsers built in spell checker
+		 * @type {Boolean}
+		 */
+		spellcheck: true,
 
 		/**
 		 * If to run the source editor when there is no WYSIWYG support. Only really applies to mobile OS's.
