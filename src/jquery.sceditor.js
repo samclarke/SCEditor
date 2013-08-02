@@ -2979,6 +2979,7 @@
 				$.sceditor.dom.convertElement(block, 'p');
 
 			rangeHelper.restoreRange();
+			return this;
 		};
 
 		// run the initializer
