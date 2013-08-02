@@ -53,9 +53,9 @@ module.exports = function(grunt) {
 			build: {
 				options: {
 					warnings: true,
-					preserveComments: 'some',
 					compress: true,
-					mangle: true
+					mangle: true,
+					banner: '/* SCEditor v<%= pkg.version %> | (C) 2011-2013, Sam Clarke | sceditor.com/license */\n'
 				},
 				files: [
 					{src: 'src/jquery.sceditor.js', dest: 'minified/jquery.sceditor.min.js'},

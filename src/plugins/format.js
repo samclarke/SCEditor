@@ -1,4 +1,3 @@
-/*!pl SCEditor | (C) 2011-2013, Sam Clarke | sceditor.com/license */
 /**
  * SCEditor Paragraph Formatting Plugin
  * http://www.sceditor.com/
@@ -10,7 +9,6 @@
  *
  * @fileoverview SCEditor Paragraph Formatting Plugin
  * @author Sam Clarke
- * @version 1.4.3
  * @requires jQuery
  */
 

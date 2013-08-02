@@ -1,4 +1,3 @@
-/*! SCEditor | (C) 2011-2013, Sam Clarke | sceditor.com/license */
 /**
  * SCEditor
  * http://www.sceditor.com/
@@ -10,7 +9,6 @@
  *
  * @fileoverview SCEditor - A lightweight WYSIWYG BBCode and HTML editor
  * @author Sam Clarke
- * @version 1.4.3
  * @requires jQuery
  */
 
