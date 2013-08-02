@@ -1,6 +1,11 @@
 {
 	"name": "sceditor",
 	"version": "1.4.4",
+	"repository" :
+	{
+		"type" : "git",
+		"url" : "https://github.com/samclarke/SCEditor.git"
+	},
 	"engines": {
 		"node": ">= 0.10.0"
 	},

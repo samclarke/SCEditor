@@ -33,6 +33,8 @@ Version 1.4.4:
 	Added bbcodeTrim option.
 	Fixed bug with stripWhiteSpace and saved ranges causing a space after the caret to be removed.
 	Added spellcheck option to disable the browsers built in spellchecker.
+	Added ability to remove block level elements by placing the cursor at the start of them and
+		pressing backspace.
 
 Version 1.4.3:
 	Added css() method which allows getting/setting inline CSS for the WYSIWYG editor.

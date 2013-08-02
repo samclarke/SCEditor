@@ -1739,7 +1739,7 @@
 
 			removeDiv = function(node, isFirst) {
 				// Don't remove divs that have styling
-				if(node.className || $(node).attr('style') || !$.isEmptyObject($(node).data()))
+				if($.sceditor.dom.hasStyling(node))
 					return;
 
 				if($.sceditor.ie || (node.childNodes.length !== 1 || !$(node.firstChild).is('br')))

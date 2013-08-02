@@ -308,6 +308,7 @@
 			handlePasteEvt,
 			handlePasteData,
 			handleKeyDown,
+			handleBackSpace,
 			handleKeyPress,
 			handleFormReset,
 			handleMouseDown,
@@ -322,7 +323,8 @@
 			checkNodeChanged,
 			autofocus,
 			emoticonsKeyPress,
-			emoticonsCheckWhitespace;
+			emoticonsCheckWhitespace,
+			currentStyledBlockNode;
 
 		/**
 		 * All the commands supported by the editor
@@ -538,6 +540,7 @@
 			$wysiwygBody
 				.keypress(handleKeyPress)
 				.keydown(handleKeyDown)
+				.keydown(handleBackSpace)
 				.keyup(appendNewLine)
 				.bind('paste', handlePasteEvt)
 				.bind($.sceditor.ie ? 'selectionchange' : 'keyup focus blur contextmenu mouseup touchend click', checkSelectionChanged)
@@ -2199,7 +2202,7 @@
 
 			base.closeDropDown();
 
-			$parentNode = $(rangeHelper.parentNode());
+			$parentNode = $(currentNode);
 
 			// "Fix" (OK it's a cludge) for blocklevel elements being duplicated in some browsers when
 			// enter is pressed instead of inserting a newline
@@ -2213,6 +2216,7 @@
 				}
 			}
 
+// TODO: Remove keyPressFuncs, which are deprecated
 			// don't apply to code elements
 			if($parentNode.is('code') || $parentNode.parents('code').length !== 0)
 				return;
@@ -2875,6 +2879,106 @@
 			delete shortcutHandlers[shortcut.toLowerCase()];
 
 			return this;
+		};
+
+		/**
+		 * Handles the backspace key press
+		 *
+		 * Will remove block styling like quotes/code ect if at the start.
+		 * @private
+		 */
+		handleBackSpace = function(e) {
+			var	node, offset, tmpRange, range, parent;
+
+			// 8 is the backspace key
+			if(options.disableBlockRemove || e.which !== 8 || !(range = rangeHelper.selectedRange()))
+				return;
+
+			if(!window.getSelection)
+			{
+				node     = range.parentElement();
+				tmpRange = $wysiwygDoc[0].selection.createRange();
+
+				// Select te entire parent and set the end as start of the current range
+				tmpRange.moveToElementText(node);
+				tmpRange.setEndPoint('EndToStart', range);
+
+				// Number of characters selected is the start offset
+				// relative to the parent node
+				offset = tmpRange.text.length;
+			}
+			else
+			{
+				node   = range.startContainer;
+				offset = range.startOffset;
+			}
+
+			if(offset !== 0 || !(parent = currentStyledBlockNode()))
+				return;
+
+			while(node !== parent)
+			{
+				while(node.previousSibling)
+				{
+					node = node.previousSibling;
+
+					// Everything but empty text nodes before the cursor
+					// should prevent the style from being removed
+					if(node.nodeType !== 3 || node.nodeValue)
+						return;
+				}
+
+				if(!(node = node.parentNode))
+					return;
+			}
+
+			// The backspace was pressed at the start of
+			// the container so clear the style
+			base.clearBlockFormatting(parent);
+			return false;
+		};
+
+		/**
+		 * Gets the first styled block node that contains the cursor
+		 * @return {HTMLElement}
+		 */
+		currentStyledBlockNode = function() {
+			var block = currentBlockNode;
+
+			while(!$.sceditor.dom.hasStyling(block))
+			{
+				if(!(block = block.parentNode) || $(block).is('body'))
+					return;
+			}
+
+			return block;
+		};
+
+		/**
+		 * Clears the formatting of the passed block element.
+		 *
+		 * If block is false, if will clear the styling of the first
+		 * block level element that contains the cursor.
+		 * @param  {HTMLElement} block
+		 * @since 1.4.4
+		 */
+		base.clearBlockFormatting = function(block) {
+			block = block || currentStyledBlockNode();
+
+			if(!block || $(block).is('body'))
+				return;
+
+			rangeHelper.saveRange();
+
+			lastRange       = null;
+			block.className = '';
+
+			$(block).attr('style', '');
+
+			if(!$(block).is('p,div'))
+				$.sceditor.dom.convertElement(block, 'p');
+
+			rangeHelper.restoreRange();
 		};
 
 		// run the initializer
@@ -4478,6 +4582,55 @@
 		},
 
 		/**
+		 * Checks if an element is not a p or div element and if it has any styling.
+		 * @param  {HTMLElement} elm
+		 * @return {Boolean}
+		 * @since 1.4.4
+		 */
+		hasStyling: function(elm) {
+			var $elm = $(elm);
+
+			return elm && (!$elm.is('p,div') || elm.className || $elm.attr('style') || !$.isEmptyObject($elm.data()));
+		},
+
+		/**
+		 * Converts an element from one type to another.
+		 *
+		 * For example it can convert the element <b> to <strong>
+		 * @param  {HTMLElement} elm
+		 * @param  {String} newElement
+		 * @return {HTMLElement}
+		 * @since 1.4.4
+		 */
+		convertElement: function(elm, newElement) {
+			var	child, attr,
+				i      = elm.attributes.length,
+				newTag = elm.ownerDocument.createElement(newElement);
+
+			while(i--)
+			{
+				attr = elm.attributes[i];
+
+				// IE < 8 returns all possible attribtues, not just specified ones
+				if(!$.sceditor.ie || attr.specified)
+				{
+					// IE < 8 doesn't return the CSS for the style attribute
+					if($.sceditor.ie < 8 && /style/i.test(attr.name))
+						elm.style.cssText = elm.style.cssText;
+					else
+						newTag.setAttribute(attr.name, attr.value);
+				}
+			}
+
+			while((child = elm.firstChild))
+				newTag.appendChild(child);
+
+			elm.parentNode.replaceChild(newTag, elm);
+
+			return newTag;
+		},
+
+		/**
 		 * List of block level elements separated by bars (|)
 		 * @type {string}
 		 */
@@ -5324,6 +5477,12 @@
 		 * @type {Boolean}
 		 */
 		bbcodeTrim: false,
+
+		/**
+		 * If to disable removing block level elements by pressing backspace at the start of them
+		 * @type {Boolean}
+		 */
+		disableBlockRemove: false,
 
 		/**
 		 * BBCode parser options, only applies if using the editor in BBCode mode.
