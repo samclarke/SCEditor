@@ -2225,12 +2225,10 @@
 					$elm.data('author', author);
 					$cite.remove();
 
-					$elm.children('cite').replaceWith(function() {
-						return $(this).text();
-					});
-
 					content	= this.elementToBbcode($(element));
 					author  = '=' + author;
+
+					$elm.prepend($cite);
 				}
 
 				return '[quote' + author + ']' + content + '[/quote]';
