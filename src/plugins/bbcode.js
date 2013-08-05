@@ -1659,10 +1659,10 @@
 						if($node.hasClass('sceditor-ignore'))
 							return;
 
+						// skip empty nlf elements (new lines automatically added after block level elements like quotes)
 						if($node.hasClass('sceditor-nlf'))
 						{
-							if(!firstChild ||
-								(!$.sceditor.ie && (node.childNodes.length > 1 || firstChild.nodeName.toLowerCase() !== 'br')))
+							if(!firstChild || (!$.sceditor.ie && (node.childNodes.length === 1 && /br/i.test(firstChild.nodeName))))
 							{
 								return;
 							}
