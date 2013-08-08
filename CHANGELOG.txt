@@ -35,6 +35,8 @@ Version 1.4.4:
 	Added spellcheck option to disable the browsers built in spellchecker.
 	Added ability to remove block level elements by placing the cursor at the start of them and
 		pressing backspace.
+	Added Greek translation.
+		- Thanks to Nikos Aggelis for translating.
 
 Version 1.4.3:
 	Added css() method which allows getting/setting inline CSS for the WYSIWYG editor.
