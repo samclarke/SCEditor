@@ -122,7 +122,7 @@
 					splitAtLength = 0,
 					childrenLen   = base.children.length;
 
-				if(typeof object !== "number")
+				if(typeof object !== 'number')
 					splitAt = $.inArray(splitAt, base.children);
 
 				if(splitAt < 0 || splitAt > childrenLen)
@@ -214,7 +214,7 @@
 				if(str.length)
 					toks.push(tokenizeTag(tokenType.content, str));
 
-				str = "";
+				str = '';
 			}
 
 			return toks;
@@ -232,20 +232,20 @@
 
 			// Extract the name and attributes from opening tags and
 			// just the name from closing tags.
-			if(type === "open" && (matches = val.match(/\[([^\]\s=]+)(?:([^\]]+))?\]/)))
+			if(type === 'open' && (matches = val.match(/\[([^\]\s=]+)(?:([^\]]+))?\]/)))
 			{
 				name = lower(matches[1]);
 
 				if(matches[2] && (matches[2] = $.trim(matches[2])))
 					attrs = tokenizeAttrs(matches[2]);
 			}
-			else if(type === "close" && (matches = val.match(/\[\/([^\[\]]+)\]/)))
+			else if(type === 'close' && (matches = val.match(/\[\/([^\[\]]+)\]/)))
 				name = lower(matches[1]);
-			else if(type === "newline")
+			else if(type === 'newline')
 				name = '#newline';
 
 			// Treat all tokens without a name and all unknown BBCodes as content
-			if(!name || (type === "open" || type === "close") && !$.sceditor.plugins.bbcode.bbcodes[name])
+			if(!name || (type === 'open' || type === 'close') && !$.sceditor.plugins.bbcode.bbcodes[name])
 			{
 				type = 'content';
 				name = '#';
@@ -286,12 +286,12 @@
 				ret         = {};
 
 			// if only one attribute then remove the = from the start and strip any quotes
-			if(attrs.charAt(0) === "=" && attrs.indexOf('=', 1) < 0)
+			if(attrs.charAt(0) === '=' && attrs.indexOf('=', 1) < 0)
 				ret.defaultattr = unquote(attrs.substr(1));
 			else
 			{
-				if(attrs.charAt(0) === "=")
-					attrs = "defaultattr" + attrs;
+				if(attrs.charAt(0) === '=')
+					attrs = 'defaultattr' + attrs;
 
 				// No need to strip quotes here, the regex will do that.
 				while((matches = atribsRegex.exec(attrs)))
@@ -847,7 +847,7 @@
 				ret = [];
 
 			isInline = function(bbcode) {
-				return (!bbcode || (typeof bbcode.isHtmlInline !== "undefined" ? bbcode.isHtmlInline : bbcode.isInline)) !== false;
+				return (!bbcode || (typeof bbcode.isHtmlInline !== 'undefined' ? bbcode.isHtmlInline : bbcode.isInline)) !== false;
 			};
 
 			while(tokens.length > 0)
@@ -870,7 +870,7 @@
 							// Add placeholder br to end of block level elements in all browsers apart from IE < 9 which
 							// handle new lines differently and doesn't need one.
 							if(!$.sceditor.ie)
-								content += "<br />";
+								content += '<br />';
 						}
 
 						if($.isFunction(bbcode.html))
@@ -1275,16 +1275,16 @@
 			var getCommand = $.sceditor.command.get;
 
 			var merge = {
-				bold: { txtExec: ["[b]", "[/b]"] },
-				italic: { txtExec: ["[i]", "[/i]"] },
-				underline: { txtExec: ["[u]", "[/u]"] },
-				strike: { txtExec: ["[s]", "[/s]"] },
-				subscript: { txtExec: ["[sub]", "[/sub]"] },
-				superscript: { txtExec: ["[sup]", "[/sup]"] },
-				left: { txtExec: ["[left]", "[/left]"] },
-				center: { txtExec: ["[center]", "[/center]"] },
-				right: { txtExec: ["[right]", "[/right]"] },
-				justify: { txtExec: ["[justify]", "[/justify]"] },
+				bold: { txtExec: ['[b]', '[/b]'] },
+				italic: { txtExec: ['[i]', '[/i]'] },
+				underline: { txtExec: ['[u]', '[/u]'] },
+				strike: { txtExec: ['[s]', '[/s]'] },
+				subscript: { txtExec: ['[sub]', '[/sub]'] },
+				superscript: { txtExec: ['[sup]', '[/sup]'] },
+				left: { txtExec: ['[left]', '[/left]'] },
+				center: { txtExec: ['[center]', '[/center]'] },
+				right: { txtExec: ['[right]', '[/right]'] },
+				justify: { txtExec: ['[justify]', '[/justify]'] },
 				font: {
 					txtExec: function(caller) {
 						var editor = this;
@@ -1293,7 +1293,7 @@
 							editor,
 							caller,
 							function(fontName) {
-								editor.insertText("[font="+fontName+"]", "[/font]");
+								editor.insertText('[font='+fontName+']', '[/font]');
 							}
 						);
 					}
@@ -1306,7 +1306,7 @@
 							editor,
 							caller,
 							function(fontSize) {
-								editor.insertText("[size="+fontSize+"]", "[/size]");
+								editor.insertText('[size='+fontSize+']', '[/size]');
 							}
 						);
 					}
@@ -1319,7 +1319,7 @@
 							editor,
 							caller,
 							function(color) {
-								editor.insertText("[color="+color+"]", "[/color]");
+								editor.insertText('[color='+color+']', '[/color]');
 							}
 						);
 					}
@@ -1348,38 +1348,38 @@
 						editor.insertText('[ol]\n' + content + '\n[/ol]');
 					}
 				},
-				table: { txtExec: ["[table][tr][td]", "[/td][/tr][/table]"] },
-				horizontalrule: { txtExec: ["[hr]"] },
-				code: { txtExec: ["[code]", "[/code]"] },
+				table: { txtExec: ['[table][tr][td]', '[/td][/tr][/table]'] },
+				horizontalrule: { txtExec: ['[hr]'] },
+				code: { txtExec: ['[code]', '[/code]'] },
 				image: {
 					txtExec: function(caller, selected) {
-						var url = prompt(this._("Enter the image URL:"), selected);
+						var url = prompt(this._('Enter the image URL:'), selected);
 
 						if(url)
-							this.insertText("[img]" + url + "[/img]");
+							this.insertText('[img]' + url + '[/img]');
 					}
 				},
 				email: {
 					txtExec: function(caller, selected) {
 						var	display = selected && selected.indexOf('@') > -1 ? null : selected,
-							email	= prompt(this._("Enter the e-mail address:"), (display ? '' : selected)),
-							text	= prompt(this._("Enter the displayed text:"), display || email) || email;
+							email	= prompt(this._('Enter the e-mail address:'), (display ? '' : selected)),
+							text	= prompt(this._('Enter the displayed text:'), display || email) || email;
 
 						if(email)
-							this.insertText("[email=" + email + "]" + text + "[/email]");
+							this.insertText('[email=' + email + ']' + text + '[/email]');
 					}
 				},
 				link: {
 					txtExec: function(caller, selected) {
 						var	display = selected && selected.indexOf('http://') > -1 ? null : selected,
-							url	= prompt(this._("Enter URL:"), (display ? 'http://' : selected)),
-							text	= prompt(this._("Enter the displayed text:"), display || url) || url;
+							url	= prompt(this._('Enter URL:'), (display ? 'http://' : selected)),
+							text	= prompt(this._('Enter the displayed text:'), display || url) || url;
 
 						if(url)
-							this.insertText("[url=" + url + "]" + text + "[/url]");
+							this.insertText('[url=' + url + ']' + text + '[/url]');
 					}
 				},
-				quote: { txtExec: ["[quote]", "[/quote]"] },
+				quote: { txtExec: ['[quote]', '[/quote]'] },
 				youtube: {
 					txtExec: function(caller) {
 						var editor = this;
@@ -1388,13 +1388,13 @@
 							editor,
 							caller,
 							function(id) {
-								editor.insertText("[youtube]" + id + "[/youtube]");
+								editor.insertText('[youtube]' + id + '[/youtube]');
 							}
 						);
 					}
 				},
-				rtl: { txtExec: ["[rtl]", "[/rtl]"] },
-				ltr: { txtExec: ["[ltr]", "[/ltr]"] }
+				rtl: { txtExec: ['[rtl]', '[/rtl]'] },
+				ltr: { txtExec: ['[ltr]', '[/ltr]'] }
 			};
 
 			editor.commands = $.extend(true, {}, merge, editor.commands);
@@ -1442,14 +1442,14 @@
 			name = propertyCache[property];
 
 			// add exception for align
-			if("text-align" === property)
+			if('text-align' === property)
 			{
 				$elm      = $(element);
 				dir       = style.direction;
 				textAlign = style[name] || $elm.css(property);
 
 				if($elm.parent().css(property) !== textAlign &&
-					$elm.css('display') === "block" && !$elm.is('hr') && !$elm.is('th'))
+					$elm.css('display') === 'block' && !$elm.is('hr') && !$elm.is('th'))
 					ret = textAlign;
 
 				// IE changes text-align to the same as the current direction so skip unless overridden by user
@@ -1589,7 +1589,7 @@
 
 			if(!$body)
 			{
-				if(typeof html === "string")
+				if(typeof html === 'string')
 				{
 					$tmpContainer = $('<div />').css('visibility', 'hidden').appendTo(document.body).html(html);
 					$body = $tmpContainer;
@@ -1783,7 +1783,7 @@
 	 * @since v1.4.0
 	 */
 	$.sceditor.plugins.bbcode.stripQuotes = function(str) {
-		return str ? str.replace(/\\(.)/g, "$1").replace(/^(["'])(.*?)\1$/, "$2") : str;
+		return str ? str.replace(/\\(.)/g, '$1').replace(/^(["'])(.*?)\1$/, '$2') : str;
 	};
 
 	/**
@@ -1798,7 +1798,7 @@
 	$.sceditor.plugins.bbcode.formatString = function() {
 		var args = arguments;
 		return args[0].replace(/\{(\d+)\}/g, function(str, p1) {
-			return typeof args[p1-0+1] !== "undefined" ?
+			return typeof args[p1-0+1] !== 'undefined' ?
 				args[p1-0+1] :
 				'{' + p1 + '}';
 		});
@@ -1847,9 +1847,9 @@
 			},
 			styles: {
 				// 401 is for FF 3.5
-				"font-weight": ["bold", "bolder", "401", "700", "800", "900"]
+				'font-weight': ['bold', 'bolder', '401', '700', '800', '900']
 			},
-			format: "[b]{0}[/b]",
+			format: '[b]{0}[/b]',
 			html: '<strong>{0}</strong>'
 		},
 		// END_COMMAND
@@ -1861,7 +1861,7 @@
 				em: null
 			},
 			styles: {
-				"font-style": ["italic", "oblique"]
+				'font-style': ['italic', 'oblique']
 			},
 			format: "[i]{0}[/i]",
 			html: '<em>{0}</em>'
@@ -1874,9 +1874,9 @@
 				u: null
 			},
 			styles: {
-				"text-decoration": ["underline"]
+				'text-decoration': ['underline']
 			},
-			format: "[u]{0}[/u]",
+			format: '[u]{0}[/u]',
 			html: '<u>{0}</u>'
 		},
 		// END_COMMAND
@@ -1888,9 +1888,9 @@
 				strike: null
 			},
 			styles: {
-				"text-decoration": ["line-through"]
+				'text-decoration': ['line-through']
 			},
-			format: "[s]{0}[/s]",
+			format: '[s]{0}[/s]',
 			html: '<s>{0}</s>'
 		},
 		// END_COMMAND
@@ -1900,7 +1900,7 @@
 			tags: {
 				sub: null
 			},
-			format: "[sub]{0}[/sub]",
+			format: '[sub]{0}[/sub]',
 			html: '<sub>{0}</sub>'
 		},
 		// END_COMMAND
@@ -1910,7 +1910,7 @@
 			tags: {
 				sup: null
 			},
-			format: "[sup]{0}[/sup]",
+			format: '[sup]{0}[/sup]',
 			html: '<sup>{0}</sup>'
 		},
 		// END_COMMAND
@@ -2020,7 +2020,7 @@
 			breakStart: true,
 			isInline: false,
 			skipLastLineBreak: true,
-			format: "[ul]{0}[/ul]",
+			format: '[ul]{0}[/ul]',
 			html: '<ul>{0}</ul>'
 		},
 		list: {
@@ -2036,7 +2036,7 @@
 			breakStart: true,
 			isInline: false,
 			skipLastLineBreak: true,
-			format: "[ol]{0}[/ol]",
+			format: '[ol]{0}[/ol]',
 			html: '<ol>{0}</ol>'
 		},
 		li: {
@@ -2045,10 +2045,10 @@
 			},
 			isInline: false,
 			closedBy: ['/ul', '/ol', '/list', '*', 'li'],
-			format: "[li]{0}[/li]",
+			format: '[li]{0}[/li]',
 			html: '<li>{0}</li>'
 		},
-		"*": {
+		'*': {
 			isInline: false,
 			closedBy: ['/ul', '/ol', '/list', '*', 'li'],
 			html: '<li>{0}</li>'
@@ -2063,7 +2063,7 @@
 			isInline: false,
 			isHtmlInline: true,
 			skipLastLineBreak: true,
-			format: "[table]{0}[/table]",
+			format: '[table]{0}[/table]',
 			html: '<table>{0}</table>'
 		},
 		tr: {
@@ -2072,7 +2072,7 @@
 			},
 			isInline: false,
 			skipLastLineBreak: true,
-			format: "[tr]{0}[/tr]",
+			format: '[tr]{0}[/tr]',
 			html: '<tr>{0}</tr>'
 		},
 		th: {
@@ -2081,7 +2081,7 @@
 			},
 			allowsEmpty: true,
 			isInline: false,
-			format: "[th]{0}[/th]",
+			format: '[th]{0}[/th]',
 			html: '<th>{0}</th>'
 		},
 		td: {
@@ -2090,7 +2090,7 @@
 			},
 			allowsEmpty: true,
 			isInline: false,
-			format: "[td]{0}[/td]",
+			format: '[td]{0}[/td]',
 			html: '<td>{0}</td>'
 		},
 		// END_COMMAND
@@ -2101,7 +2101,7 @@
 			tags: {
 				img: {
 					src: null,
-					"data-sceditor-emoticon": null
+					'data-sceditor-emoticon': null
 				}
 			},
 			format: function(element, content) {
@@ -2119,8 +2119,8 @@
 			allowsEmpty: true,
 			isSelfClosing: true,
 			isInline: false,
-			format: "[hr]{0}",
-			html: "<hr />"
+			format: '[hr]{0}',
+			html: '<hr />'
 		},
 		// END_COMMAND
 
