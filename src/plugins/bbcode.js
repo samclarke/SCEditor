@@ -1642,6 +1642,10 @@
 					{
 						isValidChild = $.inArray(tag, vChildren) > -1;
 
+						// Emoticons should always be converted
+						if($node.is('img') && $node.data('sceditor-emoticon'))
+							isValidChild = true;
+
 						// if this tag is one of the parents allowed children
 						// then set this tags allowed children to whatever it allows,
 						// otherwise set to what the parent allows
@@ -2101,7 +2105,7 @@
 				}
 			},
 			format: function(element, content) {
-				return element.attr('data-sceditor-emoticon') + content;
+				return element.data('sceditor-emoticon') + content;
 			},
 			html: '{0}'
 		},
@@ -2138,7 +2142,7 @@
 					};
 
 				// check if this is an emoticon image
-				if(typeof $element.attr('data-sceditor-emoticon') !== 'undefined')
+				if($element.attr('data-sceditor-emoticon'))
 					return content;
 
 				w = $element.attr('width') || style('width');
