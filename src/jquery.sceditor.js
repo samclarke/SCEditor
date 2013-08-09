@@ -1386,7 +1386,7 @@
 		handlePasteData = function(elm, pastearea) {
 			// fix any invalid nesting
 			$.sceditor.dom.fixNesting(pastearea);
-// Trigger custom paste event to allow filtering (pre and post converstion?)
+// TODO: Trigger custom paste event to allow filtering (pre and post converstion?)
 			var pasteddata = pastearea.innerHTML;
 
 			if(pluginManager.hasHandler('toSource'))
@@ -1398,7 +1398,7 @@
 				pasteddata = pluginManager.callOnlyFirst('toWysiwyg', pasteddata, true);
 
 			rangeHelper.restoreRange();
-			rangeHelper.insertHTML(replaceEmoticons(pasteddata));
+			base.wysiwygEditorInsertHtml(pasteddata, null, true);
 		};
 
 		/**
@@ -1452,14 +1452,38 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.wysiwygEditorInsertHtml = function (html, endHtml, overrideCodeBlocking) {
+			var	scrollTo, $marker,
+				marker = '<span id="sceditor-cursor">&nbsp;</span>';
+
 			base.focus();
+// TODO: This code tag should be configurable and should maybe convert the HTML into text
 
 			// don't apply to code elements
-			if(!overrideCodeBlocking && ($(rangeHelper.parentNode()).is('code') ||
-				$(rangeHelper.parentNode()).parents('code').length !== 0))
+			if(!overrideCodeBlocking && ($(currentBlockNode).is('code') || $(currentBlockNode).parents('code').length !== 0))
 				return;
-// TODO: This code tag should be configurable
+
+			if(endHtml)
+				endHtml += marker;
+			else
+				html += marker;
+
 			rangeHelper.insertHTML(html, endHtml);
+
+			// Scroll the editor to after the inserted HTML
+			$marker  = $wysiwygBody.find('#sceditor-cursor');
+			scrollTo = ($marker.offset().top + ($marker.outerHeight(true) * 2)) - $wysiwygEditor.height();
+			$marker.remove();
+
+// TODO: check if already in range and don't scroll if it is
+			$wysiwygDoc.scrollTop(scrollTo);
+			$wysiwygBody.scrollTop(scrollTo);
+
+			// This is needed to refresh the cursor position...
+			// without this the cursor will display in the wrong
+			// poisition even though it will behave correctly if
+			// any keys are pressed.
+			rangeHelper.saveRange();
+			rangeHelper.restoreRange();
 
 			appendNewLine();
 		};
@@ -1864,6 +1888,8 @@
 			if(!options.emoticonsEnabled)
 				return html;
 
+// TODO: Loop through DOM to replace emoticons in next nodes. Will make it a lot easier for
+// them to be blocked in certain nodes
 			var emoticons = $.extend({}, options.emoticons.more, options.emoticons.dropdown, options.emoticons.hidden);
 
 			$.each(emoticons, function (key, url) {
@@ -2237,7 +2263,8 @@
 
 			$.sceditor.dom.rTraverse($wysiwygBody[0], function(node) {
 				name = node.nodeName.toLowerCase();
-
+// TODO: Replace requireNewLineFix with just a block level fix for any block that has styling and
+// any block that isn't a plain <p> or <div>
 				if($.inArray(name, requireNewLineFix) > -1)
 					requiresNewLine = true;
 
@@ -2611,6 +2638,9 @@
 			var	pos     = 0,
 				curChar = String.fromCharCode(e.which);
 
+			if($(currentBlockNode).is('code') || $(currentBlockNode).parents('code').length)
+				return;
+
 			if(!base.emoticonsCache)
 			{
 				base.emoticonsCache = [];
@@ -2930,6 +2960,9 @@
 					return;
 			}
 
+			if(!parent || $(parent).is('body'))
+				return;
+
 			// The backspace was pressed at the start of
 			// the container so clear the style
 			base.clearBlockFormatting(parent);
@@ -2964,7 +2997,7 @@
 			block = block || currentStyledBlockNode();
 
 			if(!block || $(block).is('body'))
-				return;
+				return this;
 
 			rangeHelper.saveRange();
 
@@ -4166,7 +4199,7 @@
 		 */
 		base.getFirstBlockParent = function(n) {
 			var func = function(node) {
-				if(!$.sceditor.dom.isInline(node))
+				if(!$.sceditor.dom.isInline(node, true))
 					return node;
 
 				node = node ? node.parentNode : null;

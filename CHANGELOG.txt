@@ -37,6 +37,7 @@ Version 1.4.4:
 		pressing backspace.
 	Added Greek translation.
 		- Thanks to Nikos Aggelis for translating.
+	Improved insert and pasting to scroll to after the inserted/pasted content.
 
 Version 1.4.3:
 	Added css() method which allows getting/setting inline CSS for the WYSIWYG editor.
