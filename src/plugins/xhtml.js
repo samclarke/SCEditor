@@ -703,7 +703,7 @@
 				if(!node.attributes)
 					return;
 
-				tagName     = node.nodeName.toLowerCase(),
+				tagName     = node.nodeName.toLowerCase();
 				attrsLength = node.attributes.length;
 
 				if(attrsLength)
