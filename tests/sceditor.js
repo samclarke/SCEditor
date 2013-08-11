@@ -183,7 +183,6 @@
 		);
 	});
 
-
 	test('Emoticons Compat', function() {
 		expect(6);
 
@@ -236,6 +235,50 @@
 			this.sceditor.getWysiwygEditorValue(false).toLowerCase().split('<img ').length,
 			5,
 			'Multiple emoticons converted'
+		);
+	});
+
+	test('Newline after blocks', function() {
+		expect(4);
+
+		this.sceditor.destroy();
+
+		var $textarea = $('#qunit-fixture textarea:first');
+		$textarea.sceditor({
+			plugins: 'bbcode',
+			emoticonsCompat: true,
+			parserOptions: {
+				breakAfter: false
+			}
+		});
+
+		this.sceditor = $textarea.sceditor('instance');
+
+
+		this.sceditor.val('[code]test :)[/code]');
+		ok(
+			this.sceditor.getWysiwygEditorValue(false).indexOf('sceditor-nlf'),
+			'Add new line after code'
+		);
+
+		this.sceditor.val('[quote]test :)[/quote]');
+		ok(
+			this.sceditor.getWysiwygEditorValue(false).indexOf('sceditor-nlf'),
+			'Add new line after quote'
+		);
+
+		this.sceditor.val('[quote]test :)[/quote]\n');
+		equal(
+			this.sceditor.val(),
+			'[quote]test :)[/quote]\n',
+			'Remove auto inserted new  line after quote'
+		);
+
+		this.sceditor.setWysiwygEditorValue('<blockquote>test</blockquote><div class=\"sceditor-nlf\">test</div>');
+		equal(
+			this.sceditor.val(),
+			'[quote]test[/quote]\ntest',
+			'Do not remove text inserted into auto added new line'
 		);
 	});
 })();
