@@ -1509,7 +1509,8 @@
 		 * @private
 		 */
 		handleTags = function($element, content, blockLevel) {
-			var	element = $element[0],
+			var	convertBBCode,
+				element = $element[0],
 				tag     = element.nodeName.toLowerCase();
 
 			// convert blockLevel to boolean
@@ -1520,8 +1521,9 @@
 				$.each(tagsToBbcodes[tag][blockLevel], function(bbcode, bbcodeAttribs) {
 					// if the bbcode requires any attributes then check this has
 					// all needed
-					if(bbcodeAttribs) {
-						var runBbcode = false;
+					if(bbcodeAttribs)
+					{
+						convertBBCode = false;
 
 						// loop all the bbcode attribs
 						$.each(bbcodeAttribs, function(attrib, values) {
@@ -1531,11 +1533,11 @@
 								return;
 
 							// break this loop as we have matched this bbcode
-							runBbcode = true;
+							convertBBCode = true;
 							return false;
 						});
 
-						if(!runBbcode)
+						if(!convertBBCode)
 							return;
 					}
 
@@ -1548,7 +1550,7 @@
 
 			if(blockLevel && (!$.sceditor.dom.isInline(element, true) || tag === 'br'))
 			{
-				var	parent		= element.parentNode,
+				var	parent		    = element.parentNode,
 					parentLastChild = parent.lastChild,
 					previousSibling = element.previousSibling,
 					parentIsInline	= $.sceditor.dom.isInline(parent, true);
@@ -1666,7 +1668,7 @@
 						// skip empty nlf elements (new lines automatically added after block level elements like quotes)
 						if($node.hasClass('sceditor-nlf'))
 						{
-							if(!firstChild || (!$.sceditor.ie && (node.childNodes.length === 1 && /br/i.test(firstChild.nodeName))))
+							if(!firstChild || (!$.sceditor.ie && node.childNodes.length === 1 && /br/i.test(firstChild.nodeName)))
 							{
 								return;
 							}
@@ -1676,7 +1678,8 @@
 						if(tag !== 'iframe')
 							curTag = toBBCode(node, vChild);
 
-// TODO: isValidChild is no longer needed. Should use valid children bbcodes instead
+// TODO: isValidChild is no longer needed. Should use valid children bbcodes instead by
+// creating BBCode tokens like the parser.
 						if(isValidChild)
 						{
 							// code tags should skip most styles

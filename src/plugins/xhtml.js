@@ -92,8 +92,8 @@
 		trim = function(str) {
 			return str
 				// new lines in text nodes are always ignored in normal handling
-				.replace(/[\r\n]/, "")
-				.replace(/[^\S|\u00A0]+/g, " ");
+				.replace(/[\r\n]/, '')
+				.replace(/[^\S|\u00A0]+/g, ' ');
 		};
 
 		/**
