@@ -103,6 +103,39 @@
 		);
 	});
 
+
+	test('parseHTML', function() {
+		expect(3);
+
+		var node, parsed;
+
+
+		parsed = $.sceditor.dom.parseHTML('<span>one</span>');
+		equal(
+			parsed.length,
+			1,
+			'Parse single node'
+		);
+
+
+		node   = html2dom('<span>span<div style="font-weight: bold;">div</div>span</span>');
+		parsed = $.sceditor.dom.parseHTML('<span>span<div style="font-weight: bold;">div</div>span</span>');
+		equal(
+			parsed[0].outerHTML,
+			node.innerHTML,
+			'Parse single node'
+		);
+
+
+		parsed = $.sceditor.dom.parseHTML('<span>one</span><span>two</span><span>three</span>');
+		equal(
+			parsed.length,
+			3,
+			'Parse multiple nodes'
+		);
+	});
+
+
 	// IE 8 and below adds new lines when calling innerHTML even through
 	// they don't exist in the DOM. Instead of fixing it, just skip IE < 8
 	// for this test.
