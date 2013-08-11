@@ -2945,7 +2945,7 @@
 			var	node, offset, tmpRange, range, parent;
 
 			// 8 is the backspace key
-			if(options.disableBlockRemove || e.which !== 8 || !(range = rangeHelper.selectedRange()))
+			if($.sceditor.ie || options.disableBlockRemove || e.which !== 8 || !(range = rangeHelper.selectedRange()))
 				return;
 
 			if(!window.getSelection)
