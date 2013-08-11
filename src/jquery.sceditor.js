@@ -1456,8 +1456,8 @@
 				marker = '<span id="sceditor-cursor">&nbsp;</span>';
 
 			base.focus();
-// TODO: This code tag should be configurable and should maybe convert the HTML into text
 
+// TODO: This code tag should be configurable and should maybe convert the HTML into text
 			// don't apply to code elements
 			if(!overrideCodeBlocking && ($(currentBlockNode).is('code') || $(currentBlockNode).parents('code').length !== 0))
 				return;
@@ -1478,11 +1478,8 @@
 			$wysiwygDoc.scrollTop(scrollTo);
 			$wysiwygBody.scrollTop(scrollTo);
 
-			// This is needed to refresh the cursor position...
-			// without this the cursor will display in the wrong
-			// poisition even though it will behave correctly if
-			// any keys are pressed.
 			rangeHelper.saveRange();
+			replaceEmoticons($wysiwygBody[0]);
 			rangeHelper.restoreRange();
 
 			appendNewLine();
@@ -1731,9 +1728,6 @@
 						.replace(/&amp;/g, '&');
 				}
 
-				if(convertEmoticons !== false)
-					start = replaceEmoticons(start);
-
 				base.wysiwygEditorInsertHtml(start);
 			}
 
@@ -1753,7 +1747,7 @@
 		 * @name getWysiwygEditorValue
 		 * @memberOf jQuery.sceditor.prototype
 		 */
-		base.getWysiwygEditorValue = function (filter) {
+		base.getWysiwygEditorValue = function(filter) {
 			var	html, ieBookmark,
 				hasSelection = rangeHelper.hasSelection();
 
@@ -1850,7 +1844,8 @@
 			if(!value)
 				value = '<p>' + ($.sceditor.ie ? '' : '<br />') + '</p>';
 
-			$wysiwygBody[0].innerHTML = replaceEmoticons(value);
+			$wysiwygBody[0].innerHTML = value;
+			replaceEmoticons($wysiwygBody[0]);
 
 			appendNewLine();
 		};
@@ -1884,42 +1879,73 @@
 		 * Replaces any emoticon codes in the passed HTML with their emoticon images
 		 * @private
 		 */
-		replaceEmoticons = function (html) {
-			if(!options.emoticonsEnabled)
-				return html;
+		replaceEmoticons = function(node) {
+// TODO: Make this tag configurable.
+			if(!options.emoticonsEnabled || $(node).parents('code').length)
+				return;
 
-// TODO: Loop through DOM to replace emoticons in next nodes. Will make it a lot easier for
-// them to be blocked in certain nodes
-			var emoticons = $.extend({}, options.emoticons.more, options.emoticons.dropdown, options.emoticons.hidden);
+			var	doc           = node.ownerDocument,
+				emoticonCodes = [],
+				emoticonRegex = [],
+				emoticons     = $.extend({}, options.emoticons.more, options.emoticons.dropdown, options.emoticons.hidden);
 
-			$.each(emoticons, function (key, url) {
-				// escape the key before using it as a regex
-				// and append the regex to only find emoticons outside
-				// of HTML tags
-				var	reg   = $.sceditor.regexEscape($.sceditor.escapeEntities(key)) + '(?=([^\\<\\>]*?<(?!/code)|[^\\<\\>]*?$))',
-					group = '';
-
-				// Make sure the emoticon is surrounded by whitespace or is at the start/end of a string or html tag
+			$.each(emoticons, function (key) {
 				if(options.emoticonsCompat)
-				{
-					reg   = '((>|^|\\s|\xA0|\u2002|\u2003|\u2009|&nbsp;))' + reg + '(?=(\\s|$|<|\xA0|\u2002|\u2003|\u2009|&nbsp;))';
-					group = '$1';
-				}
+					emoticonRegex[key] = new RegExp('(>|^|\\s|\xA0|\u2002|\u2003|\u2009|&nbsp;)' + $.sceditor.regexEscape(key) + '(\\s|$|<|\xA0|\u2002|\u2003|\u2009|&nbsp;)');
 
-				html = html.replace(
-					new RegExp(reg, 'gm'),
-					group + _tmpl('emoticon', {
-						key: key,
-						url: url.url || url,
-						tooltip: url.tooltip || key
-					})
-				);
+				emoticonCodes.push(key);
 			});
+
+			(function convertEmoticons(node) {
+				node = node.firstChild;
+
+				while(node != null)
+				{
+					var	parts, key, emoticon, parsedHtml, emoticonIdx, nextSibling, startIdx,
+						nodeParent  = node.parentNode,
+						nodeValue   = node.nodeValue;
+
+					// All none textnodes
+					if(node.nodeType !== 3)
+					{
+// TODO: Make this tag configurable.
+						if(!$(node).is('code'))
+							 convertEmoticons(node);
+					}
+					else if(nodeValue)
+					{
+						emoticonIdx = emoticonCodes.length;
+						while(emoticonIdx--)
+						{
+							key      = emoticonCodes[emoticonIdx];
+							startIdx = options.emoticonsCompat ? nodeValue.search(emoticonRegex[key]) : nodeValue.indexOf(key);
+
+							if(startIdx > -1)
+							{
+								nextSibling    = node.nextSibling;
+								emoticon       = emoticons[key];
+								parts          = nodeValue.substr(startIdx).split(key);
+								nodeValue      = nodeValue.substr(0, startIdx) + parts.shift();
+								node.nodeValue = nodeValue;
+
+								parsedHtml = $.sceditor.dom.parseHTML(_tmpl('emoticon', {
+									key: key,
+									url: emoticon.url || emoticon,
+									tooltip: emoticon.tooltip || key
+								}), doc);
+
+								nodeParent.insertBefore(parsedHtml[0], nextSibling);
+								nodeParent.insertBefore(doc.createTextNode(parts.join(key)), nextSibling);
+							}
+						}
+					}
+
+					node = node.nextSibling;
+				}
+			}(node));
 
 			if(options.emoticonsCompat)
 				currentEmoticons = $wysiwygBody.find('img[data-sceditor-emoticon]');
-
-			return html;
 		};
 
 		/**
@@ -2637,7 +2663,7 @@
 		emoticonsKeyPress = function (e) {
 			var	pos     = 0,
 				curChar = String.fromCharCode(e.which);
-
+// TODO: Make configurable
 			if($(currentBlockNode).is('code') || $(currentBlockNode).parents('code').length)
 				return;
 
@@ -2768,7 +2794,7 @@
 				{
 					rangeHelper.saveRange();
 
-					$wysiwygBody.html(replaceEmoticons($wysiwygBody.html()));
+					replaceEmoticons($wysiwygBody[0]);
 					currentEmoticons = $wysiwygBody.find('img[data-sceditor-emoticon]');
 
 					rangeHelper.restoreRange();
@@ -3043,7 +3069,7 @@
 			v = 10;
 
 		// Detect IE 11
-		if(v === 3 && document.documentMode)
+		if(v === 4 && document.documentMode)
 			v = 11;
 
 		return v > 4 ? v : undef;
@@ -4611,6 +4637,23 @@
 		 */
 		rTraverse: function(node, func, innermostFirst, siblingsOnly) {
 			this.traverse(node, func, innermostFirst, siblingsOnly, true);
+		},
+
+		/**
+		 * Parses HTML
+		 * @param
+		 * @since 1.4.4
+		 * @return {Array}
+		 */
+		parseHTML: function(html, context) {
+			var	ret = [],
+				tmp = (context || document).createElement('div');
+
+			tmp.innerHTML = html;
+
+			$.merge(ret, tmp.childNodes);
+
+			return ret;
 		},
 
 		/**

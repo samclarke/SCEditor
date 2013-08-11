@@ -1,4 +1,4 @@
-/*global module: true, $: true, test: true, expect: true, equal: true*/
+/*global module: true, $: true, test: true, expect: true, equal: true, ok:true*/
 (function() {
 	'use strict';
 
@@ -150,6 +150,92 @@
 		equal(
 			this.sceditor.val(),
 			'[quote=admin]Simple [b]test[/b][/quote]\n'
+		);
+	});
+
+	test('Emoticons', function() {
+		expect(4);
+
+		this.sceditor.val('[code]test :)[/code]');
+		ok(
+			this.sceditor.getWysiwygEditorValue(false).indexOf('test :)') > -1,
+			'Do not convert emoticons in code blocks'
+		);
+
+		this.sceditor.val('[quote]test :)[/quote]');
+		ok(
+			this.sceditor.getWysiwygEditorValue(false).indexOf('test :)') === -1,
+			'Convert emoticons in quotes'
+		);
+
+		this.sceditor.val(':);):):):o:)test:)test');
+		equal(
+			this.sceditor.val(),
+			':);):):):o:)test:)test',
+			'Order remains the same'
+		);
+
+		this.sceditor.val(':);):):):O:)test:)test');
+		equal(
+			this.sceditor.getWysiwygEditorValue(false).toLowerCase().split('<img ').length,
+			8,
+			'Multiple emoticons converted'
+		);
+	});
+
+
+	test('Emoticons Compat', function() {
+		expect(6);
+
+		this.sceditor.destroy();
+
+		var $textarea = $('#qunit-fixture textarea:first');
+		$textarea.sceditor({
+			plugins: 'bbcode',
+			emoticonsCompat: true
+		});
+
+		this.sceditor = $textarea.sceditor('instance');
+
+
+		this.sceditor.val('[code]test :)[/code]');
+		ok(
+			this.sceditor.getWysiwygEditorValue(false).indexOf('test :)') > -1,
+			'Do not convert emoticons in code blocks'
+		);
+
+		this.sceditor.val('[quote]test :)[/quote]');
+		ok(
+			this.sceditor.getWysiwygEditorValue(false).indexOf('test :)') === -1,
+			'Convert emoticons in quotes'
+		);
+
+		this.sceditor.val(':) ;) :) :):o :) test:)test');
+		equal(
+			this.sceditor.val(),
+			':) ;) :) :):o :) test:)test',
+			'Order remains the same'
+		);
+
+		this.sceditor.val(':);):):):O :) test:)test');
+		equal(
+			this.sceditor.getWysiwygEditorValue(false).toLowerCase().split('<img ').length,
+			2,
+			'Multiple emoticons converted'
+		);
+
+		this.sceditor.val(':) ;) :) :):O :) test:)test');
+		equal(
+			this.sceditor.getWysiwygEditorValue(false).toLowerCase().split('<img ').length,
+			5,
+			'Multiple emoticons converted'
+		);
+
+		this.sceditor.val(':) ;) :) :O:) :) test:)test');
+		equal(
+			this.sceditor.getWysiwygEditorValue(false).toLowerCase().split('<img ').length,
+			5,
+			'Multiple emoticons converted'
 		);
 	});
 })();
