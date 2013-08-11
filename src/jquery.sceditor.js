@@ -4416,10 +4416,18 @@
 						{
 							while(sibling.lastChild)
 								sibling = sibling.lastChild;
-
-							if(!isInline(sibling) || sibling.nodeType === 3)
+							
+							var	isSiblingInline = isInline(sibling);
+							
+							if(!isSiblingInline || sibling.nodeType === 3)
 							{
 								trimStart = sibling.nodeType === 3 ? /[\t\n\r ]$/.test(sibling.nodeValue) : true;
+								break;
+							}
+							else if (isSiblingInline && sibling.nodeType != 3)
+							{
+								// if the sibling is inline but it's not a text node, 
+								// we don't trim the start of this one
 								break;
 							}
 						}
