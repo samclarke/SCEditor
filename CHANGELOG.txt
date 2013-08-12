@@ -39,6 +39,8 @@ Version 1.4.4:
 		- Thanks to Nikos Aggelis for translating.
 	Improved insert and pasting to scroll to after the inserted/pasted content.
 	Fixed bug with emoticons sometimes getting converted in code blocks.
+	Added Hungarian translation
+		- Thanks to Ángyán László for translating.
 
 Version 1.4.3:
 	Added css() method which allows getting/setting inline CSS for the WYSIWYG editor.
