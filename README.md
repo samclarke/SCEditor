@@ -1,4 +1,4 @@
-# [SCEditor](http://www.sceditor.com/) v1.4.4
+# [SCEditor](http://www.sceditor.com/) v1.4.5
 
 [![Build Status](https://travis-ci.org/samclarke/SCEditor.png?branch=master)](https://travis-ci.org/samclarke/SCEditor)
 
