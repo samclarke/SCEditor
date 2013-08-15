@@ -3473,6 +3473,18 @@
 			tooltip: 'Numbered list'
 		},
 		// END_COMMAND
+		// START_COMMAND: 
+		indent: {
+			exec: 'indent',
+			tooltip: 'Add indent'
+		},
+		// END_COMMAND
+		// START_COMMAND: 
+		outdent: {
+			exec: 'outdent',
+			tooltip: 'Remove one indent'
+		},
+		// END_COMMAND
 
 		// START_COMMAND: Table
 		table: {
@@ -5296,7 +5308,7 @@
 		 * @type {String}
 		 */
 		toolbar:	'bold,italic,underline,strike,subscript,superscript|left,center,right,justify|' +
-				'font,size,color,removeformat|cut,copy,paste,pastetext|bulletlist,orderedlist|' +
+				'font,size,color,removeformat|cut,copy,paste,pastetext|bulletlist,orderedlist,indent,outdent|' +
 				'table|code,quote|horizontalrule,image,email,link,unlink|emoticon,youtube,date,time|' +
 				'ltr,rtl|print,maximize,source',
 
