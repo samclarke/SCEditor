@@ -584,9 +584,10 @@
 					if(!base.commands[button] || $.inArray(button, exclude) > -1)
 						return;
 
+					var shortcutName = base.commands[button].shortcut ? " (" + base.commands[button].shortcut + ")" : "";
 					$button = _tmpl('toolbarButton', {
 							name: button,
-							dispName: base._(base.commands[button].tooltip || button)
+							dispName: base._(base.commands[button].tooltip || button) + shortcutName
 						}, true);
 
 					$button.data('sceditor-txtmode', !!base.commands[button].txtExec);
@@ -606,8 +607,11 @@
 					if(!base.commands[button].exec)
 						$button.addClass('disabled');
 
-					if(base.commands[button].shortcut)
+					if(base.commands[button].shortcut){
 						base.addShortcut(base.commands[button].shortcut, button);
+						// Add the shortcut info to the title
+						$button.attr('title', $button.attr('title') + shortcutName);
+					}
 
 					$group.append($button);
 				});
