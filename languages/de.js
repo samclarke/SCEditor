@@ -1,6 +1,6 @@
 (function ($) {
 	'use strict';
-	
+
 	$.sceditor.locale["de"] = {
 		"Bold": "Fett",
 		"Italic": "Kursiv",
@@ -52,5 +52,5 @@
 		"Print": "Drucken",
 		"View source": "Quelltext ansehen",
 		dateFormat: "day.month.year"
-	}
+	};
 })(jQuery);

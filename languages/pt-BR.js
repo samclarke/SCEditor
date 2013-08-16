@@ -62,5 +62,5 @@
 		"Enter the YouTube video URL or ID:": "Informe o endereço URL do YouTube ou ID:",
 		"Insert a Quote": "Inserir uma citação",
 		dateFormat: "day-month-year"
-	}
+	};
 })(jQuery);

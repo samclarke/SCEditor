@@ -11,7 +11,13 @@ module.exports = function(grunt) {
 			options: {
 				browser: true
 			},
-			all: ['src/**/*.js', 'tests/**/*.js']
+			all: ['src/**/*.js', 'tests/**/*.js'],
+			translations : {
+				src : 'languages/**/*.js',
+				options : {
+					jshintrc : 'languages/.jshintrc'
+				}
+			}
 		},
 		clean: {
 			build: ['minified/'],

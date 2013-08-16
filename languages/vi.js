@@ -64,5 +64,5 @@
 		"Invalid YouTube video": "Video Youtube không chính xác",
 
 		dateFormat: "day/month/year"
-	}
+	};
 })(jQuery);

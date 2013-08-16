@@ -1,6 +1,6 @@
 (function ($) {
 	'use strict';
-	
+
 	$.sceditor.locale["et"] = {
 		"Bold": "Rasvane",
 		"Italic": "Kaldkiri",
@@ -52,5 +52,5 @@
 		"Print": "Prindi",
 		"View source": "Vaata lähtekoodi",
 		dateFormat: "day.month.year"
-	}
+	};
 })(jQuery);

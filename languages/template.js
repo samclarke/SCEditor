@@ -4,10 +4,10 @@
  */
 (function ($) {
 	'use strict';
-	
+
 	// Replace <code> with the language code, e.g. no, fr, en, ect.
 	$.sceditor.locale["<code>"] = {
-		
+
 		// Original string is on the left, place the translation between
 		// the quotes on the right
 		"Bold": "",
@@ -66,9 +66,9 @@
 		"Enter the YouTube video URL or ID:": "",
 		"Insert a Quote":"",
 		"Invalid YouTube video": "",
-		
+
 		// month format, replace - with the date format seperator and order in the
 		// order used
 		dateFormat: "day-month-year"
-	}
+	};
 })(jQuery);

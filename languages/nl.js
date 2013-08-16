@@ -1,6 +1,6 @@
 (function ($) {
 	'use strict';
-	
+
 	$.sceditor.locale["nl"] = {
 		"Bold": "Vet",
 		"Italic": "Schuingedrukt",
@@ -52,5 +52,5 @@
 		"Print": "Print",
 		"View source": "Bron bekijken",
 		dateFormat: "day.month.year"
-	}
+	};
 })(jQuery);

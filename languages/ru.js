@@ -1,6 +1,6 @@
 (function ($) {
 	'use strict';
-	
+
 	$.sceditor.locale["ru"] = {
 		"Bold": "Жирный",
 		"Italic": "Курсив",
@@ -52,5 +52,5 @@
 		"Print": "Распечатать",
 		"View source": "Показать код",
 		dateFormat: "day.month.year"
-	}
+	};
 })(jQuery);
