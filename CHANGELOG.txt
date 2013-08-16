@@ -1,5 +1,6 @@
 Version 1.4.5:
-
+	Added command shortcuts to tooltips.
+		- Thanks to @brunoais
 
 Version 1.4.4:
 	Fixed height auto expanding when resized.
