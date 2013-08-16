@@ -3475,13 +3475,66 @@
 		// END_COMMAND
 		// START_COMMAND: 
 		indent: {
-			exec: 'indent',
+			exec: function() {
+				var editor = this,
+					elm    = editor.getRangeHelper().getFirstBlockParent(),
+					$elm   = $(elm);
+
+				editor.focus();
+
+				// If the first block element is the body, try to
+				// wrap the text in a paragraph. Uses formatBlock
+				// as that will wrap the entire paragraph rather
+				// than just the selection.
+				if(!elm || $elm.is('body'))
+				{
+					editor.execCommand("formatBlock", "p");
+
+					elm  = editor.getRangeHelper().getFirstBlockParent();
+					$elm = $(elm);
+
+					if(!elm || $elm.is('body'))
+						return;
+				}
+
+				// Use native indent for lists, and marginLeft for everything else.
+				// Can't use native indent for non-lists and it inserts a blockquote
+				// which is incorrect and used by the [quote] BBCode
+				if($elm.is('li') || $elm.parents('li:first').length)
+					editor.execCommand("indent");
+				else
+					$elm.css('marginLeft', (parseInt($elm.css('marginLeft')) || 0) + 30);
+			},
 			tooltip: 'Add indent'
 		},
 		// END_COMMAND
 		// START_COMMAND: 
 		outdent: {
-			exec: 'outdent',
+			exec: function() {
+				var indent,
+					editor = this,
+					elm    = editor.getRangeHelper().getFirstBlockParent(),
+					$elm   = $(elm);
+
+				editor.focus();
+
+				if(!elm || $elm.is('body'))
+				{
+					editor.execCommand("formatBlock", "p");
+
+					elm  = editor.getRangeHelper().getFirstBlockParent();
+					$elm = $(elm);
+					
+					if(!elm || $elm.is('body'))
+						// Something went terribly wrong as this should be false
+						return;
+				}
+
+				if($elm.is('li') || $elm.parents('li:first').length)
+					editor.execCommand("outdent");
+				else if((indent = parseInt($elm.css('marginLeft'))) > 0)
+					$elm.css('marginLeft', indent > 30 ? indent - 30 : 0);
+			},
 			tooltip: 'Remove one indent'
 		},
 		// END_COMMAND
