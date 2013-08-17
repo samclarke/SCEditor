@@ -3475,65 +3475,66 @@
 		// END_COMMAND
 		// START_COMMAND: 
 		indent: {
+			state: function(parents, firstBlock) {
+				// Only works with lists, for now
+				// This is a nested list, so it will always work
+				var listParentNum = $(firstBlock).parents('ul,ol,menu').length;
+				if(listParentNum > 1 ||
+					// in case it's a list with only a single <li>
+					(listParentNum > 0 && firstBlock.parentNode.children.length > 1)
+					){
+					return 0;
+				}
+				if($(firstBlock).is('ul,ol,menu')){
+					// if the whole list is selected, then this must be invalidated because the browser will place a <blockquote> there
+					var rangeHelper	= this.getRangeHelper();
+					var range = rangeHelper.selectedRange();
+					if(range instanceof Range){
+						if( // Select the tag, not the textNode (that's why the parentNode)
+							range.startContainer.parentNode !== range.startContainer.parentNode.parentNode.firstElementChild ||
+							// work around a bug in FF
+							(range.endContainer.parentNode.tagName.toLowerCase() == 'li' &&
+							range.endContainer.parentNode !== range.endContainer.parentNode.parentNode.lastElementChild )
+						){
+							return 0;
+						}
+					}else{
+						// it's IE...
+						// As it is impossible to know well when to accept, better safe than sorry
+						return $(firstBlock).is('li') ? 0 : -1;
+					}
+				}
+				return -1;
+			},
 			exec: function() {
 				var editor = this,
-					elm    = editor.getRangeHelper().getFirstBlockParent(),
-					$elm   = $(elm);
+					rangeHelper	= editor.getRangeHelper(),
+					elm    		= rangeHelper.getFirstBlockParent(),
+					$elm		= $(elm);
 
 				editor.focus();
-
-				// If the first block element is the body, try to
-				// wrap the text in a paragraph. Uses formatBlock
-				// as that will wrap the entire paragraph rather
-				// than just the selection.
-				if(!elm || $elm.is('body'))
-				{
-					editor.execCommand("formatBlock", "p");
-
-					elm  = editor.getRangeHelper().getFirstBlockParent();
-					$elm = $(elm);
-
-					if(!elm || $elm.is('body'))
-						return;
-				}
-
-				// Use native indent for lists, and marginLeft for everything else.
-				// Can't use native indent for non-lists and it inserts a blockquote
-				// which is incorrect and used by the [quote] BBCode
-				if($elm.is('li') || $elm.parents('li:first').length)
+				// An indent system is quite complicated as there are loads of complications
+				// and issues around how to indent text
+				// As default, let's just stay with indenting the lists, at least, for now.
+				if($elm.parents('ul,ol,menu'))
 					editor.execCommand("indent");
-				else
-					$elm.css('marginLeft', (parseInt($elm.css('marginLeft')) || 0) + 30);
 			},
 			tooltip: 'Add indent'
 		},
 		// END_COMMAND
 		// START_COMMAND: 
 		outdent: {
+			state: function(parents, firstBlock) {
+				return  $(firstBlock).is('ul,ol,menu') || $(firstBlock).parents('ul,ol,menu').length > 0 ? 0 : -1;
+			},
 			exec: function() {
 				var indent,
 					editor = this,
 					elm    = editor.getRangeHelper().getFirstBlockParent(),
 					$elm   = $(elm);
 
-				editor.focus();
-
-				if(!elm || $elm.is('body'))
-				{
-					editor.execCommand("formatBlock", "p");
-
-					elm  = editor.getRangeHelper().getFirstBlockParent();
-					$elm = $(elm);
-					
-					if(!elm || $elm.is('body'))
-						// Something went terribly wrong as this should be false
-						return;
-				}
-
-				if($elm.is('li') || $elm.parents('li:first').length)
+				if($elm.parents('ul,ol,menu'))
 					editor.execCommand("outdent");
-				else if((indent = parseInt($elm.css('marginLeft'))) > 0)
-					$elm.css('marginLeft', indent > 30 ? indent - 30 : 0);
 			},
 			tooltip: 'Remove one indent'
 		},
