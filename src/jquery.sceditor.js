@@ -3509,7 +3509,7 @@
 			exec: function() {
 				var editor = this,
 					rangeHelper	= editor.getRangeHelper(),
-					elm    		= rangeHelper.getFirstBlockParent(),
+					elm			= rangeHelper.getFirstBlockParent(),
 					$elm		= $(elm);
 
 				editor.focus();
