@@ -371,7 +371,6 @@
 			// create the editor
 			initPlugins();
 			initEmoticons();
-
 			initToolBar();
 			initEditor();
 			initCommands();
@@ -406,6 +405,7 @@
 
 		initPlugins = function() {
 			var plugins   = options.plugins;
+
 			plugins       = plugins ? plugins.toString().split(',') : [];
 			pluginManager = new $.sceditor.PluginManager(base);
 
@@ -422,16 +422,15 @@
 		initLocale = function() {
 			var lang;
 
-			if($.sceditor.locale[options.locale])
-				locale = $.sceditor.locale[options.locale];
-			else
-			{
-				lang = options.locale.split('-');
+			locale = $.sceditor.locale[options.locale];
 
-				if($.sceditor.locale[lang[0]])
-					locale = $.sceditor.locale[lang[0]];
+			if(!locale)
+			{
+				lang   = options.locale.split('-');
+				locale = $.sceditor.locale[lang[0]];
 			}
 
+			// Locale DateTime format overrides any specified in the options
 			if(locale && locale.dateFormat)
 				options.dateFormat = locale.dateFormat;
 		};
@@ -571,9 +570,10 @@
 		 * @private
 		 */
 		initToolBar = function () {
-			var	$group, $button,
-				exclude = (options.toolbarExclude || '').split(','),
-				groups  = options.toolbar.split('|');
+			var	$group, $button, shortcutName,
+				commands = base.commands,
+				exclude  = (options.toolbarExclude || '').split(','),
+				groups   = options.toolbar.split('|');
 
 			$toolbar = $('<div class="sceditor-toolbar" unselectable="on" />');
 			$.each(groups, function(idx, group) {
@@ -581,34 +581,34 @@
 
 				$.each(group.split(','), function(idx, button) {
 					// The button must be a valid command and not excluded
-					if(!base.commands[button] || $.inArray(button, exclude) > -1)
+					if(!commands[button] || $.inArray(button, exclude) > -1)
 						return;
 
-					var shortcutName = base.commands[button].shortcut ? " (" + base.commands[button].shortcut + ")" : "";
+					shortcutName = commands[button].shortcut ? " (" + commands[button].shortcut + ")" : "";
 					$button = _tmpl('toolbarButton', {
 							name: button,
-							dispName: base._(base.commands[button].tooltip || button) + shortcutName
+							dispName: base._(commands[button].tooltip || button) + shortcutName
 						}, true);
 
-					$button.data('sceditor-txtmode', !!base.commands[button].txtExec);
-					$button.data('sceditor-wysiwygmode', !!base.commands[button].exec);
+					$button.data('sceditor-txtmode', !!commands[button].txtExec);
+					$button.data('sceditor-wysiwygmode', !!commands[button].exec);
 					$button.click(function() {
 						var $this = $(this);
 						if(!$this.hasClass('disabled'))
-							handleCommand($this, base.commands[button]);
+							handleCommand($this, commands[button]);
 
 						updateActiveButtons();
 						return false;
 					});
 
-					if(base.commands[button].tooltip)
-						$button.attr('title', base._(base.commands[button].tooltip));
+					if(commands[button].tooltip)
+						$button.attr('title', base._(commands[button].tooltip));
 
-					if(!base.commands[button].exec)
+					if(!commands[button].exec)
 						$button.addClass('disabled');
 
-					if(base.commands[button].shortcut){
-						base.addShortcut(base.commands[button].shortcut, button);
+					if(commands[button].shortcut){
+						base.addShortcut(commands[button].shortcut, button);
 						// Add the shortcut info to the title
 						$button.attr('title', $button.attr('title') + shortcutName);
 					}
@@ -1262,12 +1262,13 @@
 		 */
 		base.createDropDown = function (menuItem, dropDownName, content, ieUnselectable) {
 			// first click for create second click for close
-			var	css,
+			var	dropDownCss,
 				onlyclose = $dropdown && $dropdown.is('.sceditor-' + dropDownName);
 
 			base.closeDropDown();
 
-			if (onlyclose) return;
+			if (onlyclose)
+				return;
 
 			// IE needs unselectable attr to stop it from unselecting the text in the editor.
 			// The editor can cope if IE does unselect the text it's just not nice.
@@ -1281,16 +1282,15 @@
 					.attr('unselectable', 'on');
 			}
 
-			css = {
+			dropDownCss = {
 				top: menuItem.offset().top,
 				left: menuItem.offset().left,
 				marginTop: menuItem.outerHeight()
 			};
-
-			$.extend(css, options.dropDownCss);
+			$.extend(dropDownCss, options.dropDownCss);
 
 			$dropdown = $('<div class="sceditor-dropdown sceditor-' + dropDownName + '" />')
-				.css(css)
+				.css(dropDownCss)
 				.append(content)
 				.appendTo($('body'))
 				.click(function (e) {
@@ -1360,9 +1360,9 @@
 					// Allow max 25 checks before giving up.
 					// Needed in case an empty string is pasted or
 					// something goes wrong.
-					if(checkCount > 25)
+					if (checkCount > 25)
 					{
-						while(prePasteContent.firstChild)
+						while (prePasteContent.firstChild)
 							elm.appendChild(prePasteContent.firstChild);
 
 						rangeHelper.restoreRange();
@@ -1393,12 +1393,12 @@
 // TODO: Trigger custom paste event to allow filtering (pre and post converstion?)
 			var pasteddata = pastearea.innerHTML;
 
-			if(pluginManager.hasHandler('toSource'))
+			if (pluginManager.hasHandler('toSource'))
 				pasteddata = pluginManager.callOnlyFirst('toSource', pasteddata, $(pastearea));
 
 			pastearea.parentNode.removeChild(pastearea);
 
-			if(pluginManager.hasHandler('toWysiwyg'))
+			if (pluginManager.hasHandler('toWysiwyg'))
 				pasteddata = pluginManager.callOnlyFirst('toWysiwyg', pasteddata, true);
 
 			rangeHelper.restoreRange();
@@ -1414,12 +1414,12 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.closeDropDown = function (focus) {
-			if($dropdown) {
+			if ($dropdown) {
 				$dropdown.unbind().remove();
 				$dropdown = null;
 			}
 
-			if(focus === true)
+			if (focus === true)
 				base.focus();
 		};
 
@@ -1463,10 +1463,10 @@
 
 // TODO: This code tag should be configurable and should maybe convert the HTML into text
 			// don't apply to code elements
-			if(!overrideCodeBlocking && ($(currentBlockNode).is('code') || $(currentBlockNode).parents('code').length !== 0))
+			if (!overrideCodeBlocking && ($(currentBlockNode).is('code') || $(currentBlockNode).parents('code').length !== 0))
 				return;
 
-			if(endHtml)
+			if (endHtml)
 				endHtml += marker;
 			else
 				html += marker;
@@ -1519,7 +1519,7 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.insertText = function (text, endText) {
-			if(base.inSourceMode())
+			if (base.inSourceMode())
 				base.sourceEditorInsertText(text, endText);
 			else
 				base.wysiwygEditorInsertText(text, endText);
@@ -1557,7 +1557,8 @@
 			scrollTop = sourceEditor.scrollTop;
 			sourceEditor.focus();
 
-			if(typeof sourceEditor.selectionStart !== 'undefined')
+			// All browsers apart from old versions of IE
+			if (typeof sourceEditor.selectionStart !== 'undefined')
 			{
 				start  = sourceEditor.selectionStart;
 				end    = sourceEditor.selectionEnd;
@@ -1571,7 +1572,8 @@
 				sourceEditor.selectionStart = (start + text.length) - (endText ? endText.length : 0);
 				sourceEditor.selectionEnd = sourceEditor.selectionStart;
 			}
-			else if(typeof document.selection.createRange !== 'undefined')
+			// Old versions of IE
+			else if (typeof document.selection.createRange !== 'undefined')
 			{
 				range = document.selection.createRange();
 
@@ -1637,17 +1639,17 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.val = function (val, filter) {
-			if(typeof val === "string")
+			if (typeof val === 'string')
 			{
-				if(base.inSourceMode())
-					base.setSourceEditorValue(val);
-				else
+				if (!base.inSourceMode())
 				{
-					if(filter !== false && pluginManager.hasHandler('toWysiwyg'))
+					if (filter !== false && pluginManager.hasHandler('toWysiwyg'))
 						val = pluginManager.callOnlyFirst('toWysiwyg', val);
 
 					base.setWysiwygEditorValue(val);
 				}
+				else
+					base.setSourceEditorValue(val);
 
 				return this;
 			}
@@ -1703,9 +1705,7 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.insert = function (start, end, filter, convertEmoticons, allowMixed) {
-			if(base.inSourceMode())
-				base.sourceEditorInsertText(start, end);
-			else
+			if(!base.inSourceMode())
 			{
 				// Add the selection between start and end
 				if(end)
@@ -1734,6 +1734,8 @@
 
 				base.wysiwygEditorInsertHtml(start);
 			}
+			else
+				base.sourceEditorInsertText(start, end);
 
 			return this;
 		};
@@ -1755,11 +1757,11 @@
 			var	html, ieBookmark,
 				hasSelection = rangeHelper.hasSelection();
 
-			if(hasSelection)
+			if (hasSelection)
 				rangeHelper.saveRange();
 			// IE <= 8 bookmark the current TextRange position
 			// and restore it after
-			else if(lastRange && lastRange.getBookmark)
+			else if (lastRange && lastRange.getBookmark)
 				ieBookmark = lastRange.getBookmark();
 
 			$.sceditor.dom.fixNesting($wysiwygBody[0]);
@@ -1767,10 +1769,10 @@
 			// filter the HTML and DOM through any plugins
 			html = $wysiwygBody.html();
 
-			if(filter !== false && pluginManager.hasHandler('toSource'))
+			if (filter !== false && pluginManager.hasHandler('toSource'))
 				html = pluginManager.callOnlyFirst('toSource', html, $wysiwygBody);
 
-			if(hasSelection)
+			if (hasSelection)
 			{
 				// remove the last stored range for IE as it no longer applies
 				rangeHelper.restoreRange();
