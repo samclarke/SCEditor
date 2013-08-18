@@ -3473,6 +3473,72 @@
 			tooltip: 'Numbered list'
 		},
 		// END_COMMAND
+		// START_COMMAND: 
+		indent: {
+			state: function(parents, firstBlock) {
+				// Only works with lists, for now
+				// This is a nested list, so it will always work
+				var listParentNum = $(firstBlock).parents('ul,ol,menu').length;
+				if(listParentNum > 1 ||
+					// in case it's a list with only a single <li>
+					(listParentNum > 0 && firstBlock.parentNode.children.length > 1)
+					){
+					return 0;
+				}
+				if($(firstBlock).is('ul,ol,menu')){
+					// if the whole list is selected, then this must be invalidated because the browser will place a <blockquote> there
+					var rangeHelper	= this.getRangeHelper();
+					var range = rangeHelper.selectedRange();
+					if(range instanceof Range){
+						if( // Select the tag, not the textNode (that's why the parentNode)
+							range.startContainer.parentNode !== range.startContainer.parentNode.parentNode.firstElementChild ||
+							// work around a bug in FF
+							(range.endContainer.parentNode.tagName.toLowerCase() == 'li' &&
+							range.endContainer.parentNode !== range.endContainer.parentNode.parentNode.lastElementChild )
+						){
+							return 0;
+						}
+					}else{
+						// it's IE...
+						// As it is impossible to know well when to accept, better safe than sorry
+						return $(firstBlock).is('li') ? 0 : -1;
+					}
+				}
+				return -1;
+			},
+			exec: function() {
+				var editor = this,
+					rangeHelper	= editor.getRangeHelper(),
+					elm			= rangeHelper.getFirstBlockParent(),
+					$elm		= $(elm);
+
+				editor.focus();
+				// An indent system is quite complicated as there are loads of complications
+				// and issues around how to indent text
+				// As default, let's just stay with indenting the lists, at least, for now.
+				if($elm.parents('ul,ol,menu'))
+					editor.execCommand("indent");
+			},
+			tooltip: 'Add indent'
+		},
+		// END_COMMAND
+		// START_COMMAND: 
+		outdent: {
+			state: function(parents, firstBlock) {
+				return  $(firstBlock).is('ul,ol,menu') || $(firstBlock).parents('ul,ol,menu').length > 0 ? 0 : -1;
+			},
+			exec: function() {
+				var indent,
+					editor = this,
+					elm    = editor.getRangeHelper().getFirstBlockParent(),
+					$elm   = $(elm);
+
+				if($elm.parents('ul,ol,menu'))
+					editor.execCommand("outdent");
+			},
+			tooltip: 'Remove one indent'
+		},
+		// END_COMMAND
 
 		// START_COMMAND: Table
 		table: {
@@ -5296,7 +5362,7 @@
 		 * @type {String}
 		 */
 		toolbar:	'bold,italic,underline,strike,subscript,superscript|left,center,right,justify|' +
-				'font,size,color,removeformat|cut,copy,paste,pastetext|bulletlist,orderedlist|' +
+				'font,size,color,removeformat|cut,copy,paste,pastetext|bulletlist,orderedlist,indent,outdent|' +
 				'table|code,quote|horizontalrule,image,email,link,unlink|emoticon,youtube,date,time|' +
 				'ltr,rtl|print,maximize,source',
 
