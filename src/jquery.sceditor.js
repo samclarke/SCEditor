@@ -456,8 +456,7 @@
 			wysiwygEditor = $wysiwygEditor[0];
 			sourceEditor  = $sourceEditor[0];
 
-			base.width(options.width || $original.width());
-			base.height(options.height || $original.height());
+			base.dimensions(options.width || $original.width(), options.height || $original.height());
 
 			doc = getWysiwygDoc();
 			doc.open();
@@ -1045,7 +1044,7 @@
 			{
 				if(save !== false)
 					options.width = width;
-
+// This is the problem
 				if(height === false)
 				{
 					height = $editorContainer.height();
@@ -2347,11 +2346,11 @@
 
 			if(!base.maximize())
 			{
-				if(height && height.toString().indexOf("%") > -1)
-					base.height(height);
-
-				if(width && width.toString().indexOf("%") > -1)
-					base.width(width);
+				if((height && height.toString().indexOf("%") > -1) ||
+					(width && width.toString().indexOf("%") > -1))
+				{
+					base.dimensions(width, height);
+				}
 			}
 			else
 				base.dimensions('100%', '100%', false);
@@ -3475,68 +3474,66 @@
 			tooltip: 'Numbered list'
 		},
 		// END_COMMAND
-		// START_COMMAND: 
+		// START_COMMAND: Indent
 		indent: {
 			state: function(parents, firstBlock) {
+
 				// Only works with lists, for now
 				// This is a nested list, so it will always work
-				var listParentNum = $(firstBlock).parents('ul,ol,menu').length;
-				if(listParentNum > 1 ||
-					// in case it's a list with only a single <li>
-					(listParentNum > 0 && firstBlock.parentNode.children.length > 1)
-					){
+				var	range, startContainerParent, endContainerParent,
+					$firstBlock   = $(firstBlock),
+					listParentNum = $firstBlock.parents('ul,ol,menu').length;
+
+				// in case it's a list with only a single <li>
+				if (listParentNum > 1 || (listParentNum > 0 && firstBlock.parentNode.children.length > 1))
 					return 0;
-				}
-				if($(firstBlock).is('ul,ol,menu')){
+
+				if ($firstBlock.is('ul,ol,menu')) {
 					// if the whole list is selected, then this must be invalidated because the browser will place a <blockquote> there
-					var rangeHelper	= this.getRangeHelper();
-					var range = rangeHelper.selectedRange();
-					if(range instanceof Range){
-						if( // Select the tag, not the textNode (that's why the parentNode)
-							range.startContainer.parentNode !== range.startContainer.parentNode.parentNode.firstElementChild ||
+					range = this.getRangeHelper().selectedRange();
+					if (range instanceof Range) {
+						startContainerParent = range.startContainer.parentNode;
+						endContainerParent   = range.endContainer.parentNode;
+
+						// Select the tag, not the textNode (that's why the parentNode)
+						if (startContainerParent !== startContainerParent.parentNode.firstElementChild ||
 							// work around a bug in FF
-							(range.endContainer.parentNode.tagName.toLowerCase() == 'li' &&
-							range.endContainer.parentNode !== range.endContainer.parentNode.parentNode.lastElementChild )
-						){
+							($(endContainerParent).is('li') && endContainerParent !== endContainerParent.parentNode.lastElementChild)) {
 							return 0;
 						}
-					}else{
-						// it's IE...
-						// As it is impossible to know well when to accept, better safe than sorry
-						return $(firstBlock).is('li') ? 0 : -1;
 					}
+					// it's IE... As it is impossible to know well when to accept, better safe than sorry
+					else
+						return $firstBlock.is('li') ? 0 : -1;
 				}
+
 				return -1;
 			},
 			exec: function() {
 				var editor = this,
-					rangeHelper	= editor.getRangeHelper(),
-					elm			= rangeHelper.getFirstBlockParent(),
-					$elm		= $(elm);
+					$elm   = $(editor.getRangeHelper().getFirstBlockParent());
 
 				editor.focus();
 				// An indent system is quite complicated as there are loads of complications
 				// and issues around how to indent text
 				// As default, let's just stay with indenting the lists, at least, for now.
 				if($elm.parents('ul,ol,menu'))
-					editor.execCommand("indent");
+					editor.execCommand('indent');
 			},
 			tooltip: 'Add indent'
 		},
 		// END_COMMAND
-		// START_COMMAND: 
+		// START_COMMAND: Outdent
 		outdent: {
 			state: function(parents, firstBlock) {
 				return  $(firstBlock).is('ul,ol,menu') || $(firstBlock).parents('ul,ol,menu').length > 0 ? 0 : -1;
 			},
 			exec: function() {
-				var indent,
-					editor = this,
-					elm    = editor.getRangeHelper().getFirstBlockParent(),
-					$elm   = $(elm);
+				var	editor = this,
+					$elm   = $(editor.getRangeHelper().getFirstBlockParent());
 
 				if($elm.parents('ul,ol,menu'))
-					editor.execCommand("outdent");
+					editor.execCommand('outdent');
 			},
 			tooltip: 'Remove one indent'
 		},
