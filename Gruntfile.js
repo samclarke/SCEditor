@@ -4,9 +4,13 @@ module.exports = function(grunt) {
 
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
+
+		// Runs the tests
 		qunit: {
 			all: ['tests/index.html']
 		},
+
+		// Linting for JS files
 		jshint: {
 			options: {
 				browser: true
@@ -19,10 +23,14 @@ module.exports = function(grunt) {
 				}
 			}
 		},
+
+		// Removes all the old files from the distributable directory
 		clean: {
 			build: ['minified/'],
 			dist: ['dist/']
 		},
+
+		// Copy files into the distributable directory ready to be compressed into the ZIP archive
 		copy: {
 			dist: {
 				files: [
@@ -40,13 +48,15 @@ module.exports = function(grunt) {
 				]
 			},
 			build: {
-				//TODP: icons
+				//TODO: icons
 				files: [
 					{expand: true, cwd: 'src/themes/icons/', src: '*.png', dest: 'minified/themes/'},
 					{expand: true, cwd: 'src/themes/icons/', src: 'monocons/**', dest: 'minified/themes/'}
 				]
 			}
 		},
+
+		// Create the XHTML and BBCode bundled JS files
 		concat: {
 			dist: {
 				files: {
@@ -55,6 +65,8 @@ module.exports = function(grunt) {
 				}
 			}
 		},
+
+		// Minify the JavaScript
 		uglify: {
 			build: {
 				options: {
@@ -71,6 +83,8 @@ module.exports = function(grunt) {
 				]
 			}
 		},
+
+		// Convert the less CSS theme files into CSS
 		less: {
 			build: {
 				options: {
@@ -91,6 +105,8 @@ module.exports = function(grunt) {
 				]
 			}
 		},
+
+		// Compress the WYSIWYG CSS
 		cssmin: {
 			build: {
 				files: {
@@ -98,6 +114,8 @@ module.exports = function(grunt) {
 				}
 			}
 		},
+
+		// Creates the distributable ZIP file
 		compress: {
 			dist: {
 				options: {
@@ -110,6 +128,7 @@ module.exports = function(grunt) {
 		}
 	});
 
+
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-qunit');
 	grunt.loadNpmTasks('grunt-contrib-clean');
@@ -119,7 +138,6 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-compress');
-
 
 
 	grunt.registerTask('default', ['test']);
