@@ -3,7 +3,7 @@
 	'use strict';
 
 
-	module("XHTML Plugin", {
+	module('XHTML Plugin', {
 		setup: function() {
 			this.plugin = new $.sceditor.plugins.xhtml();
 			this.plugin.init.call({
@@ -12,7 +12,7 @@
 		}
 	});
 
-	test("Remove empty tags", function() {
+	test('Remove empty tags', function() {
 		expect(10);
 
 		equal(
@@ -77,7 +77,7 @@
 	});
 
 
-	test("Allowed tags", function() {
+	test('Allowed tags', function() {
 		expect(6);
 
 		$.sceditor.plugins.xhtml.allowedTags = ['strong', 'a'];
@@ -122,7 +122,7 @@
 		$.sceditor.plugins.xhtml.allowedTags = [];
 	});
 
-	test("Disallowed tags", function() {
+	test('Disallowed tags', function() {
 		expect(7);
 
 		$.sceditor.plugins.xhtml.disallowedTags = ['div'];
@@ -173,7 +173,7 @@
 		$.sceditor.plugins.xhtml.disallowedTags = [];
 	});
 
-	test("Allowed attributes", function() {
+	test('Allowed attributes', function() {
 		expect(6);
 
 		$.sceditor.plugins.xhtml.allowedAttribs['*'] = {
@@ -224,7 +224,7 @@
 		$.sceditor.plugins.xhtml.allowedAttribs = {};
 	});
 
-	test("Disallowed attributes", function() {
+	test('Disallowed attributes', function() {
 		expect(6);
 
 		$.sceditor.plugins.xhtml.disallowedAttribs['*'] = {
@@ -275,7 +275,7 @@
 		$.sceditor.plugins.xhtml.disallowedAttribs = {};
 	});
 
-	test("Indentation", function() {
+	test('Indentation', function() {
 		expect(9);
 
 		equal(
@@ -333,7 +333,7 @@
 		);
 	});
 
-	test("Comment", function() {
+	test('Comment', function() {
 		expect(1);
 
 		equal(
@@ -342,7 +342,7 @@
 		);
 	});
 
-	test("Serialize", function() {
+	test('Serialize', function() {
 		expect(2);
 
 		var XHTMLSerializer = new $.sceditor.XHTMLSerializer();
@@ -359,7 +359,7 @@
 		);
 	});
 
-	test("Entities", function() {
+	test('Entities', function() {
 		expect(1);
 
 		equal(
@@ -368,7 +368,7 @@
 		);
 	});
 
-	test("Ignored elements", function() {
+	test('Ignored elements', function() {
 		expect(1);
 
 		equal(
@@ -377,7 +377,7 @@
 		);
 	});
 
-	test("Merge attributes", function() {
+	test('Merge attributes', function() {
 		expect(3);
 
 		$.sceditor.plugins.xhtml.allowedAttribs['*'] = {
@@ -410,7 +410,7 @@
 	});
 
 
-	module("XHTML Converters", {
+	module('XHTML Converters', {
 		setup: function() {
 			this.plugin = new $.sceditor.plugins.xhtml();
 			this.plugin.init.call({
@@ -419,27 +419,27 @@
 		}
 	});
 
-	test("Width", function() {
+	test('Width', function() {
 		expect(1);
 
 		equal(
 			this.plugin.signalToSource('', html2dom('<div width="200">test</div>', true)).ignoreAll(),
 			'<div style="width: 200px;">test</div>'.ignoreAll(),
-			"Div width"
+			'Div width'
 		);
 	});
 
-	test("Height", function() {
+	test('Height', function() {
 		expect(1);
 
 		equal(
 			this.plugin.signalToSource('', html2dom('<div height="200">test</div>', true)).ignoreAll(),
 			'<div style="height: 200px;">test</div>'.ignoreAll(),
-			"Div height"
+			'Div height'
 		);
 	});
 
-	test("Text", function() {
+	test('Text', function() {
 		expect(4);
 
 		var result;
@@ -468,11 +468,11 @@
 		equal(
 			this.plugin.signalToSource('', html2dom('<div text="rgb(255,0,0)">test</div>', true)).ignoreAll(),
 			'<div style="color: rgb(255,0,0);">test</div>'.ignoreAll(),
-			"Div rgb colour"
+			'Div rgb colour'
 		);
 	});
 
-	test("Color", function() {
+	test('Color', function() {
 		expect(4);
 
 		var result;
@@ -501,11 +501,11 @@
 		equal(
 			this.plugin.signalToSource('', html2dom('<div color="rgb(255,0,0)">test</div>', true)).ignoreAll(),
 			'<div style="color: rgb(255,0,0);">test</div>'.ignoreAll(),
-			"Div rgb colour"
+			'Div rgb colour'
 		);
 	});
 
-	test("Face", function() {
+	test('Face', function() {
 		expect(2);
 
 		equal(
@@ -522,7 +522,7 @@
 		);
 	});
 
-	test("Align", function() {
+	test('Align', function() {
 		expect(2);
 
 		equal(
@@ -538,7 +538,7 @@
 		);
 	});
 
-	test("Border", function() {
+	test('Border', function() {
 		expect(2);
 
 		var ret;
@@ -554,7 +554,7 @@
 		);
 	});
 
-	test("HR noshade", function() {
+	test('HR noshade', function() {
 		expect(1);
 
 		var ret = this.plugin.signalToSource('', html2dom('<hr noshade />', true));
@@ -563,7 +563,7 @@
 		);
 	});
 
-	test("Name", function() {
+	test('Name', function() {
 		expect(2);
 
 		equal(
@@ -579,7 +579,7 @@
 		);
 	});
 
-	test("VSpace", function() {
+	test('VSpace', function() {
 		expect(1);
 
 		equal(
@@ -588,7 +588,7 @@
 		);
 	});
 
-	test("HSpace", function() {
+	test('HSpace', function() {
 		expect(1);
 
 		ok(
@@ -597,7 +597,7 @@
 		);
 	});
 
-	test("Big", function() {
+	test('Big', function() {
 		expect(2);
 
 		equal(
@@ -613,7 +613,7 @@
 		);
 	});
 
-	test("Small", function() {
+	test('Small', function() {
 		expect(2);
 
 		equal(
@@ -629,7 +629,7 @@
 		);
 	});
 
-	test("B - Bold", function() {
+	test('B - Bold', function() {
 		expect(1);
 
 		equal(
@@ -638,7 +638,7 @@
 		);
 	});
 
-	test("U - Underline", function() {
+	test('U - Underline', function() {
 		expect(1);
 
 		equal(
@@ -647,7 +647,7 @@
 		);
 	});
 
-	test("I - Italic", function() {
+	test('I - Italic', function() {
 		expect(1);
 
 		equal(
@@ -656,7 +656,7 @@
 		);
 	});
 
-	test("Strikethrough", function() {
+	test('Strikethrough', function() {
 		expect(2);
 
 		equal(
@@ -672,7 +672,7 @@
 		);
 	});
 
-	test("Dir tag", function() {
+	test('Dir tag', function() {
 		expect(1);
 
 		equal(
@@ -681,7 +681,7 @@
 		);
 	});
 
-	test("Center tag", function() {
+	test('Center tag', function() {
 		expect(1);
 
 		equal(
@@ -690,7 +690,7 @@
 		);
 	});
 
-	test("Font", function() {
+	test('Font', function() {
 		expect(4);
 
 		equal(
@@ -718,7 +718,7 @@
 		);
 	});
 
-	test("Nowrap attribute", function() {
+	test('Nowrap attribute', function() {
 		expect(1);
 
 		equal(
@@ -727,7 +727,7 @@
 		);
 	});
 
-	test("List item value attribute", function() {
+	test('List item value attribute', function() {
 		expect(2);
 
 		equal(
@@ -743,7 +743,7 @@
 		);
 	});
 
-	test("Mozilla's junk attributes fix", function() {
+	test('Mozilla\'s junk attributes fix', function() {
 		expect(4);
 
 		equal(
