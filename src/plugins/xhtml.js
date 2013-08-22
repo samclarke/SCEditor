@@ -564,15 +564,9 @@
 		 * @private
 		 */
 		convertTags = function(node) {
-			if(!tagConvertersCache)
-				return;
-
 			$.sceditor.dom.traverse(node, function(node) {
 				var	$node   = $(node),
 					tagName = node.nodeName.toLowerCase();
-
-				if(!tagConvertersCache)
-					return;
 
 				convertNode('*', $node, node);
 				convertNode(tagName, $node, node);

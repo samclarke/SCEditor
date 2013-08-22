@@ -333,6 +333,82 @@
 		);
 	});
 
+	test("Comment", function() {
+		expect(1);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div><!-- test --></div>', true)).ignoreAll(),
+			'<div><!-- test --></div>'.ignoreAll()
+		);
+	});
+
+	test("Serialize", function() {
+		expect(2);
+
+		var XHTMLSerializer = new $.sceditor.XHTMLSerializer();
+		equal(
+			XHTMLSerializer.serialize(html2dom('<div><span>test</span></div>').firstChild).ignoreAll(),
+			'<div><span>test</span></div>'.ignoreAll(),
+			'Serialise all'
+		);
+
+		equal(
+			XHTMLSerializer.serialize(html2dom('<div><span>test</span></div>').firstChild, true).ignoreAll(),
+			'<span>test</span>'.ignoreAll(),
+			'Serialise only children'
+		);
+	});
+
+	test("Entities", function() {
+		expect(1);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div>&lt;&amp&gt;</div>', true)).ignoreAll(),
+			'<div>&lt;&amp&gt;</div>'.ignoreAll()
+		);
+	});
+
+	test("Ignored elements", function() {
+		expect(1);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div>test<span class="sceditor-ignore">test</span>test</div>', true)).ignoreAll(),
+			'<div>testtest</div>'.ignoreAll()
+		);
+	});
+
+	test("Merge attributes", function() {
+		expect(3);
+
+		$.sceditor.plugins.xhtml.allowedAttribs['*'] = {
+			'data-only-ab': ['a']
+		};
+		$.sceditor.plugins.xhtml.allowedAttribs.div = {
+			'data-only-ab': ['b']
+		};
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div data-only-ab="a">test</div>', true)).ignoreSpace(),
+			'<div data-only-ab="a">test</div>'.ignoreSpace(),
+			'Allowed attribute with specific value'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div data-only-ab="b">test</div>', true)).ignoreSpace(),
+			'<div data-only-ab="b">test</div>'.ignoreSpace(),
+			'Allowed attribute with specific value'
+		);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<div data-only-ab="c">test</div>', true)).ignoreSpace(),
+			'<div>test</div>'.ignoreSpace(),
+			'Disallowed attribute with specific value'
+		);
+
+		// Reset for next test
+		$.sceditor.plugins.xhtml.allowedAttribs = {};
+	});
+
 
 	module("XHTML Converters", {
 		setup: function() {
@@ -639,6 +715,31 @@
 			this.plugin.signalToSource('', html2dom('<font size="5">test</font>', true)).ignoreAll(),
 			'<span style="font-size:24px;">test</span>'.ignoreAll(),
 			'With size attribute'
+		);
+	});
+
+	test("Nowrap attribute", function() {
+		expect(1);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<table><tbody><tr><td nowrap>test</tr></tbody></table>', true)).ignoreAll(),
+			'<table><tbody><tr><tdstyle=\"white-space:nowrap\">test</td></tr></tbody></table>'.ignoreAll()
+		);
+	});
+
+	test("List item value attribute", function() {
+		expect(2);
+
+		equal(
+			this.plugin.signalToSource('', html2dom('<ol><li value="2">test</li></ol>', true)).ignoreAll(),
+			'<ol><li>test</li></ol>'.ignoreAll(),
+			'li tag with value attribtue'
+		);
+
+		var ret = this.plugin.signalToSource('', html2dom('<input type="text" value="2" />', true)).ignoreAll();
+		ok(
+			/value="2"/.test(ret),
+			'input with value attribute'
 		);
 	});
 
