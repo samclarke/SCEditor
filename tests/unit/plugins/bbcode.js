@@ -12,20 +12,35 @@
 	});
 
 	test('Invalid nesting', function() {
-		expect(1);
+		expect(3);
 
-		var $dom = html2dom('<span style="color: #000">this<blockquote>is</blockquote>a test</span>', true);
+		var $dom   = html2dom('<span style="color: #000">this<blockquote>is</blockquote>a test</span>', true);
 		$.sceditor.dom.fixNesting($dom[0]);
 
 		equal(
-			this.sb.signalToSource("", $dom),
+			this.sb.signalToSource('', $dom),
 			'[color=#000000]this[/color]\n[quote][color=#000000]is[/color][/quote]\n[color=#000000]a test[/color]',
 			'Invalid block level nesting'
 		);
+
+
+		var parser = new $.sceditor.BBCodeParser($.sceditor.defaultOptions.parserOptions);
+
+		equal(
+			parser.toBBCode('[b]test[code]test[/code]test[/b]').ignoreSpace(),
+			'[b]test[/b][code]test[/code][b]test[/b]'.ignoreSpace(),
+			'Block level tag in an inline tag'
+		);
+
+		equal(
+			parser.toBBCode('[b]test[code]test[/code][/b]').ignoreSpace(),
+			'[b]test[/b][code]test[/code]'.ignoreSpace(),
+			'Block level tag in an inline tag'
+		);
 	});
 
-	test("Tag closing", function() {
-		expect(3);
+	test('Tag closing', function() {
+		expect(6);
 
 		var parser = new $.sceditor.BBCodeParser($.sceditor.defaultOptions.parserOptions);
 
@@ -46,9 +61,27 @@
 			'[b][color][/b]',
 			'Missing closing tag'
 		);
+
+		equal(
+			parser.toBBCode('[b][/color][/b]'),
+			'[b][/color][/b]',
+			'Missing opening tag'
+		);
+
+		equal(
+			parser.toBBCode('[b][color]test[/b][/color]'),
+			'[b][color]test[/color][/b]',
+			'Closing parent tag from child tag'
+		);
+
+		equal(
+			parser.toBBCode('[b]test[color]test[/b]test[/color]'),
+			'[b]test[color]test[/color][/b][color]test[/color]',
+			'Closing parent tag from child tag'
+		);
 	});
 
-	test("Unknown tags", function() {
+	test('Unknown tags', function() {
 		expect(3);
 
 		var parser = new $.sceditor.BBCodeParser($.sceditor.defaultOptions.parserOptions);
@@ -73,7 +106,7 @@
 	});
 
 
-	module("HTML to BBCode", {
+	module('HTML to BBCode', {
 		setup: function() {
 			this.sb = new $.sceditor.plugins.bbcode();
 			this.sb.init.call({
@@ -82,20 +115,20 @@
 		}
 	});
 
-	test("White space removal", function() {
+	test('White space removal', function() {
 		expect(2);
 
 		// pre used to populate the code tag in IE, could you a style.
 		equal(
-			this.sb.signalToSource("", html2dom("<code><pre>Some            White \n      \n     space</pre></code>", true)).replace(/\r/g, '\n'),
-			"[code]Some            White \n      \n     space[/code]\n",
-			"Leave code spaces"
+			this.sb.signalToSource('', html2dom('<code><pre>Some            White \n      \n     space</pre></code>', true)).replace(/\r/g, '\n'),
+			'[code]Some            White \n      \n     space[/code]\n',
+			'Leave code spaces'
 		);
 
-		var ret = this.sb.signalToSource("", html2dom("     <div>   lots   </div>   \n of   junk   \n\n\n\n\n         \n  j", true));
+		var ret = this.sb.signalToSource('', html2dom('     <div>   lots   </div>   \n of   junk   \n\n\n\n\n         \n  j', true));
 		ok(
-			ret === "lots \n of junk j" || ret === "lots \nof junk j",
-			"White Space Removal"
+			ret === 'lots \n of junk j' || ret === 'lots \nof junk j',
+			'White Space Removal'
 		);
 	});
 
@@ -163,37 +196,37 @@
 		);
 	});
 
-	test("Bold", function() {
+	test('Bold', function() {
 		expect(5);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<span style='font-weight: bold'>test</span>", true)),
-			"[b]test[/b]",
-			"CSS bold"
+			this.sb.signalToSource('', html2dom('<span style="font-weight: bold">test</span>', true)),
+			'[b]test[/b]',
+			'CSS bold'
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<span style='font-weight: 800'>test</span>", true)),
-			"[b]test[/b]",
-			"CSS bold"
+			this.sb.signalToSource('', html2dom('<span style="font-weight: 800">test</span>', true)),
+			'[b]test[/b]',
+			'CSS bold'
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<span style='font-weight: normal'>test</span>", true)),
-			"test",
-			"CSS not bold"
+			this.sb.signalToSource('', html2dom('<span style="font-weight: normal">test</span>', true)),
+			'test',
+			'CSS not bold'
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<b>test</b>", true)),
-			"[b]test[/b]",
-			"B tag"
+			this.sb.signalToSource('', html2dom('<b>test</b>', true)),
+			'[b]test[/b]',
+			'B tag'
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<strong>test</strong>", true)),
-			"[b]test[/b]",
-			"Strong tag"
+			this.sb.signalToSource('', html2dom('<strong>test</strong>', true)),
+			'[b]test[/b]',
+			'Strong tag'
 		);
 	});
 
@@ -201,31 +234,31 @@
 		expect(5);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<span style='font-style: italic'>test</span>", true)),
+			this.sb.signalToSource('', html2dom("<span style='font-style: italic'>test</span>", true)),
 			"[i]test[/i]",
 			"CSS italic"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<span style='font-style: oblique'>test</span>", true)),
+			this.sb.signalToSource('', html2dom("<span style='font-style: oblique'>test</span>", true)),
 			"[i]test[/i]",
 			"CSS oblique"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<span style='font-style: normal'>test</span>", true)),
+			this.sb.signalToSource('', html2dom("<span style='font-style: normal'>test</span>", true)),
 			"test",
 			"CSS normal"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<em>test</em>", true)),
+			this.sb.signalToSource('', html2dom("<em>test</em>", true)),
 			"[i]test[/i]",
 			"Em tag"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<i>test</i>", true)),
+			this.sb.signalToSource('', html2dom("<i>test</i>", true)),
 			"[i]test[/i]",
 			"I tag"
 		);
@@ -235,19 +268,19 @@
 		expect(3);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<span style='text-decoration: underline'>test</span>", true)),
+			this.sb.signalToSource('', html2dom("<span style='text-decoration: underline'>test</span>", true)),
 			"[u]test[/u]",
 			"CSS underline"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<span style='text-decoration: normal'>test</span>", true)),
+			this.sb.signalToSource('', html2dom("<span style='text-decoration: normal'>test</span>", true)),
 			"test",
 			"CSS normal"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<u>test</u>", true)),
+			this.sb.signalToSource('', html2dom("<u>test</u>", true)),
 			"[u]test[/u]",
 			"U tag"
 		);
@@ -257,25 +290,25 @@
 		expect(4);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<span style='text-decoration: line-through'>test</span>", true)),
+			this.sb.signalToSource('', html2dom("<span style='text-decoration: line-through'>test</span>", true)),
 			"[s]test[/s]",
 			"CSS line-through"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<span style='text-decoration: normal'>test</span>", true)),
+			this.sb.signalToSource('', html2dom("<span style='text-decoration: normal'>test</span>", true)),
 			"test",
 			"CSS normal"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<s>test</s>", true)),
+			this.sb.signalToSource('', html2dom("<s>test</s>", true)),
 			"[s]test[/s]",
 			"S tag"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<strike>test</strike>", true)),
+			this.sb.signalToSource('', html2dom("<strike>test</strike>", true)),
 			"[s]test[/s]",
 			"strike tag"
 		);
@@ -285,7 +318,7 @@
 		expect(1);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<sub>test</sub>", true)),
+			this.sb.signalToSource('', html2dom("<sub>test</sub>", true)),
 			"[sub]test[/sub]",
 			"Sub tag"
 		);
@@ -295,7 +328,7 @@
 		expect(1);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<sup>test</sup>", true)),
+			this.sb.signalToSource('', html2dom("<sup>test</sup>", true)),
 			"[sup]test[/sup]",
 			"Sup tag"
 		);
@@ -305,37 +338,37 @@
 		expect(6);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<span style='font-family: Arial'>test</span>", true)),
+			this.sb.signalToSource('', html2dom("<span style='font-family: Arial'>test</span>", true)),
 			"[font=Arial]test[/font]",
 			"CSS"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<span  style='font-family: Arial Black'>test</span>", true)),
+			this.sb.signalToSource('', html2dom("<span  style='font-family: Arial Black'>test</span>", true)),
 			"[font=Arial Black]test[/font]",
 			"CSS space"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<span  style='font-family: \"Arial Black\"'>test</span>", true)),
+			this.sb.signalToSource('', html2dom("<span  style='font-family: \"Arial Black\"'>test</span>", true)),
 			"[font=Arial Black]test[/font]",
 			"CSS space with quotes"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<font face='Arial'>test</font>", true)),
+			this.sb.signalToSource('', html2dom("<font face='Arial'>test</font>", true)),
 			"[font=Arial]test[/font]",
 			"Font tag"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<font face='Arial Black'>test</font>", true)),
+			this.sb.signalToSource('', html2dom("<font face='Arial Black'>test</font>", true)),
 			"[font=Arial Black]test[/font]",
 			"Font tag with space"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<font face=\"'Arial Black'\">test</font>", true)),
+			this.sb.signalToSource('', html2dom("<font face=\"'Arial Black'\">test</font>", true)),
 			"[font=Arial Black]test[/font]",
 			"Font tag with space & quotes"
 		);
@@ -345,37 +378,37 @@
 		expect(6);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<span style='font-size: 11px'>test</span>", true)),
+			this.sb.signalToSource('', html2dom("<span style='font-size: 11px'>test</span>", true)),
 			"[size=1]test[/size]",
 			"CSS px"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<span style='font-size: 1100px'>test</span>", true)),
+			this.sb.signalToSource('', html2dom("<span style='font-size: 1100px'>test</span>", true)),
 			"[size=7]test[/size]",
 			"CSS px too large"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<span style='font-size: 0.5em'>test</span>", true)),
+			this.sb.signalToSource('', html2dom("<span style='font-size: 0.5em'>test</span>", true)),
 			"[size=1]test[/size]",
 			"CSS em"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<span style='font-size: 50%'>test</span>", true)),
+			this.sb.signalToSource('', html2dom("<span style='font-size: 50%'>test</span>", true)),
 			"[size=1]test[/size]",
 			"CSS %"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<font size='1'>test</font>", true)),
+			this.sb.signalToSource('', html2dom("<font size='1'>test</font>", true)),
 			"[size=1]test[/size]",
 			"Size tag"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<font size=1>test</font>", true)),
+			this.sb.signalToSource('', html2dom("<font size=1>test</font>", true)),
 			"[size=1]test[/size]",
 			"Size tag"
 		);
@@ -385,37 +418,37 @@
 		expect(6);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<span style='color: #000000'>test</span>", true)),
+			this.sb.signalToSource('', html2dom("<span style='color: #000000'>test</span>", true)),
 			"[color=#000000]test[/color]",
 			"Normal"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<span style='color: #000'>test</span>", true)),
+			this.sb.signalToSource('', html2dom("<span style='color: #000'>test</span>", true)),
 			"[color=#000000]test[/color]",
 			"Short hand"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<span style='color: rgb(0,0,0)'>test</span>", true)),
+			this.sb.signalToSource('', html2dom("<span style='color: rgb(0,0,0)'>test</span>", true)),
 			"[color=#000000]test[/color]",
 			"RGB"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<font color='#000'>test</span>", true)),
+			this.sb.signalToSource('', html2dom("<font color='#000'>test</span>", true)),
 			"[color=#000000]test[/color]",
 			"Font tag short"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<font color='#000000'>test</span>", true)),
+			this.sb.signalToSource('', html2dom("<font color='#000000'>test</span>", true)),
 			"[color=#000000]test[/color]",
 			"Font tag normal"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<font color='rgb(0,0,0)'>test</span>", true)),
+			this.sb.signalToSource('', html2dom("<font color='rgb(0,0,0)'>test</span>", true)),
 			"[color=#000000]test[/color]",
 			"Font tag rgb"
 		);
@@ -425,19 +458,19 @@
 		expect(3);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<ul><li>test" + ($.sceditor.ie ? '' : "<br />") + "</li></ul>", true)),
+			this.sb.signalToSource('', html2dom("<ul><li>test" + ($.sceditor.ie ? '' : "<br />") + "</li></ul>", true)),
 			"[ul]\n[li]test[/li]\n[/ul]\n",
 			"UL tag"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<ol><li>test" + ($.sceditor.ie ? '' : "<br />") + "</li></ol>", true)),
+			this.sb.signalToSource('', html2dom("<ol><li>test" + ($.sceditor.ie ? '' : "<br />") + "</li></ol>", true)),
 			"[ol]\n[li]test[/li]\n[/ol]\n",
 			"OL tag"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<ul><li>test<ul><li>sub" + ($.sceditor.ie ? '' : "<br />") + "</li></ul></li></ul>", true)),
+			this.sb.signalToSource('', html2dom("<ul><li>test<ul><li>sub" + ($.sceditor.ie ? '' : "<br />") + "</li></ul></li></ul>", true)),
 			"[ul]\n[li]test\n[ul]\n[li]sub[/li]\n[/ul]\n[/li]\n[/ul]\n",
 			"Nested UL tag"
 		);
@@ -447,7 +480,7 @@
 		expect(1);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<table><tr><th>test</th></tr><tr><td>data1</td></tr></table>", true)),
+			this.sb.signalToSource('', html2dom("<table><tr><th>test</th></tr><tr><td>data1</td></tr></table>", true)),
 			"[table][tr][th]test[/th]\n[/tr]\n[tr][td]data1[/td]\n[/tr]\n[/table]\n",
 			"Table tag"
 		);
@@ -457,7 +490,7 @@
 		expect(1);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<img data-sceditor-emoticon=':)' />", true)),
+			this.sb.signalToSource('', html2dom("<img data-sceditor-emoticon=':)' />", true)),
 			":)",
 			"Img tag"
 		);
@@ -467,7 +500,7 @@
 		expect(1);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<hr />", true)),
+			this.sb.signalToSource('', html2dom("<hr />", true)),
 			"[hr]\n",
 			"HR tag"
 		);
@@ -477,7 +510,7 @@
 		expect(1);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<img width=10 height=10 src='http://test.com/test.png' />", true)),
+			this.sb.signalToSource('', html2dom("<img width=10 height=10 src='http://test.com/test.png' />", true)),
 			"[img=10x10]http://test.com/test.png[/img]",
 			"Img tag"
 		);
@@ -487,19 +520,19 @@
 		expect(3);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<a href='http://test.com/'>Test</a>", true)),
+			this.sb.signalToSource('', html2dom("<a href='http://test.com/'>Test</a>", true)),
 			"[url=http://test.com/]Test[/url]",
 			"A tag name"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<a href='http://test.com/'>http://test.com</a>", true)),
+			this.sb.signalToSource('', html2dom("<a href='http://test.com/'>http://test.com</a>", true)),
 			"[url=http://test.com/]http://test.com[/url]",
 			"A tag URL"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<a href='http://test.com/'></a>", true)),
+			this.sb.signalToSource('', html2dom("<a href='http://test.com/'></a>", true)),
 			"[url=http://test.com/][/url]",
 			"A tag empty"
 		);
@@ -509,20 +542,20 @@
 		expect(3);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<a href='mailto:test@test.com'>Test</a>", true)),
+			this.sb.signalToSource('', html2dom("<a href='mailto:test@test.com'>Test</a>", true)),
 			"[email=test@test.com]Test[/email]",
 			"A tag name"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<a href='mailto:test@test.com'>test@test.com</a>", true)),
+			this.sb.signalToSource('', html2dom("<a href='mailto:test@test.com'>test@test.com</a>", true)),
 			"[email=test@test.com]test@test.com[/email]",
 			"A tag e-mail"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<a href='mailto:test@test.com'></a>", true)),
-			"",
+			this.sb.signalToSource('', html2dom("<a href='mailto:test@test.com'></a>", true)),
+			'',
 			"Empty e-mail tag"
 		);
 	});
@@ -531,25 +564,25 @@
 		expect(4);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<blockquote>Testing 1.2.3....</blockquote>", true)),
+			this.sb.signalToSource('', html2dom("<blockquote>Testing 1.2.3....</blockquote>", true)),
 			"[quote]Testing 1.2.3....[/quote]\n",
 			"Simple quote"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<blockquote><cite>admin</cite>Testing 1.2.3....</blockquote>", true)),
+			this.sb.signalToSource('', html2dom("<blockquote><cite>admin</cite>Testing 1.2.3....</blockquote>", true)),
 			"[quote=admin]Testing 1.2.3....[/quote]\n",
 			"Quote with cite (author)"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<blockquote><cite>admin</cite>Testing 1.2.3....<blockquote><cite>admin</cite>Testing 1.2.3....</blockquote></blockquote>", true)),
+			this.sb.signalToSource('', html2dom("<blockquote><cite>admin</cite>Testing 1.2.3....<blockquote><cite>admin</cite>Testing 1.2.3....</blockquote></blockquote>", true)),
 			"[quote=admin]Testing 1.2.3....\n[quote=admin]Testing 1.2.3....[/quote]\n[/quote]\n",
 			"Nested quote with cite (author)"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<blockquote><cite>admin</cite><cite>this should be ignored</cite> Testing 1.2.3....</blockquote>", true)),
+			this.sb.signalToSource('', html2dom("<blockquote><cite>admin</cite><cite>this should be ignored</cite> Testing 1.2.3....</blockquote>", true)),
 			"[quote=admin]this should be ignored Testing 1.2.3....[/quote]\n",
 			"Quote with 2 cites (author)"
 		);
@@ -559,13 +592,13 @@
 		expect(2);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<code>Testing 1.2.3....</code>", true)),
+			this.sb.signalToSource('', html2dom("<code>Testing 1.2.3....</code>", true)),
 			"[code]Testing 1.2.3....[/code]\n",
 			"Simple code"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<code><b>ignore this</b> Testing 1.2.3....</code>", true)),
+			this.sb.signalToSource('', html2dom("<code><b>ignore this</b> Testing 1.2.3....</code>", true)),
 			"[code]ignore this Testing 1.2.3....[/code]\n",
 			"Code with styling"
 		);
@@ -574,13 +607,13 @@
 	test("Left", function() {
 		expect(2);
 
-		var ret = this.sb.signalToSource("", html2dom("<div style='text-align: left'>test</div>", true));
+		var ret = this.sb.signalToSource('', html2dom("<div style='text-align: left'>test</div>", true));
 		ok(
 			ret === "[left]test[/left]\n" || ret === 'test',
 			"Div CSS text-align"
 		);
 
-		ret = this.sb.signalToSource("", html2dom("<p style='text-align: left'>test</p>", true));
+		ret = this.sb.signalToSource('', html2dom("<p style='text-align: left'>test</p>", true));
 		ok(
 			ret === "[left]test[/left]\n" || ret === 'test',
 			"P CSS text-align"
@@ -591,25 +624,25 @@
 		expect(4);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<div style='text-align: right'>test</div>", true)),
+			this.sb.signalToSource('', html2dom("<div style='text-align: right'>test</div>", true)),
 			"[right]test[/right]\n",
 			"Div CSS text-align"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<p style='text-align: right'>test</p>", true)),
+			this.sb.signalToSource('', html2dom("<p style='text-align: right'>test</p>", true)),
 			"[right]test[/right]\n",
 			"P CSS text-align"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<p align='right'>test</p>", true)),
+			this.sb.signalToSource('', html2dom("<p align='right'>test</p>", true)),
 			"[right]test[/right]\n",
 			"P align"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<div align='right'>test</div>", true)),
+			this.sb.signalToSource('', html2dom("<div align='right'>test</div>", true)),
 			"[right]test[/right]\n",
 			"Div align"
 		);
@@ -619,25 +652,25 @@
 		expect(4);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<div style='text-align: center'>test</div>", true)),
+			this.sb.signalToSource('', html2dom("<div style='text-align: center'>test</div>", true)),
 			"[center]test[/center]\n",
 			"Div CSS text-align"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<p style='text-align: center'>test</p>", true)),
+			this.sb.signalToSource('', html2dom("<p style='text-align: center'>test</p>", true)),
 			"[center]test[/center]\n",
 			"P CSS text-align"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<p align='center'>test</p>", true)),
+			this.sb.signalToSource('', html2dom("<p align='center'>test</p>", true)),
 			"[center]test[/center]\n",
 			"P align"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<div align='center'>test</div>", true)),
+			this.sb.signalToSource('', html2dom("<div align='center'>test</div>", true)),
 			"[center]test[/center]\n",
 			"Div align"
 		);
@@ -647,25 +680,25 @@
 		expect(4);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<div style='text-align: justify'>test</div>", true)),
+			this.sb.signalToSource('', html2dom("<div style='text-align: justify'>test</div>", true)),
 			"[justify]test[/justify]\n",
 			"Div CSS text-align"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<p style='text-align: justify'>test</p>", true)),
+			this.sb.signalToSource('', html2dom("<p style='text-align: justify'>test</p>", true)),
 			"[justify]test[/justify]\n",
 			"P CSS text-align"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<p align='justify'>test</p>", true)),
+			this.sb.signalToSource('', html2dom("<p align='justify'>test</p>", true)),
 			"[justify]test[/justify]\n",
 			"P align"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<div align='justify'>test</div>", true)),
+			this.sb.signalToSource('', html2dom("<div align='justify'>test</div>", true)),
 			"[justify]test[/justify]\n",
 			"Div align"
 		);
@@ -675,7 +708,7 @@
 		expect(1);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<iframe data-youtube-id='xyz'></iframe>", true)),
+			this.sb.signalToSource('', html2dom("<iframe data-youtube-id='xyz'></iframe>", true)),
 			"[youtube]xyz[/youtube]",
 			"Div CSS text-align"
 		);
@@ -685,13 +718,13 @@
 		expect(2);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<ul><li>newline<br />" + ($.sceditor.ie ? '' : "<br />") + "</li></ul>", true)),
+			this.sb.signalToSource('', html2dom("<ul><li>newline<br />" + ($.sceditor.ie ? '' : "<br />") + "</li></ul>", true)),
 			"[ul]\n[li]newline\n[/li]\n[/ul]\n",
 			"List item last child block level"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<div><code>newline" + ($.sceditor.ie ? '' : "<br />") + "</code></div><div>newline</div>", true)),
+			this.sb.signalToSource('', html2dom("<div><code>newline" + ($.sceditor.ie ? '' : "<br />") + "</code></div><div>newline</div>", true)),
 			"[code]newline[/code]\nnewline",
 			"Block level last child"
 		);
@@ -930,11 +963,17 @@
 	});
 
 	test("Code", function() {
-		expect(1);
+		expect(2);
 
 		equal(
 			this.sb.signalToWysiwyg("[code]Testing 1.2.3....[/code]").toLowerCase(),
 			"<code>testing 1.2.3...." + ($.sceditor.ie ? '' : "<br />") + "</code>",
+			"Normal"
+		);
+
+		equal(
+			this.sb.signalToWysiwyg("[code]Testing [b]test[/b][/code]").toLowerCase(),
+			"<code>testing [b]test[/b]" + ($.sceditor.ie ? '' : "<br />") + "</code>",
 			"Normal"
 		);
 	});
@@ -1197,61 +1236,61 @@
 		expect(10);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<b><br /></b>", true)),
+			this.sb.signalToSource('', html2dom("<b><br /></b>", true)),
 			"\n",
 			"Bold tag with newline"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<b></b>", true)),
-			"",
+			this.sb.signalToSource('', html2dom("<b></b>", true)),
+			'',
 			"Empty bold tag"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<b><br />Content</b>", true)),
+			this.sb.signalToSource('', html2dom("<b><br />Content</b>", true)),
 			"[b]\nContent[/b]",
 			"Bold tag with content"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<b><span><br /></span></b>", true)),
+			this.sb.signalToSource('', html2dom("<b><span><br /></span></b>", true)),
 			"\n",
 			"Bold tag with only whitespace content"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<b><span><span><span></span><span></span></span>   </span></b>", true)),
+			this.sb.signalToSource('', html2dom("<b><span><span><span></span><span></span></span>   </span></b>", true)),
 			$.sceditor.ie < 9 ? '' : ' ',
 			"Bold tag with only whitespace content"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("test<b><span><br /></span></b>test", true)),
+			this.sb.signalToSource('', html2dom("test<b><span><br /></span></b>test", true)),
 			"test\ntest",
 			"Bold tag with only whitespace between words"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("test<b><i> </i></b>test", true)),
+			this.sb.signalToSource('', html2dom("test<b><i> </i></b>test", true)),
 			"test test",
 			"Bold and italic tag with only whitespace between words"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<b><span><br />test<span></b>", true)),
+			this.sb.signalToSource('', html2dom("<b><span><br />test<span></b>", true)),
 			"[b]\ntest[/b]",
 			"Bold tag with nested content"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<b><span><br /><span>test<span><span></b>", true)),
+			this.sb.signalToSource('', html2dom("<b><span><br /><span>test<span><span></b>", true)),
 			"[b]\ntest[/b]",
 			"Bold tag with nested content"
 		);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<b><span><span><img src='test.png' /><span><span></b>", true)),
+			this.sb.signalToSource('', html2dom("<b><span><span><img src='test.png' /><span><span></b>", true)),
 			"[b][img]test.png[/img][/b]",
 			"Bold tag with nested content"
 		);
@@ -1262,12 +1301,12 @@
 		expect(2);
 
 		equal(
-			this.sb.signalToSource("", html2dom("<span  style='font-family: \"Arial Black\"'>test</span>", true)),
+			this.sb.signalToSource('', html2dom("<span  style='font-family: \"Arial Black\"'>test</span>", true)),
 			"[font=Arial Black]test[/font]",
 			"Quotes that should be stripped"
 		);
 
-		var ret = this.sb.signalToSource("", html2dom("<span  style=\"font-family: 'Arial Black', Arial\">test</span>", true));
+		var ret = this.sb.signalToSource('', html2dom("<span  style=\"font-family: 'Arial Black', Arial\">test</span>", true));
 		ok(
 			ret === "[font='Arial Black', Arial]test[/font]" || ret === '[font="Arial Black", Arial]test[/font]' ||
 			ret === "[font='Arial Black',Arial]test[/font]" || ret === "[font=Arial Black]test[/font]",
