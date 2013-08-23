@@ -14,6 +14,12 @@
 		<script type="text/javascript" src="./utils/blanket.min.js"></script>
 		<!--<![endif]-->
 
+		<script>
+		if (location.href.match(/(\?|&)gruntReport($|&|=)/)) {
+			blanket.options("reporter", "utils/grunt-reporter.js");
+		}
+		</script>
+
 
 
 		<!-- SCEditor source -->

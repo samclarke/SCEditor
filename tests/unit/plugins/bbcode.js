@@ -1,4 +1,3 @@
-/*global module, $, test, expect, equal, html2dom, ok, asyncTest, start*/
 (function() {
 	'use strict';
 
@@ -1491,7 +1490,7 @@
 		);
 	});
 
-	test("Custom quote", function() {
+	test('Custom quote', function() {
 		expect(4);
 
 		delete $.sceditorBBCodePlugin.bbcodes.quote.quoteType;
@@ -1501,10 +1500,10 @@
 
 		equal(
 			parser.toBBCode(
-				"[quote author=emanuele date=1353794172 link=topic=2.msg4#msg4]hi[/quote]"
+				'[quote author=emanuele date=1353794172 link=topic=2.msg4#msg4]hi[/quote]'
 			),
 			"[quote author='emanuele' date='1353794172' link='topic=2.msg4#msg4']hi[/quote]\n",
-			"Attribute with equals"
+			'Attribute with equals'
 		);
 
 		equal(
@@ -1512,15 +1511,15 @@
 				"[quote author='emanuele\\\'s']hi[/quote]"
 			),
 			"[quote author='emanuele\\\'s']hi[/quote]\n",
-			"Quoted attribute with escaped quote"
+			'Quoted attribute with escaped quote'
 		);
 
 		equal(
 			parser.toBBCode(
-				"[quote author=This is all the author date=12345679]hi[/quote]"
+				'[quote author=This is all the author date=12345679]hi[/quote]'
 			),
 			"[quote author='This is all the author' date='12345679']hi[/quote]\n",
-			"Attribute with spaces"
+			'Attribute with spaces'
 		);
 
 		equal(
@@ -1532,7 +1531,7 @@
 			),
 			"[quote quoted='anything that does not have an equals after it date=1353794172\\' link=anythingEvenEquals=as long as no space up to the equals' " +
 			"author='anything that does not have an equals after it' date='1353794172' link='anythingEvenEquals=as long as no space up to the equals' test='la']asd[/quote]\n",
-			"Multi-Attribute test"
+			'Multi-Attribute test'
 		);
 	});
 

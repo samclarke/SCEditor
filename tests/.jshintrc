@@ -1,0 +1,17 @@
+{
+	"globals": {
+		"module": true,
+		"$": true,
+		"test": true,
+		"expect": true,
+		"equal": true,
+		"ok": true,
+		"html2dom": true,
+		"ignoreSpaces": true,
+		"ignoreAll": true,
+		"QUnit": true,
+		"document": true,
+		"asyncTest": true,
+		"start": true
+	}
+}

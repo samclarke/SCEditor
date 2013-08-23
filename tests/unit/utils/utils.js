@@ -1,4 +1,3 @@
-/*global $, QUnit, document*/
 (function (html, wrapInJquery) {
 	'use strict';
 

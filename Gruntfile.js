@@ -7,15 +7,24 @@ module.exports = function(grunt) {
 
 		// Runs the tests
 		qunit: {
-			all: ['tests/index.html']
+			all: ['tests/unit/index.html']
 		},
 
 		// Linting for JS files
 		jshint: {
-			options: {
-				browser: true
+			source : {
+				src: ['src/**/*.js'],
+				options: {
+					browser: true
+				}
 			},
-			all: ['src/**/*.js', 'tests/**/*.js'],
+			tests : {
+				src : ['tests/**/*.js'],
+				options : {
+					ignores: ['tests/unit/utils/blanket.min.js'],
+					jshintrc : 'tests/.jshintrc'
+				}
+			},
 			translations : {
 				src : 'languages/**/*.js',
 				options : {

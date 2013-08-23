@@ -1,4 +1,3 @@
-/*global module: true, $: true, test: true, expect: true, equal: true, ok:true*/
 (function() {
 	'use strict';
 

@@ -1,4 +1,3 @@
-/*global module, $, test, expect, equal, html2dom, ok*/
 (function() {
 	'use strict';
 
