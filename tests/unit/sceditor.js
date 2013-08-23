@@ -143,16 +143,6 @@
 		);
 	});
 
-	test('Quote with author', function() {
-		expect(1);
-
-		this.sceditor.commands.quote.exec.call(this.sceditor, null, 'Simple <b>test</b>', 'admin');
-		equal(
-			this.sceditor.val(),
-			'[quote=admin]Simple [b]test[/b][/quote]\n'
-		);
-	});
-
 	test('Emoticons', function() {
 		expect(4);
 
