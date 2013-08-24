@@ -53,5 +53,5 @@
 		"View source": "Показати код",
 		"Maximize": "Розгорнути редактор",
 		dateFormat: "day.month.year"
-	}
+	};
 })(jQuery);

@@ -5,6 +5,10 @@ Version 1.4.5:
 		- Thanks to @brunoais
 	Added list indent and outdent commands.
 		- Thanks to @brunoais
+	Improved the base CSS greatly so both width & height can be set via adding
+		a CSS rule.
+	Added Ukrainian translation.
+		Thanks to @aqrln for translating
 
 Version 1.4.4:
 	Fixed height auto expanding when resized.
