@@ -1,7 +1,7 @@
 (function() {
 	'use strict';
 
-	module('BBCode Parser', {
+	module('BBCode Plugin - Parser', {
 		setup: function() {
 			this.sb = new $.sceditor.plugins.bbcode();
 			this.sb.init.call({
@@ -105,7 +105,7 @@
 	});
 
 
-	module('HTML to BBCode', {
+	module('BBCode Plugin - HTML to BBCode', {
 		setup: function() {
 			this.sb = new $.sceditor.plugins.bbcode();
 			this.sb.init.call({
@@ -731,7 +731,7 @@
 
 
 
-	module("BBCode to HTML", {
+	module("BBCode Plugin - BBCode to HTML", {
 		setup: function() {
 			this.sb = new $.sceditor.plugins.bbcode();
 			this.sb.init.call({
@@ -1045,7 +1045,7 @@
 
 
 
-	module('BBCode Insert Filter');
+	module('BBCode Plugin - Insert Filter');
 
 	test('Removal check', function() {
 		expect(4);
@@ -1125,7 +1125,7 @@
 
 
 
-	module("BBCode Converter Methods", {
+	module("BBCode Plugin - Converter Methods", {
 		setup: function() {
 			var $textarea = $("#qunit-fixture textarea:first");
 			$textarea.sceditor({ plugins: 'bbcode' });
@@ -1222,7 +1222,7 @@
 
 
 
-	module("BBCode White Space", {
+	module("BBCode Plugin - White Space", {
 		setup: function() {
 			this.sb = new $.sceditor.plugins.bbcode();
 			this.sb.init.call({
@@ -1359,7 +1359,7 @@
 
 
 
-	module("BBCode attributes");
+	module("BBCode Plugin - BBCode attributes");
 
 	test("Auto quote", function() {
 		expect(4);
@@ -1538,7 +1538,7 @@
 
 
 
-	module('BBCode triming', {
+	module('BBCode Plugin - BBCode triming', {
 		setup: function() {
 			this.sb = new $.sceditor.plugins.bbcode();
 			this.sb.init.call({

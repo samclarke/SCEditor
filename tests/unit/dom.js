@@ -1,7 +1,7 @@
 (function() {
 	'use strict';
 
-	module('DOM Class');
+	module('SCEditor - DOM object');
 
 	test('Traversal', function() {
 		expect(4);

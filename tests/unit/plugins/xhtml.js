@@ -409,7 +409,7 @@
 	});
 
 
-	module('XHTML Converters', {
+	module('XHTML Plugin - Converters', {
 		setup: function() {
 			this.plugin = new $.sceditor.plugins.xhtml();
 			this.plugin.init.call({

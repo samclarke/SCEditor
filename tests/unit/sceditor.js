@@ -116,7 +116,7 @@
 	});
 
 
-	module('SCEditor Commands', {
+	module('SCEditor - Commands', {
 		setup: function() {
 			var $textarea = $('#qunit-fixture textarea:first');
 
