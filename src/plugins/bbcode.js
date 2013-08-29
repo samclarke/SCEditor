@@ -1371,9 +1371,9 @@
 				},
 				link: {
 					txtExec: function(caller, selected) {
-						var	display = selected && selected.indexOf('http://') > -1 ? null : selected,
-							url	= prompt(this._('Enter URL:'), (display ? 'http://' : selected)),
-							text	= prompt(this._('Enter the displayed text:'), display || url) || url;
+						var	display = /^[a-z]+:\/\//i.test($.trim(selected)) ? null : selected,
+							url     = prompt(this._('Enter URL:'), (display ? 'http://' : $.trim(selected))),
+							text    = prompt(this._('Enter the displayed text:'), display || url) || url;
 
 						if(url)
 							this.insertText('[url=' + url + ']' + text + '[/url]');

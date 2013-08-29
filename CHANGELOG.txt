@@ -7,8 +7,12 @@ Version 1.4.5:
 		- Thanks to @brunoais
 	Improved the base CSS greatly so both width & height can be set via adding
 		a CSS rule.
+	Deprecated updateStyleCache() method. No longer needed with new
+		styling.
 	Added Ukrainian translation.
 		Thanks to @aqrln for translating
+	Fixed bug with BBCode source editor creating links with [img] tags selected.
+		- Thanks to @liamdawe for reporting.
 
 Version 1.4.4:
 	Fixed height auto expanding when resized.
