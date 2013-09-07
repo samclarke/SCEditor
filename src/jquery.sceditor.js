@@ -3167,7 +3167,7 @@
 	 * @memberOf jQuery.sceditor
 	 */
 	$.sceditor.regexEscape = function(str) {
-		return str.replace(/[\$\?\[\]\.\*\(\)\|\\]/g, '\\$&');
+		return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 	};
 
 	/**
