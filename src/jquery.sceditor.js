@@ -4020,25 +4020,15 @@
 	 * @class rangeHelper
 	 * @name jQuery.sceditor.rangeHelper
 	 */
-	$.sceditor.rangeHelper = function(w, d) {
-		var	win, doc, init, _createMarker, _isOwner,
-			isW3C        = true,
+	$.sceditor.rangeHelper = function (w, d) {
+		var	_createMarker, _isOwner,
+			doc          = d || w.contentDocument || w.document,
+			win          = w,
+			isW3C        = !!w.getSelection,
 			startMarker  = 'sceditor-start-marker',
 			endMarker    = 'sceditor-end-marker',
 			characterStr = 'character', // Used to improve minification
 			base         = this;
-
-		/**
-		 * @constructor
-		 * @param Window window
-		 * @param Document document
-		 * @private
-		 */
-		init = function (window, document) {
-			doc   = document || window.contentDocument || window.document;
-			win   = window;
-			isW3C = !!window.getSelection;
-		}(w, d);
 
 		/**
 		 * <p>Inserts HTML into the current range replacing any selected
