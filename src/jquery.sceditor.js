@@ -1218,6 +1218,10 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.destroy = function () {
+			// Don't destroy if the editor has already been destroyed
+			if(!pluginManager)
+				return;
+
 			pluginManager.destroy();
 
 			rangeHelper   = null;
