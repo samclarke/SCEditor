@@ -322,7 +322,10 @@
 			autofocus,
 			emoticonsKeyPress,
 			emoticonsCheckWhitespace,
-			currentStyledBlockNode;
+			currentStyledBlockNode,
+			triggerValueChanged,
+			valueChangedBlur,
+			valueChangedKeyPress;
 
 		/**
 		 * All the commands supported by the editor
@@ -538,6 +541,7 @@
 				.keydown(handleKeyDown)
 				.keydown(handleBackSpace)
 				.keyup(appendNewLine)
+				.bind('blur', valueChangedBlur)
 				.bind('paste', handlePasteEvt)
 				.bind($.sceditor.ie ? 'selectionchange' : 'keyup focus blur contextmenu mouseup touchend click', checkSelectionChanged)
 				.bind('keydown keyup keypress focus blur contextmenu', handleEvent);
@@ -545,11 +549,16 @@
 			if(options.emoticonsCompat && window.getSelection)
 				$wysiwygBody.keyup(emoticonsCheckWhitespace);
 
-			$sourceEditor.bind('keydown keyup keypress focus blur contextmenu', handleEvent).keydown(handleKeyDown);
+			$sourceEditor
+				.bind('blur', valueChangedBlur)
+				.bind('keypress', valueChangedKeyPress)
+				.bind('keydown keyup keypress focus blur contextmenu', handleEvent)
+				.keydown(handleKeyDown);
 
 			$wysiwygDoc
 				.keypress(handleKeyPress)
 				.mousedown(handleMouseDown)
+				.bind('blur', valueChangedBlur)
 				.bind($.sceditor.ie ? 'selectionchange' : 'focus blur contextmenu mouseup click', checkSelectionChanged)
 				.bind('beforedeactivate keyup', saveRange)
 				.keyup(appendNewLine)
@@ -1417,7 +1426,8 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.closeDropDown = function (focus) {
-			if ($dropdown) {
+			if ($dropdown)
+			{
 				$dropdown.unbind().remove();
 				$dropdown = null;
 			}
@@ -1487,6 +1497,7 @@
 
 			rangeHelper.saveRange();
 			replaceEmoticons($wysiwygBody[0]);
+			triggerValueChanged(false);
 			rangeHelper.restoreRange();
 
 			appendNewLine();
@@ -1560,7 +1571,7 @@
 			scrollTop = sourceEditor.scrollTop;
 			sourceEditor.focus();
 
-			// All browsers apart from old versions of IE
+			// All browsers except IE < 9
 			if (typeof sourceEditor.selectionStart !== 'undefined')
 			{
 				start  = sourceEditor.selectionStart;
@@ -1575,7 +1586,7 @@
 				sourceEditor.selectionStart = (start + text.length) - (endText ? endText.length : 0);
 				sourceEditor.selectionEnd = sourceEditor.selectionStart;
 			}
-			// Old versions of IE
+			// IE < 9
 			else if (typeof document.selection.createRange !== 'undefined')
 			{
 				range = document.selection.createRange();
@@ -1596,6 +1607,8 @@
 
 			sourceEditor.scrollTop = scrollTop;
 			sourceEditor.focus();
+
+			triggerValueChanged();
 		};
 
 		/**
@@ -1857,6 +1870,7 @@
 			replaceEmoticons($wysiwygBody[0]);
 
 			appendNewLine();
+			triggerValueChanged();
 		};
 
 		/**
@@ -1869,6 +1883,8 @@
 		 */
 		base.setSourceEditorValue = function (value) {
 			$sourceEditor.val(value);
+
+			triggerValueChanged();
 		};
 
 		/**
@@ -2256,8 +2272,7 @@
 		 * @private
 		 */
 		handleKeyPress = function(e) {
-			var	$parentNode,
-				i = keyPressFuncs.length;
+			var	$parentNode, i;
 
 			base.closeDropDown();
 
@@ -2280,8 +2295,11 @@
 			if($parentNode.is('code') || $parentNode.parents('code').length !== 0)
 				return;
 
+			i = keyPressFuncs.length;
 			while(i--)
 				keyPressFuncs[i].call(base, e, wysiwygEditor, $sourceEditor);
+
+			valueChangedKeyPress(e);
 		};
 
 		/**
@@ -2427,6 +2445,8 @@
 		 *   <li>nodechanged<br />
 		 *       When the current node containing the selection changes in WYSIWYG mode</li>
 		 *   <li>contextmenu</li>
+		 *   <li>selectionchanged</li>
+		 *   <li>valuechanged</li>
 		 * </ul>
 		 * </p>
 		 *
@@ -2445,8 +2465,8 @@
 		 * @since 1.4.1
 		 */
 		base.bind = function(events, handler, excludeWysiwyg, excludeSource) {
+			events = events.split(' ');
 			var i  = events.length;
-			events = events.split(" ");
 
 			while(i--)
 			{
@@ -2480,8 +2500,8 @@
 		 * @see bind
 		 */
 		base.unbind = function(events, handler, excludeWysiwyg, excludeSource) {
+			events = events.split(' ');
 			var i  = events.length;
-			events = events.split(" ");
 
 			while(i--)
 			{
@@ -2666,6 +2686,29 @@
 		};
 
 		/**
+		 * <p>Adds a handler to the value changed event</p>
+		 *
+		 * <p>Happens whenever the current editor value changes.</p>
+		 *
+		 * <p>Whenever anything is inserted, the value changed or
+		 * 1.5 secs after text is typed. If a space is typed it will
+		 * cause the event to be triggered immediately instead of
+		 * after 1.5 seconds</p>
+		 *
+		 * @param  {Function} handler
+		 * @param  {Boolean} excludeWysiwyg If to exclude adding this handler to the WYSIWYG editor
+		 * @param  {Boolean} excludeSource  if to exclude adding this handler to the source editor
+		 * @return {this}
+		 * @function
+		 * @name valueChanged
+		 * @memberOf jQuery.sceditor.prototype
+		 * @since 1.4.5
+		 */
+		base.valueChanged = function(handler, excludeWysiwyg, excludeSource) {
+			return base.bind('valuechanged', handler, excludeWysiwyg, excludeSource);
+		};
+
+		/**
 		 * Emoticons keypress handler
 		 * @private
 		 */
@@ -2718,7 +2761,7 @@
 			var	prev, next, parent, range, previousText, rangeStartContainer,
 				currentBlock = base.currentBlockNode(),
 				rangeStart   = false,
-				noneWsRegex  = /[^\s\xA0\u2002\u2003\u2009]+/;
+				noneWsRegex  = /[^\s\xA0\u2002\u2003\u2009\u00a0]+/;
 
 			currentEmoticons = $.map(currentEmoticons, function(emoticon) {
 				// Ignore emotiocons that have been removed from DOM
@@ -2805,6 +2848,7 @@
 
 					replaceEmoticons($wysiwygBody[0]);
 					currentEmoticons = $wysiwygBody.find('img[data-sceditor-emoticon]');
+					triggerValueChanged(false);
 
 					rangeHelper.restoreRange();
 				}
@@ -2817,6 +2861,8 @@
 
 				currentEmoticons = [];
 				$wysiwygBody.unbind('keypress', emoticonsKeyPress);
+
+				triggerValueChanged();
 			}
 
 			return this;
@@ -3046,6 +3092,93 @@
 
 			rangeHelper.restoreRange();
 			return this;
+		};
+
+		/**
+		 * Triggers the valueChnaged signal if there is
+		 * a plugin that handles it.
+		 *
+		 * If rangeHelper.saveRange() has already been
+		 * called, then saveRange should be set to false
+		 * to prevent the range being saved twice.
+		 *
+		 * @since 1.4.5
+		 * @param {Boolean} saveRange If to call rangeHelper.saveRange().
+		 * @private
+		 */
+		triggerValueChanged = function(saveRange) {
+			if (!pluginManager.hasHandler('valueChanged'))
+				return;
+
+			var	customEvent,
+				sourceMode   = base.sourceMode(),
+				hasSelection = !sourceMode && rangeHelper.hasSelection();
+
+			saveRange = saveRange !== false;
+
+			// Clear any current timeout as it's now been triggered
+			if(valueChangedKeyPress.timer)
+			{
+				clearTimeout(valueChangedKeyPress.timer);
+				valueChangedKeyPress.timer = false;
+			}
+
+			if (hasSelection && saveRange)
+				rangeHelper.saveRange();
+
+			customEvent = $.Event((sourceMode ? 'scesrc' : 'scewys') + 'valuechanged', {
+				rawValue: sourceMode ? base.val() : $wysiwygBody.html()
+			});
+
+			pluginManager.call('valueChanged', customEvent.rawValue);
+			$editorContainer.trigger(customEvent, base);
+
+			if (hasSelection && saveRange)
+				rangeHelper.removeMarkers();
+		};
+
+		/**
+		 * Should be called whenever there is a blur event
+		 * @private
+		 */
+		valueChangedBlur = function() {
+			if(valueChangedKeyPress.timer)
+				triggerValueChanged();
+		};
+
+		/**
+		 * Should be called whenever there is a keypress event
+		 * @param  {Event} e The keypress event
+		 * @private
+		 */
+		valueChangedKeyPress = function(e) {
+			var which        = e.which,
+				lastWasSpace = (valueChangedKeyPress.lastChar === 13 || valueChangedKeyPress.lastChar === 32);
+
+			valueChangedKeyPress.lastChar = which;
+
+			// 13 = return
+			// 32 = space
+			if(which === 13 || which === 32)
+			{
+				if(!lastWasSpace)
+					triggerValueChanged();
+
+				return;
+			}
+			else if(lastWasSpace)
+				triggerValueChanged();
+
+			// Clear the previous timeout and set a new one.
+			if(valueChangedKeyPress.timer)
+				clearTimeout(valueChangedKeyPress.timer);
+
+			// Trigger the event 1.5s after the last keypress if space
+			// isn't pressed. This should probably be lowered, need
+			// to look into what the slowest average Chars Per Min is.
+			valueChangedKeyPress.timer = setTimeout(function() {
+				triggerValueChanged();
+			}, 1500);
 		};
 
 		// run the initializer
