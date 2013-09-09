@@ -571,7 +571,7 @@
 			$editorContainer
 				.bind('selectionchanged', checkNodeChanged)
 				.bind('selectionchanged', updateActiveButtons)
-				.bind('selectionchanged', handleEvent)
+				.bind('selectionchanged valuechanged', handleEvent)
 				.bind('nodechanged', handleEvent);
 		};
 
@@ -2468,7 +2468,7 @@
 			delete clone.type;
 			customEvent = $.Event((e.target === sourceEditor ? 'scesrc' : 'scewys') + e.type, clone);
 
-			$editorContainer.trigger.apply($editorContainer, [customEvent, base]);
+			$editorContainer.trigger(customEvent, base);
 
 			if(customEvent.isDefaultPrevented())
 				e.preventDefault();
@@ -2528,6 +2528,10 @@
 
 					if(!excludeSource)
 						$editorContainer.bind('scesrc' + events[i], handler);
+
+					// Start sending value changed events
+					if(events[i] === 'valuechanged')
+						triggerValueChanged.hasHandler = true;
 				}
 			}
 
@@ -3156,11 +3160,10 @@
 		 * @private
 		 */
 		triggerValueChanged = function(saveRange) {
-			if (!pluginManager.hasHandler('valueChanged'))
+			if (!pluginManager.hasHandler('valueChangedEvent') && !triggerValueChanged.hasHandler)
 				return;
 
-			var	customEvent,
-				sourceMode   = base.sourceMode(),
+			var	sourceMode   = base.sourceMode(),
 				hasSelection = !sourceMode && rangeHelper.hasSelection();
 
 			saveRange = saveRange !== false && !$wysiwygDoc[0].getElementById('sceditor-start-marker');
@@ -3175,12 +3178,9 @@
 			if (hasSelection && saveRange)
 				rangeHelper.saveRange();
 
-			customEvent = $.Event((sourceMode ? 'scesrc' : 'scewys') + 'valuechanged', {
+			$editorContainer.trigger($.Event('valuechanged', {
 				rawValue: sourceMode ? base.val() : $wysiwygBody.html()
-			});
-
-			pluginManager.call('valueChanged', customEvent.rawValue);
-			$editorContainer.trigger(customEvent, base);
+			}));
 
 			if (hasSelection && saveRange)
 				rangeHelper.removeMarkers();
