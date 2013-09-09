@@ -325,7 +325,7 @@
 			currentStyledBlockNode,
 			triggerValueChanged,
 			valueChangedBlur,
-			valueChangedKeyPress;
+			valueChangedKeyUp;
 
 		/**
 		 * All the commands supported by the editor
@@ -385,6 +385,8 @@
 			if(!$.sceditor.isWysiwygSupported)
 				base.toggleSourceMode();
 
+			updateActiveButtons();
+
 			var loaded = function() {
 				$(window).unbind('load', loaded);
 
@@ -397,13 +399,12 @@
 				// Page width might have changed after CSS is loaded so
 				// call handleWindowResize to update any % based dimensions
 				handleWindowResize();
+
+				pluginManager.call('ready');
 			};
 			$(window).load(loaded);
 			if(document.readyState && document.readyState === 'complete')
 				loaded();
-
-			updateActiveButtons();
-			pluginManager.call('ready');
 		};
 
 		initPlugins = function() {
@@ -542,6 +543,7 @@
 				.keydown(handleBackSpace)
 				.keyup(appendNewLine)
 				.bind('blur', valueChangedBlur)
+				.keyup(valueChangedKeyUp)
 				.bind('paste', handlePasteEvt)
 				.bind($.sceditor.ie ? 'selectionchange' : 'keyup focus blur contextmenu mouseup touchend click', checkSelectionChanged)
 				.bind('keydown keyup keypress focus blur contextmenu', handleEvent);
@@ -551,7 +553,7 @@
 
 			$sourceEditor
 				.bind('blur', valueChangedBlur)
-				.bind('keypress', valueChangedKeyPress)
+				.keyup(valueChangedKeyUp)
 				.bind('keydown keyup keypress focus blur contextmenu', handleEvent)
 				.keydown(handleKeyDown);
 
@@ -1625,6 +1627,55 @@
 		};
 
 		/**
+		 * Gets the source editors textarea.
+		 *
+		 * This shouldn't be used to insert text
+		 *
+		 * @return {jQuery}
+		 * @function
+		 * @since 1.4.5
+		 * @name sourceEditorCaret
+		 * @memberOf jQuery.sceditor.prototype
+		 */
+		base.sourceEditorCaret = function (position) {
+			var ret = {};
+
+			// All browsers except IE8 and below
+			if(typeof sourceEditor.selectionStart !== 'undefined')
+			{
+				if(position)
+				{
+					sourceEditor.selectionStart = position.start;
+					sourceEditor.selectionEnd   = position.end;
+				}
+				else
+				{
+					ret.start = sourceEditor.selectionStart;
+					ret.end   = sourceEditor.selectionEnd;
+				}
+			}
+			// IE8 and below
+			else
+			{
+				range = document.selection.createRange();
+
+				if(position)
+				{
+					range.moveStart('character', position.start);
+					range.moveEnd('character', position.end);
+					range.select();
+				}
+				else
+				{
+					ret.start = range.Start;
+					ret.end   = range.End;
+				}
+			}
+
+			return position ? this : ret;
+		};
+
+		/**
 		 * <p>Gets the value of the editor.</p>
 		 *
 		 * <p>If the editor is in WYSIWYG mode it will return the filtered
@@ -2298,8 +2349,6 @@
 			i = keyPressFuncs.length;
 			while(i--)
 				keyPressFuncs[i].call(base, e, wysiwygEditor, $sourceEditor);
-
-			valueChangedKeyPress(e);
 		};
 
 		/**
@@ -3114,13 +3163,13 @@
 				sourceMode   = base.sourceMode(),
 				hasSelection = !sourceMode && rangeHelper.hasSelection();
 
-			saveRange = saveRange !== false;
+			saveRange = saveRange !== false && !$wysiwygDoc[0].getElementById('sceditor-start-marker');
 
 			// Clear any current timeout as it's now been triggered
-			if(valueChangedKeyPress.timer)
+			if(valueChangedKeyUp.timer)
 			{
-				clearTimeout(valueChangedKeyPress.timer);
-				valueChangedKeyPress.timer = false;
+				clearTimeout(valueChangedKeyUp.timer);
+				valueChangedKeyUp.timer = false;
 			}
 
 			if (hasSelection && saveRange)
@@ -3142,7 +3191,7 @@
 		 * @private
 		 */
 		valueChangedBlur = function() {
-			if(valueChangedKeyPress.timer)
+			if(valueChangedKeyUp.timer)
 				triggerValueChanged();
 		};
 
@@ -3151,11 +3200,13 @@
 		 * @param  {Event} e The keypress event
 		 * @private
 		 */
-		valueChangedKeyPress = function(e) {
-			var which        = e.which,
-				lastWasSpace = (valueChangedKeyPress.lastChar === 13 || valueChangedKeyPress.lastChar === 32);
+		valueChangedKeyUp = function(e) {
+			var which         = e.which,
+				lastChar      = valueChangedKeyUp.lastChar,
+				lastWasSpace  = (lastChar === 13 || lastChar === 32),
+				lastWasDelete = (lastChar === 8 || lastChar === 46);
 
-			valueChangedKeyPress.lastChar = which;
+			valueChangedKeyUp.lastChar = which;
 
 			// 13 = return
 			// 32 = space
@@ -3166,17 +3217,26 @@
 
 				return;
 			}
-			else if(lastWasSpace)
+			// 8 = backspace
+			// 46 = del
+			else if(which === 8 || which === 46)
+			{
+				if(!lastWasDelete)
+					triggerValueChanged();
+
+				return;
+			}
+			else if(lastWasSpace || lastWasDelete)
 				triggerValueChanged();
 
 			// Clear the previous timeout and set a new one.
-			if(valueChangedKeyPress.timer)
-				clearTimeout(valueChangedKeyPress.timer);
+			if(valueChangedKeyUp.timer)
+				clearTimeout(valueChangedKeyUp.timer);
 
 			// Trigger the event 1.5s after the last keypress if space
 			// isn't pressed. This should probably be lowered, need
 			// to look into what the slowest average Chars Per Min is.
-			valueChangedKeyPress.timer = setTimeout(function() {
+			valueChangedKeyUp.timer = setTimeout(function() {
 				triggerValueChanged();
 			}, 1500);
 		};
@@ -4591,8 +4651,6 @@
 				marker.moveToElementText(end);
 				range.setEndPoint('EndToStart', marker);
 				range.moveEnd(characterStr, 0);
-
-				base.selectRange(range);
 			}
 			else
 			{
@@ -4600,10 +4658,9 @@
 
 				range.setStartBefore(start);
 				range.setEndAfter(end);
-
-				base.selectRange(range);
 			}
 
+			base.selectRange(range);
 			base.removeMarkers();
 		};
 
