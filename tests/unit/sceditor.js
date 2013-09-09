@@ -270,4 +270,40 @@
 			'Do not remove text inserted into auto added new line'
 		);
 	});
+
+
+	module('SCEditor - Escaping');
+
+	test('Regex Escaping', function() {
+		expect(2);
+
+		equal(
+			$.sceditor.regexEscape('^^ >.< =)'),
+			'\\^\\^ >\\.< \\=\\)',
+			'Escape possible emoticons'
+		);
+
+		equal(
+			$.sceditor.regexEscape('- \\ ^ / $ * + ? . ( ) | { } [ ] | ! :'),
+			'\\- \\\\ \\^ \\/ \\$ \\* \\+ \\? \\. \\( \\) \\| \\{ \\} \\[ \\] \\| \\! \\:',
+			'All special chars'
+		);
+	});
+
+	test('Escape Entities', function() {
+		expect(2);
+
+		equal(
+			$.sceditor.escapeEntities('<b> <test="test">'),
+			'&lt;b&gt; &lt;test="test"&gt;',
+			'Escape HTML'
+		);
+
+		equal(
+			$.sceditor.escapeEntities('< > & &amp; \' " \r\n \n "     "'),
+			'&lt; &gt; &amp; &amp;amp; \' " <br /> <br /> " &nbsp; &nbsp; "',
+			'All escaped chars'
+		);
+	});
+
 })();
