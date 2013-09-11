@@ -2380,14 +2380,16 @@
 		 * @since v1.3.5
 		 */
 		set: function(name, bbcode) {
+			var bbcodes = $.sceditor.plugins.bbcode.bbcodes;
+
 			if(!name || !bbcode)
 				return false;
 
 			// merge any existing command properties
-			bbcode        = $.extend($.sceditor.plugins.bbcode.bbcodes[name] || {}, bbcode);
-			bbcode.remove = function() { $.sceditor.plugins.bbcode.bbcode.remove(name); };
+			bbcode        = $.extend(bbcodes[name] || {}, bbcode);
+			bbcode.remove = function() { delete bbcodes[name]; };
 
-			$.sceditor.plugins.bbcode.bbcodes[name] = bbcode;
+			bbcodes[name] = bbcode;
 
 			return this;
 		},
@@ -2404,10 +2406,12 @@
 		 * @since v1.4.0
 		 */
 		rename: function(name, newName) {
-			if (this.hasOwnProperty(name))
+			var bbcodes = $.sceditor.plugins.bbcode.bbcodes;
+
+			if (name in bbcodes)
 			{
-				this[newName] = this[name];
-				this.remove(name);
+				bbcodes[newName] = bbcodes[name];
+				delete bbcodes[name];
 			}
 			else
 				return false;
@@ -2423,8 +2427,10 @@
 		 * @since v1.3.5
 		 */
 		remove: function(name) {
-			if($.sceditor.plugins.bbcode.bbcodes[name])
-				delete $.sceditor.plugins.bbcode.bbcodes[name];
+			var bbcodes = $.sceditor.plugins.bbcode.bbcodes;
+
+			if (name in bbcodes)
+				delete bbcodes[name];
 
 			return this;
 		}
