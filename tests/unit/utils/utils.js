@@ -1,18 +1,6 @@
 (function (html, wrapInJquery) {
 	'use strict';
 
-	window.html2dom = function(html, wrapInJquery) {
-		var ret = document.createElement('div');
-		ret.innerHTML = html;
-
-		if(wrapInJquery)
-			ret = $(ret);
-
-		$('#qunit-fixture').append(ret);
-
-		return ret;
-	};
-
 	window.equalMulti = function(actual, expectedArr, message) {
 		var matched = false;
 
