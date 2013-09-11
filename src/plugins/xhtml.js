@@ -964,7 +964,29 @@
 				}
 			},
 			conv: function(node, $node) {
-				$node.css('fontSize', $node.css('fontSize')).removeAttr('size');
+				var	size     = $node.css('fontSize'),
+					fontSize = size;
+
+				// IE 8 and below incorrectly returns the value of the size
+				// attribute instead of the px value so must convert it
+				if($.sceditor.ie < 9)
+				{
+					fontSize = 10;
+					if(size > 1)
+						fontSize = 13;
+					if(size > 2)
+						fontSize = 16;
+					if(size > 3)
+						fontSize = 18;
+					if(size > 4)
+						fontSize = 24;
+					if(size > 5)
+						fontSize = 32;
+					if(size > 6)
+						fontSize = 48;
+				}
+
+				$node.css('fontSize', fontSize).removeAttr('size');
 			}
 		},
 		{
