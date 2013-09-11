@@ -4284,7 +4284,8 @@
 			{
 				var	selection, selectAfter,
 					toInsert = doc.createDocumentFragment(),
-					range    = base.selectedRange();
+					range    = base.selectedRange(),
+					parent   = range.commonAncestorContainer;
 
 				if(!range)
 					return false;
@@ -4304,7 +4305,14 @@
 					return;
 
 				range.deleteContents();
-				range.insertNode(toInsert);
+
+				// FF allows <br /> to be selected but inserting a node into <br />
+				// will cause it not to be displayed so must insert before the <br />
+				// in FF.
+				if(parent && /^(br|hr)$/i.test(parent.nodeName))
+					parent.parentNode.insertBefore(toInsert, parent);
+				else
+					range.insertNode(toInsert);
 
 				selection = doc.createRange();
 				selection.setStartAfter(selectAfter);

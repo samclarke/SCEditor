@@ -1,17 +1,7 @@
-(function (html, wrapInJquery) {
+(function() {
 	'use strict';
 
-	window.equalMulti = function(actual, expectedArr, message) {
-		var matched = false;
-
-		$.each(expectedArr, function(idx, expected) {
-			if(actual == expected)
-				matched = true;
-		});
-
-		QUnit.push(matched, actual, expectedArr, message);
-	};
-
+	// Yes adding methods to String is bad, but this is just for testing
 	String.prototype.toDOM = function() {
 		var ret = document.createElement('div');
 		ret.innerHTML = this;
