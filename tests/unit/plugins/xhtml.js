@@ -342,7 +342,7 @@
 	});
 
 	test('Serialize', function() {
-		expect(2);
+		expect(3);
 
 		var XHTMLSerializer = new $.sceditor.XHTMLSerializer();
 		equal(
@@ -355,6 +355,14 @@
 			XHTMLSerializer.serialize(html2dom('<div><span>test</span></div>').firstChild, true).ignoreAll(),
 			'<span>test</span>'.ignoreAll(),
 			'Serialise only children'
+		);
+
+		var frag = document.createDocumentFragment();
+		frag.appendChild(document.createTextNode('testing'));
+		equal(
+			XHTMLSerializer.serialize(frag).ignoreAll(),
+			'testing'.ignoreAll(),
+			'Serialise Fragment'
 		);
 	});
 

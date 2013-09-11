@@ -8,7 +8,7 @@
 
 		var result = '';
 		$.sceditor.dom.traverse(
-			html2dom('<code><b>1</b><b>2</b><b>3</b><span><b>4</b><b>5</b></span></code>'),
+			'<code><b>1</b><b>2</b><b>3</b><span><b>4</b><b>5</b></span></code>'.toDOM(),
 			function(node) {
 				if(node.nodeType === 3)
 					result += node.nodeValue;
@@ -23,7 +23,7 @@
 
 		result = '';
 		$.sceditor.dom.rTraverse(
-			html2dom('<code><b>1</b><b>2</b><b>3</b><span><b>4</b><b>5</b></span></code>'),
+			'<code><b>1</b><b>2</b><b>3</b><span><b>4</b><b>5</b></span></code>'.toDOM(),
 			function(node) {
 				if(node.nodeType === 3)
 					result += node.nodeValue;
@@ -38,7 +38,7 @@
 
 		result = '';
 		$.sceditor.dom.traverse(
-			html2dom('<code><span><b></b></span><span><b></b><b></b></span></code>'),
+			'<code><span><b></b></span><span><b></b><b></b></span></code>'.toDOM(),
 			function(node) {
 				result += node.nodeName.toLowerCase() + ':';
 			},
@@ -53,7 +53,7 @@
 
 		result = '';
 		$.sceditor.dom.traverse(
-			html2dom('1<span>ignore</span>2<span>ignore</span>3'),
+			'1<span>ignore</span>2<span>ignore</span>3'.toDOM(),
 			function(node) {
 				if(node.nodeType === 3)
 					result += node.nodeValue;
@@ -72,7 +72,7 @@
 	test('Fix nesting', function() {
 		expect(3);
 
-		var node        = html2dom('<span>span<div style="font-weight: bold;">div</div>span</span>');
+		var node = '<span>span<div style="font-weight: bold;">div</div>span</span>'.toDOM();
 		$.sceditor.dom.fixNesting(node);
 		equal(
 			node.innerHTML.ignoreAll(),
@@ -81,7 +81,7 @@
 		);
 
 
-		node = html2dom('<span style="font-weight: bold;">span<div>div</div>span</span>');
+		node = '<span style="font-weight: bold;">span<div>div</div>span</span>'.toDOM();
 		$.sceditor.dom.fixNesting(node);
 		equal(
 			node.innerHTML.ignoreAll(),
@@ -92,7 +92,7 @@
 		);
 
 
-		node = html2dom('<span>span<span>span<div style="font-weight: bold;">div</div>span</span>span</span>');
+		node = '<span>span<span>span<div style="font-weight: bold;">div</div>span</span>span</span>'.toDOM();
 		$.sceditor.dom.fixNesting(node);
 		equal(
 			node.innerHTML.ignoreAll(),
@@ -117,7 +117,7 @@
 		);
 
 
-		node   = html2dom('<span>span<div style="font-weight: bold;">div</div>span</span>');
+		node   = '<span>span<div style="font-weight: bold;">div</div>span</span>'.toDOM();
 		parsed = $.sceditor.dom.parseHTML('<span>span<div style="font-weight: bold;">div</div>span</span>');
 		equal(
 			parsed[0].outerHTML,
@@ -142,7 +142,7 @@
 	test('Remove White Space', function() {
 		expect(9);
 
-		var node = html2dom('<span>   </span>');
+		var node = '<span>   </span>'.toDOM();
 		$.sceditor.dom.removeWhiteSpace(node);
 		equal(
 			node.innerHTML.toLowerCase(),
@@ -151,7 +151,7 @@
 		);
 
 
-		node = html2dom('<div>    <span>  \t\t\t\t </span>\t\t\t</div><div></div>');
+		node = '<div>    <span>  \t\t\t\t </span>\t\t\t</div><div></div>'.toDOM();
 		$.sceditor.dom.removeWhiteSpace(node);
 		equal(
 			node.innerHTML.toLowerCase(),
@@ -160,7 +160,7 @@
 		);
 
 
-		node = html2dom('<span>test</span><span><span>  test  </span></span><span>test</span>');
+		node = '<span>test</span><span><span>  test  </span></span><span>test</span>'.toDOM();
 		$.sceditor.dom.removeWhiteSpace(node);
 		equal(
 			node.innerHTML.toLowerCase(),
@@ -169,7 +169,7 @@
 		);
 
 
-		node = html2dom('<span><span><span><span>test  </span></span></span></span><span><span><span><span>  test  </span></span></span></span><span>  test</span>');
+		node = '<span><span><span><span>test  </span></span></span></span><span><span><span><span>  test  </span></span></span></span><span>  test</span>'.toDOM();
 		$.sceditor.dom.removeWhiteSpace(node);
 		equal(
 			node.innerHTML.toLowerCase(),
@@ -178,7 +178,7 @@
 		);
 
 
-		node = html2dom('<span>test  </span><span><span>  test  </span></span><span>  test</span>');
+		node = '<span>test  </span><span><span>  test  </span></span><span>  test</span>'.toDOM();
 		$.sceditor.dom.removeWhiteSpace(node);
 		equal(
 			node.innerHTML.toLowerCase(),
@@ -187,7 +187,7 @@
 		);
 
 
-		node = html2dom('<div>    <span>  \t\tcontent\t\t </span>\t\t\t</div><div></div>');
+		node = '<div>    <span>  \t\tcontent\t\t </span>\t\t\t</div><div></div>'.toDOM();
 		$.sceditor.dom.removeWhiteSpace(node);
 		equal(
 			node.innerHTML.toLowerCase(),
@@ -196,7 +196,7 @@
 		);
 
 
-		node = html2dom('<div>    <pre>  \t\tcontent\t\t </pre>\t\t\t</div>');
+		node = '<div>    <pre>  \t\tcontent\t\t </pre>\t\t\t</div>'.toDOM();
 		$.sceditor.dom.removeWhiteSpace(node);
 		equal(
 			node.innerHTML.toLowerCase(),
@@ -205,7 +205,7 @@
 		);
 
 
-		node = html2dom('<pre>    <span>  \t\tcontent\t\t </span>\t\t\t</pre>');
+		node = '<pre>    <span>  \t\tcontent\t\t </span>\t\t\t</pre>'.toDOM();
 		$.sceditor.dom.removeWhiteSpace(node);
 		equal(
 			node.innerHTML.toLowerCase(),
@@ -213,7 +213,7 @@
 			'Nested content with parent pre tag'
 		);
 
-		node = html2dom('<div>test <img src="emoticons/smile.png"> test.</div>');
+		node = '<div>test <img src="emoticons/smile.png"> test.</div>'.toDOM();
 		$.sceditor.dom.removeWhiteSpace(node);
 		equal(
 			node.innerHTML.toLowerCase(),
@@ -229,7 +229,7 @@
 	test('Block level white space', function() {
 		expect(5);
 
-		var node = html2dom('<div>test\ntest</div>');
+		var node = '<div>test\ntest</div>'.toDOM();
 		$.sceditor.dom.removeWhiteSpace(node);
 		equal(
 			node.innerHTML.toLowerCase(),
@@ -237,7 +237,7 @@
 			'Newline in textnode'
 		);
 
-		node = html2dom('<div>test\n</div><div></div>');
+		node = '<div>test\n</div><div></div>'.toDOM();
 		$.sceditor.dom.removeWhiteSpace(node);
 		equal(
 			node.innerHTML.toLowerCase(),
@@ -245,7 +245,7 @@
 			'Newline after textnode'
 		);
 
-		node = html2dom('<div>test\n </div><div></div>');
+		node = '<div>test\n </div><div></div>'.toDOM();
 		$.sceditor.dom.removeWhiteSpace(node);
 		equal(
 			node.innerHTML.toLowerCase(),
@@ -253,7 +253,7 @@
 			'Newline after textnode and a space'
 		);
 
-		node = html2dom('<div>\ntest</div>');
+		node = '<div>\ntest</div>'.toDOM();
 		$.sceditor.dom.removeWhiteSpace(node);
 		equal(
 			node.innerHTML.toLowerCase(),
@@ -261,7 +261,7 @@
 			'Newline at start of textnode'
 		);
 
-		node = html2dom('<div> \ntest</div>');
+		node = '<div> \ntest</div>'.toDOM();
 		$.sceditor.dom.removeWhiteSpace(node);
 		equal(
 			node.innerHTML.toLowerCase(),
@@ -273,7 +273,7 @@
 	test('Inline white space', function() {
 		expect(5);
 
-		var node = html2dom('<span>test\ntest</span>');
+		var node = '<span>test\ntest</span>'.toDOM();
 		$.sceditor.dom.removeWhiteSpace(node);
 		equal(
 			node.innerHTML.toLowerCase(),
@@ -281,7 +281,7 @@
 			'Newline in textnode'
 		);
 
-		node = html2dom('<span>test\n</span><span></span>');
+		node = '<span>test\n</span><span></span>'.toDOM();
 		$.sceditor.dom.removeWhiteSpace(node);
 		equal(
 			node.innerHTML.toLowerCase(),
@@ -289,7 +289,7 @@
 			'Newline after textnode'
 		);
 
-		node = html2dom('<span>test\n </span><span></span>');
+		node = '<span>test\n </span><span></span>'.toDOM();
 		$.sceditor.dom.removeWhiteSpace(node);
 		equal(
 			node.innerHTML.toLowerCase(),
@@ -297,7 +297,7 @@
 			'Newline after textnode and a space'
 		);
 
-		node = html2dom('<span>\ntest</span>');
+		node = '<span>\ntest</span>'.toDOM();
 		$.sceditor.dom.removeWhiteSpace(node);
 		equal(
 			node.innerHTML.toLowerCase(),
@@ -305,7 +305,7 @@
 			'Newline at start of textnode'
 		);
 
-		node = html2dom('<span> \ntest</span>');
+		node = '<span> \ntest</span>'.toDOM();
 		$.sceditor.dom.removeWhiteSpace(node);
 		equal(
 			node.innerHTML.toLowerCase(),

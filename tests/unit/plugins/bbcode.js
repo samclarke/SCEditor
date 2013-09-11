@@ -11,7 +11,7 @@
 	});
 
 	test('Invalid nesting', function() {
-		expect(3);
+		expect(4);
 
 		var $dom   = html2dom('<span style="color: #000">this<blockquote>is</blockquote>a test</span>', true);
 		$.sceditor.dom.fixNesting($dom[0]);
@@ -36,10 +36,41 @@
 			'[b]test[/b][code]test[/code]'.ignoreSpace(),
 			'Block level tag in an inline tag'
 		);
+
+		equal(
+			parser.toBBCode('[b][i][s]test[code]test[/code]test[/s][/i][/b]').ignoreSpace(),
+			'[b][i][s]test[/s][/i][/b][code]test[/code][b][i][s]test[/s][/i][/b]'.ignoreSpace(),
+			'Deeply nested block in inline tags'
+		);
+	});
+
+	test('Rename BBCode', function() {
+		expect(3);
+
+		$.sceditor.plugins.bbcode.bbcode.rename('b', 'testbold');
+		var parser = new $.sceditor.BBCodeParser($.sceditor.defaultOptions.parserOptions);
+
+		ok(
+			!!$.sceditor.plugins.bbcode.bbcode.get('testbold'),
+			'Can get renamed BBCode'
+		);
+
+		equal(
+			parser.toHTML('[testbold]test[/testbold]').ignoreSpace(),
+			'<div><strong>test</strong></div>'.ignoreSpace(),
+			'Renamed BBCode'
+		);
+
+		$.sceditor.plugins.bbcode.bbcode.rename('testbold', 'b');
+
+		ok(
+			!$.sceditor.plugins.bbcode.bbcode.get('testbold'),
+			'Should not be able to get old BBCode name'
+		);
 	});
 
 	test('Tag closing', function() {
-		expect(6);
+		expect(8);
 
 		var parser = new $.sceditor.BBCodeParser($.sceditor.defaultOptions.parserOptions);
 
@@ -78,10 +109,22 @@
 			'[b]test[color]test[/color][/b][color]test[/color]',
 			'Closing parent tag from child tag'
 		);
+
+		equal(
+			parser.toBBCode('[b][s][i][color]test[/i][/s][/b][/color]'),
+			'[b][s][i][color]test[/color][/i][/s][/b]',
+			'Closing parent tag from deeply nested child tag'
+		);
+
+		equal(
+			parser.toBBCode('[color][b][s][i]test[/color][/i][/s][/b]'),
+			'[color][b][s][i]test[/i][/s][/b][/color]',
+			'Closing parent tag from deeply nested child tag'
+		);
 	});
 
 	test('Unknown tags', function() {
-		expect(3);
+		expect(4);
 
 		var parser = new $.sceditor.BBCodeParser($.sceditor.defaultOptions.parserOptions);
 
@@ -101,6 +144,12 @@
 			parser.toBBCode('[b][unknown][/unknown][/b]'),
 			'[b][unknown][/unknown][/b]',
 			'Empty unknown tag with end'
+		);
+
+		equal(
+			parser.toHTML('[b][unknown]test[/unknown][/b]'),
+			'<div><strong>[unknown]test[/unknown]</strong></div>\n',
+			'Empty unknown tag with end to HTML'
 		);
 	});
 
@@ -229,59 +278,59 @@
 		);
 	});
 
-	test("Italic", function() {
+	test('Italic', function() {
 		expect(5);
 
 		equal(
-			this.sb.signalToSource('', html2dom("<span style='font-style: italic'>test</span>", true)),
-			"[i]test[/i]",
-			"CSS italic"
+			this.sb.signalToSource('', html2dom('<span style="font-style: italic">test</span>', true)),
+			'[i]test[/i]',
+			'CSS italic'
 		);
 
 		equal(
-			this.sb.signalToSource('', html2dom("<span style='font-style: oblique'>test</span>", true)),
-			"[i]test[/i]",
-			"CSS oblique"
+			this.sb.signalToSource('', html2dom('<span style="font-style: oblique">test</span>', true)),
+			'[i]test[/i]',
+			'CSS oblique'
 		);
 
 		equal(
-			this.sb.signalToSource('', html2dom("<span style='font-style: normal'>test</span>", true)),
-			"test",
-			"CSS normal"
+			this.sb.signalToSource('', html2dom('<span style="font-style: normal">test</span>', true)),
+			'test',
+			'CSS normal'
 		);
 
 		equal(
-			this.sb.signalToSource('', html2dom("<em>test</em>", true)),
-			"[i]test[/i]",
-			"Em tag"
+			this.sb.signalToSource('', html2dom('<em>test</em>', true)),
+			'[i]test[/i]',
+			'Em tag'
 		);
 
 		equal(
-			this.sb.signalToSource('', html2dom("<i>test</i>", true)),
-			"[i]test[/i]",
-			"I tag"
+			this.sb.signalToSource('', html2dom('<i>test</i>', true)),
+			'[i]test[/i]',
+			'I tag'
 		);
 	});
 
-	test("Underline", function() {
+	test('Underline', function() {
 		expect(3);
 
 		equal(
-			this.sb.signalToSource('', html2dom("<span style='text-decoration: underline'>test</span>", true)),
-			"[u]test[/u]",
-			"CSS underline"
+			this.sb.signalToSource('', html2dom('<span style="text-decoration: underline">test</span>', true)),
+			'[u]test[/u]',
+			'CSS underline'
 		);
 
 		equal(
-			this.sb.signalToSource('', html2dom("<span style='text-decoration: normal'>test</span>", true)),
-			"test",
-			"CSS normal"
+			this.sb.signalToSource('', html2dom('<span style="text-decoration: normal">test</span>', true)),
+			'test',
+			'CSS normal'
 		);
 
 		equal(
-			this.sb.signalToSource('', html2dom("<u>test</u>", true)),
-			"[u]test[/u]",
-			"U tag"
+			this.sb.signalToSource('', html2dom('<u>test</u>', true)),
+			'[u]test[/u]',
+			'U tag'
 		);
 	});
 
@@ -413,7 +462,7 @@
 		);
 	});
 
-	test("Font colour", function() {
+	test("colour", function() {
 		expect(6);
 
 		equal(
@@ -1125,63 +1174,63 @@
 
 
 
-	module("BBCode Plugin - Converter Methods", {
+	module('BBCode Plugin - Converter Methods', {
 		setup: function() {
-			var $textarea = $("#qunit-fixture textarea:first");
+			var $textarea = $('#qunit-fixture textarea:first');
 			$textarea.sceditor({ plugins: 'bbcode' });
-			this.sceditor = $textarea.sceditor("instance");
+			this.sceditor = $textarea.sceditor('instance');
 		}
 	});
 
-	test("To BBCode method", function() {
+	test('To BBCode method', function() {
 		expect(7);
 
 		equal(
 			this.sceditor.toBBCode(html2dom('<b>test</b>')),
-			"[b]test[/b]",
-			"DOM test"
+			'[b]test[/b]',
+			'DOM test'
 		);
 
 		equal(
 			this.sceditor.toBBCode(html2dom('<b>test</b>', true)),
-			"[b]test[/b]",
-			"jQuery DOM test"
+			'[b]test[/b]',
+			'jQuery DOM test'
 		);
 
 		equal(
 			this.sceditor.toBBCode('<b>test</b>'),
-			"[b]test[/b]",
-			"HTML String test"
+			'[b]test[/b]',
+			'HTML String test'
 		);
 
 		equal(
 			this.sceditor.toBBCode('<img src="http://www.sceditor.com/emoticons/smile.png" />'),
-			"[img]http://www.sceditor.com/emoticons/smile.png[/img]",
-			"Image test"
+			'[img]http://www.sceditor.com/emoticons/smile.png[/img]',
+			'Image test'
 		);
 
 		equal(
 			this.sceditor.toBBCode(html2dom('<img src="http://www.sceditor.com/emoticons/smile.png" />')),
-			"[img]http://www.sceditor.com/emoticons/smile.png[/img]",
-			"Image DOM test"
+			'[img]http://www.sceditor.com/emoticons/smile.png[/img]',
+			'Image DOM test'
 		);
 
 		equal(
 			this.sceditor.toBBCode(html2dom('<img src="http://www.sceditor.com/emoticons/smile.png" />', true)),
-			"[img]http://www.sceditor.com/emoticons/smile.png[/img]",
-			"Image jQuery test"
+			'[img]http://www.sceditor.com/emoticons/smile.png[/img]',
+			'Image jQuery test'
 		);
 
 
 
 		equal(
 			this.sceditor.toBBCode('<img src="http://www.sceditor.com/does/not/exist/smile.png" width="200" />'),
-			"[img]http://www.sceditor.com/does/not/exist/smile.png[/img]",
-			"Non-loaded image width test"
+			'[img]http://www.sceditor.com/does/not/exist/smile.png[/img]',
+			'Non-loaded image width test'
 		);
 	});
 
-	asyncTest("ToBBCode loaded image width test", function() {
+	asyncTest('ToBBCode loaded image width test', function() {
 		expect(1);
 
 		var img      = html2dom('<img src="http://www.sceditor.com/emoticons/smile.png" width="200" />');
@@ -1190,7 +1239,7 @@
 		var loaded = function() {
 			ok(
 				sceditor.toBBCode(img),
-				"[img=200x200]http://www.sceditor.com/emoticons/smile.png[/img]"
+				'[img=200x200]http://www.sceditor.com/emoticons/smile.png[/img]'
 			);
 
 			start();
@@ -1203,26 +1252,26 @@
 			loaded();
 	});
 
-	test("From BBCode method", function() {
+	test('From BBCode method', function() {
 		expect(2);
 
 		equal(
 			this.sceditor.fromBBCode('[b]test[/b]'),
-			"<div><strong>test</strong></div>\n",
-			"Normal"
+			'<div><strong>test</strong></div>\n',
+			'Normal'
 		);
 
 		equal(
 			this.sceditor.fromBBCode('[b]test[/b]', true).ignoreCase(),
-			"<strong>test</strong>",
-			"As fragment"
+			'<strong>test</strong>',
+			'As fragment'
 		);
 	});
 
 
 
 
-	module("BBCode Plugin - White Space", {
+	module('BBCode Plugin - White Space', {
 		setup: function() {
 			this.sb = new $.sceditor.plugins.bbcode();
 			this.sb.init.call({
@@ -1231,85 +1280,85 @@
 		}
 	});
 
-	test("Stripping empty", function() {
+	test('Stripping empty', function() {
 		expect(10);
 
 		equal(
-			this.sb.signalToSource('', html2dom("<b><br /></b>", true)),
-			"\n",
-			"Bold tag with newline"
+			this.sb.signalToSource('', html2dom('<b><br /></b>', true)),
+			'\n',
+			'Bold tag with newline'
 		);
 
 		equal(
-			this.sb.signalToSource('', html2dom("<b></b>", true)),
+			this.sb.signalToSource('', html2dom('<b></b>', true)),
 			'',
-			"Empty bold tag"
+			'Empty bold tag'
 		);
 
 		equal(
-			this.sb.signalToSource('', html2dom("<b><br />Content</b>", true)),
-			"[b]\nContent[/b]",
-			"Bold tag with content"
+			this.sb.signalToSource('', html2dom('<b><br />Content</b>', true)),
+			'[b]\nContent[/b]',
+			'Bold tag with content'
 		);
 
 		equal(
-			this.sb.signalToSource('', html2dom("<b><span><br /></span></b>", true)),
-			"\n",
-			"Bold tag with only whitespace content"
+			this.sb.signalToSource('', html2dom('<b><span><br /></span></b>', true)),
+			'\n',
+			'Bold tag with only whitespace content'
 		);
 
 		equal(
-			this.sb.signalToSource('', html2dom("<b><span><span><span></span><span></span></span>   </span></b>", true)),
+			this.sb.signalToSource('', html2dom('<b><span><span><span></span><span></span></span>   </span></b>', true)),
 			$.sceditor.ie < 9 ? '' : ' ',
-			"Bold tag with only whitespace content"
+			'Bold tag with only whitespace content'
 		);
 
 		equal(
-			this.sb.signalToSource('', html2dom("test<b><span><br /></span></b>test", true)),
-			"test\ntest",
-			"Bold tag with only whitespace between words"
+			this.sb.signalToSource('', html2dom('test<b><span><br /></span></b>test', true)),
+			'test\ntest',
+			'Bold tag with only whitespace between words'
 		);
 
 		equal(
-			this.sb.signalToSource('', html2dom("test<b><i> </i></b>test", true)),
-			"test test",
-			"Bold and italic tag with only whitespace between words"
+			this.sb.signalToSource('', html2dom('test<b><i> </i></b>test', true)),
+			'test test',
+			'Bold and italic tag with only whitespace between words'
 		);
 
 		equal(
-			this.sb.signalToSource('', html2dom("<b><span><br />test<span></b>", true)),
-			"[b]\ntest[/b]",
-			"Bold tag with nested content"
+			this.sb.signalToSource('', html2dom('<b><span><br />test<span></b>', true)),
+			'[b]\ntest[/b]',
+			'Bold tag with nested content'
 		);
 
 		equal(
-			this.sb.signalToSource('', html2dom("<b><span><br /><span>test<span><span></b>", true)),
-			"[b]\ntest[/b]",
-			"Bold tag with nested content"
+			this.sb.signalToSource('', html2dom('<b><span><br /><span>test<span><span></b>', true)),
+			'[b]\ntest[/b]',
+			'Bold tag with nested content'
 		);
 
 		equal(
-			this.sb.signalToSource('', html2dom("<b><span><span><img src='test.png' /><span><span></b>", true)),
-			"[b][img]test.png[/img][/b]",
-			"Bold tag with nested content"
+			this.sb.signalToSource('', html2dom('<b><span><span><img src="test.png" /><span><span></b>', true)),
+			'[b][img]test.png[/img][/b]',
+			'Bold tag with nested content'
 		);
 	});
 
 
-	test("Strip Quotes", function() {
+	test('Strip Quotes', function() {
 		expect(2);
 
 		equal(
-			this.sb.signalToSource('', html2dom("<span  style='font-family: \"Arial Black\"'>test</span>", true)),
-			"[font=Arial Black]test[/font]",
-			"Quotes that should be stripped"
+			this.sb.signalToSource('', html2dom('<span  style="font-family: \'Arial Black\'">test</span>', true)),
+			'[font=Arial Black]test[/font]',
+			'Quotes that should be stripped'
 		);
 
 		var ret = this.sb.signalToSource('', html2dom("<span  style=\"font-family: 'Arial Black', Arial\">test</span>", true));
 		ok(
 			ret === "[font='Arial Black', Arial]test[/font]" || ret === '[font="Arial Black", Arial]test[/font]' ||
 			ret === "[font='Arial Black',Arial]test[/font]" || ret === "[font=Arial Black]test[/font]",
-			"Quotes that shouldn't be stripped"
+			'Quotes that shouldn\'t be stripped'
 		);
 	});
 
@@ -1329,39 +1378,39 @@
 	});
 
 
-	test("New Line Handling", function() {
+	test('New Line Handling', function() {
 		expect(4);
 
 		equal(
-			this.sb.signalToWysiwyg("[list][*]test\n[*]test2\nline\n[/list]"),
-			"<ul><li>test" + ($.sceditor.ie ? '' : "<br />") + "</li><li>test2<br />line" + ($.sceditor.ie ? '' : "<br />") + "</li></ul>",
-			"List with non-closed [*]"
+			this.sb.signalToWysiwyg('[list][*]test\n[*]test2\nline\n[/list]'),
+			'<ul><li>test' + ($.sceditor.ie ? '' : '<br />') + '</li><li>test2<br />line' + ($.sceditor.ie ? '' : '<br />') + '</li></ul>',
+			'List with non-closed [*]'
 		);
 
 		equal(
-			this.sb.signalToWysiwyg("[code]test\nline\n[/code]"),
-			"<code>test<br />line<br />" + ($.sceditor.ie ? '' : "<br />") + "</code>",
-			"Code test"
+			this.sb.signalToWysiwyg('[code]test\nline\n[/code]'),
+			'<code>test<br />line<br />' + ($.sceditor.ie ? '' : '<br />') + '</code>',
+			'Code test'
 		);
 
 		equal(
-			this.sb.signalToWysiwyg("[quote]test\nline\n[/quote]"),
-			"<blockquote>test<br />line<br />" + ($.sceditor.ie ? '' : "<br />") + "</blockquote>",
-			"Quote test"
+			this.sb.signalToWysiwyg('[quote]test\nline\n[/quote]'),
+			'<blockquote>test<br />line<br />' + ($.sceditor.ie ? '' : '<br />') + '</blockquote>',
+			'Quote test'
 		);
 
 		equal(
-			this.sb.signalToWysiwyg("[quote][center]test[/center][/quote]"),
-			"<blockquote><div align=\"center\">test" + ($.sceditor.ie ? '' : "<br />") + "</div></blockquote>",
-			"Two block-level elements together"
+			this.sb.signalToWysiwyg('[quote][center]test[/center][/quote]'),
+			'<blockquote><div align="center">test' + ($.sceditor.ie ? '' : '<br />') + '</div></blockquote>',
+			'Two block-level elements together'
 		);
 	});
 
 
 
-	module("BBCode Plugin - BBCode attributes");
+	module('BBCode Plugin - BBCode attributes');
 
-	test("Auto quote", function() {
+	test('Auto quote', function() {
 		expect(4);
 
 		delete $.sceditorBBCodePlugin.bbcodes.quote.quoteType;
@@ -1369,10 +1418,10 @@
 
 		equal(
 			parser.toBBCode(
-				"[quote author=emanuele date=1353794172 link=topic=2.msg4#msg4]hi[/quote]"
+				'[quote author=emanuele date=1353794172 link=topic=2.msg4#msg4]hi[/quote]'
 			),
 			'[quote author=emanuele date=1353794172 link="topic=2.msg4#msg4"]hi[/quote]\n',
-			"Attribute with equals"
+			'Attribute with equals'
 		);
 
 		equal(
@@ -1380,15 +1429,15 @@
 				"[quote author='emanuele\\\'s']hi[/quote]"
 			),
 			'[quote author=emanuele\'s]hi[/quote]\n',
-			"Quoted attribute with escaped quote"
+			'Quoted attribute with escaped quote'
 		);
 
 		equal(
 			parser.toBBCode(
-				"[quote author=This is all the author date=12345679]hi[/quote]"
+				'[quote author=This is all the author date=12345679]hi[/quote]'
 			),
 			'[quote author="This is all the author" date=12345679]hi[/quote]\n',
-			"Attribute with spaces"
+			'Attribute with spaces'
 		);
 
 		equal(
@@ -1401,8 +1450,44 @@
 			'[quote quoted="anything that does not have an equals after it date=1353794172\' ' +
 			'link=anythingEvenEquals=as long as no space up to the equals" ' +
 			'author="anything that does not have an equals after it" date=1353794172 link="anythingEvenEquals=as long as no space up to the equals" test=la]asd[/quote]\n',
-			"Multi-Attribute test"
+			'Multi-Attribute test'
 		);
+	});
+
+	test('Auto quote', function() {
+		$.sceditor.plugins.bbcode.bbcode.set('test', {
+			format: function() {
+
+			}
+		});
+
+		var parser = new $.sceditor.BBCodeParser({ quoteType: $.sceditor.BBCodeParser.QuoteType.auto });
+
+		equal(
+			parser.toBBCode(
+				'[url=http://www.test.com/]tets[/url]'
+			),
+			'[url=http://www.test.com/]tets[/url]',
+			'Default attribute'
+		);
+
+		equal(
+			parser.toBBCode(
+				'[quote author="test"]test[/quote]'
+			),
+			'[quote author=test]test[/quote]\n',
+			'Non-default attribute'
+		);
+
+		equal(
+			parser.toBBCode(
+				'[test=testdefault nondefault=testnondefault]testing[/test]'
+			),
+			'[test=testdefault nondefault=testnondefault]testing[/test]',
+			'Mixed attribute'
+		);
+
+		$.sceditor.plugins.bbcode.bbcode.remove('test');
 	});
 
 	test("Never quote", function() {
@@ -1413,10 +1498,10 @@
 
 		equal(
 			parser.toBBCode(
-				"[quote author=emanuele date=1353794172 link=topic=2.msg4#msg4]hi[/quote]"
+				'[quote author=emanuele date=1353794172 link=topic=2.msg4#msg4]hi[/quote]'
 			),
 			'[quote author=emanuele date=1353794172 link=topic=2.msg4#msg4]hi[/quote]\n',
-			"Attribute with equals"
+			'Attribute with equals'
 		);
 
 		equal(
@@ -1424,29 +1509,29 @@
 				"[quote author='emanuele\\\'s']hi[/quote]"
 			),
 			'[quote author=emanuele\'s]hi[/quote]\n',
-			"Quoted attribute with escaped quote"
+			'Quoted attribute with escaped quote'
 		);
 
 		equal(
 			parser.toBBCode(
-				"[quote author=This is all the author date=12345679]hi[/quote]"
+				'[quote author=This is all the author date=12345679]hi[/quote]'
 			),
 			'[quote author=This is all the author date=12345679]hi[/quote]\n',
-			"Attribute with spaces"
+			'Attribute with spaces'
 		);
 
 		equal(
 			parser.toBBCode(
-				"[quote author=anything that does not have an equals after it date=1353794172 " +
-				"link=anythingEvenEquals=as long as no space up to the equals test=la]asd[/quote]"
+				'[quote author=anything that does not have an equals after it date=1353794172 ' +
+				'link=anythingEvenEquals=as long as no space up to the equals test=la]asd[/quote]'
 			),
 			'[quote author=anything that does not have an equals after it date=1353794172 ' +
 			'link=anythingEvenEquals=as long as no space up to the equals test=la]asd[/quote]\n',
-			"Multi-Attribute test"
+			'Multi-Attribute test'
 		);
 	});
 
-	test("Always quote", function() {
+	test('Always quote', function() {
 		expect(4);
 
 		delete $.sceditorBBCodePlugin.bbcodes.quote.quoteType;
@@ -1454,10 +1539,10 @@
 
 		equal(
 			parser.toBBCode(
-				"[quote author=emanuele date=1353794172 link=topic=2.msg4#msg4]hi[/quote]"
+				'[quote author=emanuele date=1353794172 link=topic=2.msg4#msg4]hi[/quote]'
 			),
 			'[quote author="emanuele" date="1353794172" link="topic=2.msg4#msg4"]hi[/quote]\n',
-			"Attribute with equals"
+			'Attribute with equals'
 		);
 
 		equal(
@@ -1465,15 +1550,15 @@
 				"[quote author='emanuele\\\'s']hi[/quote]"
 			),
 			'[quote author="emanuele\'s"]hi[/quote]\n',
-			"Quoted attribute with escaped quote"
+			'Quoted attribute with escaped quote'
 		);
 
 		equal(
 			parser.toBBCode(
-				"[quote author=This is all the author date=12345679]hi[/quote]"
+				'[quote author=This is all the author date=12345679]hi[/quote]'
 			),
 			'[quote author="This is all the author" date="12345679"]hi[/quote]\n',
-			"Attribute with spaces"
+			'Attribute with spaces'
 		);
 
 		equal(
@@ -1486,7 +1571,7 @@
 			'[quote quoted="anything that does not have an equals after it date=1353794172\' ' +
 			'link=anythingEvenEquals=as long as no space up to the equals" ' +
 			'author="anything that does not have an equals after it" date="1353794172" link="anythingEvenEquals=as long as no space up to the equals" test="la"]asd[/quote]\n',
-			"Multi-Attribute test"
+			'Multi-Attribute test'
 		);
 	});
 

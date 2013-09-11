@@ -115,6 +115,33 @@
 		);
 	});
 
+	test('Textarea required', function() {
+		expect(3);
+
+		this.sceditor.destroy();
+
+		ok(
+			!$('#qunit-fixture textarea:first').attr('required'),
+			'Required not added'
+		);
+
+		var $textarea = $('<textarea required="required" id="#required-test"></textarea>');
+		$('#qunit-fixture textarea:first').append($textarea);
+
+		$textarea.sceditor();
+		this.sceditor = $textarea.sceditor('instance');
+		ok(
+			!$textarea.attr('required'),
+			'Required removed'
+		);
+
+		this.sceditor.destroy();
+		ok(
+			$textarea.attr('required'),
+			'Required preserved'
+		);
+	});
+
 
 	module('SCEditor - Commands', {
 		setup: function() {
