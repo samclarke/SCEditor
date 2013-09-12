@@ -11,7 +11,9 @@ Version 1.4.5:
 		- Thanks to @liamdawe for reporting.
 	Fixed issue with insert() and FF.
 		- Thanks to @martec for reporting.
-	Fixed in IE8 and below with XHTML font size attribute converstion
+	Fixed in IE8 and below with XHTML font size attribute converstion.
+	Fixed typo in German translation.
+		- Thanks to Ulf for reporting.
 
 Version 1.4.4:
 	Fixed height auto expanding when resized.

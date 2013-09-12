@@ -15,7 +15,7 @@
 		"Font Name": "Schriftname",
 		"Font Size": "Schriftgröße",
 		"Font Color": "Schriftfarbe",
-		"Remove Formatting": "Formattierung entfernen",
+		"Remove Formatting": "Formatierung entfernen",
 		"Cut": "Ausschneiden",
 		"Your browser does not allow the cut command. Please use the keyboard shortcut Ctrl/Cmd-X": "... Ctrl / Cmd-X",
 		"Copy": "Kopieren",
