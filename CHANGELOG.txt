@@ -14,6 +14,7 @@ Version 1.4.5:
 	Fixed in IE8 and below with XHTML font size attribute converstion.
 	Fixed typo in German translation.
 		- Thanks to Ulf for reporting.
+	Removed build.sh as grunt now does everything build.sh could.
 
 Version 1.4.4:
 	Fixed height auto expanding when resized.
