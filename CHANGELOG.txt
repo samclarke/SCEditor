@@ -11,10 +11,6 @@ Version 1.4.5:
 		- Thanks to @liamdawe for reporting.
 	Fixed issue with insert() and FF.
 		- Thanks to @martec for reporting.
-	Improved the base CSS greatly so both width & height can be set via adding
-		a CSS rule.
-	Deprecated updateStyleCache() method. No longer needed with new
-		styling.
 	Fixed in IE8 and below with XHTML font size attribute converstion
 
 Version 1.4.4:
