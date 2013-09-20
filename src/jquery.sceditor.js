@@ -1307,7 +1307,7 @@
 				.css(dropDownCss)
 				.append(content)
 				.appendTo($('body'))
-				.click(function (e) {
+				.on('click focusin', function (e) {
 					// stop clicks within the dropdown from being handled
 					e.stopPropagation();
 				});
