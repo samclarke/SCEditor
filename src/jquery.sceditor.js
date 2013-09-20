@@ -3160,7 +3160,7 @@
 		 * @private
 		 */
 		triggerValueChanged = function(saveRange) {
-			if (!pluginManager.hasHandler('valueChangedEvent') && !triggerValueChanged.hasHandler)
+			if (!pluginManager.hasHandler('valuechangedEvent') && !triggerValueChanged.hasHandler)
 				return;
 
 			var	sourceMode   = base.sourceMode(),
