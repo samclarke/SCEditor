@@ -1338,7 +1338,7 @@
 		);
 
 		equal(
-			this.sb.signalToSource('', '<b><span><span><img src="test.png" /><span><span></b>'.toJquery()),
+			this.sb.signalToSource('', '<b><span><span><img src="test.png" /><span><span></b>'.toJquery()).ieURLFix(),
 			'[b][img]test.png[/img][/b]',
 			'Bold tag with nested content'
 		);

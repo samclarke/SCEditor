@@ -221,7 +221,7 @@
 					else
 						attrValue = attr.value;
 
-					output(" " + attr.name.toLowerCase() + '="' + escapeEntites(attrValue) + '"', false);
+					output(' ' + attr.name.toLowerCase() + '="' + escapeEntites(attrValue) + '"', false);
 				}
 			}
 			output(selfClosing ? ' />' : '>', false);
@@ -765,7 +765,10 @@
 				}
 			},
 			conv: function(node, $node) {
-				$node.removeAttr('value');
+				if ($.sceditor.ie < 8)
+					node.removeAttribute('value');
+				else
+					$node.removeAttr('value');
 			}
 		},
 		{
