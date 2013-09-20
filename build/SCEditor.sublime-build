@@ -1,8 +1,8 @@
 {
-	"cmd": ["./build/build.sh --js"],
+	"cmd": ["grunt build"],
 	"working_dir": "${project_path:${folder}}",
 	"shell": true,
-	"variants": [
+/*	"variants": [
 		{
 			"cmd": ["./build/build.sh --js --css"],
 			"name": "Build with CSS"
@@ -15,5 +15,5 @@
 			"cmd": ["./build/build.sh --js --css --docs"],
 			"name": "Build with CSS and Docs"
 		}
-	]
+	]*/
 }

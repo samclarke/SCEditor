@@ -82,7 +82,7 @@
 		$.sceditor.plugins.xhtml.allowedTags = ['strong', 'a'];
 
 		equal(
-			this.plugin.signalToSource('', '<div><strong>test</strong><a href="#">test link</a></div>'.toJquery()).ignoreSpace(),
+			this.plugin.signalToSource('', '<div><strong>test</strong><a href="#">test link</a></div>'.toJquery()).ignoreSpace().ieURLFix(),
 			'<strong>test</strong><a href="#">test link</a>'.ignoreSpace(),
 			'Allowed tags in disallowed tag'
 		);
@@ -127,7 +127,7 @@
 		$.sceditor.plugins.xhtml.disallowedTags = ['div'];
 
 		equal(
-			this.plugin.signalToSource('', '<div><strong>test</strong><a href="#">test link</a></div>'.toJquery()).ignoreSpace(),
+			this.plugin.signalToSource('', '<div><strong>test</strong><a href="#">test link</a></div>'.toJquery()).ignoreSpace().ieURLFix(),
 			'<strong>test</strong><a href="#">test link</a>'.ignoreSpace(),
 			'Allowed tags in disallowed tag'
 		);
@@ -202,7 +202,7 @@
 		);
 
 		equal(
-			this.plugin.signalToSource('', '<a href="#">test</a><div href="#">test</div>'.toJquery()).ignoreSpace(),
+			this.plugin.signalToSource('', '<a href="#">test</a><div href="#">test</div>'.toJquery()).ignoreSpace().ieURLFix(),
 			'<a href="#">test</a><div>test</div>'.ignoreSpace(),
 			'Allowed and disallowed attributes for specific tag'
 		);
@@ -253,7 +253,7 @@
 		);
 
 		equal(
-			this.plugin.signalToSource('', '<a href="#">test</a><div href="#">test</div>'.toJquery()).ignoreSpace(),
+			this.plugin.signalToSource('', '<a href="#">test</a><div href="#">test</div>'.toJquery()).ignoreSpace().ieURLFix(),
 			'<a href="#">test</a><div>test</div>'.ignoreSpace(),
 			'Allowed and disallowed attributes for specific tag'
 		);
@@ -335,9 +335,9 @@
 	test('Comment', function() {
 		expect(1);
 
-		equal(
-			this.plugin.signalToSource('', '<div><!-- test --></div>'.toJquery()).ignoreAll(),
-			'<div><!-- test --></div>'.ignoreAll()
+		var ret = this.plugin.signalToSource('', '<div><!-- test -->test</div>'.toJquery()).ignoreAll();
+		ok(
+			ret == '<div><!-- test -->test</div>'.ignoreAll() || ret == '<div>test</div>'.ignoreAll()
 		);
 	});
 
@@ -745,7 +745,7 @@
 
 		var ret = this.plugin.signalToSource('', '<input type="text" value="2" />'.toJquery()).ignoreAll();
 		ok(
-			/value="2"/.test(ret),
+			/value="2"/i.test(ret),
 			'input with value attribute'
 		);
 	});

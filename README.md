@@ -66,12 +66,13 @@ or via [Flattr](http://flattr.com/thing/400345/SCEditor)
 
 ## Credits
 
-**Nomicons: The Full Monty Emoticons by:**
-
+**Nomicons: The Full Monty Emoticons by:**  
 Oscar Gruno, aka Nominell v. 2.0 -> oscargruno@mac.com
 Andy Fedosjeenko, aka Nightwolf -> bobo@animevanguard.com
 
-**Icons by:**
-
+**Icons by:**  
 Mark James (http://www.famfamfam.com/lab/icons/silk/)
 Licensed under the [Creative Commons CC-BY license](http://creativecommons.org/licenses/by/3.0/).
+
+**Functional tests powered by:**  
+[Browserstack](http://www.browserstack.com/).

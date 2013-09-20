@@ -30,4 +30,17 @@
 	String.prototype.ignoreAll = function(str) {
 		return this.ignoreSpace().ignoreSemicolon().ignoreCase();
 	};
+
+	String.prototype.ieURLFix = function(str) {
+		if(!$.sceditor.ie || $.sceditor.ie > 7)
+			return this;
+
+		var urlParts = window.location.href.split('/');
+		urlParts.pop();
+
+		return this.replace(
+			new RegExp($.sceditor.regexEscape(urlParts.join('/')) + '/', 'g'),
+			''
+		);
+	};
 }());
