@@ -78,7 +78,7 @@
 	 * <p>If createHTML is passed it will use jQuery to create the HTML. The
 	 * same as doing: $(editor.tmpl("html", {params...}));</p>
 	 *
-	 * @param {string} templateName
+	 * @param {string} name
 	 * @param {Object} params
 	 * @param {Boolean} createHTML
 	 * @private
@@ -3163,13 +3163,15 @@
 			if (!pluginManager.hasHandler('valuechangedEvent') && !triggerValueChanged.hasHandler)
 				return;
 
-			var	sourceMode   = base.sourceMode(),
+			var	currentHtml,
+				sourceMode   = base.sourceMode(),
 				hasSelection = !sourceMode && rangeHelper.hasSelection();
 
+			// Don't need to save the range if sceditor-start-marker is present as the range is already saved
 			saveRange = saveRange !== false && !$wysiwygDoc[0].getElementById('sceditor-start-marker');
 
 			// Clear any current timeout as it's now been triggered
-			if(valueChangedKeyUp.timer)
+			if (valueChangedKeyUp.timer)
 			{
 				clearTimeout(valueChangedKeyUp.timer);
 				valueChangedKeyUp.timer = false;
@@ -3178,9 +3180,17 @@
 			if (hasSelection && saveRange)
 				rangeHelper.saveRange();
 
-			$editorContainer.trigger($.Event('valuechanged', {
-				rawValue: sourceMode ? base.val() : $wysiwygBody.html()
-			}));
+			currentHtml = $wysiwygBody.html();
+
+			// Only trigger if something has actually changed.
+			if (currentHtml === triggerValueChanged.lastHtmlValue)
+			{
+				triggerValueChanged.lastHtmlValue = currentHtml;
+
+				$editorContainer.trigger($.Event('valuechanged', {
+					rawValue: sourceMode ? base.val() : currentHtml
+				}));
+			}
 
 			if (hasSelection && saveRange)
 				rangeHelper.removeMarkers();
@@ -3214,8 +3224,8 @@
 			{
 				if(!lastWasSpace)
 					triggerValueChanged();
-
-				return;
+				else
+					valueChangedKeyUp.triggerNextChar = true;
 			}
 			// 8 = backspace
 			// 46 = del
@@ -3223,18 +3233,21 @@
 			{
 				if(!lastWasDelete)
 					triggerValueChanged();
-
-				return;
+				else
+					valueChangedKeyUp.triggerNextChar = true;
 			}
-			else if(lastWasSpace || lastWasDelete)
+			else if(valueChangedKeyUp.triggerNextChar)
+			{
 				triggerValueChanged();
+				valueChangedKeyUp.triggerNextChar = false;
+			}
 
 			// Clear the previous timeout and set a new one.
 			if(valueChangedKeyUp.timer)
 				clearTimeout(valueChangedKeyUp.timer);
 
 			// Trigger the event 1.5s after the last keypress if space
-			// isn't pressed. This should probably be lowered, need
+			// isn't pressed. This should probably be lowered, will need
 			// to look into what the slowest average Chars Per Min is.
 			valueChangedKeyUp.timer = setTimeout(function() {
 				triggerValueChanged();
