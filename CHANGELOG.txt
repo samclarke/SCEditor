@@ -17,6 +17,8 @@ Version 1.4.5:
 	Removed build.sh as grunt now does everything build.sh could.
 	Added Italian translation.
 		- Thanks to Tropico for translating.
+	Fixed bug when insert empty node.
+		- Thanks to @spuds for reporting.
 
 Version 1.4.4:
 	Fixed height auto expanding when resized.

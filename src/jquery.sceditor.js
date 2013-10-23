@@ -1471,37 +1471,40 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.wysiwygEditorInsertHtml = function (html, endHtml, overrideCodeBlocking) {
-			var	scrollTo, $marker,
-				marker = '<span id="sceditor-cursor">&nbsp;</span>';
+			var	scrollTo, $marker;
 
 			base.focus();
 
-// TODO: This code tag should be configurable and should maybe convert the HTML into text
-			// don't apply to code elements
+// TODO: This code tag should be configurable and should maybe convert the HTML into text instead
+			// Don't apply to code elements
 			if (!overrideCodeBlocking && ($(currentBlockNode).is('code') || $(currentBlockNode).parents('code').length !== 0))
 				return;
 
-			if (endHtml)
-				endHtml += marker;
-			else
-				html += marker;
-
+			// Insert the HTML and save the range so the editor can be scrolled to the end
+			// of the selection and also allow emoticons to be replaced without affecting
+			// the selection
 			rangeHelper.insertHTML(html, endHtml);
+			rangeHelper.saveRange();
 
-			// Scroll the editor to after the inserted HTML
-			$marker  = $wysiwygBody.find('#sceditor-cursor');
+			// Scroll the editor after the end of the selection
+			$marker  = $wysiwygBody.find('#sceditor-end-marker').show();
 			scrollTo = ($marker.offset().top + ($marker.outerHeight(true) * 2)) - $wysiwygEditor.height();
-			$marker.remove();
 
-// TODO: check if already in range and don't scroll if it is
+			$marker.hide();
+// TODO: check if position already contains the range and don't scroll if it does
+
 			$wysiwygDoc.scrollTop(scrollTo);
 			$wysiwygBody.scrollTop(scrollTo);
 
-			rangeHelper.saveRange();
+// TODO: Check if $marker parent contains a zero width space and if it does place it in an array so
+// it can be removed as soon as the user types something into the empty tag.
+
+			// Replace any emoticons and trigger the value changed event
 			replaceEmoticons($wysiwygBody[0]);
 			triggerValueChanged(false);
 			rangeHelper.restoreRange();
 
+			// Add a new line after the last block element so can't be trapped in it
 			appendNewLine();
 		};
 
@@ -4227,7 +4230,7 @@
 	 * @name jQuery.sceditor.rangeHelper
 	 */
 	$.sceditor.rangeHelper = function (w, d) {
-		var	_createMarker, _isOwner,
+		var	_createMarker, _isOwner, _prepareHTML,
 			doc          = d || w.contentDocument || w.document,
 			win          = w,
 			isW3C        = !!w.getSelection,
@@ -4255,11 +4258,11 @@
 			var	node, div,
 				range = base.selectedRange();
 
-			if(endHTML)
-				html += base.selectedHtml() + endHTML;
-
 			if(isW3C)
 			{
+				if(endHTML)
+					html += base.selectedHtml() + endHTML;
+
 				div           = doc.createElement('div');
 				node          = doc.createDocumentFragment();
 				div.innerHTML = html;
@@ -4274,8 +4277,73 @@
 				if(!range)
 					return false;
 
-				range.pasteHTML(html);
+				range.pasteHTML(_prepareHTML(html, endHTML, true));
 			}
+		};
+
+		/**
+		 * Prepares HTML to be inserted by adding a zero width space
+		 * if the last child is empty and adding the range start/end
+		 * markers to the last child.
+		 * @param  {Node|String} node
+		 * @param  {Node|String} endNode
+		 * @param  {Boolean} returnHtml
+		 * @return {Node|String}
+		 * @private
+		 */
+		_prepareHTML = function (node, endNode, returnHtml) {
+			var lastChild, $lastChild, toInsert,
+				div = doc.createElement('div');
+
+			if (typeof node === 'string')
+			{
+				if (endNode)
+					node += base.selectedHtml() + endNode;
+
+				div.innerHTML = node;
+			}
+			else
+			{
+				div.appendChild(node);
+
+				if (endNode)
+				{
+					div.appendChild(range.extractContents());
+					div.appendChild(endNode);
+				}
+			}
+
+			lastChild = div.lastChild;
+			if (!lastChild)
+				return;
+
+			// Clear any current markers
+			base.removeMarkers();
+
+			$lastChild = $(lastChild);
+
+			// 1 = Element
+			if (lastChild.nodeType === 1)
+			{
+				// IE < 8 and Webkit won't allow the cursor to be placed inside and empty
+				// tag, so add a zero width space to it.
+				if (!lastChild.lastChild)
+					$lastChild.append(doc.createTextNode('\u200B'));
+
+				// Append range markers to the child so can restore the range to it
+				$lastChild.append(_createMarker(endMarker)).append(_createMarker(startMarker));
+			}
+			else
+				$lastChild.after(_createMarker(startMarker)).after(_createMarker(endMarker));
+
+			if (returnHtml)
+				return div.innerHTML;
+
+			toInsert = doc.createDocumentFragment();
+			while(div.firstChild)
+				toInsert.appendChild(div.firstChild);
+
+			return toInsert;
 		};
 
 		/**
@@ -4295,27 +4363,12 @@
 		base.insertNode = function(node, endNode) {
 			if(isW3C)
 			{
-				var	selection, selectAfter,
-					toInsert = doc.createDocumentFragment(),
+				var	toInsert = _prepareHTML(node, endNode),
 					range    = base.selectedRange(),
 					parent   = range.commonAncestorContainer;
 
-				if(!range)
+				if (!toInsert)
 					return false;
-
-				toInsert.appendChild(node);
-
-				if(endNode)
-				{
-					toInsert.appendChild(range.extractContents());
-					toInsert.appendChild(endNode);
-				}
-
-				selectAfter = toInsert.lastChild;
-
-				// If the last child is undefined then there is nothing to insert so return
-				if(!selectAfter)
-					return;
 
 				range.deleteContents();
 
@@ -4327,9 +4380,7 @@
 				else
 					range.insertNode(toInsert);
 
-				selection = doc.createRange();
-				selection.setStartAfter(selectAfter);
-				base.selectRange(selection);
+				base.restoreRange();
 			}
 			else
 				base.insertHTML(node.outerHTML, endNode?endNode.outerHTML:null);
@@ -5137,11 +5188,16 @@
 						trimStart = sibling.nodeType === 3 ? /[\t\n\r ]$/.test(sibling.nodeValue) : !isInline(sibling);
 					}
 
+					// Strip leading whitespace
 					if(!isInline(node) || !previous || !isInline(previous) || trimStart)
 						nodeValue = nodeValue.replace(/^[\t\n\r ]+/, '');
 
+					// Strip trailing whitespace
 					if(!isInline(node) || !next || !isInline(next))
 						nodeValue = nodeValue.replace(/[\t\n\r ]+$/, '');
+
+					// Clear zero width spaces
+					nodeValue = nodeValue.replace(/\u200B/g, '');
 
 					// Remove empty text nodes
 					if(!nodeValue.length)
