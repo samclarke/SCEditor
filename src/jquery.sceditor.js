@@ -558,7 +558,6 @@
 				.keydown(handleKeyDown);
 
 			$wysiwygDoc
-				.keypress(handleKeyPress)
 				.mousedown(handleMouseDown)
 				.bind('blur', valueChangedBlur)
 				.bind($.sceditor.ie ? 'selectionchange' : 'focus blur contextmenu mouseup click', checkSelectionChanged)
@@ -1790,7 +1789,7 @@
 
 					start += html + end;
 				}
-
+// TODO: This filter should allow empty as it's inserting.
 				if(filter !== false && pluginManager.hasHandler('toWysiwyg'))
 					start = pluginManager.callOnlyFirst('toWysiwyg', start, true);
 
@@ -2327,6 +2326,10 @@
 		 */
 		handleKeyPress = function(e) {
 			var	$parentNode, i;
+
+			// FF bug: https://bugzilla.mozilla.org/show_bug.cgi?id=501496
+			if (e.originalEvent.defaultPrevented)
+				return;
 
 			base.closeDropDown();
 

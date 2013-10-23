@@ -19,6 +19,8 @@ Version 1.4.5:
 		- Thanks to Tropico for translating.
 	Fixed bug when insert empty node.
 		- Thanks to @spuds for reporting.
+	Fixed FF bug with dropdowns not opening via shortcuts.
+		- thanks to @echteinfachtv for reporting.
 
 Version 1.4.4:
 	Fixed height auto expanding when resized.
