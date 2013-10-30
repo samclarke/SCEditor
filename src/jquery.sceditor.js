@@ -1327,7 +1327,7 @@
 		 * @private
 		 */
 		handlePasteEvt = function(e) {
-			var	html, handlePaste,
+			var	html, handlePaste, scrollTop,
 				elm             = $wysiwygBody[0],
 				doc             = $wysiwygDoc[0],
 				checkCount      = 0,
@@ -1353,36 +1353,36 @@
 				}
 			}
 
-			while(elm.firstChild)
+			// Save the scroll position so can be restored when contents is restored
+			scrollTop = $wysiwygBody.scrollTop() || $wysiwygDoc.scrollTop();
+
+			while (elm.firstChild)
 				prePasteContent.appendChild(elm.firstChild);
 // try make pastearea contenteditable and redirect to that? Might work.
 // Check the tests if still exist, if not re-0create
 			handlePaste = function (elm, pastearea) {
-				if (elm.childNodes.length > 0)
+				if (elm.childNodes.length > 0 || checkCount > 25)
 				{
-					while(elm.firstChild)
+					while (elm.firstChild)
 						pastearea.appendChild(elm.firstChild);
 
-					while(prePasteContent.firstChild)
+					while (prePasteContent.firstChild)
 						elm.appendChild(prePasteContent.firstChild);
 
-					handlePasteData(elm, pastearea);
+					$wysiwygBody.scrollTop(scrollTop);
+					$wysiwygDoc.scrollTop(scrollTop);
+
+					if (pastearea.childNodes.length > 0)
+						handlePasteData(elm, pastearea);
+					else
+						rangeHelper.restoreRange();
 				}
 				else
 				{
 					// Allow max 25 checks before giving up.
 					// Needed in case an empty string is pasted or
 					// something goes wrong.
-					if (checkCount > 25)
-					{
-						while (prePasteContent.firstChild)
-							elm.appendChild(prePasteContent.firstChild);
-
-						rangeHelper.restoreRange();
-						return;
-					}
-
-					++checkCount;
+					checkCount++;
 					setTimeout(function () {
 						handlePaste(elm, pastearea);
 					}, 20);
@@ -1470,7 +1470,8 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.wysiwygEditorInsertHtml = function (html, endHtml, overrideCodeBlocking) {
-			var	scrollTo, $marker;
+			var	$marker, scrollTop, scrollTo,
+				editorHeight = $wysiwygEditor.height();
 
 			base.focus();
 
@@ -1480,30 +1481,29 @@
 				return;
 
 			// Insert the HTML and save the range so the editor can be scrolled to the end
-			// of the selection and also allow emoticons to be replaced without affecting
-			// the selection
+			// of the selection. Also allow emoticons to be replaced without affecting
+			// the cusrsor position
 			rangeHelper.insertHTML(html, endHtml);
 			rangeHelper.saveRange();
+			replaceEmoticons($wysiwygBody[0]);
 
 			// Scroll the editor after the end of the selection
-			$marker  = $wysiwygBody.find('#sceditor-end-marker').show();
-			scrollTo = ($marker.offset().top + ($marker.outerHeight(true) * 2)) - $wysiwygEditor.height();
-
+			$marker   = $wysiwygBody.find('#sceditor-end-marker').show();
+			scrollTop = $wysiwygBody.scrollTop() || $wysiwygDoc.scrollTop();
+			scrollTo  = ($.sceditor.dom.getOffset($marker[0]).top + ($marker.outerHeight(true) * 1.5)) - editorHeight;
 			$marker.hide();
-// TODO: check if position already contains the range and don't scroll if it does
 
-			$wysiwygDoc.scrollTop(scrollTo);
-			$wysiwygBody.scrollTop(scrollTo);
+			// Only scroll if marker isn't already visible
+			if (scrollTo > scrollTop || scrollTo + editorHeight < scrollTop)
+			{
+				$wysiwygBody.scrollTop(scrollTo);
+				$wysiwygDoc.scrollTop(scrollTo);
+			}
 
-// TODO: Check if $marker parent contains a zero width space and if it does place it in an array so
-// it can be removed as soon as the user types something into the empty tag.
-
-			// Replace any emoticons and trigger the value changed event
-			replaceEmoticons($wysiwygBody[0]);
 			triggerValueChanged(false);
 			rangeHelper.restoreRange();
 
-			// Add a new line after the last block element so can't be trapped in it
+			// Add a new line after the last block element so can always add text after it
 			appendNewLine();
 		};
 
@@ -5271,6 +5271,28 @@
 
 				return df;
 			}(commonAncestor));
+		},
+
+		/**
+		 * Gets the offset position of an element
+		 * @param  {HTMLElement} obj
+		 * @return {Object} An object with left and top properties
+		 */
+		getOffset: function(obj) {
+			var	pLeft = 0,
+				pTop = 0;
+
+			while (obj)
+			{
+				pLeft += obj.offsetLeft;
+				pTop  += obj.offsetTop;
+				obj   = obj.offsetParent;
+			}
+
+			return {
+				left: pLeft,
+				top: pTop
+			};
 		}
 	};
 

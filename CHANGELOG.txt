@@ -21,6 +21,7 @@ Version 1.4.5:
 		- Thanks to @spuds for reporting.
 	Fixed FF bug with dropdowns not opening via shortcuts.
 		- thanks to @echteinfachtv for reporting.
+	Improved inserting so only scrolls if the end of the inserted HTML isn't in view.
 
 Version 1.4.4:
 	Fixed height auto expanding when resized.
