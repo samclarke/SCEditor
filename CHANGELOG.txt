@@ -24,6 +24,8 @@ Version 1.4.5:
 	Improved inserting so only scrolls if the end of the inserted HTML isn't in view.
 	Added zh-TW translation.
 		- Thanks to @gan068 for translating.
+	Updated Polish translation.
+		- Thanks to @gnysek for updating.
 
 Version 1.4.4:
 	Fixed height auto expanding when resized.
