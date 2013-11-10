@@ -67,11 +67,23 @@ $.sceditor.plugins.undoOverrider = function() {
 	me.undo = function(e) {
 			// e.preventDefault();
 			var value = undo.pop();
-			if(editor.val() == value){
+			if(value &&
+				editor.rawValue() == value.value ||
+				value.value == editor.val()
+			){
 				value = undo.pop();
 			}
 			if(value){
-				redo.push(value);
+				console.log(editor.rawValue() + " \n\n " + value.value);
+				var currentValue = {
+					'caret': editor.sourceEditorCaret(),
+					'sourceMode': editor.sourceMode(),
+					'value': editor.rawValue()
+					}
+				redo.push(currentValue);
+				if(currentValue.value != value.value){
+					redo.push(value);
+				}
 				readjustEditor(value.caret, value.sourceMode, value.value);
 				ignoreNextValueChanged = true;
 				if(console){
@@ -84,7 +96,7 @@ $.sceditor.plugins.undoOverrider = function() {
 	me.redo = function(e) {
 		// e.preventDefault();
 		var value = redo.pop();
-		if(editor.val() == value){
+		if(value && editor.rawValue() == value.value){
 			value = undo.pop();
 		}
 		if(value){
@@ -102,6 +114,15 @@ $.sceditor.plugins.undoOverrider = function() {
 	me.signalReady = function () {
 		// Store the initial value as the last value
 		previousValue = editor.val();
+		
+		
+		var value = {
+			'caret': this.sourceEditorCaret(),
+			'sourceMode': this.sourceMode(),
+			'value': editor.rawValue()
+			}
+			
+		undo.push(value);
 	};
 	
 	/**
@@ -125,7 +146,6 @@ $.sceditor.plugins.undoOverrider = function() {
 		}else if(charChangedCount < 50 && !e.rawValue[e.rawValue.length - 1].match(/\s/g)){
 			return
 		}
-		console.log("undoready: " + e.rawValue);
 		redo.length = 0;
 		
 		var value = {
