@@ -20,7 +20,7 @@
 		"Center": "Do środka",
 		"Align right": "Do prawej",
 		"Justify": "Wyjustowanie",
-		"Font Name": "Krój czcionkę",
+		"Font Name": "Krój czcionki",
 		"Font Size": "Rozmiar czcionki",
 		"Font Color": "Kolor czcionki",
 		"Remove Formatting": "Usuń formatowanie",
