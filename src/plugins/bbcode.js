@@ -122,7 +122,7 @@
 					splitAtLength = 0,
 					childrenLen   = base.children.length;
 
-				if(typeof object !== 'number')
+				if(typeof splitAt !== 'number')
 					splitAt = $.inArray(splitAt, base.children);
 
 				if(splitAt < 0 || splitAt > childrenLen)
