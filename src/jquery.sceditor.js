@@ -4279,7 +4279,7 @@
 			marker.style.lineHeight = '0';
 			marker.style.display    = 'none';
 			marker.className        = 'sceditor-selection sceditor-ignore';
-			marker.innerHTML        = ' ';
+			marker.innerHTML        = '';
 
 			return marker;
 		};
