@@ -65,5 +65,5 @@
         "Right-to-Left":"右から左へ",
         "Maximize":"最大化",
         dateFormat: "year-month-day"
-    }
+    };
 })(jQuery);
