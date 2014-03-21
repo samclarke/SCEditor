@@ -5461,7 +5461,7 @@
 		 * @name exists
 		 * @memberOf jQuery.sceditor.PluginManager.prototype
 		 */
-		base.exsists = function(plugin) {
+		base.exists = function(plugin) {
 			if(plugin in $.sceditor.plugins)
 			{
 				plugin = $.sceditor.plugins[plugin];
@@ -5483,7 +5483,7 @@
 		base.isRegistered = function(plugin) {
 			var i = plugins.length;
 
-			if(!base.exsists(plugin))
+			if(!base.exists(plugin))
 				return false;
 
 			while(i--)
@@ -5502,7 +5502,7 @@
 		 * @memberOf jQuery.sceditor.PluginManager.prototype
 		 */
 		base.register = function(plugin) {
-			if(!base.exsists(plugin))
+			if(!base.exists(plugin))
 				return false;
 
 			plugin = new $.sceditor.plugins[plugin]();
