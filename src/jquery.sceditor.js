@@ -5681,7 +5681,7 @@
 		 * The locale to use.
 		 * @type {String}
 		 */
-		locale: 'en',
+		locale: $('html').attr('lang') || 'en',
 
 		/**
 		 * The Charset to use
