@@ -29,6 +29,7 @@
 - [ ] Update dropdown to be able to work from an object to generate HTML instead of requiring HTML
 - [ ] Spell checker plugin
 - [ ] Possibly create a page which helps create custom commands and BBCodes
+- [ ] Consider moving code into modules e.g. AMD modules to make it a bit easier to edit.
 
 
 ## Spell checker plugin ideas
