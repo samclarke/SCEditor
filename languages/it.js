@@ -1,5 +1,6 @@
 /**
  * @author <Tropico> <www.mangiaconsapevole.com>
+ * @author Gianluca Guazzo
  * @license [MIT](http://www.opensource.org/licenses/mit-license.php)
  */
 (function ($) {
