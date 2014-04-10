@@ -98,7 +98,7 @@ module.exports = function(grunt) {
 			build: {
 				options: {
 					paths: ["src/themes/"],
-					yuicompress: true
+					cleancss: true
 				},
 				files: [
 					{expand: true, filter: 'isFile', cwd: 'src/themes/', src: ['*'], dest: 'minified/themes/', ext: '.min.css'}
