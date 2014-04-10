@@ -423,6 +423,7 @@
 			{
 				next = toks[0];
 
+				/* jshint indent:false */
 				switch(token.type)
 				{
 					case tokenType.open:
@@ -1214,7 +1215,6 @@
 			handleStyles,
 			handleTags,
 			formatString,
-			getStyle,
 			mergeSourceModeCommands,
 			removeFirstLastDiv;
 
@@ -1247,13 +1247,6 @@
 			tr: ['td', 'th'],
 			code: ['br', 'p', 'div']
 		};
-
-		/**
-		 * Cache of CamelCase versions of CSS properties
-		 * @type {Object}
-		 */
-		var propertyCache = {};
-
 
 		/**
 		 * Initializer
@@ -1426,50 +1419,14 @@
 		};
 
 		/**
-		 * Gets the value of a style property on the passed element
-		 * @private
-		 */
-		getStyle = function(element, property) {
-			var	$elm, ret, dir, textAlign, name,
-				style = element.style;
-
-			if(!style)
-				return null;
-
-			if(!propertyCache[property])
-				propertyCache[property] = $.camelCase(property);
-
-			name = propertyCache[property];
-
-			// add exception for align
-			if('text-align' === property)
-			{
-				$elm      = $(element);
-				dir       = style.direction;
-				textAlign = style[name] || $elm.css(property);
-
-				if($elm.parent().css(property) !== textAlign &&
-					$elm.css('display') === 'block' && !$elm.is('hr') && !$elm.is('th'))
-					ret = textAlign;
-
-				// IE changes text-align to the same as the current direction so skip unless overridden by user
-				if(dir && ret && ((/right/i.test(ret) && dir === 'rtl') || (/left/i.test(ret) && dir === 'ltr')))
-					return null;
-
-				return ret;
-			}
-
-			return style[name];
-		};
-
-		/**
 		 * Checks if any bbcode styles match the elements styles
 		 *
 		 * @return string Content with any matching bbcode tags wrapped around it.
 		 * @private
 		 */
 		handleStyles = function($element, content, blockLevel) {
-			var	elementPropVal;
+			var	styleValue, format,
+				getStyle = $.sceditor.dom.getStyle;
 
 			// convert blockLevel to boolean
 			blockLevel = !!blockLevel;
@@ -1478,20 +1435,22 @@
 				return content;
 
 			$.each(stylesToBbcodes[blockLevel], function(property, bbcodes) {
-				elementPropVal = getStyle($element[0], property);
+				styleValue = getStyle($element[0], property);
 
 				// if the parent has the same style use that instead of this one
 				// so you don't end up with [i]parent[i]child[/i][/i]
-				if(!elementPropVal || getStyle($element.parent()[0], property) === elementPropVal)
+				if(!styleValue || getStyle($element.parent()[0], property) === styleValue)
 					return;
 
 				$.each(bbcodes, function(bbcode, values) {
-					if(!values || $.inArray(elementPropVal.toString(), values) > -1)
+					if(!values || $.inArray(styleValue.toString(), values) > -1)
 					{
-						if($.isFunction(base.bbcodes[bbcode].format))
-							content = base.bbcodes[bbcode].format.call(base, $element, content);
+						format = base.bbcodes[bbcode].format;
+
+						if($.isFunction(format))
+							content = format.call(base, $element, content);
 						else
-							content = formatString(base.bbcodes[bbcode].format, content);
+							content = formatString(format, content);
 					}
 				});
 			});
@@ -1509,7 +1468,7 @@
 		 * @private
 		 */
 		handleTags = function($element, content, blockLevel) {
-			var	convertBBCode,
+			var	convertBBCode, format,
 				element = $element[0],
 				tag     = element.nodeName.toLowerCase();
 
@@ -1541,10 +1500,12 @@
 							return;
 					}
 
-					if($.isFunction(base.bbcodes[bbcode].format))
-						content = base.bbcodes[bbcode].format.call(base, $element, content);
+					format = base.bbcodes[bbcode].format;
+
+					if($.isFunction(format))
+						content = format.call(base, $element, content);
 					else
-						content = formatString(base.bbcodes[bbcode].format, content);
+						content = formatString(format, content);
 				});
 			}
 
@@ -1702,7 +1663,7 @@
 					{
 // TODO:This should check for CSS white-space, should pass it in the function to reduce css lookups which are SLOW!
 						if($node.parents('code').length === 0)
-							ret += node.wholeText.replace(/ +/g, " ");
+							ret += node.wholeText.replace(/ +/g, ' ');
 						else
 							ret += node.wholeText;
 					}
@@ -1866,7 +1827,7 @@
 			styles: {
 				'font-style': ['italic', 'oblique']
 			},
-			format: "[i]{0}[/i]",
+			format: '[i]{0}[/i]',
 			html: '<em>{0}</em>'
 		},
 		// END_COMMAND
@@ -2153,7 +2114,7 @@
 
 				// only add width and height if one is specified
 				if((element.complete && (w || h)) || (w && h))
-					attribs = "=" + $element.width() + "x" + $element.height();
+					attribs = '=' + $element.width() + 'x' + $element.height();
 
 				return '[img' + attribs + ']' + $element.attr('src') + '[/img]';
 			},
@@ -2162,9 +2123,9 @@
 					attribs = '';
 
 				// handle [img width=340 height=240]url[/img]
-				if(typeof attrs.width !== "undefined")
+				if(typeof attrs.width !== 'undefined')
 					attribs += ' width="' + attrs.width + '"';
-				if(typeof attrs.height !== "undefined")
+				if(typeof attrs.height !== 'undefined')
 					attribs += ' height="' + attrs.height + '"';
 
 				// handle [img=340x240]url[/img]

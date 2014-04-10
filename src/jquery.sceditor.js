@@ -5293,6 +5293,66 @@
 				left: pLeft,
 				top: pTop
 			};
+		},
+
+		/**
+		 * Gets the value of a CSS property from the elements style attribute
+		 * @param  {HTMLElement} elm
+		 * @param  {String} property
+		 * @return {String}
+		 */
+		getStyle: function(elm, property) {
+			var	$elm, direction, propertyCache, styleValue,
+				elmStyle = elm.style;
+
+			if(!elmStyle)
+				return null;
+
+			if (!$.sceditor.dom._propertyCache)
+				$.sceditor.dom._propertyCache = {};
+
+			propertyCache = $.sceditor.dom._propertyCache;
+			if(!propertyCache[property])
+				propertyCache[property] = $.camelCase(property);
+
+			property = propertyCache[property];
+			styleValue = elmStyle[property];
+
+			// Add an exception for text-align
+			if('textAlign' === property)
+			{
+				$elm       = $(elm);
+				direction  = elmStyle.direction;
+				styleValue = styleValue || $elm.css(property);
+
+				if($elm.parent().css(property) === styleValue || $elm.css('display') !== 'block' || $elm.is('hr') || $elm.is('th'))
+					return null;
+
+				// IE changes text-align to the same as the current direction so skip unless overridden by user
+				if(direction && styleValue && ((/right/i.test(styleValue) && direction === 'rtl') || (/left/i.test(styleValue) && direction === 'ltr')))
+					return null;
+			}
+
+			return styleValue;
+		},
+
+		/**
+		 * Tests if an element has a style.
+		 *
+		 * If values are specified it will check that the styles value
+		 * matches one of the valuse
+		 * @param  {HTMLElement} elm
+		 * @param  {String} property
+		 * @param  {String|Array} values
+		 * @return {Boolean}
+		 */
+		hasStyle: function (elm, property, values) {
+			var styleValue = $.sceditor.dom.getStyle(elm, property);
+
+			if (!styleValue)
+				return (!values || styleValue === values || ($.isArray(values) && $.inArray(styleValue, values) > -1));
+
+			return false;
 		}
 	};
 
