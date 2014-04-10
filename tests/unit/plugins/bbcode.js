@@ -934,7 +934,7 @@
 	});
 
 	test('Image', function() {
-		expect(4);
+		expect(5);
 
 		equal(
 			this.sb.signalToWysiwyg('[img=10x10]http://test.com/test.png[/img]'),
@@ -959,10 +959,16 @@
 			'<div><img src="http://test.com/test.png" /></div>\n',
 			'No size'
 		);
+
+		equal(
+			this.sb.signalToWysiwyg('[img]http://test.com/test.png?test&&test[/img]').toLowerCase(),
+			'<div><img src="http://test.com/test.png?test&amp;&amp;test" /></div>\n',
+			'Ampersands in URL'
+		);
 	});
 
 	test('URL', function() {
-		expect(2);
+		expect(4);
 
 
 		equal(
@@ -975,6 +981,18 @@
 			this.sb.signalToWysiwyg('[url]http://test.com/[/url]').toLowerCase(),
 			'<div><a href="http://test.com/">http://test.com/</a></div>\n',
 			'Only URL'
+		);
+
+		equal(
+			this.sb.signalToWysiwyg('[url=http://test.com/?test&&test]test[/url]').toLowerCase(),
+			'<div><a href="http://test.com/?test&amp;&amp;test">test</a></div>\n',
+			'Ampersands in URL'
+		);
+
+		equal(
+			this.sb.signalToWysiwyg('[url]http://test.com/?test&&test[/url]').toLowerCase(),
+			'<div><a href="http://test.com/?test&amp;&amp;test">http://test.com/?test&amp;&amp;test</a></div>\n',
+			'Ampersands in URL'
 		);
 	});
 
@@ -1666,6 +1684,167 @@
 			this.sb.signalToSource('', '<div><br /><br /><strong>test</strong><br /><br /><br /></div>'.toJquery()),
 			'[b]test[/b]',
 			'Inline'
+		);
+	});
+
+
+	module('BBCode Plugin - Parser XSS', {
+		setup: function() {
+			this.parser = $.sceditor.BBCodeParser($.sceditor.defaultOptions.parserOptions);
+		}
+	});
+
+	test('Rename BBCode - img', function() {
+		expect(8);
+
+		equal(
+			this.parser.toHTML('[img]fake.png" onerror="alert(String.fromCharCode(88,83,83))[/img]').ignoreSpace(),
+			'<div><img src="fake.png&#34; onerror=&#34;alert(String.fromCharCode(88,83,83))"/></div>'.ignoreSpace(),
+			'Inject attribute'
+		);
+
+		ok(
+			!/src="javascript:/i.test(
+				this.parser.toHTML('[img]javascript:alert(String.fromCharCode(88,83,83))[/img]').ignoreSpace()
+			),
+			'JavaScript URL'
+		);
+
+		ok(
+			!/src="javascript:/i.test(
+				this.parser.toHTML('[img]JaVaScRiPt:alert(String.fromCharCode(88,83,83))[/img]').ignoreSpace()
+			),
+			'JavaScript URL casing'
+		);
+
+		ok(
+			!/src="jav/i.test(
+				this.parser.toHTML('[img]jav&#x0A;ascript:alert(String.fromCharCode(88,83,83))[/img]').ignoreSpace()
+			),
+			'JavaScript URL entities'
+		);
+
+		ok(
+			!/[img]onerror=j/i.test(
+				this.parser.toHTML('[img]http://foo.com/fake.png [img] onerror=javascript:alert(String.fromCharCode(88,83,83)) [/img] [/img]').ignoreSpace()
+			),
+			'Nested [img]'
+		);
+
+		equal(
+			this.parser.toHTML('[img=\'"2]uri[/img]').ignoreSpace(),
+			'<div><img width="&#39;&#34;2" height="&#39;&#34;2" src="uri"/></div>'.ignoreSpace(),
+			'Dimension attribute injection'
+		);
+
+		equal(
+			this.parser.toHTML('[img=\'"2x3]uri[/img]').ignoreSpace(),
+			'<div><img width="&#39;&#34;2" height="3" src="uri"/></div>'.ignoreSpace(),
+			'Width attribute injection'
+		);
+
+		equal(
+			this.parser.toHTML('[img=3x\'"2]uri[/img]').ignoreSpace(),
+			'<div><img width="3" height="&#39;&#34;2" src="uri"/></div>'.ignoreSpace(),
+			'Width attribute injection'
+		);
+	});
+
+	test('Rename BBCode - url', function() {
+		expect(7);
+
+		equal(
+			this.parser.toHTML('[url]fake.png" onmouseover="alert(String.fromCharCode(88,83,83))[/url]').ignoreSpace(),
+			'<div><a href="fake.png&#34; onmouseover=&#34;alert(String.fromCharCode(88,83,83))">fake.png&#34; onmouseover=&#34;alert(String.fromCharCode(88,83,83))</a></div>'.ignoreSpace(),
+			'Inject attribute'
+		);
+
+		ok(
+			!/href="javascript:/i.test(
+				this.parser.toHTML('[url]javascript:alert(String.fromCharCode(88,83,83))[/url]').ignoreSpace()
+			),
+			'JavaScript URL'
+		);
+
+		ok(
+			!/href="javascript:/i.test(
+				this.parser.toHTML('[url]JaVaScRiPt:alert(String.fromCharCode(88,83,83))[/url]').ignoreSpace()
+			),
+			'JavaScript URL casing'
+		);
+
+		ok(
+			!/href="jav/i.test(
+				this.parser.toHTML('[url]jav&#x0A;ascript:alert(String.fromCharCode(88,83,83))[/url]').ignoreSpace()
+			),
+			'JavaScript URL entities'
+		);
+
+		ok(
+			!/href="jav/i.test(
+				this.parser.toHTML('[url]jav	ascript:alert("XSS");[/url]').ignoreSpace()
+			),
+			'JavaScript URL entities'
+		);
+
+		equal(
+			this.parser.toHTML('[url]test@test.test<b>tet</b>[/url]').ignoreSpace(),
+			'<div><a href="test@test.test&lt;b&gt;tet&lt;/b&gt;">test@test.test&lt;b&gt;tet&lt;/b&gt;</a></div>'.ignoreSpace(),
+			'Inject HTML'
+		);
+
+		equal(
+			this.parser.toHTML('[url=&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#101;&#114;&#116;&#40;&#39;&#88;&#83;&#83;&#39;&#41;]XSS[/url]').ignoreSpace(),
+			'<div><a href="&amp;#106;&amp;#97;&amp;#118;&amp;#97;&amp;#115;&amp;#99;&amp;#114;&amp;#105;&amp;#112;&amp;#116;&amp;#58;&amp;#97;&amp;#108;&amp;#101;&amp;#114;&amp;#116;&amp;#40;&amp;#39;&amp;#88;&amp;#83;&amp;#83;&amp;#39;&amp;#41;">XSS</a></div>'.ignoreSpace(),
+			'Inject HTML'
+		);
+	});
+
+	test('Rename BBCode - email', function() {
+		expect(2);
+
+		equal(
+			this.parser.toHTML('[email]fake@fake.com" onmouseover="alert(String.fromCharCode(88,83,83))[/email]').ignoreSpace(),
+			'<div><a href="mailto:fake@fake.com&#34;onmouseover=&#34;alert(String.fromCharCode(88,83,83))">fake@fake.com&#34;onmouseover=&#34;alert(String.fromCharCode(88,83,83))</a></div>'.ignoreSpace(),
+			'Inject attribute'
+		);
+
+		equal(
+			this.parser.toHTML('[email]test@test.test<b>tet</b>[/email]').ignoreSpace(),
+			'<div><a href="mailto:test@test.test&lt;b&gt;tet&lt;/b&gt;">test@test.test&lt;b&gt;tet&lt;/b&gt;</a></div>'.ignoreSpace(),
+			'Inject HTML'
+		);
+	});
+
+	test('Rename BBCode - CSS injection', function() {
+		expect(2);
+
+		equal(
+			this.parser.toHTML('[color=#ff0000;xss:expression(alert(String.fromCharCode(88,83,83)))]XSS[/color]').ignoreSpace(),
+			'<div><font color="#ff0000;xss:expression(alert(String.fromCharCode(88,83,83)))">XSS</font></div>'.ignoreSpace(),
+			'Inject CSS expression'
+		);
+
+		equal(
+			this.parser.toHTML('[font=Impact, sans-serif;xss:expression(alert(String.fromCharCode(88,83,83)))]XSS[/font]').ignoreSpace(),
+			'<div><font face="Impact,sans-serif;xss:expression(alert(String.fromCharCode(88,83,83)))">XSS</font></div>'.ignoreSpace(),
+			'Inject CSS expression'
+		);
+	});
+
+	test('Rename BBCode - HTML injection', function() {
+		expect(2);
+
+		equal(
+			this.parser.toHTML('<script>alert("Hello");</script>').ignoreSpace(),
+			'<div>&lt;script&gt;alert(&#34;Hello&#34;);&lt;/script&gt;</div>'.ignoreSpace(),
+			'Inject HTML script'
+		);
+
+		equal(
+			this.parser.toHTML('[quote=test<b>test</b>test]test[/quote]').ignoreSpace(),
+			'<blockquote><cite>test&lt;b&gt;test&lt;/b&gt;test</cite>test<br/></blockquote>'.ignoreSpace(),
+			'Inject HTML script'
 		);
 	});
 })();

@@ -2446,13 +2446,14 @@
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base._ = function() {
-			var args = arguments;
+			var	undef,
+				args = arguments;
 
 			if(locale && locale[args[0]])
 				args[0] = locale[args[0]];
 
 			return args[0].replace(/\{(\d+)\}/g, function(str, p1) {
-				return typeof args[p1-0+1] !== 'undefined' ?
+				return args[p1-0+1] !== undef ?
 					args[p1-0+1] :
 					'{' + p1 + '}';
 			});
@@ -3389,22 +3390,70 @@
 	/**
 	 * Escapes all HTML entities in a string
 	 *
+	 * If quote is set to true, single and double quotes will also be escaped
+	 *
 	 * @param {String} str
+	 * @param {Boolean} [quote=false]
 	 * @return {String}
 	 * @name escapeEntities
 	 * @memberOf jQuery.sceditor
 	 * @since 1.4.1
 	 */
-	$.sceditor.escapeEntities = function(str) {
+	$.sceditor.escapeEntities = function(str, quote) {
 		if(!str)
 			return str;
 
-		return str.replace(/&/g, '&amp;')
+		str = str.replace(/&/g, '&amp;')
 			.replace(/</g, '&lt;')
 			.replace(/>/g, '&gt;')
 			.replace(/ {2}/g, ' &nbsp;')
 			.replace(/\r\n|\r/g, '\n')
 			.replace(/\n/g, '<br />');
+
+		if (quote)
+			str = str.replace(/"/g, '&#34;').replace(/'/g, '&#39;');
+
+		return str;
+	};
+
+	/**
+	 * Escape URI scheme.
+	 *
+	 * Appends the current URL to a url if it has a scheme that is not:
+	 *
+	 * http
+	 * https
+	 * sftp
+	 * ftp
+	 * mailto
+	 * spotify
+	 * skype
+	 * ssh
+	 * teamspeak
+	 * tel
+	 * //
+	 *
+	 * @param  {String} url
+	 * @return {String}
+	 * @name escapeUriScheme
+	 * @memberOf jQuery.sceditor
+	 * @since 1.4.5
+	 */
+	$.sceditor.escapeUriScheme = function(url) {
+		var	path,
+			validSchemes = /^(?:https?|s?ftp|mailto|spotify|skype|ssh|teamspeak|tel):|(?:\/\/)/i,
+			// If there is a : before a / then it has a scheme
+			hasScheme = /^[^\/]*:/i,
+			location = window.location;
+
+		// Has no scheme or a valid scheme
+		if ((!url || !hasScheme.test(url)) || validSchemes.test(url))
+			return url;
+
+		path = location.pathname.split('/');
+		path.pop();
+
+		return location.protocol + '://' + location.host + path.join('/') + '/' + url;
 	};
 
 	/**

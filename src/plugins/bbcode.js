@@ -23,6 +23,9 @@
 (function($, window, document) {
 	'use strict';
 
+	var escapeEntities = $.sceditor.escapeEntities;
+	var escapeUriScheme = $.sceditor.escapeUriScheme;
+
 	/**
 	 * SCEditor BBCode parser class
 	 *
@@ -874,10 +877,13 @@
 								content += '<br />';
 						}
 
-						if($.isFunction(bbcode.html))
-							html = bbcode.html.call(base, token, token.attrs, content);
+						if(!$.isFunction(bbcode.html))
+						{
+							token.attrs['0'] = content;
+							html = $.sceditor.plugins.bbcode.formatBBCodeString(bbcode.html, token.attrs);
+						}
 						else
-							html = $.sceditor.plugins.bbcode.formatString(bbcode.html, content);
+							html = bbcode.html.call(base, token, token.attrs, content);
 					}
 					else
 						html = token.val + content + (token.closing ? token.closing.val : '');
@@ -926,7 +932,7 @@
 				else // content
 				{
 					needsBlockWrap = isRoot;
-					html           = $.sceditor.escapeEntities(token.val);
+					html           = escapeEntities(token.val, true);
 				}
 
 				if(needsBlockWrap && !blockWrapOpen)
@@ -1760,11 +1766,48 @@
 	 * @since v1.4.0
 	 */
 	$.sceditor.plugins.bbcode.formatString = function() {
-		var args = arguments;
+		var	undef,
+			args = arguments;
+
 		return args[0].replace(/\{(\d+)\}/g, function(str, p1) {
-			return typeof args[p1-0+1] !== 'undefined' ?
+			return args[p1-0+1] !== undef ?
 				args[p1-0+1] :
 				'{' + p1 + '}';
+		});
+	};
+
+	/**
+	 * Formats a string replacing {name} with the values of
+	 * obj.name properties.
+	 *
+	 * If there is no property for the specified {name} then
+	 * it will be left intact.
+	 *
+	 * @param  {String} str
+	 * @param  {Object} obj
+	 * @return {String}
+	 * @since 1.4.5
+	 */
+	$.sceditor.plugins.bbcode.formatBBCodeString = function(str, obj) {
+		return str.replace(/\{(!?[^}]+)\}/g, function(match, group) {
+			var	undef,
+				escape = true;
+
+			if (group[0] === '!')
+			{
+				escape = false;
+				group = group.substring(1);
+			}
+
+			if (group[0] === '0')
+				escape = false;
+
+			if (obj[group] === undef)
+				return match;
+
+			return escape ?
+				escapeEntities(obj[group], true) :
+				obj[group];
 		});
 	};
 
@@ -1898,9 +1941,7 @@
 
 				return '[font=' + this.stripQuotes(font) + ']' + content + '[/font]';
 			},
-			html: function(token, attrs, content) {
-				return '<font face="' + attrs.defaultattr + '">' + content + '</font>';
-			}
+			html: '<font face="{defaultattr}">{0}</font>'
 		},
 		// END_COMMAND
 
@@ -1944,9 +1985,7 @@
 
 				return '[size=' + size + ']' + content + '[/size]';
 			},
-			html: function(token, attrs, content) {
-				return '<font size="' + attrs.defaultattr + '">' + content + '</font>';
-			}
+			html: '<font size="{defaultattr}">{!0}</font>'
 		},
 		// END_COMMAND
 
@@ -1971,7 +2010,9 @@
 				return '[color=' + normaliseColour(color) + ']' + content + '[/color]';
 			},
 			html: function(token, attrs, content) {
-				return '<font color="' + normaliseColour(attrs.defaultattr) + '">' + content + '</font>';
+				return '<font color="' +
+					escapeEntities(normaliseColour(attrs.defaultattr), true) +
+					'">' + content + '</font>';
 			}
 		},
 		// END_COMMAND
@@ -2068,8 +2109,8 @@
 					'data-sceditor-emoticon': null
 				}
 			},
-			format: function(element, content) {
-				return element.data('sceditor-emoticon') + content;
+			format: function($elm, content) {
+				return $elm.data('sceditor-emoticon') + content;
 			},
 			html: '{0}'
 		},
@@ -2096,6 +2137,7 @@
 					src: null
 				}
 			},
+			allowedChildren: ['#'],
 			quoteType: $.sceditor.BBCodeParser.QuoteType.never,
 			format: function($element, content) {
 				var	w, h,
@@ -2119,24 +2161,29 @@
 				return '[img' + attribs + ']' + $element.attr('src') + '[/img]';
 			},
 			html: function(token, attrs, content) {
-				var	parts,
+				var	undef, w, h, parts,
 					attribs = '';
 
 				// handle [img width=340 height=240]url[/img]
-				if(typeof attrs.width !== 'undefined')
-					attribs += ' width="' + attrs.width + '"';
-				if(typeof attrs.height !== 'undefined')
-					attribs += ' height="' + attrs.height + '"';
+				if(attrs.width !== undef)
+					w = attrs.width;
+				if(attrs.height !== undef)
+					h = attrs.height;
 
 				// handle [img=340x240]url[/img]
 				if(attrs.defaultattr) {
 					parts = attrs.defaultattr.split(/x/i);
 
-					attribs = ' width="' + parts[0] + '"' +
-						' height="' + (parts.length === 2 ? parts[1] : parts[0]) + '"';
+					w = parts[0];
+					h = (parts.length === 2 ? parts[1] : parts[0]);
 				}
 
-				return '<img' + attribs + ' src="' + content + '" />';
+				if (w !== undef)
+					attribs += ' width="' + escapeEntities(w, true) + '"';
+				if (h !== undef)
+					attribs += ' height="' + escapeEntities(h, true) + '"';
+
+				return '<img' + attribs + ' src="' + escapeUriScheme(content) + '" />';
 			}
 		},
 		// END_COMMAND
@@ -2157,10 +2204,12 @@
 				if(url.substr(0, 7) === 'mailto:')
 					return '[email="' + url.substr(7) + '"]' + content + '[/email]';
 
-				return '[url=' + decodeURI(url) + ']' + content + '[/url]';
+				return '[url=' + url + ']' + content + '[/url]';
 			},
 			html: function(token, attrs, content) {
-				return '<a href="' + encodeURI(attrs.defaultattr || content) + '">' + content + '</a>';
+				attrs.defaultattr = escapeEntities(attrs.defaultattr, true) || content;
+
+				return '<a href="' + escapeUriScheme(attrs.defaultattr) + '">' + content + '</a>';
 			}
 		},
 		// END_COMMAND
@@ -2169,7 +2218,7 @@
 		email: {
 			quoteType: $.sceditor.BBCodeParser.QuoteType.never,
 			html: function(token, attrs, content) {
-				return '<a href="mailto:' + (attrs.defaultattr || content) + '">' + content + '</a>';
+				return '<a href="mailto:' + (escapeEntities(attrs.defaultattr, true) || content) + '">' + content + '</a>';
 			}
 		},
 		// END_COMMAND
@@ -2203,7 +2252,7 @@
 			},
 			html: function(token, attrs, content) {
 				if(attrs.defaultattr)
-					content = '<cite>' + attrs.defaultattr + '</cite>' + content;
+					content = '<cite>' + escapeEntities(attrs.defaultattr) + '</cite>' + content;
 
 				return '<blockquote>' + content + '</blockquote>';
 			}

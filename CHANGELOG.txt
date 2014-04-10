@@ -26,6 +26,8 @@ Version 1.4.5:
 		- Thanks to @gan068 for translating.
 	Updated Polish translation.
 		- Thanks to @gnysek for updating.
+	Fix possible XSS if editing loading BBCode that someone else has written.
+		- Thanks to for Sergiu reporting.
 
 Version 1.4.4:
 	Fixed height auto expanding when resized.
