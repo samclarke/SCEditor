@@ -1957,7 +1957,7 @@
 			},
 			format: function(element, content) {
 				var	fontSize = element.attr('size'),
-					size     = 1;
+					size     = 2;
 
 				if(!fontSize)
 					fontSize = element.css('fontSize');
@@ -1967,8 +1967,8 @@
 					// convert size to an int
 					fontSize = fontSize.replace('px', '') - 0;
 
-					if(fontSize > 12)
-						size = 2;
+					if(fontSize > 6)
+						size = 1;
 					if(fontSize > 15)
 						size = 3;
 					if(fontSize > 17)
