@@ -1,33 +1,37 @@
 # Roadmap
 
-## 1.4.4
+## 1.4.6
 
-- [ ] Table editing plugin
+- [ ] Update code style so that it matches what most JavaScript code uses.
+- [ ] Add option to disable pasting, plain text pasting and allow a callback to filter the pasted HTML/text
+
+
+## 1.4.7
+
+- [ ] Add support for BBCodes with just their BBCode and HTML replacement. (possibly 1.4.7)
+- [ ] HTML5 drag-drop file upload plugin with callbacks to handle the upload and PHP/Node example
+
+
+## 1.4.8
+
 - [ ] Image resize plugin
-- [ ] Add support for BBCodes with just their BBCode and HTML replacement.
-- [ ] Add flash embedding command + BBCode
-- [ ] Add option to disable pasting, plain text pasting and allow a callback or show a message
+- [ ] Add flash embedding command + BBCode in a plugin
+
+
+## 1.4.9
+
 - [ ] Add context menu support
-
-
-## 1.4.5
-
-- [ ] Update dropdown to be able to work from an object to generate HTML instead of requiring HTML
-- [ ] Add option to only paste plain text
-- [ ] Add build page to website so only the commands and BBCodes needed are included
-- [ ] Add wget (or similar) support for build page so updating can be automated
-- [ ] Add localstorage/cookie support to build page to remember last options
-- [ ] Spell checker plugin?
-- [ ] HTML5 drag-drop file upload options with callbacks to handle the upload
+- [ ] Table editing plugin. Move table command into the plugin
 
 
 ## Future
-   * Possibly create a page which helps create custom commands and BBCodes
+
+- [ ] Update dropdown to be able to work from an object to generate HTML instead of requiring HTML
+- [ ] Spell checker plugin
+- [ ] Possibly create a page which helps create custom commands and BBCodes
 
 
-# Ideas for the future
-
-## Spell checker plugin
+## Spell checker plugin ideas
 
 It should:
 
@@ -40,7 +44,7 @@ It should:
    * Wrap the wrong words in a span with a class so it can have custom styling.
    * When the span is clicked/right clicked it should show a menu with suggestions, might want to preload them in case it's being done via AJAX.
    * Have an option to allow adding words so backends that support adding words can add them.
-   * Have an ingore word option which adds the word to the cache.
+   * Have an ignore word option which adds the word to the cache.
    * Have options to ignore capitalised words, split words with hyphens.
    * Have an option to set a custom word handler which is passed a string to extract the words from.
    * Have an option to replace all words spelled a certain way with the suggested word.
