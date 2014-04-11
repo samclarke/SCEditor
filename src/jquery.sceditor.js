@@ -570,8 +570,7 @@
 			$editorContainer
 				.bind('selectionchanged', checkNodeChanged)
 				.bind('selectionchanged', updateActiveButtons)
-				.bind('selectionchanged valuechanged', handleEvent)
-				.bind('nodechanged', handleEvent);
+				.bind('selectionchanged valuechanged nodechanged', handleEvent);
 		};
 
 		/**
@@ -3190,7 +3189,7 @@
 			currentHtml = $wysiwygBody.html();
 
 			// Only trigger if something has actually changed.
-			if (currentHtml === triggerValueChanged.lastHtmlValue)
+			if (currentHtml !== triggerValueChanged.lastHtmlValue)
 			{
 				triggerValueChanged.lastHtmlValue = currentHtml;
 
