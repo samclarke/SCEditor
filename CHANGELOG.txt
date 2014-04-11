@@ -32,6 +32,8 @@ Version 1.4.5:
 		- Thanks to @jetand for fixing.
 	Added Japanese translation.
 		- Thanks to @PyYoshi for translating.
+	Fixed bug with XHTML plugin stripping iframes.
+		- Thanks to @tim-se for reporting.
 
 Version 1.4.4:
 	Fixed height auto expanding when resized.

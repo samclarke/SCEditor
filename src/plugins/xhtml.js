@@ -226,7 +226,9 @@
 			}
 			output(selfClosing ? ' />' : '>', false);
 
-			child = node.firstChild;
+			if (tagName !== 'iframe')
+				child = node.firstChild;
+
 			while(child)
 			{
 				currentIndent++;
@@ -613,8 +615,8 @@
 		removetags = function(node) {
 			$.sceditor.dom.traverse(node, function(node) {
 				var	remove,
-					empty          = isEmpty(node),
 					tagName        = node.nodeName.toLowerCase(),
+					empty          = tagName !== 'iframe' && isEmpty(node),
 					parentNode     = node.parentNode,
 					nodeType       = node.nodeType,
 					allowedtags    = $.sceditor.plugins.xhtml.allowedTags,
