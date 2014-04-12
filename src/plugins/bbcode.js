@@ -1973,7 +1973,7 @@
 					// convert size to an int
 					fontSize = fontSize.replace('px', '') - 0;
 
-					if(fontSize > 6)
+					if(fontSize < 12)
 						size = 1;
 					if(fontSize > 15)
 						size = 3;
