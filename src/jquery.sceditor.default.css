@@ -29,25 +29,6 @@ ul, ol {
 	padding-bottom: 0;
 }
 
-/* Ordered lists improvement. Make them appear as:
-1.
-1.1
-1.1.1
-1.2
-1.2.1
-etc...
-*/
-
-ol {
-  counter-reset: section;
-  list-style-type: none;
-}
-
-ol > li:before {
-  counter-increment: section;
-  content: counters(section, ".") " ";
-}
-
 table, td {
 	border: 1px dotted #000;
 	empty-cells: show;
