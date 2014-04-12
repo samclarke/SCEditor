@@ -4381,8 +4381,7 @@
 
 			$lastChild = $(lastChild);
 
-			// 1 = Element
-			if (lastChild.nodeType === 1)
+			if ($.sceditor.dom.canHaveChildren(lastChild))
 			{
 				// IE < 8 and Webkit won't allow the cursor to be placed inside and empty
 				// tag, so add a zero width space to it.
@@ -5094,6 +5093,23 @@
 		 * @type {string}
 		 */
 		blockLevelList: '|body|hr|p|div|h1|h2|h3|h4|h5|h6|address|pre|form|table|tbody|thead|tfoot|th|tr|td|li|ol|ul|blockquote|center|',
+
+		/**
+		 * List of elements that do not allow children separated by bars (|)
+		 *
+		 * @param {Node} node
+		 * @return {bool}
+		 * @since  1.4.5
+		 */
+		canHaveChildren: function (node) {
+			// 1  = Element
+			// 9  = Docuemnt
+			// 11 = Document Fragment
+			if (!/11?|9/.test(node.nodeType))
+				return false;
+
+			return 'hr,br,img,input,meta,link,'.indexOf(node.nodeName.toLowerCase() + ',') < 0;
+		},
 
 		/**
 		 * Checks if an element is inline
