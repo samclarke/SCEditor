@@ -105,6 +105,12 @@
 	 * @name jQuery.sceditor
 	 */
 	$.sceditor = function (el, options) {
+		var IE_VER = $.sceditor.ie;
+
+		// In IE < 11 a BR at the end of a block level element
+		// causes a double line break.
+		var IE_BR_FIX = IE_VER && IE_VER < 11;
+
 		/**
 		 * Alias of this
 		 * @private
@@ -365,8 +371,8 @@
 
 			// Add IE version to the container to allow IE specific CSS
 			// fixes without using CSS hacks or conditional comments
-			if($.sceditor.ie)
-				$editorContainer.addClass('ie ie' + $.sceditor.ie);
+			if(IE_VER)
+				$editorContainer.addClass('ie ie' + IE_VER);
 
 			isRequired = !!$original.attr('required');
 			$original.removeAttr('required');
@@ -474,16 +480,16 @@
 
 			// Add IE version class to the HTML element so can apply
 			// conditional styling without CSS hacks
-			if($.sceditor.ie)
-				$wysiwygDoc.find('html').addClass('ie ie' + $.sceditor.ie);
+			if(IE_VER)
+				$wysiwygDoc.find('html').addClass('ie ie' + IE_VER);
 
 			// iframe overflow fix for iOS, also fixes an IE issue with the
 			// editor not getting focus when clicking inside
-			if($.sceditor.ios || $.sceditor.ie)
+			if($.sceditor.ios || IE_VER)
 			{
 				$wysiwygBody.height('100%');
 
-				if(!$.sceditor.ie)
+				if(!IE_VER)
 					$wysiwygBody.bind('touchend', base.focus);
 			}
 
@@ -545,7 +551,7 @@
 				.bind('blur', valueChangedBlur)
 				.keyup(valueChangedKeyUp)
 				.bind('paste', handlePasteEvt)
-				.bind($.sceditor.ie ? 'selectionchange' : 'keyup focus blur contextmenu mouseup touchend click', checkSelectionChanged)
+				.bind(IE_VER ? 'selectionchange' : 'keyup focus blur contextmenu mouseup touchend click', checkSelectionChanged)
 				.bind('keydown keyup keypress focus blur contextmenu', handleEvent);
 
 			if(options.emoticonsCompat && window.getSelection)
@@ -560,7 +566,7 @@
 			$wysiwygDoc
 				.mousedown(handleMouseDown)
 				.bind('blur', valueChangedBlur)
-				.bind($.sceditor.ie ? 'selectionchange' : 'focus blur contextmenu mouseup click', checkSelectionChanged)
+				.bind(IE_VER ? 'selectionchange' : 'focus blur contextmenu mouseup click', checkSelectionChanged)
 				.bind('beforedeactivate keyup', saveRange)
 				.keyup(appendNewLine)
 				.focus(function() {
@@ -704,7 +710,7 @@
 					base.dimensions(newWidth, newHeight);
 
 					// The resize cover will not fill the container in IE6 unless a height is specified.
-					if($.sceditor.ie < 7)
+					if(IE_VER < 7)
 						$editorContainer.height(newHeight);
 				}
 
@@ -745,7 +751,7 @@
 				$(document).bind('touchend mouseup', mouseUpFunc);
 
 				// The resize cover will not fill the container in IE6 unless a height is specified.
-				if($.sceditor.ie < 7)
+				if(IE_VER < 7)
 					$editorContainer.height(startHeight);
 
 				e.preventDefault();
@@ -1037,7 +1043,7 @@
 		base.dimensions = function(width, height, save) {
 			// IE6 & IE7 add 2 pixels to the source mode textarea height which must be ignored.
 			// Doesn't seem to be any way to fix it with only CSS
-			var ieBorderBox = $.sceditor.ie < 8 || document.documentMode < 8 ? 2 : 0;
+			var ieBorderBox = IE_VER < 8 || document.documentMode < 8 ? 2 : 0;
 
 			// set undefined width/height to boolean false
 			width  = (!width && width !== 0) ? false : width;
@@ -1178,7 +1184,7 @@
 			maximize = !!maximize;
 
 			// IE 6 fix
-			if($.sceditor.ie < 7)
+			if(IE_VER < 7)
 				$('html, body').toggleClass('sceditor-maximize', maximize);
 
 			$editorContainer.toggleClass('sceditor-maximize', maximize);
@@ -1916,7 +1922,7 @@
 		 */
 		base.setWysiwygEditorValue = function (value) {
 			if(!value)
-				value = '<p>' + ($.sceditor.ie ? '' : '<br />') + '</p>';
+				value = '<p>' + (IE_VER ? '' : '<br />') + '</p>';
 
 			$wysiwygBody[0].innerHTML = value;
 			replaceEmoticons($wysiwygBody[0]);
@@ -2146,7 +2152,7 @@
 		 */
 		saveRange = function () {
 			/* this is only needed for IE */
-			if($.sceditor.ie)
+			if(IE_VER)
 				lastRange = rangeHelper.selectedRange();
 		};
 
@@ -2208,7 +2214,7 @@
 
 			// In IE, this is only called on the selectionchanged event so no need to
 			// limit checking as it should always be valid to do.
-			if($.sceditor.ie)
+			if(IE_VER)
 				check();
 			else
 				setTimeout(check, 100);
@@ -2377,7 +2383,7 @@
 
 				// find the last non-empty text node or line break.
 				if((node.nodeType === 3 && !/^\s*$/.test(node.nodeValue)) || name === 'br' ||
-					($.sceditor.ie && !node.firstChild && !$.sceditor.dom.isInline(node, false)))
+					(IE_BR_FIX && !node.firstChild && !$.sceditor.dom.isInline(node, false)))
 				{
 					// this is the last text or br node, if its in a code or quote tag
 					// then add a newline to the end of the editor
@@ -2385,7 +2391,7 @@
 					{
 						div = $wysiwygBody[0].ownerDocument.createElement('div');
 						div.className = 'sceditor-nlf';
-						div.innerHTML = !$.sceditor.ie ? '<br />' : '';
+						div.innerHTML = !IE_BR_FIX ? '<br />' : '';
 						$wysiwygBody[0].appendChild(div);
 					}
 
@@ -3059,7 +3065,7 @@
 			var	node, offset, tmpRange, range, parent;
 
 			// 8 is the backspace key
-			if($.sceditor.ie || options.disableBlockRemove || e.which !== 8 || !(range = rangeHelper.selectedRange()))
+			if(IE_VER || options.disableBlockRemove || e.which !== 8 || !(range = rangeHelper.selectedRange()))
 				return;
 
 			if(!window.getSelection)
@@ -3814,6 +3820,7 @@
 					}, true);
 
 				content.find('.button').click(function (e) {
+					var IE_VER = $.sceditor.ie;
 					var	rows = content.find('#rows').val() - 0,
 						cols = content.find('#cols').val() - 0,
 						html = '<table>';
@@ -3825,7 +3832,7 @@
 						html += '<tr>';
 
 						for (var col=0; col < cols; col++)
-							html += '<td>' + ($.sceditor.ie ? '' : '<br />') + '</td>';
+							html += '<td>' + (IE_VER && IE_VER < 11 ? '' : '<br />') + '</td>';
 
 						html += '</tr>';
 					}
@@ -3989,6 +3996,7 @@
 		quote: {
 			forceNewLineAfter: ['blockquote'],
 			exec: function (caller, html, author) {
+				var IE_VER = $.sceditor.ie;
 				var	before = '<blockquote>',
 					end    = '</blockquote>';
 
@@ -4002,7 +4010,7 @@
 				}
 				// if not add a newline to the end of the inserted quote
 				else if(this.getRangeHelper().selectedHtml() === '')
-					end = $.sceditor.ie ? '' : '<br />' + end;
+					end = IE_VER && IE_VER < 11 ? '' : '<br />' + end;
 
 				this.wysiwygEditorInsertHtml(before, end);
 			},

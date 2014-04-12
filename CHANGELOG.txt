@@ -34,6 +34,7 @@ Version 1.4.5:
 		- Thanks to @PyYoshi for translating.
 	Fixed bug with XHTML plugin stripping iframes.
 		- Thanks to @tim-se for reporting.
+	Fixed bug with IE11 newline handling.
 
 Version 1.4.4:
 	Fixed height auto expanding when resized.

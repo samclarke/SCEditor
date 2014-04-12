@@ -26,6 +26,12 @@
 	var escapeEntities = $.sceditor.escapeEntities;
 	var escapeUriScheme = $.sceditor.escapeUriScheme;
 
+	var IE_VER = $.sceditor.ie;
+
+	// In IE < 11 a BR at the end of a block level element
+	// causes a double line break.
+	var IE_BR_FIX = IE_VER && IE_VER < 11;
+
 	/**
 	 * SCEditor BBCode parser class
 	 *
@@ -873,7 +879,7 @@
 						{
 							// Add placeholder br to end of block level elements in all browsers apart from IE < 9 which
 							// handle new lines differently and doesn't need one.
-							if(!$.sceditor.ie)
+							if(!IE_BR_FIX)
 								content += '<br />';
 						}
 
@@ -910,12 +916,12 @@
 						// find one.
 						// Cannot do zoom: 1; or set a height on the div to fix it as that
 						// causes resize handles to be added to the div when it's clicked on/
-						if((document.documentMode && document.documentMode < 8) || $.sceditor.ie < 8)
+						if((document.documentMode && document.documentMode < 8) || IE_VER < 8)
 							ret.push('\u00a0');
 					}
 
 					// Putting BR in a div in IE causes it to do a double line break.
-					if(!$.sceditor.ie)
+					if(!IE_BR_FIX)
 						ret.push('<br />');
 
 					// Normally the div acts as a line-break with by moving whatever comes
@@ -1534,7 +1540,7 @@
 				//	The last block level as the last block level is collapsed.
 				//	Is an li element.
 				//	Is IE and the tag is BR. IE never collapses BR's
-				if(parentIsInline || parentLastChild !== element || tag === 'li' || (tag === 'br' && $.sceditor.ie))
+				if(parentIsInline || parentLastChild !== element || tag === 'li' || (tag === 'br' && IE_BR_FIX))
 					content += '\n';
 
 				// Check for <div>text<div>This needs a newline prepended</div></div>
@@ -1635,7 +1641,7 @@
 						// skip empty nlf elements (new lines automatically added after block level elements like quotes)
 						if($node.hasClass('sceditor-nlf'))
 						{
-							if(!firstChild || (!$.sceditor.ie && node.childNodes.length === 1 && /br/i.test(firstChild.nodeName)))
+							if(!firstChild || (!IE_BR_FIX && node.childNodes.length === 1 && /br/i.test(firstChild.nodeName)))
 							{
 								return;
 							}
@@ -1714,7 +1720,7 @@
 				if($.sceditor.dom.hasStyling(node))
 					return;
 
-				if($.sceditor.ie || (node.childNodes.length !== 1 || !$(node.firstChild).is('br')))
+				if(IE_BR_FIX || (node.childNodes.length !== 1 || !$(node.firstChild).is('br')))
 				{
 					while((next = node.firstChild))
 						output.insertBefore(next, node);
