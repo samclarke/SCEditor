@@ -40,6 +40,24 @@ For a full list of options, see the [options documentation](http://www.sceditor.
 
 
 
+## Building and testing
+
+You will need [Grunt](http://gruntjs.com/) installed to run the build/tests. To install Grunt run:
+
+    npm install -g grunt-cli
+
+Next, to install the SCEditor dev dependencies run:
+
+    npm install
+
+That's it! You can now build and test SCEditor with the following commands:
+
+    grunt build # Minifies the JS and converts the LESS to CSS
+    grunt test # Runs the linter and unit tests
+    grunt dist # Creates the distributable ZIP file
+
+
+
 ## Contribute
 
 Any contributions and/or pull requests would be welcome.
