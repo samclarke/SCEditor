@@ -5108,7 +5108,7 @@
 			if (!/11?|9/.test(node.nodeType))
 				return false;
 
-			return 'hr,br,img,input,meta,link,'.indexOf(node.nodeName.toLowerCase() + ',') < 0;
+			return 'hr,br,img,input,meta,link,iframe,'.indexOf(node.nodeName.toLowerCase() + ',') < 0;
 		},
 
 		/**
