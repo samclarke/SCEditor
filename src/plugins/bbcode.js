@@ -1521,16 +1521,20 @@
 				});
 			}
 
-			if(blockLevel && (!$.sceditor.dom.isInline(element, true) || tag === 'br'))
+			var isInline = $.sceditor.dom.isInline;
+			if(blockLevel && (!isInline(element, true) || tag === 'br'))
 			{
 				var	parent		    = element.parentNode,
 					parentLastChild = parent.lastChild,
 					previousSibling = element.previousSibling,
-					parentIsInline	= $.sceditor.dom.isInline(parent, true);
+					parentIsInline	= isInline(parent, true);
 
-				// skips selection makers and other ignored items
-				while(previousSibling && $(previousSibling).hasClass('sceditor-ignore'))
+				// skips selection makers and other ignored items and empty inlines
+				while(previousSibling && ($(previousSibling).hasClass('sceditor-ignore') ||
+					(previousSibling.nodeType === 1 && isInline(previousSibling, true) && !previousSibling.firstChild)))
+				{
 					previousSibling = previousSibling.previousSibling;
+				}
 
 				while($(parentLastChild).hasClass('sceditor-ignore'))
 					parentLastChild = parentLastChild.previousSibling;
@@ -1544,7 +1548,7 @@
 					content += '\n';
 
 				// Check for <div>text<div>This needs a newline prepended</div></div>
-				if('br' !== tag && previousSibling && previousSibling.nodeName.toLowerCase() !== 'br' && $.sceditor.dom.isInline(previousSibling, true))
+				if('br' !== tag && previousSibling && previousSibling.nodeName.toLowerCase() !== 'br' && isInline(previousSibling, true))
 					content = '\n' + content;
 			}
 
