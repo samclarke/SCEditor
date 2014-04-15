@@ -670,10 +670,19 @@
 			mouseMoveFunc = function (e) {
 				// iOS must use window.event
 				if(e.type === 'touchmove')
+				{
 					e = window.event;
+					var newX = e.changedTouches[0].pageX;
+					var newY = e.changedTouches[0].pageY;
+				}
+				else
+				{
+					var newX = e.pageX;
+					var newY = e.pageY;
+				}
 
-				var	newHeight = startHeight + (e.pageY - startY),
-					newWidth  = rtl ? startWidth - (e.pageX - startX) : startWidth + (e.pageX - startX);
+				var	newHeight = startHeight + (newY - startY),
+					newWidth  = rtl ? startWidth - (newX - startX) : startWidth + (newX - startX);
 
 				if(maxWidth > 0 && newWidth > maxWidth)
 					newWidth = maxWidth;
@@ -708,7 +717,7 @@
 				$cover.hide();
 				$editorContainer.removeClass('resizing').height('auto');
 				$(document).unbind('touchmove mousemove', mouseMoveFunc);
-				$(document).unbind('touchend mouseup', mouseUpFunc);
+				$(document).unbind('touchcancel touchend mouseup', mouseUpFunc);
 
 				e.preventDefault();
 			};
@@ -719,10 +728,16 @@
 			$grip.bind('touchstart mousedown', function (e) {
 				// iOS must use window.event
 				if(e.type === 'touchstart')
+				{
 					e = window.event;
-
-				startX      = e.pageX;
-				startY      = e.pageY;
+					startX    = e.touches[0].pageX;
+					startY    = e.touches[0].pageY;
+				}
+				else 
+				{
+					startX    = e.pageX;
+					startY    = e.pageY;
+				}
 				startWidth  = $editorContainer.width();
 				startHeight = $editorContainer.height();
 				dragging    = true;
@@ -730,7 +745,7 @@
 				$editorContainer.addClass('resizing');
 				$cover.show();
 				$(document).bind('touchmove mousemove', mouseMoveFunc);
-				$(document).bind('touchend mouseup', mouseUpFunc);
+				$(document).bind('touchcancel touchend mouseup', mouseUpFunc);
 
 				// The resize cover will not fill the container in IE6 unless a height is specified.
 				if($.sceditor.ie < 7)
