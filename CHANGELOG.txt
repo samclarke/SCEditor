@@ -1,5 +1,6 @@
 Version 1.4.6:
-
+	Fixed resize issue with Android browsers.
+		- Thanks to @scripple for fixing.
 
 Version 1.4.5:
 	Added command shortcuts to tooltips.
