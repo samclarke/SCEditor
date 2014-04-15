@@ -3747,21 +3747,21 @@
 		// START_COMMAND: Indent
 		indent: {
 			state: function(parents, firstBlock) {
-
 				// Only works with lists, for now
 				// This is a nested list, so it will always work
 				var	range, startContainerParent, endContainerParent,
-					$firstBlock   = $(firstBlock),
-					listParentNum = $firstBlock.parents('ul,ol,menu').length;
+					$firstBlock = $(firstBlock),
+					parentLists = $firstBlock.parents('ul,ol,menu'),
+					parentList  = parentLists.first();
 
 				// in case it's a list with only a single <li>
-				if (listParentNum > 1 || (listParentNum > 0 && firstBlock.parentNode.children.length > 1))
+				if (parentLists.length > 1 || parentList.children().length > 1)
 					return 0;
 
 				if ($firstBlock.is('ul,ol,menu')) {
 					// if the whole list is selected, then this must be invalidated because the browser will place a <blockquote> there
 					range = this.getRangeHelper().selectedRange();
-					if (range instanceof Range) {
+					if (window.Range && range instanceof Range) {
 						startContainerParent = range.startContainer.parentNode;
 						endContainerParent   = range.endContainer.parentNode;
 
@@ -3774,7 +3774,7 @@
 					}
 					// it's IE... As it is impossible to know well when to accept, better safe than sorry
 					else
-						return $firstBlock.is('li') ? 0 : -1;
+						return $firstBlock.is('li,ul,ol,menu') ? 0 : -1;
 				}
 
 				return -1;
