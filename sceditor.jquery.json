@@ -2,7 +2,7 @@
 	"name": "sceditor",
 	"title": "SCEditor",
 	"description": "SCEditor is designed to be a lightweight HTML and BBCode WYSIWYG editor.",
-	"version": "1.4.5",
+	"version": "1.4.6",
 	"homepage": "http://www.sceditor.com/",
 	"author": {
 		"name": "Sam Clarke",
