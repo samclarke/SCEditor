@@ -3032,7 +3032,7 @@
 
 			$(block).attr('style', '');
 
-			if(!$(block).is('p,div'))
+			if(!$(block).is('p,div,td'))
 				$.sceditor.dom.convertElement(block, 'p');
 
 			rangeHelper.restoreRange();
