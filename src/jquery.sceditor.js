@@ -1734,6 +1734,19 @@
 		};
 
 		/**
+		 * Returns the same as the contents of the rawValue
+		 * in the event object
+		 *
+		 *
+		 * @since 1.4.5
+		 * @param {String} rawValue The current working text text.
+		 * @private
+		 */
+		base.rawValue = function () {
+			return base.sourceMode() ? base.val() : $wysiwygBody.html()
+		}
+
+		/**
 		 * <p>Inserts HTML/BBCode into the editor</p>
 		 *
 		 * <p>If end is supplied any selected text will be placed between
