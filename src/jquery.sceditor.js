@@ -32,7 +32,7 @@
 		html:		'<!DOCTYPE html>' +
 				'<html>' +
 					'<head>' +
-						'<style>.ie * {min-height: auto !important}</style>' +
+						'<style>.ie * {min-height: auto !important} .ie table td {height:15px}</style>' +
 						'<meta http-equiv="Content-Type" content="text/html;charset={charset}" />' +
 						'<link rel="stylesheet" type="text/css" href="{style}" />' +
 					'</head>' +
