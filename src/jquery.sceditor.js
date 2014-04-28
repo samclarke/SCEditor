@@ -3498,7 +3498,9 @@
 					}
 
 					html += '</table>';
-
+					if($.sceditor.ie) {
+						html += '<br />';
+					}
 					editor.wysiwygEditorInsertHtml(html);
 					editor.closeDropDown(true);
 					e.preventDefault();
