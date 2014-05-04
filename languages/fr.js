@@ -47,7 +47,8 @@
 		"Unlink": "Supprimer un Lien",
 		"More": "Plus",
 		"Insert an emoticon": "Insérer une Émoticône",
-		"Video URL:": "URL Vidéo",
+		"Video Type:": "Hébergeur de la vidéo"
+		"Video URL:": "Lien de la vidéo",
 		"Insert": "Insérer",
 		"Insert a YouTube video": "Insérer une Vidéo YouTube",
 		"Insert current date": "Insérer la date actuelle",
