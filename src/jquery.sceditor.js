@@ -32,7 +32,7 @@
 		html:		'<!DOCTYPE html>' +
 				'<html>' +
 					'<head>' +
-						'<style>.ie * {min-height: auto !important}</style>' +
+						'<style>.ie * {min-height: auto !important} .ie table td {height:15px}</style>' +
 						'<meta http-equiv="Content-Type" content="text/html;charset={charset}" />' +
 						'<link rel="stylesheet" type="text/css" href="{style}" />' +
 					'</head>' +
@@ -3169,7 +3169,7 @@
 
 			$(block).attr('style', '');
 
-			if(!$(block).is('p,div'))
+			if(!$(block).is('p,div,td'))
 				$.sceditor.dom.convertElement(block, 'p');
 
 			rangeHelper.restoreRange();
@@ -3855,7 +3855,9 @@
 					}
 
 					html += '</table>';
-
+					if($.sceditor.ie) {
+						html += '<br />';
+					}
 					editor.wysiwygEditorInsertHtml(html);
 					editor.closeDropDown(true);
 					e.preventDefault();
