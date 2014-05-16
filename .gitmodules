@@ -1,3 +1,0 @@
-[submodule "build/CodeView"]
-	path = build/CodeView
-	url = git://github.com/WouterBos/Codeview.git
