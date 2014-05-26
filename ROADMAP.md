@@ -2,21 +2,31 @@
 
 ## 1.4.6
 
-- [ ] Update code style so that it matches what most JavaScript code uses.
+- [x] Update code style so that it matches what most JavaScript code uses.
+- [ ] Add undo/redo plugin
+- [ ] Add WYSIWYG DOM ready event
 - [ ] Update DOM -> BBCode converter to convert directly to tokens used by the BBCode parser.
 - [ ] Add option to disable pasting, plain text pasting and allow a callback to filter the pasted HTML/text
+- [ ] Add bower support
 
 
 ## 1.4.7
 
-- [ ] Add support for BBCodes with just their BBCode and HTML replacement. (possibly 1.4.7)
+- [ ] Create version of the themes using the monocons icon font
+- [ ] Enable the themes text only commands as well as mixed text/icon
 - [ ] HTML5 drag-drop file upload plugin with callbacks to handle the upload and PHP/Node example
+- [ ] Add auto save drafts plugin.
+- [ ] Add helper methods to add/remove inline styling easily.
+- [ ] Add support for BBCodes with just their BBCode and HTML replacement.
 
 
 ## 1.4.8
 
 - [ ] Image resize plugin
 - [ ] Add flash embedding command + BBCode in a plugin
+- [ ] Add mobile friendly theme with larger touch area.
+      Should have an option to only show specific commands based on window size and/or hide commands in menus
+- [ ] Possibly add mobile plugin that gives the option to go fullscreen when focused and gives option to disable the editor completely.
 
 
 ## 1.4.9
@@ -29,8 +39,11 @@
 
 - [ ] Update dropdown to be able to work from an object to generate HTML instead of requiring HTML
 - [ ] Spell checker plugin
+- [ ] Markdown plugin
 - [ ] Possibly create a page which helps create custom commands and BBCodes
-- [ ] Consider moving code into modules e.g. AMD modules to make it a bit easier to edit.
+- [ ] Cleaner API
+- [ ] Make jQuery an optional dependency
+- [x] Consider moving code into modules e.g. AMD modules to make it a bit easier to edit.
 
 
 ## Spell checker plugin ideas

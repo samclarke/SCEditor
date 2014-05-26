@@ -1,6 +1,22 @@
 Version 1.4.6:
 	Fixed resize issue with Android browsers.
 		- Thanks to @scripple for fixing.
+	Refactored the code so that it's in modules.
+		The code is now much more readable and far easier to maintain and test.
+		This change is 100% backwards compatible with the minified version and
+		running the build will also create a backwards compatible non-minified
+		version.
+		The non-minified non-built code will require an AMD module loader to
+		load it.
+	Refactored all the unit tests for the new modules.
+	Added manual tests.
+	Fixed bug with RangeHelper.getOuterText() in IE < 9 when getting text after
+	Fixed bug with RangeHelper.insertNode() in IE < 9 when inserting a documentFragment
+	Fixed bug with dom.extractContents() method moving extracted element
+		children into the returned documentFragment
+	Fixed bug with valueChanged event causing an error if the editor is
+		destroyed before it has done its checks.
+	Enabled valueChanged on sourceMode.
 
 Version 1.4.5:
 	Added command shortcuts to tooltips.
@@ -15,7 +31,7 @@ Version 1.4.5:
 		- Thanks to @liamdawe for reporting.
 	Fixed issue with insert() and FF.
 		- Thanks to @martec for reporting.
-	Fixed in IE8 and below with XHTML font size attribute converstion.
+	Fixed in IE8 and below with XHTML font size attribute conversion.
 	Fixed typo in German translation.
 		- Thanks to Ulf for reporting.
 	Removed build.sh as grunt now does everything build.sh could.
@@ -66,7 +82,7 @@ Version 1.4.4:
 		- Thanks to @Dr1ks for reporting.
 	Fixed issue with Opera adding blank lines.
 		- Thanks to @Dr1ks for reporting.
-	Improved unlink to remove links without selecing the whole link.
+	Improved unlink to remove links without selecting the whole link.
 		- Thanks to @liamdawe for reporting.
 	Fixed newline after [quote] being stripped.
 		- Thanks to @liamdawe for reporting.

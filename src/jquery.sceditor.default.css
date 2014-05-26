@@ -14,12 +14,14 @@ html {
 	-webkit-overflow-scrolling: touch;
 }
 body {
+	/* Needed for iOS scrolling bug fix */
 	position: relative;
+	overflow: auto;
+
+	/* Needed to make sure body covers the whole editor and that
+		long lines don't cause horizontal scrolling */
 	min-height: 100%;
 	word-wrap: break-word;
-
-	/* Needed for iOS scrolling bug fix */
-	overflow: auto;
 }
 
 ul, ol {
@@ -49,7 +51,9 @@ code {
 	padding: .25em;
 	display: block;
 }
-.ie6 code, .ie7 code {margin-top: 0;}
+.ie6 code, .ie7 code {
+	margin-top: 0;
+}
 code:before, code {
 	display: block;
 	text-align: left;
@@ -68,5 +72,12 @@ blockquote cite {
 	font-size: 1em;
 	border-bottom: 1px solid #aaa;
 }
-div { min-height: 1.25em; }
-h1, h2, h3, h4, h5, h6 { padding: 0; margin: 0; }
+
+h1, h2, h3, h4, h5, h6 {
+	padding: 0; margin: 0;
+}
+
+/* Prevent empty paragraphs from collapsing */
+div, p {
+	min-height: 1.25em;
+}

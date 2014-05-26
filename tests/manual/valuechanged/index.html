@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+
+		<title>ValueChanged Test - SCEditor</title>
+
+		<link rel="stylesheet/less" href="../../../src/themes/default.less"
+			type="text/css">
+		<script>
+			window.less = {
+				env: 'development',
+				relativeUrls: true
+			};
+		</script>
+		<!-- This is needed for LessJS to work in IE < 9 -->
+		<script src="../../libs/es5-shim.js"></script>
+		<script src="../../libs/less-1.7.0.min.js"></script>
+
+		<script src="../../libs/jquery-1.11.0.min.js"></script>
+		<script src="../../libs/require-2.1.11.js"></script>
+
+		<link rel="stylesheet" type="text/css"
+			href="http://fonts.googleapis.com/css?family=Open+Sans:400,500,700">
+		<link rel="stylesheet" type="text/css" href="../style.css">
+
+		<script src="../manualTestRunner.js"></script>
+		<script src="../patchConsole.js"></script>
+		<script src="./test.js"></script>
+	</head>
+	<body>
+		<h1 class="valuechanged-header">ValueChanged Test</h1>
+
+		<div id="container">
+			<div id="manual-tests">
+				<h2>Tests</h2>
+
+				<div id="tests"></div>
+
+
+				<h2>Current Test</h2>
+
+				<div class="current-test-container">
+					<div class="current-test test">
+						<a href="#">Skip this test</a>
+
+						<h3>Tests not loaded</h3>
+
+						<p>Check there are no JS errors in the tests.</p>
+					</div>
+				</div>
+
+				<div id="progress-bar-container">
+					<div id="progress-bar">
+						<div id="progress" style="width: 0%"> </div>
+					</div>
+					<p>
+						Test <span id="progress-info">0 / 0</span>
+					</p>
+				</div>
+			</div>
+
+			<div id="editor">
+				<h2>Test Area</h2>
+
+				<div id="counter">
+					ValueChanged counter: <span id="count">0</span>
+					<div>
+						<button class="passed">Passed</button>
+						<button class="failed">Failed</button>
+					</div>
+				</div>
+
+				<textarea id="testarea"></textarea>
+			</div>
+
+			<div id="console">
+				<h2>Output:</h2>
+
+				<div id="console-output"></div>
+			</div>
+		</div>
+	</body>
+</html>

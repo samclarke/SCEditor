@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+
+		<title>Memory Test - SCEditor</title>
+
+		<link rel="stylesheet/less" href="../../../src/themes/default.less"
+			type="text/css">
+		<script>
+			window.less = {
+				env: 'development',
+				relativeUrls: true
+			};
+		</script>
+		<!-- This is needed for LessJS to work in IE < 9 -->
+		<script src="../../libs/es5-shim.js"></script>
+		<script src="../../libs/less-1.7.0.min.js"></script>
+
+		<script src="../../libs/jquery-1.11.0.min.js"></script>
+		<script src="../../libs/require-2.1.11.js"></script>
+
+		<link rel="stylesheet" type="text/css"
+			href="http://fonts.googleapis.com/css?family=Open+Sans:400,500,700">
+		<link rel="stylesheet" type="text/css" href="../style.css">
+
+		<script src="./test.js"></script>
+	</head>
+	<body>
+		<h1 class="memory-header">Memory Tests</h1>
+
+		<div id="container">
+			<div id="editor">
+				<h2>Test Area</h2>
+
+				<p>This test will create and destroy SCEditor 100 times.
+				Once the test completed you will have to manually check there
+				are no memory leaks by making sure there are no references to
+				any SCEditor objects left. Can be done in Chrome by taking a
+				heap snapshot and searching for SCEditor.</p>
+
+				<p><input type="submit" value="Begin Test" /></p>
+
+				<div id="progress-bar-container">
+					<div id="progress-bar">
+						<div id="progress" style="width: 0%"> </div>
+					</div>
+				</div>
+
+				<textarea id="testarea"></textarea>
+			</div>
+		</div>
+	</body>
+</html>

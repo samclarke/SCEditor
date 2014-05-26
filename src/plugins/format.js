@@ -11,18 +11,10 @@
  * @author Sam Clarke
  * @requires jQuery
  */
-
-// ==ClosureCompiler==
-// @output_file_name format.min.js
-// @compilation_level SIMPLE_OPTIMIZATIONS
-// ==/ClosureCompiler==
-
-/*jshint smarttabs: true, scripturl: true, jquery: true, devel:true, eqnull:true, curly: false */
-
-(function($) {
+(function ($) {
 	'use strict';
 
-	$.sceditor.plugins.format = function() {
+	$.sceditor.plugins.format = function () {
 		var base = this;
 
 		/**
@@ -50,79 +42,86 @@
 			formatCmd;
 
 
-		base.init = function() {
+		base.init = function () {
 			var	opts  = this.opts,
 				pOpts = opts.paragraphformat;
 
 			// Don't enable if the BBCode plugin is enabled.
-			if($.sceditor.plugins.bbcode && opts.plugins && opts.plugins.indexOf('bbcode') > -1)
+			if (opts.plugins && opts.plugins.indexOf('bbcode') > -1) {
 				return;
+			}
 
-			if(pOpts)
-			{
-				if(pOpts.tags)
+			if (pOpts) {
+				if (pOpts.tags) {
 					tags = pOpts.tags;
+				}
 
-				if(pOpts.excludeTags)
-				{
-					$.each(pOpts.excludeTags, function(idx, val) {
+				if (pOpts.excludeTags) {
+					$.each(pOpts.excludeTags, function (idx, val) {
 						delete tags[val];
 					});
 				}
 			}
 
-			if(!this.commands.format)
-			{
+			if (!this.commands.format) {
 				this.commands.format = {
 					exec: formatCmd,
 					txtExec: formatCmd,
-					tooltip: "Format Paragraph"
+					tooltip: 'Format Paragraph'
 				};
 			}
 
-			if(opts.toolbar === $.sceditor.defaultOptions.toolbar)
-				opts.toolbar = opts.toolbar.replace(',color,', ',color,format,');
+			if (opts.toolbar === $.sceditor.defaultOptions.toolbar) {
+				opts.toolbar = opts.toolbar.replace(',color,',
+					',color,format,');
+			}
 		};
 
 		/**
 		 * Inserts the specified tag into the editor
+		 *
 		 * @param  {sceditor} editor
 		 * @param  {string} tag
 		 * @private
 		 */
-		insertTag = function(editor, tag) {
-			if(editor.sourceMode())
+		insertTag = function (editor, tag) {
+			if (editor.sourceMode()) {
 				editor.insert('<' + tag + '>', '</' + tag + '>');
-			else
+			} else {
 				editor.execCommand('formatblock', '<' + tag + '>');
+			}
 
 		};
 
 		/**
 		 * Function for the exec and txtExec properties
+		 *
 		 * @param  {node} caller
 		 * @private
 		 */
-		formatCmd = function(caller) {
+		formatCmd = function (caller) {
 			var	editor   = this,
-				$content = $("<div />");
+				$content = $('<div />');
 
-			$.each(tags, function(tag, val) {
-				$('<a class="sceditor-option" href="#">' + (val.name || val) + '</a>')
-					.click(function() {
-						editor.closeDropDown(true);
+			$.each(tags, function (tag, val) {
+				$(
+					'<a class="sceditor-option" href="#">' +
+						(val.name || val) + '</a>'
+				).click(function () {
+					editor.closeDropDown(true);
 
-						if(val.exec)
-							val.exec(editor);
-						else
-							insertTag(editor, tag);
+					if (val.exec) {
+						val.exec(editor);
+					} else {
+						insertTag(editor, tag);
+					}
 
-						return false;
-					})
-					.appendTo($content);
+					return false;
+				})
+				.appendTo($content);
 			});
 
-			editor.createDropDown(caller, "format", $content);
+			editor.createDropDown(caller, 'format', $content);
 		};
 	};
 })(jQuery);

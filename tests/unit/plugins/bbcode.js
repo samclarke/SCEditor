@@ -1,1668 +1,91 @@
-(function() {
+define([
+	'lib/SCEditor',
+	'tests/unit/utils',
+	'lib/browser',
+	'plugins/bbcode'
+], function (SCEditor, utils, browser) {
 	'use strict';
 
-	module('BBCode Plugin - Parser', {
-		setup: function() {
-			this.sb = new $.sceditor.plugins.bbcode();
-			this.sb.init.call({
-				opts: $.extend({}, $.sceditor.defaultOptions)
-			});
+	// In IE < 11 a BR at the end of a block level element
+	// causes a line break. In all other browsers it's collapsed.
+	var IE_BR_FIX = browser.ie && browser.ie < 11;
+	var IE_BR_STR = IE_BR_FIX ? '' : '<br />';
+
+
+	module('plugins/bbcode', {
+		setup: function () {
+			this.mockEditor = {
+				opts: $.extend({}, SCEditor.defaultOptions)
+			};
+
+			this.plugin = new SCEditor.plugins.bbcode();
+			this.plugin.init.call(this.mockEditor);
+
+			this.htmlToBBCode = function (html) {
+				var $html = $(utils.htmlToDiv(html));
+
+				return this.plugin.signalToSource('', $html);
+			};
 		}
 	});
 
-	test('Invalid nesting', function() {
-		expect(4);
 
-		var $dom = '<span style="color: #000">this<blockquote>is</blockquote>a test</span>'.toJquery();
-		$.sceditor.dom.fixNesting($dom[0]);
-
-		equal(
-			this.sb.signalToSource('', $dom),
-			'[color=#000000]this[/color]\n[quote][color=#000000]is[/color][/quote]\n[color=#000000]a test[/color]',
-			'Invalid block level nesting'
-		);
-
-
-		var parser = new $.sceditor.BBCodeParser($.sceditor.defaultOptions.parserOptions);
-
-		equal(
-			parser.toBBCode('[b]test[code]test[/code]test[/b]').ignoreSpace(),
-			'[b]test[/b][code]test[/code][b]test[/b]'.ignoreSpace(),
-			'Block level tag in an inline tag'
-		);
-
-		equal(
-			parser.toBBCode('[b]test[code]test[/code][/b]').ignoreSpace(),
-			'[b]test[/b][code]test[/code]'.ignoreSpace(),
-			'Block level tag in an inline tag'
-		);
-
-		equal(
-			parser.toBBCode('[b][i][s]test[code]test[/code]test[/s][/i][/b]').ignoreSpace(),
-			'[b][i][s]test[/s][/i][/b][code]test[/code][b][i][s]test[/s][/i][/b]'.ignoreSpace(),
-			'Deeply nested block in inline tags'
-		);
-	});
-
-	test('Rename BBCode', function() {
-		expect(3);
-
-		$.sceditor.plugins.bbcode.bbcode.rename('b', 'testbold');
-		var parser = new $.sceditor.BBCodeParser($.sceditor.defaultOptions.parserOptions);
-
-		ok(
-			!!$.sceditor.plugins.bbcode.bbcode.get('testbold'),
-			'Can get renamed BBCode'
-		);
-
-		equal(
-			parser.toHTML('[testbold]test[/testbold]').ignoreSpace(),
-			'<div><strong>test</strong></div>'.ignoreSpace(),
-			'Renamed BBCode'
-		);
-
-		$.sceditor.plugins.bbcode.bbcode.rename('testbold', 'b');
-
-		ok(
-			!$.sceditor.plugins.bbcode.bbcode.get('testbold'),
-			'Should not be able to get old BBCode name'
-		);
-	});
-
-	test('Tag closing', function() {
-		expect(8);
-
-		var parser = new $.sceditor.BBCodeParser($.sceditor.defaultOptions.parserOptions);
-
-		equal(
-			parser.toBBCode('[hr] test').ignoreSpace(),
-			'[hr] test'.ignoreSpace(),
-			'Self closing'
-		);
-
-		equal(
-			parser.toBBCode('[list][*] test[*] test 2[/list]').ignoreSpace(),
-			'[list][*]test[/*][*]test2[/*][/list]'.ignoreSpace(),
-			'List [*]'
-		);
-
-		equal(
-			parser.toBBCode('[b][color][/b]'),
-			'[b][color][/b]',
-			'Missing closing tag'
-		);
-
-		equal(
-			parser.toBBCode('[b][/color][/b]'),
-			'[b][/color][/b]',
-			'Missing opening tag'
-		);
-
-		equal(
-			parser.toBBCode('[b][color]test[/b][/color]'),
-			'[b][color]test[/color][/b]',
-			'Closing parent tag from child tag'
-		);
-
-		equal(
-			parser.toBBCode('[b]test[color]test[/b]test[/color]'),
-			'[b]test[color]test[/color][/b][color]test[/color]',
-			'Closing parent tag from child tag'
-		);
-
-		equal(
-			parser.toBBCode('[b][s][i][color]test[/i][/s][/b][/color]'),
-			'[b][s][i][color]test[/color][/i][/s][/b]',
-			'Closing parent tag from deeply nested child tag'
-		);
-
-		equal(
-			parser.toBBCode('[color][b][s][i]test[/color][/i][/s][/b]'),
-			'[color][b][s][i]test[/i][/s][/b][/color]',
-			'Closing parent tag from deeply nested child tag'
-		);
-	});
-
-	test('Unknown tags', function() {
-		expect(4);
-
-		var parser = new $.sceditor.BBCodeParser($.sceditor.defaultOptions.parserOptions);
-
-		equal(
-			parser.toBBCode('[b][unknown][/b]'),
-			'[b][unknown][/b]',
-			'Unknown tag missing end'
-		);
-
-		equal(
-			parser.toBBCode('[b][unknown]test[/unknown][/b]'),
-			'[b][unknown]test[/unknown][/b]',
-			'Unknown tag with end'
-		);
-
-		equal(
-			parser.toBBCode('[b][unknown][/unknown][/b]'),
-			'[b][unknown][/unknown][/b]',
-			'Empty unknown tag with end'
-		);
-
-		equal(
-			parser.toHTML('[b][unknown]test[/unknown][/b]'),
-			'<div><strong>[unknown]test[/unknown]</strong></div>\n',
-			'Empty unknown tag with end to HTML'
-		);
-	});
-
-
-	module('BBCode Plugin - HTML to BBCode', {
-		setup: function() {
-			this.sb = new $.sceditor.plugins.bbcode();
-			this.sb.init.call({
-				opts: $.extend({}, $.sceditor.defaultOptions)
-			});
-		}
-	});
-
-	test('White space removal', function() {
-		expect(2);
-
-		// pre used to populate the code tag in IE, could you a style.
-		equal(
-			this.sb.signalToSource('', '<code><pre>Some            White \n      \n     space</pre></code>'.toJquery()).replace(/\r/g, '\n'),
-			'[code]Some            White \n      \n     space[/code]\n',
-			'Leave code spaces'
-		);
-
-		var ret = this.sb.signalToSource('', '     <div>   lots   </div>   \n of   junk   \n\n\n\n\n         \n  j'.toJquery());
-		ok(
-			ret === 'lots \n of junk j' || ret === 'lots \nof junk j',
-			'White Space Removal'
-		);
-	});
-
-	test('New line handling', function() {
-		expect(10);
-
-		equal(
-			this.sb.signalToSource('', 'textnode<div>new line before and after </div>textnode'.toJquery()),
-			'textnode\nnew line before and after \ntextnode',
-			'Textnode before and after block level element'
-		);
-
-		equal(
-			this.sb.signalToSource('', 'textnode <span>no new line before and after </span>textnode'.toJquery()),
-			'textnode no new line before and after textnode',
-			'Textnode before and after inline element'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<div>text<div>text</div>text</div>'.toJquery()),
-			'text\ntext\ntext',
-			'Nested divs'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<div><span>text</span><div>text</div><span>text</span></div>'.toJquery()),
-			'text\ntext\ntext',
-			'Nested div with span siblings'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<div><div>text</div><div>text</div><div>text</div></div>'.toJquery()),
-			'text\ntext\ntext',
-			'Nested div with div siblings'
-		);
-
-		equal(
-			this.sb.signalToSource('', ('<div><div>text</div><div>' + ($.sceditor.ie ? '' : '<br />') + '</div><div>text</div></div>').toJquery()),
-			'text\n\ntext',
-			'Nested div with br and div siblings'
-		);
-
-		equal(
-			this.sb.signalToSource('', ('<div>text</div><div>' + ($.sceditor.ie ? '' : '<br />') + '</div><ul><li>text</li></ul>').toJquery()),
-			'text\n\n[ul]\n[li]text[/li]\n[/ul]\n',
-			'Div siblings with a list'
-		);
-
-		equal(
-			this.sb.signalToSource('', ('<div>text</div><div>' + ($.sceditor.ie ? '' : '<br />') + '</div><div>' + ($.sceditor.ie ? '' : '<br />') + '</div><ul><li>text</li></ul>').toJquery()),
-			'text\n\n\n[ul]\n[li]text[/li]\n[/ul]\n',
-			'Multiple div siblings with a list'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<div>text<br />text</div>'.toJquery()),
-			'text\ntext',
-			'BR tag'
-		);
-
-		equal(
-			this.sb.signalToSource('', ('<div>text<br />text' + ($.sceditor.ie ? '' : '<br />') + '</div>').toJquery()),
-			'text\ntext',
-			'Collapsed end BR tag'
-		);
-	});
-
-	test('Bold', function() {
-		expect(5);
-
-		equal(
-			this.sb.signalToSource('', '<span style="font-weight: bold">test</span>'.toJquery()),
-			'[b]test[/b]',
-			'CSS bold'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<span style="font-weight: 800">test</span>'.toJquery()),
-			'[b]test[/b]',
-			'CSS bold'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<span style="font-weight: normal">test</span>'.toJquery()),
-			'test',
-			'CSS not bold'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<b>test</b>'.toJquery()),
-			'[b]test[/b]',
-			'B tag'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<strong>test</strong>'.toJquery()),
-			'[b]test[/b]',
-			'Strong tag'
-		);
-	});
-
-	test('Italic', function() {
-		expect(5);
-
-		equal(
-			this.sb.signalToSource('', '<span style="font-style: italic">test</span>'.toJquery()),
-			'[i]test[/i]',
-			'CSS italic'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<span style="font-style: oblique">test</span>'.toJquery()),
-			'[i]test[/i]',
-			'CSS oblique'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<span style="font-style: normal">test</span>'.toJquery()),
-			'test',
-			'CSS normal'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<em>test</em>'.toJquery()),
-			'[i]test[/i]',
-			'Em tag'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<i>test</i>'.toJquery()),
-			'[i]test[/i]',
-			'I tag'
-		);
-	});
-
-	test('Underline', function() {
-		expect(3);
-
-		equal(
-			this.sb.signalToSource('', '<span style="text-decoration: underline">test</span>'.toJquery()),
-			'[u]test[/u]',
-			'CSS underline'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<span style="text-decoration: normal">test</span>'.toJquery()),
-			'test',
-			'CSS normal'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<u>test</u>'.toJquery()),
-			'[u]test[/u]',
-			'U tag'
-		);
-	});
-
-	test('Strikethrough', function() {
-		expect(4);
-
-		equal(
-			this.sb.signalToSource('', '<span style="text-decoration: line-through">test</span>'.toJquery()),
-			'[s]test[/s]',
-			'CSS line-through'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<span style="text-decoration: normal">test</span>'.toJquery()),
-			'test',
-			'CSS normal'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<s>test</s>'.toJquery()),
-			'[s]test[/s]',
-			'S tag'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<strike>test</strike>'.toJquery()),
-			'[s]test[/s]',
-			'strike tag'
-		);
-	});
-
-	test('Subscript', function() {
-		expect(1);
-
-		equal(
-			this.sb.signalToSource('', '<sub>test</sub>'.toJquery()),
-			'[sub]test[/sub]',
-			'Sub tag'
-		);
-	});
-
-	test('Superscript', function() {
-		expect(1);
-
-		equal(
-			this.sb.signalToSource('', '<sup>test</sup>'.toJquery()),
-			'[sup]test[/sup]',
-			'Sup tag'
-		);
-	});
-
-	test('Font face', function() {
-		expect(6);
-
-		equal(
-			this.sb.signalToSource('', '<span style="font-family: Arial">test</span>'.toJquery()),
-			'[font=Arial]test[/font]',
-			'CSS'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<span  style="font-family: Arial Black">test</span>'.toJquery()),
-			'[font=Arial Black]test[/font]',
-			'CSS space'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<span  style="font-family: \'Arial Black\'">test</span>'.toJquery()),
-			'[font=Arial Black]test[/font]',
-			'CSS space with quotes'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<font face="Arial">test</font>'.toJquery()),
-			'[font=Arial]test[/font]',
-			'Font tag'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<font face="Arial Black">test</font>'.toJquery()),
-			'[font=Arial Black]test[/font]',
-			'Font tag with space'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<font face="\'Arial Black\'">test</font>'.toJquery()),
-			'[font=Arial Black]test[/font]',
-			'Font tag with space & quotes'
-		);
-	});
-
-	test('Size', function() {
-		expect(6);
-
-		equal(
-			this.sb.signalToSource('', '<span style="font-size: 11px">test</span>'.toJquery()),
-			'[size=1]test[/size]',
-			'CSS px'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<span style="font-size: 1100px">test</span>'.toJquery()),
-			'[size=7]test[/size]',
-			'CSS px too large'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<span style="font-size: 0.5em">test</span>'.toJquery()),
-			'[size=1]test[/size]',
-			'CSS em'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<span style="font-size: 50%">test</span>'.toJquery()),
-			'[size=1]test[/size]',
-			'CSS %'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<font size="1">test</font>'.toJquery()),
-			'[size=1]test[/size]',
-			'Size tag'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<font size=1>test</font>'.toJquery()),
-			'[size=1]test[/size]',
-			'Size tag'
-		);
-	});
-
-	test('colour', function() {
-		expect(6);
-
-		equal(
-			this.sb.signalToSource('', '<span style="color: #000000">test</span>'.toJquery()),
-			'[color=#000000]test[/color]',
-			'Normal'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<span style="color: #000">test</span>'.toJquery()),
-			'[color=#000000]test[/color]',
-			'Short hand'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<span style="color: rgb(0,0,0)">test</span>'.toJquery()),
-			'[color=#000000]test[/color]',
-			'RGB'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<font color="#000">test</span>'.toJquery()),
-			'[color=#000000]test[/color]',
-			'Font tag short'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<font color="#000000">test</span>'.toJquery()),
-			'[color=#000000]test[/color]',
-			'Font tag normal'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<font color="rgb(0,0,0)">test</span>'.toJquery()),
-			'[color=#000000]test[/color]',
-			'Font tag rgb'
-		);
-	});
-
-	test('List', function() {
-		expect(3);
-
-		equal(
-			this.sb.signalToSource('', ('<ul><li>test' + ($.sceditor.ie ? '' : '<br />') + '</li></ul>').toJquery()),
-			'[ul]\n[li]test[/li]\n[/ul]\n',
-			'UL tag'
-		);
-
-		equal(
-			this.sb.signalToSource('', ('<ol><li>test' + ($.sceditor.ie ? '' : '<br />') + '</li></ol>').toJquery()),
-			'[ol]\n[li]test[/li]\n[/ol]\n',
-			'OL tag'
-		);
-
-		equal(
-			this.sb.signalToSource('', ('<ul><li>test<ul><li>sub' + ($.sceditor.ie ? '' : '<br />') + '</li></ul></li></ul>').toJquery()),
-			'[ul]\n[li]test\n[ul]\n[li]sub[/li]\n[/ul]\n[/li]\n[/ul]\n',
-			'Nested UL tag'
-		);
-	});
-
-	test('Table', function() {
-		expect(1);
-
-		equal(
-			this.sb.signalToSource('', '<table><tr><th>test</th></tr><tr><td>data1</td></tr></table>'.toJquery()),
-			'[table][tr][th]test[/th]\n[/tr]\n[tr][td]data1[/td]\n[/tr]\n[/table]\n',
-			'Table tag'
-		);
-	});
-
-	test('Emoticons', function() {
-		expect(1);
-
-		equal(
-			this.sb.signalToSource('', '<img data-sceditor-emoticon=":)"" />'.toJquery()),
-			':)',
-			'Img tag'
-		);
-	});
-
-	test('Horizontal rule', function() {
-		expect(1);
-
-		equal(
-			this.sb.signalToSource('', '<hr />'.toJquery()),
-			'[hr]\n',
-			'HR tag'
-		);
-	});
-
-	test('Image', function() {
-		expect(1);
-
-		equal(
-			this.sb.signalToSource('', '<img width=10 height=10 src="http://test.com/test.png" />'.toJquery()),
-			'[img=10x10]http://test.com/test.png[/img]',
-			'Img tag'
-		);
-	});
-
-	test('URL', function() {
-		expect(3);
-
-		equal(
-			this.sb.signalToSource('', '<a href="http://test.com/">Test</a>'.toJquery()),
-			'[url=http://test.com/]Test[/url]',
-			'A tag name'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<a href="http://test.com/">http://test.com</a>'.toJquery()),
-			'[url=http://test.com/]http://test.com[/url]',
-			'A tag URL'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<a href="http://test.com/"></a>'.toJquery()),
-			'[url=http://test.com/][/url]',
-			'A tag empty'
-		);
-	});
-
-	test('Email', function() {
-		expect(3);
-
-		equal(
-			this.sb.signalToSource('', '<a href="mailto:test@test.com">Test</a>'.toJquery()),
-			'[email=test@test.com]Test[/email]',
-			'A tag name'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<a href="mailto:test@test.com">test@test.com</a>'.toJquery()),
-			'[email=test@test.com]test@test.com[/email]',
-			'A tag e-mail'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<a href="mailto:test@test.com"></a>'.toJquery()),
-			'',
-			'Empty e-mail tag'
-		);
-	});
-
-	test('Quote', function() {
-		expect(4);
-
-		equal(
-			this.sb.signalToSource('', '<blockquote>Testing 1.2.3....</blockquote>'.toJquery()),
-			'[quote]Testing 1.2.3....[/quote]\n',
-			'Simple quote'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<blockquote><cite>admin</cite>Testing 1.2.3....</blockquote>'.toJquery()),
-			'[quote=admin]Testing 1.2.3....[/quote]\n',
-			'Quote with cite (author)'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<blockquote><cite>admin</cite>Testing 1.2.3....<blockquote><cite>admin</cite>Testing 1.2.3....</blockquote></blockquote>'.toJquery()),
-			'[quote=admin]Testing 1.2.3....\n[quote=admin]Testing 1.2.3....[/quote]\n[/quote]\n',
-			'Nested quote with cite (author)'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<blockquote><cite>admin</cite><cite>this should be ignored</cite> Testing 1.2.3....</blockquote>'.toJquery()),
-			'[quote=admin]this should be ignored Testing 1.2.3....[/quote]\n',
-			'Quote with 2 cites (author)'
-		);
-	});
-
-	test('Code', function() {
-		expect(2);
-
-		equal(
-			this.sb.signalToSource('', '<code>Testing 1.2.3....</code>'.toJquery()),
-			'[code]Testing 1.2.3....[/code]\n',
-			'Simple code'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<code><b>ignore this</b> Testing 1.2.3....</code>'.toJquery()),
-			'[code]ignore this Testing 1.2.3....[/code]\n',
-			'Code with styling'
-		);
-	});
-
-	test('Left', function() {
-		expect(2);
-
-		var ret = this.sb.signalToSource('', '<div style="text-align: left">test</div>'.toJquery());
-		ok(
-			ret === '[left]test[/left]\n' || ret === 'test',
-			'Div CSS text-align'
-		);
-
-		ret = this.sb.signalToSource('', '<p style="text-align: left">test</p>'.toJquery());
-		ok(
-			ret === '[left]test[/left]\n' || ret === 'test',
-			'P CSS text-align'
-		);
-	});
-
-	test('Right', function() {
-		expect(4);
-
-		equal(
-			this.sb.signalToSource('', '<div style="text-align: right">test</div>'.toJquery()),
-			'[right]test[/right]\n',
-			'Div CSS text-align'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<p style="text-align: right">test</p>'.toJquery()),
-			'[right]test[/right]\n',
-			'P CSS text-align'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<p align="right">test</p>'.toJquery()),
-			'[right]test[/right]\n',
-			'P align'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<div align="right">test</div>'.toJquery()),
-			'[right]test[/right]\n',
-			'Div align'
-		);
-	});
-
-	test('Centre', function() {
-		expect(4);
-
-		equal(
-			this.sb.signalToSource('', '<div style="text-align: center">test</div>'.toJquery()),
-			'[center]test[/center]\n',
-			'Div CSS text-align'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<p style="text-align: center">test</p>'.toJquery()),
-			'[center]test[/center]\n',
-			'P CSS text-align'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<p align="center">test</p>'.toJquery()),
-			'[center]test[/center]\n',
-			'P align'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<div align="center">test</div>'.toJquery()),
-			'[center]test[/center]\n',
-			'Div align'
-		);
-	});
-
-	test('Justify', function() {
-		expect(4);
-
-		equal(
-			this.sb.signalToSource('', '<div style="text-align: justify">test</div>'.toJquery()),
-			'[justify]test[/justify]\n',
-			'Div CSS text-align'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<p style="text-align: justify">test</p>'.toJquery()),
-			'[justify]test[/justify]\n',
-			'P CSS text-align'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<p align="justify">test</p>'.toJquery()),
-			'[justify]test[/justify]\n',
-			'P align'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<div align="justify">test</div>'.toJquery()),
-			'[justify]test[/justify]\n',
-			'Div align'
-		);
-	});
-
-	test('YouTube', function() {
-		expect(1);
-
-		equal(
-			this.sb.signalToSource('', '<iframe data-youtube-id="xyz"></iframe>'.toJquery()),
-			'[youtube]xyz[/youtube]',
-			'Div CSS text-align'
-		);
-	});
-
-	test('New Line Handling', function() {
-		expect(2);
-
-		equal(
-			this.sb.signalToSource('', ('<ul><li>newline<br />' + ($.sceditor.ie ? '' : '<br />') + '</li></ul>').toJquery()),
-			'[ul]\n[li]newline\n[/li]\n[/ul]\n',
-			'List item last child block level'
-		);
-
-		equal(
-			this.sb.signalToSource('', ('<div><code>newline' + ($.sceditor.ie ? '' : '<br />') + '</code></div><div>newline</div>').toJquery()),
-			'[code]newline[/code]\nnewline',
-			'Block level last child'
-		);
-	});
-
-
-
-	module('BBCode Plugin - BBCode to HTML', {
-		setup: function() {
-			this.sb = new $.sceditor.plugins.bbcode();
-			this.sb.init.call({
-				opts: $.extend({}, $.sceditor.defaultOptions)
-			});
-		}
-	});
-
-	test('Bold', function() {
-		expect(1);
-
-		equal(
-			this.sb.signalToWysiwyg('[b]test[/b]').toLowerCase(),
-			'<div><strong>test</strong></div>\n'
-		);
-	});
-
-	test('Italic', function() {
-		expect(1);
-
-		equal(
-			this.sb.signalToWysiwyg('[i]test[/i]').toLowerCase(),
-			'<div><em>test</em></div>\n'
-		);
-	});
-
-	test('Underline', function() {
-		expect(1);
-
-		equal(
-			this.sb.signalToWysiwyg('[u]test[/u]').toLowerCase(),
-			'<div><u>test</u></div>\n'
-		);
-	});
-
-	test('Strikethrough', function() {
-		expect(1);
-
-		equal(
-			this.sb.signalToWysiwyg('[s]test[/s]').toLowerCase(),
-			'<div><s>test</s></div>\n'
-		);
-	});
-
-	test('Subscript', function() {
-		expect(1);
-
-		equal(
-			this.sb.signalToWysiwyg('[sub]test[/sub]').toLowerCase(),
-			'<div><sub>test</sub></div>\n'
-		);
-	});
-
-	test('Superscript', function() {
-		expect(1);
-
-		equal(
-			this.sb.signalToWysiwyg('[sup]test[/sup]').toLowerCase(),
-			'<div><sup>test</sup></div>\n'
-		);
-	});
-
-	test('Font face', function() {
-		expect(3);
-
-		equal(
-			this.sb.signalToWysiwyg('[font=arial]test[/font]'),
-			'<div><font face="arial">test</font></div>\n',
-			'Normal'
-		);
-
-		equal(
-			this.sb.signalToWysiwyg('[font=arial black]test[/font]'),
-			'<div><font face="arial black">test</font></div>\n',
-			'Space'
-		);
-
-		equal(
-			this.sb.signalToWysiwyg('[font="arial black"]test[/font]'),
-			'<div><font face="arial black">test</font></div>\n',
-			'Quotes'
-		);
-	});
-
-	test('Size', function() {
-		expect(1);
-
-		equal(
-			this.sb.signalToWysiwyg('[size=4]test[/size]'),
-			'<div><font size="4">test</font></div>\n',
-			'Normal'
-		);
-	});
-
-	test('Font colour', function() {
-		expect(2);
-
-		equal(
-			this.sb.signalToWysiwyg('[color=#000]test[/color]'),
-			'<div><font color="#000000">test</font></div>\n',
-			'Normal'
-		);
-
-		equal(
-			this.sb.signalToWysiwyg('[color=black]test[/color]'),
-			'<div><font color="black">test</font></div>\n',
-			'Named'
-		);
-	});
-
-	test('List', function() {
-		expect(3);
-
-		equal(
-			this.sb.signalToWysiwyg('[ul][li]test[/li][/ul]'),
-			'<ul><li>test' + ($.sceditor.ie ? '' : '<br />') + '</li></ul>',
-			'UL'
-		);
-
-		equal(
-			this.sb.signalToWysiwyg('[ol][li]test[/li][/ol]'),
-			'<ol><li>test' + ($.sceditor.ie ? '' : '<br />') + '</li></ol>',
-			'OL'
-		);
-
-		equal(
-			this.sb.signalToWysiwyg('[ul][li]test[ul][li]sub[/li][/ul][/li][/ul]'),
-			'<ul><li>test<ul><li>sub' + ($.sceditor.ie ? '' : '<br />') + '</li></ul></li></ul>',
-			'Nested UL'
-		);
-	});
-
-	test('Table', function() {
-		expect(1);
-
-		equal(
-			this.sb.signalToWysiwyg('[table][tr][th]test[/th][/tr][tr][td]data1[/td][/tr][/table]'),
-			'<div><table><tr><th>test' + ($.sceditor.ie ? '' : '<br />') + '</th></tr><tr><td>data1' + ($.sceditor.ie ? '' : '<br />') + '</td></tr></table></div>\n',
-			'Normal'
-		);
-	});
-
-	test('Horizontal rule', function() {
-		expect(1);
-
-		equal(
-			this.sb.signalToWysiwyg('[hr]').toLowerCase(),
-			'<hr />',
-			'Normal'
-		);
-	});
-
-	test('Image', function() {
-		expect(5);
-
-		equal(
-			this.sb.signalToWysiwyg('[img=10x10]http://test.com/test.png[/img]'),
-			'<div><img width="10" height="10" src="http://test.com/test.png" /></div>\n',
-			'Normal'
-		);
-
-		equal(
-			this.sb.signalToWysiwyg('[img width=10]http://test.com/test.png[/img]'),
-			'<div><img width="10" src="http://test.com/test.png" /></div>\n',
-			'Width only'
-		);
-
-		equal(
-			this.sb.signalToWysiwyg('[img height=10]http://test.com/test.png[/img]'),
-			'<div><img height="10" src="http://test.com/test.png" /></div>\n',
-			'Height only'
-		);
-
-		equal(
-			this.sb.signalToWysiwyg('[img]http://test.com/test.png[/img]').toLowerCase(),
-			'<div><img src="http://test.com/test.png" /></div>\n',
-			'No size'
-		);
-
-		equal(
-			this.sb.signalToWysiwyg('[img]http://test.com/test.png?test&&test[/img]').toLowerCase(),
-			'<div><img src="http://test.com/test.png?test&amp;&amp;test" /></div>\n',
-			'Ampersands in URL'
-		);
-	});
-
-	test('URL', function() {
-		expect(4);
-
-
-		equal(
-			this.sb.signalToWysiwyg('[url=http://test.com/]Test[/url]').toLowerCase(),
-				'<div><a href="http://test.com/">test</a></div>\n',
-			'Normal'
-		);
-
-		equal(
-			this.sb.signalToWysiwyg('[url]http://test.com/[/url]').toLowerCase(),
-			'<div><a href="http://test.com/">http://test.com/</a></div>\n',
-			'Only URL'
-		);
-
-		equal(
-			this.sb.signalToWysiwyg('[url=http://test.com/?test&&test]test[/url]').toLowerCase(),
-			'<div><a href="http://test.com/?test&amp;&amp;test">test</a></div>\n',
-			'Ampersands in URL'
-		);
-
-		equal(
-			this.sb.signalToWysiwyg('[url]http://test.com/?test&&test[/url]').toLowerCase(),
-			'<div><a href="http://test.com/?test&amp;&amp;test">http://test.com/?test&amp;&amp;test</a></div>\n',
-			'Ampersands in URL'
-		);
-	});
-
-	test('Email', function() {
-		expect(2);
-
-		equal(
-			this.sb.signalToWysiwyg('[email=test@test.com]test[/email]').toLowerCase(),
-			'<div><a href="mailto:test@test.com">test</a></div>\n',
-			'Normal'
-		);
-
-		equal(
-			this.sb.signalToWysiwyg('[email]test@test.com[/email]').toLowerCase(),
-			'<div><a href="mailto:test@test.com">test@test.com</a></div>\n',
-			'Only e-mail'
-		);
-	});
-
-	test('Quote', function() {
-		expect(2);
-
-		equal(
-			this.sb.signalToWysiwyg('[quote]Testing 1.2.3....[/quote]').toLowerCase(),
-			'<blockquote>testing 1.2.3....' + ($.sceditor.ie ? '' : '<br />') + '</blockquote>',
-			'Normal'
-		);
-
-		equal(
-			this.sb.signalToWysiwyg('[quote=admin]Testing 1.2.3....[/quote]').toLowerCase(),
-			'<blockquote><cite>admin</cite>testing 1.2.3....' + ($.sceditor.ie ? '' : '<br />') + '</blockquote>',
-			'With author'
-		);
-	});
-
-	test('Code', function() {
-		expect(2);
-
-		equal(
-			this.sb.signalToWysiwyg('[code]Testing 1.2.3....[/code]').toLowerCase(),
-			'<code>testing 1.2.3....' + ($.sceditor.ie ? '' : '<br />') + '</code>',
-			'Normal'
-		);
-
-		equal(
-			this.sb.signalToWysiwyg('[code]Testing [b]test[/b][/code]').toLowerCase(),
-			'<code>testing [b]test[/b]' + ($.sceditor.ie ? '' : '<br />') + '</code>',
-			'Normal'
-		);
-	});
-
-	test('Left', function() {
-		expect(1);
-
-		equal(
-			this.sb.signalToWysiwyg('[left]Testing 1.2.3....[/left]'),
-			'<div align="left">Testing 1.2.3....' + ($.sceditor.ie ? '' : '<br />') + '</div>',
-			'Normal'
-		);
-	});
-
-	test('Right', function() {
-		expect(1);
-
-		equal(
-			this.sb.signalToWysiwyg('[right]Testing 1.2.3....[/right]'),
-			'<div align="right">Testing 1.2.3....' + ($.sceditor.ie ? '' : '<br />') + '</div>',
-			'Normal'
-		);
-	});
-
-	test('Centre', function() {
-		expect(1);
-
-		equal(
-			this.sb.signalToWysiwyg('[center]Testing 1.2.3....[/center]'),
-			'<div align="center">Testing 1.2.3....' + ($.sceditor.ie ? '' : '<br />') + '</div>',
-			'Normal'
-		);
-	});
-
-	test('Justify', function() {
-		expect(1);
-
-		equal(
-			this.sb.signalToWysiwyg('[justify]Testing 1.2.3....[/justify]'),
-			'<div align="justify">Testing 1.2.3....' + ($.sceditor.ie ? '' : '<br />') + '</div>',
-			'Normal'
-		);
-	});
-
-	test('YouTube', function() {
-		expect(1);
-
-		equal(
-			this.sb.signalToWysiwyg('[youtube]xyz[/youtube]'),
-			'<div><iframe width="560" height="315" src="http://www.youtube.com/embed/xyz?wmode=opaque" data-youtube-id="xyz" frameborder="0" allowfullscreen></iframe></div>\n',
-			'Normal'
-		);
-	});
-
-	test('Unsupported BBCodes', function() {
-		expect(2);
-
-		equal(
-			this.sb.signalToWysiwyg('[nonexistant]test[/nonexistant]').toLowerCase(),
-			'<div>[nonexistant]test[/nonexistant]</div>\n',
-			'Open and closing tag'
-		);
-
-		equal(
-			this.sb.signalToWysiwyg('[nonexistant aaa]').toLowerCase(),
-			'<div>[nonexistant aaa]</div>\n',
-			'Only opening tag'
-		);
-	});
-
-
-
-	module('BBCode Plugin - Insert Filter');
-
-	test('Removal check', function() {
-		expect(4);
-
-		var $textarea = $('#qunit-fixture textarea:first');
-
-		$.sceditor.plugins.bbcode.bbcode.set('test', {
-			format: '[test]{0}[/test]',
-			html: '<div style="font-weight:bold">{0}</div>',
-			styles: {
-				'font-weight': ['bold']
-			},
-			tags: {
-				div: {
-					'class': ['test'],
-					'data-test': ['test']
-				}
-			},
-			isInline: false,
-			allowsEmpty: true
-		});
-		$textarea.sceditor({ plugins: 'bbcode' });
-		$textarea.sceditor('instance').insert('[test]', '[/test]');
-		equal(
-			$textarea.sceditor('instance').val(),
-			'[test][/test]\n',
-			'Style check'
-		);
-		$textarea.sceditor('instance').destroy();
-
-
-
-		$.sceditor.plugins.bbcode.bbcode.set('test', {
-			html: '<div class="test">{0}</div>'
-		});
-		$textarea.sceditor({ plugins: 'bbcode' });
-		$textarea.sceditor('instance').insert('[test]', '[/test]');
-		equal(
-			$textarea.sceditor('instance').val(),
-			'[test][/test]\n',
-			'Class check'
-		);
-		$textarea.sceditor('instance').destroy();
-
-
-
-		$.sceditor.plugins.bbcode.bbcode.set('test', {
-			html: '<div data-test="test">{0}</div>'
-		});
-		$textarea.sceditor({ plugins: 'bbcode' });
-		$textarea.sceditor('instance').insert('[test]', '[/test]');
-		equal(
-			$textarea.sceditor('instance').val(),
-			'[test][/test]\n',
-			'Data check'
-		);
-		$textarea.sceditor('instance').destroy();
-
-
-
-		$.sceditor.plugins.bbcode.bbcode.set('test', {
-			html: '<div>{0}</div>'
-		});
-		$textarea.sceditor({ plugins: 'bbcode' });
-		$textarea.sceditor('instance').insert('[test]', '[/test]');
-		equal(
-			$textarea.sceditor('instance').val(),
-			'',
-			'Nothing check'
-		);
-		$textarea.sceditor('instance').destroy();
-
-
-		$.sceditor.plugins.bbcode.bbcode.remove("test");
-	});
-
-
-
-
-	module('BBCode Plugin - Converter Methods', {
-		setup: function() {
-			var $textarea = $('#qunit-fixture textarea:first');
-			$textarea.sceditor({ plugins: 'bbcode' });
-			this.sceditor = $textarea.sceditor('instance');
-		}
-	});
-
-	test('To BBCode method', function() {
-		expect(7);
-
-		equal(
-			this.sceditor.toBBCode('<b>test</b>'.toDOM()),
+	test('To BBCode method', function (assert) {
+		assert.equal(
+			this.mockEditor.toBBCode(utils.htmlToDiv('<b>test</b>')),
 			'[b]test[/b]',
 			'DOM test'
 		);
 
-		equal(
-			this.sceditor.toBBCode('<b>test</b>'.toJquery()),
+		assert.equal(
+			this.mockEditor.toBBCode($(utils.htmlToDiv('<b>test</b>'))),
 			'[b]test[/b]',
 			'jQuery DOM test'
 		);
 
-		equal(
-			this.sceditor.toBBCode('<b>test</b>'),
+		assert.equal(
+			this.mockEditor.toBBCode('<b>test</b>'),
 			'[b]test[/b]',
 			'HTML String test'
 		);
-
-		equal(
-			this.sceditor.toBBCode('<img src="http://www.sceditor.com/emoticons/smile.png" />'),
-			'[img]http://www.sceditor.com/emoticons/smile.png[/img]',
-			'Image test'
-		);
-
-		equal(
-			this.sceditor.toBBCode('<img src="http://www.sceditor.com/emoticons/smile.png" />'.toDOM()),
-			'[img]http://www.sceditor.com/emoticons/smile.png[/img]',
-			'Image DOM test'
-		);
-
-		equal(
-			this.sceditor.toBBCode('<img src="http://www.sceditor.com/emoticons/smile.png" />'.toJquery()),
-			'[img]http://www.sceditor.com/emoticons/smile.png[/img]',
-			'Image jQuery test'
-		);
+	});
 
 
-
-		equal(
-			this.sceditor.toBBCode('<img src="http://www.sceditor.com/does/not/exist/smile.png" width="200" />'),
-			'[img]http://www.sceditor.com/does/not/exist/smile.png[/img]',
-			'Non-loaded image width test'
+	test('From BBCode method', function (assert) {
+		assert.htmlEqual(
+			this.mockEditor.fromBBCode('[b]test[/b]'),
+			'<div><strong>test</strong></div>\n'
 		);
 	});
 
-	asyncTest('ToBBCode loaded image width test', function() {
-		expect(1);
-
-		var img      = '<img src="http://www.sceditor.com/emoticons/smile.png" width="200" />'.toDOM();
-		var sceditor = this.sceditor;
-
-		var loaded = function() {
-			ok(
-				sceditor.toBBCode(img),
-				'[img=200x200]http://www.sceditor.com/emoticons/smile.png[/img]'
-			);
-
-			start();
-		};
-
-		if(!img.firstChild.complete)
-			img.firstChild.onload = loaded;
-
-		if(img.firstChild.complete)
-			loaded();
-	});
-
-	test('From BBCode method', function() {
-		expect(2);
-
-		equal(
-			this.sceditor.fromBBCode('[b]test[/b]'),
-			'<div><strong>test</strong></div>\n',
-			'Normal'
-		);
-
-		equal(
-			this.sceditor.fromBBCode('[b]test[/b]', true).ignoreCase(),
+	test('From BBCode method as fragment', function (assert) {
+		assert.htmlEqual(
+			this.mockEditor.fromBBCode('[b]test[/b]', true),
 			'<strong>test</strong>',
 			'As fragment'
 		);
 	});
 
 
+	test('BBcode to HTML trim', function (assert) {
+		this.mockEditor = {
+			opts: $.extend({}, $.sceditor.defaultOptions, { bbcodeTrim: true })
+		};
 
+		this.plugin = new SCEditor.plugins.bbcode();
+		this.plugin.init.call(this.mockEditor);
 
-	module('BBCode Plugin - White Space', {
-		setup: function() {
-			this.sb = new $.sceditor.plugins.bbcode();
-			this.sb.init.call({
-				opts: $.extend({}, $.sceditor.defaultOptions)
-			});
-		}
-	});
 
-	test('Stripping empty', function() {
-		expect(10);
-
-		equal(
-			this.sb.signalToSource('', '<b><br /></b>'.toJquery()),
-			'\n',
-			'Bold tag with newline'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<b></b>'.toJquery()),
-			'',
-			'Empty bold tag'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<b><br />Content</b>'.toJquery()),
-			'[b]\nContent[/b]',
-			'Bold tag with content'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<b><span><br /></span></b>'.toJquery()),
-			'\n',
-			'Bold tag with only whitespace content'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<b><span><span><span></span><span></span></span>   </span></b>'.toJquery()),
-			$.sceditor.ie < 9 ? '' : ' ',
-			'Bold tag with only whitespace content'
-		);
-
-		equal(
-			this.sb.signalToSource('', 'test<b><span><br /></span></b>test'.toJquery()),
-			'test\ntest',
-			'Bold tag with only whitespace between words'
-		);
-
-		equal(
-			this.sb.signalToSource('', 'test<b><i> </i></b>test'.toJquery()),
-			'test test',
-			'Bold and italic tag with only whitespace between words'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<b><span><br />test<span></b>'.toJquery()),
-			'[b]\ntest[/b]',
-			'Bold tag with nested content'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<b><span><br /><span>test<span><span></b>'.toJquery()),
-			'[b]\ntest[/b]',
-			'Bold tag with nested content'
-		);
-
-		equal(
-			this.sb.signalToSource('', '<b><span><span><img src="test.png" /><span><span></b>'.toJquery()).ieURLFix(),
-			'[b][img]test.png[/img][/b]',
-			'Bold tag with nested content'
-		);
-	});
-
-
-	test('Strip Quotes', function() {
-		expect(2);
-
-		equal(
-			this.sb.signalToSource('', '<span  style="font-family: \'Arial Black\'">test</span>'.toJquery()),
-			'[font=Arial Black]test[/font]',
-			'Quotes that should be stripped'
-		);
-
-		var ret = this.sb.signalToSource('', "<span  style=\"font-family: 'Arial Black', Arial\">test</span>".toJquery());
-		ok(
-			ret === "[font='Arial Black', Arial]test[/font]" || ret === '[font="Arial Black", Arial]test[/font]' ||
-			ret === "[font='Arial Black',Arial]test[/font]" || ret === "[font=Arial Black]test[/font]",
-			'Quotes that shouldn\'t be stripped'
-		);
-	});
-
-
-	test('Don\'t strip start and end spaces', function() {
-		expect(1);
-
-		equal(
-			this.sb.signalToWysiwyg('\n\n[quote]test[/quote]\n\n\n\n'),
-			'<div>' + ($.sceditor.ie ? '' : '<br />') + '</div>\n' +
-			'<div>' + ($.sceditor.ie ? '' : '<br />') + '</div>\n' +
-			'<blockquote>test' + ($.sceditor.ie ? '' : '<br />') + '</blockquote>' +
-			'<div>' + ($.sceditor.ie ? '' : '<br />') + '</div>\n' +
-			'<div>' + ($.sceditor.ie ? '' : '<br />') + '</div>\n' +
-			'<div><br />' + ($.sceditor.ie ? '' : '<br />') + '</div>\n'
-		);
-	});
-
-
-	test('New Line Handling', function() {
-		expect(4);
-
-		equal(
-			this.sb.signalToWysiwyg('[list][*]test\n[*]test2\nline\n[/list]'),
-			'<ul><li>test' + ($.sceditor.ie ? '' : '<br />') + '</li><li>test2<br />line' + ($.sceditor.ie ? '' : '<br />') + '</li></ul>',
-			'List with non-closed [*]'
-		);
-
-		equal(
-			this.sb.signalToWysiwyg('[code]test\nline\n[/code]'),
-			'<code>test<br />line<br />' + ($.sceditor.ie ? '' : '<br />') + '</code>',
-			'Code test'
-		);
-
-		equal(
-			this.sb.signalToWysiwyg('[quote]test\nline\n[/quote]'),
-			'<blockquote>test<br />line<br />' + ($.sceditor.ie ? '' : '<br />') + '</blockquote>',
-			'Quote test'
-		);
-
-		equal(
-			this.sb.signalToWysiwyg('[quote][center]test[/center][/quote]'),
-			'<blockquote><div align="center">test' + ($.sceditor.ie ? '' : '<br />') + '</div></blockquote>',
-			'Two block-level elements together'
-		);
-	});
-
-
-
-	module('BBCode Plugin - BBCode attributes');
-
-	test('Auto quote', function() {
-		expect(4);
-
-		delete $.sceditorBBCodePlugin.bbcodes.quote.quoteType;
-		var parser = new $.sceditor.BBCodeParser({ quoteType: $.sceditor.BBCodeParser.QuoteType.auto });
-
-		equal(
-			parser.toBBCode(
-				'[quote author=emanuele date=1353794172 link=topic=2.msg4#msg4]hi[/quote]'
-			),
-			'[quote author=emanuele date=1353794172 link="topic=2.msg4#msg4"]hi[/quote]\n',
-			'Attribute with equals'
-		);
-
-		equal(
-			parser.toBBCode(
-				"[quote author='emanuele\\\'s']hi[/quote]"
-			),
-			'[quote author=emanuele\'s]hi[/quote]\n',
-			'Quoted attribute with escaped quote'
-		);
-
-		equal(
-			parser.toBBCode(
-				'[quote author=This is all the author date=12345679]hi[/quote]'
-			),
-			'[quote author="This is all the author" date=12345679]hi[/quote]\n',
-			'Attribute with spaces'
-		);
-
-		equal(
-			parser.toBBCode(
-				"[quote quoted='anything that does not have an equals after it date=1353794172\\\' " +
-				"link=anythingEvenEquals=as long as no space up to the equals' " +
-				"author=anything that does not have an equals after it date=1353794172 " +
-				"link=anythingEvenEquals=as long as no space up to the equals test=la]asd[/quote]"
-			),
-			'[quote quoted="anything that does not have an equals after it date=1353794172\' ' +
-			'link=anythingEvenEquals=as long as no space up to the equals" ' +
-			'author="anything that does not have an equals after it" date=1353794172 link="anythingEvenEquals=as long as no space up to the equals" test=la]asd[/quote]\n',
-			'Multi-Attribute test'
-		);
-	});
-
-	test('Auto quote', function() {
-		$.sceditor.plugins.bbcode.bbcode.set('test', {
-			format: function() {
-
-			}
-		});
-
-		var parser = new $.sceditor.BBCodeParser({ quoteType: $.sceditor.BBCodeParser.QuoteType.auto });
-
-		equal(
-			parser.toBBCode(
-				'[url=http://www.test.com/]tets[/url]'
-			),
-			'[url=http://www.test.com/]tets[/url]',
-			'Default attribute'
-		);
-
-		equal(
-			parser.toBBCode(
-				'[quote author="test"]test[/quote]'
-			),
-			'[quote author=test]test[/quote]\n',
-			'Non-default attribute'
-		);
-
-		equal(
-			parser.toBBCode(
-				'[test=testdefault nondefault=testnondefault]testing[/test]'
-			),
-			'[test=testdefault nondefault=testnondefault]testing[/test]',
-			'Mixed attribute'
-		);
-
-		$.sceditor.plugins.bbcode.bbcode.remove('test');
-	});
-
-	test("Never quote", function() {
-		expect(4);
-
-		delete $.sceditorBBCodePlugin.bbcodes.quote.quoteType;
-		var parser = new $.sceditor.BBCodeParser({ quoteType: $.sceditor.BBCodeParser.QuoteType.never });
-
-		equal(
-			parser.toBBCode(
-				'[quote author=emanuele date=1353794172 link=topic=2.msg4#msg4]hi[/quote]'
-			),
-			'[quote author=emanuele date=1353794172 link=topic=2.msg4#msg4]hi[/quote]\n',
-			'Attribute with equals'
-		);
-
-		equal(
-			parser.toBBCode(
-				"[quote author='emanuele\\\'s']hi[/quote]"
-			),
-			'[quote author=emanuele\'s]hi[/quote]\n',
-			'Quoted attribute with escaped quote'
-		);
-
-		equal(
-			parser.toBBCode(
-				'[quote author=This is all the author date=12345679]hi[/quote]'
-			),
-			'[quote author=This is all the author date=12345679]hi[/quote]\n',
-			'Attribute with spaces'
-		);
-
-		equal(
-			parser.toBBCode(
-				'[quote author=anything that does not have an equals after it date=1353794172 ' +
-				'link=anythingEvenEquals=as long as no space up to the equals test=la]asd[/quote]'
-			),
-			'[quote author=anything that does not have an equals after it date=1353794172 ' +
-			'link=anythingEvenEquals=as long as no space up to the equals test=la]asd[/quote]\n',
-			'Multi-Attribute test'
-		);
-	});
-
-	test('Always quote', function() {
-		expect(4);
-
-		delete $.sceditorBBCodePlugin.bbcodes.quote.quoteType;
-		var parser = new $.sceditor.BBCodeParser({ quoteType: $.sceditor.BBCodeParser.QuoteType.always });
-
-		equal(
-			parser.toBBCode(
-				'[quote author=emanuele date=1353794172 link=topic=2.msg4#msg4]hi[/quote]'
-			),
-			'[quote author="emanuele" date="1353794172" link="topic=2.msg4#msg4"]hi[/quote]\n',
-			'Attribute with equals'
-		);
-
-		equal(
-			parser.toBBCode(
-				"[quote author='emanuele\\\'s']hi[/quote]"
-			),
-			'[quote author="emanuele\'s"]hi[/quote]\n',
-			'Quoted attribute with escaped quote'
-		);
-
-		equal(
-			parser.toBBCode(
-				'[quote author=This is all the author date=12345679]hi[/quote]'
-			),
-			'[quote author="This is all the author" date="12345679"]hi[/quote]\n',
-			'Attribute with spaces'
-		);
-
-		equal(
-			parser.toBBCode(
-				"[quote quoted='anything that does not have an equals after it date=1353794172\\\' " +
-				"link=anythingEvenEquals=as long as no space up to the equals' " +
-				"author=anything that does not have an equals after it date=1353794172 " +
-				"link=anythingEvenEquals=as long as no space up to the equals test=la]asd[/quote]"
-			),
-			'[quote quoted="anything that does not have an equals after it date=1353794172\' ' +
-			'link=anythingEvenEquals=as long as no space up to the equals" ' +
-			'author="anything that does not have an equals after it" date="1353794172" link="anythingEvenEquals=as long as no space up to the equals" test="la"]asd[/quote]\n',
-			'Multi-Attribute test'
-		);
-	});
-
-	test('Custom quote', function() {
-		expect(4);
-
-		delete $.sceditorBBCodePlugin.bbcodes.quote.quoteType;
-		var parser = new $.sceditor.BBCodeParser({ quoteType: function(str) {
-			return "'" + str.replace('\\', '\\\\').replace("'", "\\'") + "'";
-		}});
-
-		equal(
-			parser.toBBCode(
-				'[quote author=emanuele date=1353794172 link=topic=2.msg4#msg4]hi[/quote]'
-			),
-			"[quote author='emanuele' date='1353794172' link='topic=2.msg4#msg4']hi[/quote]\n",
-			'Attribute with equals'
-		);
-
-		equal(
-			parser.toBBCode(
-				"[quote author='emanuele\\\'s']hi[/quote]"
-			),
-			"[quote author='emanuele\\\'s']hi[/quote]\n",
-			'Quoted attribute with escaped quote'
-		);
-
-		equal(
-			parser.toBBCode(
-				'[quote author=This is all the author date=12345679]hi[/quote]'
-			),
-			"[quote author='This is all the author' date='12345679']hi[/quote]\n",
-			'Attribute with spaces'
-		);
-
-		equal(
-			parser.toBBCode(
-				"[quote quoted='anything that does not have an equals after it date=1353794172\\\' " +
-				"link=anythingEvenEquals=as long as no space up to the equals' " +
-				"author=anything that does not have an equals after it date=1353794172 " +
-				"link=anythingEvenEquals=as long as no space up to the equals test=la]asd[/quote]"
-			),
-			"[quote quoted='anything that does not have an equals after it date=1353794172\\' link=anythingEvenEquals=as long as no space up to the equals' " +
-			"author='anything that does not have an equals after it' date='1353794172' link='anythingEvenEquals=as long as no space up to the equals' test='la']asd[/quote]\n",
-			'Multi-Attribute test'
-		);
-	});
-
-
-
-
-	module('BBCode Plugin - BBCode triming', {
-		setup: function() {
-			this.sb = new $.sceditor.plugins.bbcode();
-			this.sb.init.call({
-				opts: $.extend({}, $.sceditor.defaultOptions, { bbcodeTrim: true })
-			});
-		}
-	});
-
-	test('BBcode to HTML trim', function() {
-		expect(2);
-
-		equal(
-			this.sb.signalToWysiwyg(
+		assert.htmlEqual(
+			this.plugin.signalToWysiwyg(
 				'\n\n[quote]test[/quote]\n\n'
 			),
-			'<blockquote>test' + (!$.sceditor.ie ? '<br />': '') +'</blockquote>',
+			'<blockquote>test' + IE_BR_STR + '</blockquote>',
 			'Block level'
 		);
 
-		equal(
-			this.sb.signalToWysiwyg(
+		assert.htmlEqual(
+			this.plugin.signalToWysiwyg(
 				'\n\n[b]test[/b]\n\n'
 			),
 			'<div><strong>test</strong></div>\n',
@@ -1670,181 +93,784 @@
 		);
 	});
 
-	test('HTML to BBCode trim', function() {
-		expect(2);
 
-		equal(
-			this.sb.signalToSource('', '<div><br /><br /></div><blockquote>test</blockquote><div><br /><br /></div>'.toJquery()),
+	test('HTML to BBCode trim', function (assert) {
+		this.mockEditor = {
+			opts: $.extend({}, $.sceditor.defaultOptions, { bbcodeTrim: true })
+		};
+
+		this.plugin = new SCEditor.plugins.bbcode();
+		this.plugin.init.call(this.mockEditor);
+
+		this.htmlToBBCode = function (html) {
+			var $html = $(utils.htmlToDiv(html));
+
+			return this.plugin.signalToSource('', $html);
+		};
+
+
+		assert.equal(
+			this.htmlToBBCode('<div><br /><br /></div>' +
+				'<blockquote>test</blockquote><div><br /><br /></div>'),
 			'[quote]test[/quote]',
 			'Block level'
 		);
 
-
-		equal(
-			this.sb.signalToSource('', '<div><br /><br /><strong>test</strong><br /><br /><br /></div>'.toJquery()),
+		assert.equal(
+			this.htmlToBBCode('<div><br /><br /><strong>test</strong>' +
+				'<br /><br /><br /></div>'),
 			'[b]test[/b]',
 			'Inline'
 		);
 	});
 
 
-	module('BBCode Plugin - Parser XSS', {
-		setup: function() {
-			this.parser = $.sceditor.BBCodeParser($.sceditor.defaultOptions.parserOptions);
+	module('plugins/bbcode - HTML to BBCode', {
+		setup: function () {
+			this.mockEditor = {
+				opts: $.extend({}, SCEditor.defaultOptions)
+			};
+
+			this.plugin = new SCEditor.plugins.bbcode();
+			this.plugin.init.call(this.mockEditor);
+
+			this.htmlToBBCode = function (html) {
+				var $html = $(utils.htmlToDiv(html));
+
+				return this.plugin.signalToSource('', $html);
+			};
 		}
 	});
 
-	test('Rename BBCode - img', function() {
-		expect(8);
 
-		equal(
-			this.parser.toHTML('[img]fake.png" onerror="alert(String.fromCharCode(88,83,83))[/img]').ignoreSpace(),
-			'<div><img src="fake.png&#34; onerror=&#34;alert(String.fromCharCode(88,83,83))"/></div>'.ignoreSpace(),
-			'Inject attribute'
+	test('Remove empty', function (assert) {
+		assert.equal(
+			this.htmlToBBCode('<b><br /></b>'),
+			'\n',
+			'Empty tag with newline'
 		);
 
-		ok(
-			!/src="javascript:/i.test(
-				this.parser.toHTML('[img]javascript:alert(String.fromCharCode(88,83,83))[/img]').ignoreSpace()
+		assert.equal(
+			this.htmlToBBCode('<b></b>'),
+			'',
+			'Empty tag'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<b><span><br /></span></b>'),
+			'\n',
+			'Empty tag with only whitespace content'
+		);
+
+		assert.equal(
+			this.htmlToBBCode(
+				'<b><span><span><span></span><span></span></span>   </span></b>'
 			),
-			'JavaScript URL'
+			// IE < 9 removes whitespace from innerHTML
+			browser.ie < 9 ? '' : ' ',
+			'Empty tag with only whitespace content'
 		);
 
-		ok(
-			!/src="javascript:/i.test(
-				this.parser.toHTML('[img]JaVaScRiPt:alert(String.fromCharCode(88,83,83))[/img]').ignoreSpace()
-			),
-			'JavaScript URL casing'
+		assert.equal(
+			this.htmlToBBCode('test<b><span><br /></span></b>test'),
+			'test\ntest',
+			'Empty tag with only whitespace between words'
 		);
 
-		ok(
-			!/src="jav/i.test(
-				this.parser.toHTML('[img]jav&#x0A;ascript:alert(String.fromCharCode(88,83,83))[/img]').ignoreSpace()
-			),
-			'JavaScript URL entities'
-		);
-
-		ok(
-			!/[img]onerror=j/i.test(
-				this.parser.toHTML('[img]http://foo.com/fake.png [img] onerror=javascript:alert(String.fromCharCode(88,83,83)) [/img] [/img]').ignoreSpace()
-			),
-			'Nested [img]'
-		);
-
-		equal(
-			this.parser.toHTML('[img=\'"2]uri[/img]').ignoreSpace(),
-			'<div><img width="&#39;&#34;2" height="&#39;&#34;2" src="uri"/></div>'.ignoreSpace(),
-			'Dimension attribute injection'
-		);
-
-		equal(
-			this.parser.toHTML('[img=\'"2x3]uri[/img]').ignoreSpace(),
-			'<div><img width="&#39;&#34;2" height="3" src="uri"/></div>'.ignoreSpace(),
-			'Width attribute injection'
-		);
-
-		equal(
-			this.parser.toHTML('[img=3x\'"2]uri[/img]').ignoreSpace(),
-			'<div><img width="3" height="&#39;&#34;2" src="uri"/></div>'.ignoreSpace(),
-			'Width attribute injection'
+		assert.equal(
+			this.htmlToBBCode('test<b><i> </i></b>test'),
+			'test test',
+			'Nested empty tags with only whitespace between words'
 		);
 	});
 
-	test('Rename BBCode - url', function() {
-		expect(7);
 
-		equal(
-			this.parser.toHTML('[url]fake.png" onmouseover="alert(String.fromCharCode(88,83,83))[/url]').ignoreSpace(),
-			'<div><a href="fake.png&#34; onmouseover=&#34;alert(String.fromCharCode(88,83,83))">fake.png&#34; onmouseover=&#34;alert(String.fromCharCode(88,83,83))</a></div>'.ignoreSpace(),
-			'Inject attribute'
+	test('Should not remove whitespace in code tags', function (assert) {
+		// IE messes with the whitespace when it's set as innerHTML which
+		// causes this test to fail so skip in IE < 9.
+		if (browser.ie && browser.ie < 9) {
+			expect(0);
+			return;
+		}
+
+		var result = this.htmlToBBCode(
+			'<code><pre>Some    White \n   \n   space</pre></code>'
 		);
 
-		ok(
-			!/href="javascript:/i.test(
-				this.parser.toHTML('[url]javascript:alert(String.fromCharCode(88,83,83))[/url]').ignoreSpace()
+		assert.equal(result, '[code]Some    White \n   \n   space[/code]\n');
+	});
+
+	test('Should remove whitespace in non-code tags', function (assert) {
+		var result = this.htmlToBBCode(
+			'     <div>   lots   </div>   \n of   junk   \n\n\n        \n  j'
+		);
+
+		assert.equal(result, 'lots \nof junk j');
+	});
+
+
+	test('New line handling', function (assert) {
+		assert.equal(
+			this.htmlToBBCode(
+				'textnode' +
+				'<div>new line before and after </div>' +
+				'textnode'
 			),
-			'JavaScript URL'
+			'textnode\nnew line before and after \ntextnode',
+			'Textnode before and after block level element'
 		);
 
-		ok(
-			!/href="javascript:/i.test(
-				this.parser.toHTML('[url]JaVaScRiPt:alert(String.fromCharCode(88,83,83))[/url]').ignoreSpace()
+		assert.equal(
+			this.htmlToBBCode(
+				'textnode <span>no new line before and after </span>textnode'
 			),
-			'JavaScript URL casing'
+			'textnode no new line before and after textnode',
+			'Textnode before and after inline element'
 		);
 
-		ok(
-			!/href="jav/i.test(
-				this.parser.toHTML('[url]jav&#x0A;ascript:alert(String.fromCharCode(88,83,83))[/url]').ignoreSpace()
+		assert.equal(
+			this.htmlToBBCode(
+				'<div>text<div>text</div>text</div>'
 			),
-			'JavaScript URL entities'
+			'text\ntext\ntext',
+			'Nested divs'
 		);
 
-		ok(
-			!/href="jav/i.test(
-				this.parser.toHTML('[url]jav	ascript:alert("XSS");[/url]').ignoreSpace()
+		assert.equal(
+			this.htmlToBBCode(
+				'<div><span>text</span><div>text</div><span>text</span></div>'
 			),
-			'JavaScript URL entities'
+			'text\ntext\ntext',
+			'Nested div with span siblings'
 		);
 
-		equal(
-			this.parser.toHTML('[url]test@test.test<b>tet</b>[/url]').ignoreSpace(),
-			'<div><a href="test@test.test&lt;b&gt;tet&lt;/b&gt;">test@test.test&lt;b&gt;tet&lt;/b&gt;</a></div>'.ignoreSpace(),
-			'Inject HTML'
+		assert.equal(
+			this.htmlToBBCode(
+				'<div>' +
+					'<div>text</div>' +
+					'<div>text</div>' +
+					'<div>text</div>' +
+				'</div>'
+			),
+			'text\ntext\ntext',
+			'Nested div with div siblings'
 		);
 
-		equal(
-			this.parser.toHTML('[url=&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#101;&#114;&#116;&#40;&#39;&#88;&#83;&#83;&#39;&#41;]XSS[/url]').ignoreSpace(),
-			'<div><a href="&amp;#106;&amp;#97;&amp;#118;&amp;#97;&amp;#115;&amp;#99;&amp;#114;&amp;#105;&amp;#112;&amp;#116;&amp;#58;&amp;#97;&amp;#108;&amp;#101;&amp;#114;&amp;#116;&amp;#40;&amp;#39;&amp;#88;&amp;#83;&amp;#83;&amp;#39;&amp;#41;">XSS</a></div>'.ignoreSpace(),
-			'Inject HTML'
+		assert.equal(
+			this.htmlToBBCode(
+				'<div>' +
+					'<div>text</div>' +
+					'<div>' + IE_BR_STR + '</div>' +
+					'<div>text</div>' +
+				'</div>'
+			),
+			'text\n\ntext',
+			'Nested div with br and div siblings'
+		);
+
+		assert.equal(
+			this.htmlToBBCode(
+				'<div>text</div>' +
+				'<div>' + IE_BR_STR + '</div>' +
+				'<ul><li>text</li></ul>'
+			),
+			'text\n\n[ul]\n[li]text[/li]\n[/ul]\n',
+			'Div siblings with a list'
+		);
+
+		assert.equal(
+			this.htmlToBBCode(
+				'<div>text</div>' +
+				'<div>' + IE_BR_STR + '</div>' +
+				'<div>' + IE_BR_STR + '</div>' +
+				'<ul><li>text</li></ul>'
+			),
+			'text\n\n\n[ul]\n[li]text[/li]\n[/ul]\n',
+			'Multiple div siblings with a list'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<div>text<br />text</div>'),
+			'text\ntext',
+			'BR tag'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<div>text<br />text' + IE_BR_STR + '</div>'),
+			'text\ntext',
+			'Collapsed end BR tag'
+		);
+
+		assert.equal(
+			this.htmlToBBCode(
+				'<ul><li>newline<br />' + IE_BR_STR + '</li></ul>'
+			),
+			'[ul]\n[li]newline\n[/li]\n[/ul]\n',
+			'List item last child block level'
+		);
+
+		assert.equal(
+			this.htmlToBBCode(
+				'<div><code>newline' + IE_BR_STR + '</code></div>' +
+				'<div>newline</div>'
+			),
+			'[code]newline[/code]\nnewline',
+			'Block level last child'
 		);
 	});
 
-	test('Rename BBCode - email', function() {
-		expect(2);
 
-		equal(
-			this.parser.toHTML('[email]fake@fake.com" onmouseover="alert(String.fromCharCode(88,83,83))[/email]').ignoreSpace(),
-			'<div><a href="mailto:fake@fake.com&#34;onmouseover=&#34;alert(String.fromCharCode(88,83,83))">fake@fake.com&#34;onmouseover=&#34;alert(String.fromCharCode(88,83,83))</a></div>'.ignoreSpace(),
-			'Inject attribute'
+	test('Bold', function (assert) {
+		assert.equal(
+			this.htmlToBBCode('<span style="font-weight: bold">test</span>'),
+			'[b]test[/b]',
+			'CSS bold'
 		);
 
-		equal(
-			this.parser.toHTML('[email]test@test.test<b>tet</b>[/email]').ignoreSpace(),
-			'<div><a href="mailto:test@test.test&lt;b&gt;tet&lt;/b&gt;">test@test.test&lt;b&gt;tet&lt;/b&gt;</a></div>'.ignoreSpace(),
-			'Inject HTML'
+		assert.equal(
+			this.htmlToBBCode('<span style="font-weight: 800">test</span>'),
+			'[b]test[/b]',
+			'CSS bold number'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<span style="font-weight: normal">test</span>'),
+			'test',
+			'CSS not bold'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<b>test</b>'),
+			'[b]test[/b]',
+			'B tag'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<strong>test</strong>'),
+			'[b]test[/b]',
+			'Strong tag'
+		);
+	});
+
+
+	test('Italic', function (assert) {
+		assert.equal(
+			this.htmlToBBCode('<span style="font-style: italic">test</span>'),
+			'[i]test[/i]',
+			'CSS italic'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<span style="font-style: oblique">test</span>'),
+			'[i]test[/i]',
+			'CSS oblique'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<span style="font-style: normal">test</span>'),
+			'test',
+			'CSS normal'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<em>test</em>'),
+			'[i]test[/i]',
+			'Em tag'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<i>test</i>'),
+			'[i]test[/i]',
+			'I tag'
 		);
 	});
 
-	test('Rename BBCode - CSS injection', function() {
-		expect(2);
 
-		equal(
-			this.parser.toHTML('[color=#ff0000;xss:expression(alert(String.fromCharCode(88,83,83)))]XSS[/color]').ignoreSpace(),
-			'<div><font color="#ff0000;xss:expression(alert(String.fromCharCode(88,83,83)))">XSS</font></div>'.ignoreSpace(),
-			'Inject CSS expression'
+	test('Underline', function (assert) {
+		assert.equal(
+			this.htmlToBBCode(
+				'<span style="text-decoration: underline">test</span>'
+			),
+			'[u]test[/u]',
+			'CSS underline'
 		);
 
-		equal(
-			this.parser.toHTML('[font=Impact, sans-serif;xss:expression(alert(String.fromCharCode(88,83,83)))]XSS[/font]').ignoreSpace(),
-			'<div><font face="Impact,sans-serif;xss:expression(alert(String.fromCharCode(88,83,83)))">XSS</font></div>'.ignoreSpace(),
-			'Inject CSS expression'
+		assert.equal(
+			this.htmlToBBCode(
+				'<span style="text-decoration: normal">test</span>'
+			),
+			'test',
+			'CSS normal'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<u>test</u>'),
+			'[u]test[/u]',
+			'U tag'
+		);
+	});
+
+
+	test('Strikethrough', function (assert) {
+		assert.equal(
+			this.htmlToBBCode(
+				'<span style="text-decoration: line-through">test</span>'
+			),
+			'[s]test[/s]',
+			'CSS line-through'
+		);
+
+		assert.equal(
+			this.htmlToBBCode(
+				'<span style="text-decoration: normal">test</span>'
+			),
+			'test',
+			'CSS normal'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<s>test</s>'),
+			'[s]test[/s]',
+			'S tag'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<strike>test</strike>'),
+			'[s]test[/s]',
+			'strike tag'
 		);
 	});
 
-	test('Rename BBCode - HTML injection', function() {
-		expect(2);
 
-		equal(
-			this.parser.toHTML('<script>alert("Hello");</script>').ignoreSpace(),
-			'<div>&lt;script&gt;alert(&#34;Hello&#34;);&lt;/script&gt;</div>'.ignoreSpace(),
-			'Inject HTML script'
-		);
-
-		equal(
-			this.parser.toHTML('[quote=test<b>test</b>test]test[/quote]').ignoreSpace(),
-			'<blockquote><cite>test&lt;b&gt;test&lt;/b&gt;test</cite>test<br/></blockquote>'.ignoreSpace(),
-			'Inject HTML script'
+	test('Subscript', function (assert) {
+		assert.equal(
+			this.htmlToBBCode('<sub>test</sub>'),
+			'[sub]test[/sub]',
+			'Sub tag'
 		);
 	});
-})();
+
+
+	test('Superscript', function (assert) {
+		assert.equal(
+			this.htmlToBBCode('<sup>test</sup>'),
+			'[sup]test[/sup]',
+			'Sup tag'
+		);
+	});
+
+
+	test('Font face', function (assert) {
+		assert.equal(
+			this.htmlToBBCode('<span style="font-family: Arial">test</span>'),
+			'[font=Arial]test[/font]',
+			'CSS'
+		);
+
+		assert.equal(
+			this.htmlToBBCode(
+				'<span  style="font-family: Arial Black">test</span>'
+			),
+			'[font=Arial Black]test[/font]',
+			'CSS font with space in name'
+		);
+
+		assert.equal(
+			this.htmlToBBCode(
+				'<span  style="font-family: \'Arial Black\'">test</span>'
+			),
+			'[font=Arial Black]test[/font]',
+			'CSS font with space in name wrapped in quotes'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<font face="Arial">test</font>'),
+			'[font=Arial]test[/font]',
+			'Font tag face attribute'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<font face="Arial Black">test</font>'),
+			'[font=Arial Black]test[/font]',
+			'Font tag face attribute with space in name'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<font face="\'Arial Black\'">test</font>'),
+			'[font=Arial Black]test[/font]',
+			'Font tag face attribute with space in name wrapped in quotes'
+		);
+
+		assert.equal(
+			utils.stripWhiteSpace(this.htmlToBBCode(
+				'<span style="font-family: \'Arial Black\', Arial">test</span>'
+			)).replace(/"/g, '\''),
+			utils.stripWhiteSpace(
+				'[font=\'Arial Black\',Arial]test[/font]'
+			).replace(/"/g, '\''),
+			'Font with space and another without quotes'
+		);
+	});
+
+
+	test('Size', function (assert) {
+		assert.equal(
+			this.htmlToBBCode('<span style="font-size: 11px">test</span>'),
+			'[size=1]test[/size]',
+			'CSS px'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<span style="font-size: 1100px">test</span>'),
+			'[size=7]test[/size]',
+			'CSS px too large'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<span style="font-size: 0.5em">test</span>'),
+			'[size=1]test[/size]',
+			'CSS em'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<span style="font-size: 50%">test</span>'),
+			'[size=1]test[/size]',
+			'CSS percent'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<font size="1">test</font>'),
+			'[size=1]test[/size]',
+			'Font tag size attribute'
+		);
+	});
+
+
+	test('colour', function (assert) {
+		assert.equal(
+			this.htmlToBBCode('<span style="color: #ffffff">test</span>'),
+			'[color=#ffffff]test[/color]',
+			'CSS normal'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<span style="color: #fff">test</span>'),
+			'[color=#ffffff]test[/color]',
+			'CSS short hand'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<span style="color: rgb(255,255,255)">test</span>'),
+			'[color=#ffffff]test[/color]',
+			'CSS RGB'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<font color="#000">test</span>'),
+			'[color=#000000]test[/color]',
+			'Font tag color attribute short'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<font color="#000000">test</span>'),
+			'[color=#000000]test[/color]',
+			'Font tag color attribute normal'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<font color="rgb(0,0,0)">test</span>'),
+			'[color=#000000]test[/color]',
+			'Font tag color attribute rgb'
+		);
+	});
+
+
+	test('List', function (assert) {
+		assert.equal(
+			this.htmlToBBCode('<ul><li>test' + IE_BR_STR + '</li></ul>'),
+			'[ul]\n[li]test[/li]\n[/ul]\n',
+			'UL tag'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<ol><li>test' + IE_BR_STR + '</li></ol>'),
+			'[ol]\n[li]test[/li]\n[/ol]\n',
+			'OL tag'
+		);
+
+		assert.equal(
+			this.htmlToBBCode(
+				'<ul>' +
+					'<li>test' +
+						'<ul>' +
+							'<li>sub' + IE_BR_STR + '</li>' +
+						'</ul>' +
+					'</li>' +
+				'</ul>'
+			),
+			'[ul]\n[li]test\n[ul]\n[li]sub[/li]\n[/ul]\n[/li]\n[/ul]\n',
+			'Nested UL tag'
+		);
+	});
+
+
+	test('Table', function (assert) {
+		assert.equal(
+			this.htmlToBBCode(
+				'<table>' +
+					'<tr><th>test</th></tr>' +
+					'<tr><td>data1</td></tr>' +
+				'</table>'
+			),
+			'[table]' +
+				'[tr][th]test[/th]\n[/tr]\n' +
+				'[tr][td]data1[/td]\n[/tr]\n' +
+			'[/table]\n'
+		);
+	});
+
+
+	test('Emoticons', function (assert) {
+		assert.equal(
+			this.htmlToBBCode('<img data-sceditor-emoticon=":)"" />'),
+			':)',
+			'Img tag'
+		);
+	});
+
+
+	test('Horizontal rule', function (assert) {
+		assert.equal(
+			this.htmlToBBCode('<hr />'),
+			'[hr]\n',
+			'HR tag'
+		);
+	});
+
+
+	test('Image', function (assert) {
+		assert.equal(
+			this.htmlToBBCode(
+				'<img width=10 height=10 src="http://example.com/test.png" />'
+			),
+			'[img=10x10]http://example.com/test.png[/img]',
+			'Image tag with width and height attributes'
+		);
+
+		assert.equal(
+			this.htmlToBBCode(
+				'<img src="http://www.sceditor.com/emoticons/smile.png" />'
+			),
+			'[img]http://www.sceditor.com/emoticons/smile.png[/img]',
+			'Image no attributes'
+		);
+
+		assert.equal(
+			this.htmlToBBCode(
+				'<img src="http://www.sceditor.com/404.png" width="200" />'
+			),
+			'[img]http://www.sceditor.com/404.png[/img]',
+			'Non-loaded image with width attribute'
+		);
+	});
+
+	asyncTest('Image dimensions when loaded', function (assert) {
+		var plugin = this.plugin;
+		var div = utils.htmlToDiv(
+			'<img src="http://www.sceditor.com/emoticons/smile.png" ' +
+				'width="200" />'
+		);
+
+		var loaded = function () {
+			// IE < 9 fires loaded before the image is complete
+			// so must check
+			if (!div.firstChild.complete) {
+				setTimeout(loaded, 100);
+				return;
+			}
+
+			assert.equal(
+				plugin.signalToSource('', $(div)),
+				'[img=200x200]http://www.sceditor.com/emoticons/smile.png[/img]'
+			);
+
+			QUnit.start();
+		};
+
+		if (!div.firstChild.complete) {
+			div.firstChild.onload = loaded;
+		}
+
+		if (div.firstChild.complete) {
+			loaded();
+		}
+	});
+
+
+	test('URL', function (assert) {
+		assert.equal(
+			this.htmlToBBCode('<a href="http://test.com/">Test</a>'),
+			'[url=http://test.com/]Test[/url]',
+			'Anchor tag'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<a href="http://test.com/"></a>'),
+			'[url=http://test.com/][/url]',
+			'Empty anchor tag'
+		);
+	});
+
+
+	test('Email', function (assert) {
+		assert.equal(
+			this.htmlToBBCode('<a href="mailto:test@test.com">Test</a>'),
+			'[email=test@test.com]Test[/email]',
+			'A tag name'
+		);
+
+		assert.equal(
+			this.htmlToBBCode(
+				'<a href="mailto:test@test.com">test@test.com</a>'
+			),
+			'[email=test@test.com]test@test.com[/email]',
+			'A tag e-mail'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<a href="mailto:test@test.com"></a>'),
+			'',
+			'Empty e-mail tag'
+		);
+	});
+
+
+	test('Quote', function (assert) {
+		assert.equal(
+			this.htmlToBBCode('<blockquote>Testing 1.2.3....</blockquote>'),
+			'[quote]Testing 1.2.3....[/quote]\n',
+			'Simple quote'
+		);
+
+		assert.equal(
+			this.htmlToBBCode(
+				'<blockquote><cite>admin</cite>Testing 1.2.3....</blockquote>'
+			),
+			'[quote=admin]Testing 1.2.3....[/quote]\n',
+			'Quote with cite (author)'
+		);
+
+		assert.equal(
+			this.htmlToBBCode(
+				'<blockquote>' +
+					'<cite>admin</cite>Testing 1.2.3....' +
+					'<blockquote>' +
+						'<cite>admin</cite>Testing 1.2.3....' +
+					'</blockquote>' +
+				'</blockquote>'
+			),
+			'[quote=admin]Testing 1.2.3....\n[quote=admin]Testing 1.2.3....' +
+				'[/quote]\n[/quote]\n',
+			'Nested quote with cite (author)'
+		);
+
+		assert.equal(
+			this.htmlToBBCode(
+				'<blockquote>' +
+					'<cite>admin</cite>' +
+					'<cite>this should be ignored</cite> Testing 1.2.3....' +
+				'</blockquote>'
+			),
+			'[quote=admin]this should be ignored Testing 1.2.3....[/quote]\n',
+			'Quote with 2 cites (author)'
+		);
+	});
+
+
+	test('Code', function (assert) {
+		assert.equal(
+			this.htmlToBBCode('<code>Testing 1.2.3....</code>'),
+			'[code]Testing 1.2.3....[/code]\n',
+			'Simple code'
+		);
+
+		assert.equal(
+			this.htmlToBBCode(
+				'<code><b>ignore this</b> Testing 1.2.3....</code>'
+			),
+			'[code]ignore this Testing 1.2.3....[/code]\n',
+			'Code with styling'
+		);
+	});
+
+
+	test('Left', function (assert) {
+		// IE will return text-align when a parents direction is changed
+		// so will be skipped in IE unless the direction is different
+		// from the parent alignment
+		assert.equal(
+			this.htmlToBBCode('<div style="text-align: left">test</div>'),
+			browser.ie ? 'test' : '[left]test[/left]\n',
+			'CSS text-align'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<div align="left">test</div>'),
+			browser.ie ? 'test' : '[left]test[/left]\n',
+			'Align attribute'
+		);
+	});
+
+
+	test('Right', function (assert) {
+		assert.equal(
+			this.htmlToBBCode('<div style="text-align: right">test</div>'),
+			'[right]test[/right]\n',
+			'CSS text-align'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<div align="right">test</div>'),
+			'[right]test[/right]\n',
+			'Align attribute'
+		);
+	});
+
+
+	test('Centre', function (assert) {
+		assert.equal(
+			this.htmlToBBCode('<div style="text-align: center">test</div>'),
+			'[center]test[/center]\n',
+			'CSS text-align'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<div align="center">test</div>'),
+			'[center]test[/center]\n',
+			'Align attribute'
+		);
+	});
+
+
+	test('Justify', function (assert) {
+		assert.equal(
+			this.htmlToBBCode('<div style="text-align: justify">test</div>'),
+			'[justify]test[/justify]\n',
+			'CSS text-align'
+		);
+
+		assert.equal(
+			this.htmlToBBCode('<div align="justify">test</div>'),
+			'[justify]test[/justify]\n',
+			'Align attribute'
+		);
+	});
+
+
+	test('YouTube', function (assert) {
+		assert.equal(
+			this.htmlToBBCode('<iframe data-youtube-id="xyz"></iframe>'),
+			'[youtube]xyz[/youtube]'
+		);
+	});
+});

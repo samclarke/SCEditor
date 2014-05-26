@@ -1,49 +1,67 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta charset="utf-8" />
-		<title>SCEditor Test</title>
-		<link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.12.0.css" type="text/css" media="screen">
+		<meta charset="utf-8">
+		<title>SCEditor Tests</title>
 
-		<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-		<script src="http://code.jquery.com/qunit/qunit-1.12.0.js"></script>
 
-		<script type="text/javascript" src="./utils/utils.js"></script>
+		<link rel="stylesheet/less" type="text/css"
+			href="../../src/themes/default.less" />
+		<script>
+		var less = {
+			relativeUrls: true
+		};
+		</script>
+		<script src="../libs/less-1.7.0.min.js"></script>
 
+		<link rel="stylesheet" href="../libs/qunit-1.14.0.css">
+		<script src="../libs/jquery-1.11.0.min.js"></script>
+		<script src="../libs/rangy-1.2.3/rangy-core.js"></script>
+		<script src="../libs/qunit-1.14.0.js"></script>
+		<script src="../libs/sinon-1.9.1.js"></script>
+		<script src="../libs/sinon-qunit-1.0.0.js"></script>
+		<script src="../libs/require-2.1.11.js"></script>
 		<!--[if gt IE 8]><!-->
-		<script type="text/javascript" src="./utils/blanket.min.js"></script>
+		<script src="../libs/blanket-1.1.5.min.js" data-cover-only="src/"
+			data-cover-never="['tests/', '/unit']"
+			data-cover-flags="branchTracking"></script>
 		<!--<![endif]-->
 
-		<script>
-		if (location.href.match(/(\?|&)gruntReport($|&|=)/)) {
-			blanket.options("reporter", "utils/grunt-reporter.js");
+		<style>
+		#qunit-module-fixture {
+			position: absolute;
+			top: -10000px;
+			left: -10000px;
+			width: 1000px;
+			height: 1000px;
 		}
+		</style>
+		<script src="init.js"></script>
+		<script>
+			require([
+				// Load all tests as dependancies
+				'tests/unit/lib/PluginManager',
+				'tests/unit/lib/RangeHelper',
+				'tests/unit/lib/SCEditor',
+				'tests/unit/lib/dom',
+				'tests/unit/lib/escape',
+				'tests/unit/plugins/bbcode',
+				'tests/unit/plugins/bbcode.parser',
+				'tests/unit/plugins/xhtml',
+				'tests/unit/jquery.sceditor',
+				'tests/unit/closeAssert',
+				'tests/unit/htmlAssert',
+				'domReady!'
+			], function () {
+				// Start QUnit
+				QUnit.load();
+				QUnit.start();
+			});
 		</script>
-
-
-
-		<!-- SCEditor source -->
-		<script src="../../src/jquery.sceditor.js" data-cover></script>
-		<script src="../../src/plugins/bbcode.js" data-cover></script>
-		<script src="../../src/plugins/xhtml.js" data-cover></script>
-
-
-
-		<!-- SCEditor Tests -->
-		<script type="text/javascript" src="./sceditor.js"></script>
-		<script type="text/javascript" src="./dom.js"></script>
-
-		<!-- Plugins -->
-		<script type="text/javascript" src="./plugins/bbcode.js"></script>
-		<script type="text/javascript" src="./plugins/xhtml.js"></script>
-
-		<script>$.sceditor.defaultOptions.toolbar = '';</script>
 	</head>
 	<body>
 		<div id="qunit"></div>
-		<div id="qunit-fixture">
-			<textarea id="#txt1"></textarea>
-			<textarea id="#txt2"></textarea>
-		</div>
+		<div id="qunit-fixture"></div>
+		<div id="qunit-module-fixture"></div>
 	</body>
 </html>

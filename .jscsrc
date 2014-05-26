@@ -1,0 +1,135 @@
+{
+	"requireCurlyBraces": [
+		"if", "else", "for", "while", "do", "try", "catch"
+	],
+	"requireSpaceAfterKeywords": [
+		"if", "else", "for", "while", "do", "switch", "return", "try", "catch"
+	],
+	"requireSpaceBeforeBlockStatements": true,
+	"requireParenthesesAroundIIFE": true,
+	"requireSpacesInFunctionExpression": {
+		"beforeOpeningRoundBrace": true,
+		"beforeOpeningCurlyBrace": true
+	},
+	"requireSpacesInAnonymousFunctionExpression": {
+		"beforeOpeningRoundBrace": true,
+		"beforeOpeningCurlyBrace": true
+	},
+	"disallowSpacesInNamedFunctionExpression": {
+		"beforeOpeningRoundBrace": true
+	},
+	"disallowSpacesInFunctionDeclaration": {
+		"beforeOpeningRoundBrace": true
+	},
+
+	//"disallowMultipleVarDecl": true,
+
+	"requireBlocksOnNewline": true,
+
+	//"disallowPaddingNewlinesInBlock": true,
+
+	"disallowEmptyBlocks": true,
+
+	//"disallowQuotedKeysInObjects": "allButReserved", no for langs
+
+	"disallowSpaceAfterObjectKeys": true,
+	"requireCommaBeforeLineBreak": true,
+	"requireOperatorBeforeLineBreak": [
+		"?",
+		"+",
+		"-",
+		"/",
+		"*",
+		"=",
+		"==",
+		"===",
+		"!=",
+		"!==",
+		">",
+		">=",
+		"<",
+		"<="
+	],
+	"disallowLeftStickedOperators": [
+		"?",
+		"+",
+		"-",
+		"/",
+		"*",
+		"=",
+		"==",
+		"===",
+		"!=",
+		"!==",
+		">",
+		">=",
+		"<",
+		"<="
+	],
+	"disallowRightStickedOperators": [
+		"?",
+		"+",
+		"/",
+		"*",
+		":",
+		"=",
+		"==",
+		"===",
+		"!=",
+		"!==",
+		">",
+		">=",
+		"<",
+		"<="
+	],
+	"requireRightStickedOperators": [
+		"!"
+	],
+	"requireLeftStickedOperators": [
+		","
+	],
+	"disallowSpaceAfterPrefixUnaryOperators": [
+		"++", "--", "+", "-", "~", "!"
+	],
+	"disallowSpaceBeforePostfixUnaryOperators": [
+		"++", "--"
+	],
+	"requireSpaceBeforeBinaryOperators": [
+		"+", "-", "/", "*", "=", "==", "===", "!=", "!=="
+	],
+	"requireSpaceAfterBinaryOperators": [
+		"+", "-", "/", "*", "=", "==", "===", "!=", "!=="
+	],
+	"requireCamelCaseOrUpperCaseIdentifiers": true,
+	"disallowKeywords": ["with"],
+	"disallowMultipleLineStrings": true,
+	"validateLineBreaks": "LF",
+	"validateQuoteMarks": "'",
+	"validateIndentation": "\t",
+	"disallowMixedSpacesAndTabs": "smart",
+	"disallowTrailingWhitespace": true,
+
+	//"disallowTrailingComma": true,
+
+	"disallowKeywordsOnNewLine": ["else"],
+	"requireLineFeedAtFileEnd": true,
+	"maximumLineLength": 80,
+	"requireCapitalizedConstructors": true,
+	"safeContextKeyword": ["base", "that", "editor"],
+
+	//"requireDotNotation": true, not for langs
+
+	"validateJSDoc": {
+		"checkParamNames": true,
+
+		// Can't check this as optional params like ...args currently cause an
+		// error, see: https://github.com/mdevils/node-jscs/issues/59
+		//"checkRedundantParams": true,
+
+		"requireParamTypes": true
+	},
+	"excludeFiles": [
+		"node_modules/**",
+		"**.min.js"
+	]
+}
