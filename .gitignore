@@ -10,3 +10,5 @@ sceditor.sublime-project
 sceditor.sublime-workspace
 node_modules/*
 distributable/*
+dist/*
+minified/*
