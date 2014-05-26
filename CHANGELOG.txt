@@ -1,6 +1,8 @@
 Version 1.4.6:
 	Fixed resize issue with Android browsers.
 		- Thanks to @scripple for fixing.
+	Fixed bug with table being turned into paragraphs.
+		- Thanks to @jetand for fixing.
 	Refactored the code so that it's in modules.
 		The code is now much more readable and far easier to maintain and test.
 		This change is 100% backwards compatible with the minified version and
