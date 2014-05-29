@@ -491,8 +491,10 @@ define(function (require) {
 			if (isW3C) {
 				var sel = win.getSelection();
 
-				base.clear();
-				sel.addRange(range);
+				if (sel) {
+					base.clear();
+					sel.addRange(range);
+				}
 			} else {
 				range.select();
 			}
@@ -758,10 +760,12 @@ define(function (require) {
 		base.clear = function () {
 			var sel = isW3C ? win.getSelection() : doc.selection;
 
-			if (sel.removeAllRanges) {
-				sel.removeAllRanges();
-			} else if (sel.empty) {
-				sel.empty();
+			if (sel) {
+				if (sel.removeAllRanges) {
+					sel.removeAllRanges();
+				} else if (sel.empty) {
+					sel.empty();
+				}
 			}
 		};
 	};
