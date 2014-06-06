@@ -1788,7 +1788,7 @@
 
 			var isInline = SCEditor.dom.isInline;
 			if (blockLevel && (!isInline(element, true) || tag === 'br')) {
-				var	isLastBlockChild, parent, parentLastChild, parentIsInline,
+				var	isLastBlockChild, parent, parentLastChild,
 					previousSibling = element.previousSibling;
 
 				// skips selection makers and other ignored
@@ -1808,7 +1808,6 @@
 				do {
 					parent          = element.parentNode;
 					parentLastChild = parent.lastChild;
-					parentIsInline  = isInline(parent, true);
 
 					while ($(parentLastChild).hasClass('sceditor-ignore')) {
 						parentLastChild = parentLastChild.previousSibling;
@@ -1816,7 +1815,7 @@
 
 					isLastBlockChild = parentLastChild === element;
 					element = parent;
-				} while (parent && isLastBlockChild && parentIsInline);
+				} while (parent && isLastBlockChild && isInline(parent, true));
 
 				// If this block is:
 				//	* Not the last child of a block level element
