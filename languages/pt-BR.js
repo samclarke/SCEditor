@@ -1,5 +1,5 @@
 /**
-* @author <Your Name> <Your e-mail/Website if you would like>
+* @author martec
 * @license [MIT](http://www.opensource.org/licenses/mit-license.php)
 */
 (function ($) {
@@ -59,8 +59,9 @@
 		'Enter the e-mail address:': 'Informe o endereço de e-mail:',
 		'Enter the displayed text:': 'Digite o texto exibido:',
 		'Enter URL:': 'Informe o endereço URL:',
-		'Enter the YouTube video URL or ID:': 'Informe o endereço URL do YouTube ou ID:',
+		'Enter the YouTube video URL or ID:': 'Informe o endereço URL ou ID do YouTube:',
 		'Insert a Quote': 'Inserir uma citação',
+		'Invalid YouTube video': 'Vídeo do TouTube inválido',
 		dateFormat: 'day-month-year'
 	};
 })(jQuery);
