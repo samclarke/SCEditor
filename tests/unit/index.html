@@ -9,9 +9,13 @@
 			href="../../src/themes/default.less" />
 		<script>
 		var less = {
+			env: 'development',
+			logLevel: 1,
 			relativeUrls: true
 		};
 		</script>
+		<!-- This is needed for LessJS to work in IE < 9 -->
+		<script src="../libs/es5-shim.js"></script>
 		<script src="../libs/less-1.7.0.min.js"></script>
 
 		<link rel="stylesheet" href="../libs/qunit-1.14.0.css">
