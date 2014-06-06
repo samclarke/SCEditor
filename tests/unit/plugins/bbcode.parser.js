@@ -1004,7 +1004,7 @@ define([
 		assert.equal(
 			this.parser.toHTML('[quote=test<b>test</b>test]test[/quote]'),
 			'<blockquote><cite>test&lt;b&gt;test&lt;/b&gt;test</cite>' +
-				'test<br /></blockquote>',
+				'test' + IE_BR_STR + '</blockquote>',
 			'Inject HTML script'
 		);
 	});

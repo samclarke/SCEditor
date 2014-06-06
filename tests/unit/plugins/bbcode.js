@@ -145,8 +145,8 @@ define([
 
 	test('Remove empty', function (assert) {
 		assert.equal(
-			this.htmlToBBCode('<b><br /></b>'),
-			'\n',
+			this.htmlToBBCode('<b>' + IE_BR_STR + '</b>'),
+			'',
 			'Empty tag with newline'
 		);
 
@@ -157,8 +157,8 @@ define([
 		);
 
 		assert.equal(
-			this.htmlToBBCode('<b><span><br /></span></b>'),
-			'\n',
+			this.htmlToBBCode('<b><span>' + IE_BR_STR + '</span></b>'),
+			'',
 			'Empty tag with only whitespace content'
 		);
 
@@ -226,6 +226,16 @@ define([
 			),
 			'textnode no new line before and after textnode',
 			'Textnode before and after inline element'
+		);
+
+		assert.equal(
+			this.htmlToBBCode(
+				'test<div>' +
+					'<strong><em>test' + IE_BR_STR + '</em></strong>' +
+				'</div>test'
+			),
+			'test\n[b][i]test[/i][/b]\ntest',
+			'Block inside inline that is the last child of a block'
 		);
 
 		assert.equal(

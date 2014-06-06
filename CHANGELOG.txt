@@ -21,6 +21,8 @@ Version 1.4.6:
 	Enabled valueChanged on sourceMode.
 	Updated Brazilian Portuguese translation.
 		- Thanks to @martec
+	Fixed HTML to BBCode newline handling causing extra newlines to be added.
+		- Thanks to @jetand for reportig.
 
 Version 1.4.5:
 	Added command shortcuts to tooltips.

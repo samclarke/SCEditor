@@ -1788,10 +1788,8 @@
 
 			var isInline = SCEditor.dom.isInline;
 			if (blockLevel && (!isInline(element, true) || tag === 'br')) {
-				var	parent		    = element.parentNode,
-					parentLastChild = parent.lastChild,
-					previousSibling = element.previousSibling,
-					parentIsInline	= isInline(parent, true);
+				var	isLastBlockChild, parent, parentLastChild, parentIsInline,
+					previousSibling = element.previousSibling;
 
 				// skips selection makers and other ignored
 				// items and empty inlines
@@ -1803,23 +1801,39 @@
 					previousSibling = previousSibling.previousSibling;
 				}
 
-				while ($(parentLastChild).hasClass('sceditor-ignore')) {
-					parentLastChild = parentLastChild.previousSibling;
-				}
+				// If it's the last block of an inline that is the last
+				// child of a block then it shouldn't cause a line break
+				// except in IE < 11
+				// <block><inline><br></inline></block>
+				do {
+					parent          = element.parentNode;
+					parentLastChild = parent.lastChild;
+					parentIsInline  = isInline(parent, true);
 
-				// If this is
-				//	A br/block element inside an inline element.
-				//	The last block level as the last block level is collapsed.
-				//	Is an li element.
-				//	Is IE and the tag is BR. IE never collapses BR's
-				if (parentIsInline || parentLastChild !== element ||
-					tag === 'li' || (tag === 'br' && IE_BR_FIX)) {
+					while ($(parentLastChild).hasClass('sceditor-ignore')) {
+						parentLastChild = parentLastChild.previousSibling;
+					}
+
+					isLastBlockChild = parentLastChild === element;
+					element = parent;
+				} while (parent && isLastBlockChild && parentIsInline);
+
+				// If this block is:
+				//	* Not the last child of a block level element
+				//	* Is a <li> tag (lists are blocks)
+				//	* Is IE < 11 and the tag is BR. IE < 11 never collapses BR
+				//	  tags.
+				if (!isLastBlockChild || tag === 'li' ||
+					(tag === 'br' && IE_BR_FIX)) {
 					content += '\n';
 				}
 
-				// Check for
-				// <div>text<div>This needs a newline prepended</div></div>
-				if ('br' !== tag && previousSibling &&
+				// Check for:
+				// <block>text<block>text</block></block>
+				//
+				// The second opening <block> opening tag should cause a
+				// line break because the previous sibing is inline.
+				if (tag !== 'br' && previousSibling &&
 					!$(previousSibling).is('br') &&
 					isInline(previousSibling, true)) {
 					content = '\n' + content;
@@ -2063,16 +2077,16 @@
 	 * @since 1.4.5
 	 */
 	sceditorPlugins.bbcode.formatBBCodeString = function (str, obj) {
-		return str.replace(/\{(!?[^}]+)\}/g, function (match, group) {
+		return str.replace(/\{([^}]+)\}/g, function (match, group) {
 			var	undef,
 				escape = true;
 
-			if (group[0] === '!') {
+			if (group.charAt(0) === '!') {
 				escape = false;
 				group = group.substring(1);
 			}
 
-			if (group[0] === '0') {
+			if (group === '0') {
 				escape = false;
 			}
 
