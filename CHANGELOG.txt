@@ -19,6 +19,8 @@ Version 1.4.6:
 	Fixed bug with valueChanged event causing an error if the editor is
 		destroyed before it has done its checks.
 	Enabled valueChanged on sourceMode.
+	Updated Brazilian Portuguese translation.
+		- Thanks to @martec
 
 Version 1.4.5:
 	Added command shortcuts to tooltips.
