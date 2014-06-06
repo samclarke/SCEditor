@@ -26,7 +26,15 @@ define([
 		};
 
 		this.filterStripWhiteSpace = function (html) {
-			return utils.stripWhiteSpace(this.filterHtml(html));
+			return utils
+				.stripWhiteSpace(this.filterHtml(html))
+				// IE < 9 outputs styles in upper case
+				.replace(/style="[^"]+"/g, function (match) {
+					return match
+						.toLowerCase()
+						// Make sure the last ; is added to the style attribute
+						.replace(/;?"$/, ';"');
+				});
 		};
 	};
 
@@ -102,11 +110,14 @@ define([
 			'Single span with space and br'
 		);
 
-		assert.htmlEqual(
-			this.filterHtml('<div> <br />		</div>'),
-			'<div>\n\t <br /> \n</div>',
-			'Single div with spaces and br'
-		);
+		// IE < 9 strips whitespace from innerHTML causing the div to be empty
+		if (!browser.ie || browser.ie > 8) {
+			assert.htmlEqual(
+				this.filterHtml('<div> <br />		</div>'),
+				 '<div>\n\t <br /> \n</div>',
+				'Single div with spaces and br'
+			);
+		}
 	});
 
 
@@ -578,22 +589,22 @@ define([
 
 	test('Face', function (assert) {
 		assert.equal(
-			this.filterStripWhiteSpace('<div face="Arial">test</div>'),
+			this.filterStripWhiteSpace('<div face="arial">test</div>'),
 			utils.stripWhiteSpace(
-				'<div style="font-family: Arial;">test</div>'
+				'<div style="font-family: arial;">test</div>'
 			),
 			'Div font'
 		);
 
 		var result = this.filterStripWhiteSpace(
-			'<div face="Arial Black">test</div>'
+			'<div face="arial black">test</div>'
 		);
 
 		assert.ok(
 			result === utils.stripWhiteSpace(
-				'<div style="font-family: Arial Black;">test</div>') ||
+				'<div style="font-family: arial black;">test</div>') ||
 			result === utils.stripWhiteSpace(
-				'<div style="font-family: \'Arial Black\';">test</div>'),
+				'<div style="font-family: \'arial black\';">test</div>'),
 			'Div font with space'
 		);
 	});
