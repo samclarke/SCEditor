@@ -166,17 +166,28 @@ define([
 		);
 	});
 
-
 	test('Do not strip start and end spaces', function (assert) {
-		assert.equal(
-			this.parser.toHTML('\n\n[quote]test[/quote]\n\n\n\n'),
-			'<div>' + IE_BR_STR + '</div>\n' +
-			'<div>' + IE_BR_STR + '</div>\n' +
-			'<blockquote>test' + IE_BR_STR + '</blockquote>' +
-			'<div>' + IE_BR_STR + '</div>\n' +
-			'<div>' + IE_BR_STR + '</div>\n' +
-			'<div><br />' + IE_BR_STR + '</div>\n'
-		);
+		if (browser.ie && browser.ie < 8) {
+			assert.equal(
+				this.parser.toHTML('\n\n[quote]test[/quote]\n\n\n\n'),
+				'<div>\u00a0</div>\n' +
+				'<div>\u00a0</div>\n' +
+				'<blockquote>test</blockquote>' +
+				'<div>\u00a0</div>\n' +
+				'<div>\u00a0</div>\n' +
+				'<div>\u00a0<br /></div>\n'
+			);
+		} else {
+			assert.equal(
+				this.parser.toHTML('\n\n[quote]test[/quote]\n\n\n\n'),
+				'<div>' + IE_BR_STR + '</div>\n' +
+				'<div>' + IE_BR_STR + '</div>\n' +
+				'<blockquote>test' + IE_BR_STR + '</blockquote>' +
+				'<div>' + IE_BR_STR + '</div>\n' +
+				'<div>' + IE_BR_STR + '</div>\n' +
+				'<div><br />' + IE_BR_STR + '</div>\n'
+			);
+		}
 	});
 
 

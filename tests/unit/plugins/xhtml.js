@@ -110,14 +110,11 @@ define([
 			'Single span with space and br'
 		);
 
-		// IE < 9 strips whitespace from innerHTML causing the div to be empty
-		if (!browser.ie || browser.ie > 8) {
-			assert.htmlEqual(
-				this.filterHtml('<div> <br />		</div>'),
-				 '<div>\n\t <br /> \n</div>',
-				'Single div with spaces and br'
-			);
-		}
+		assert.htmlEqual(
+			this.filterHtml('<div> <br />		</div>'),
+			 '<div>\n\t <br /> \n</div>',
+			'Single div with spaces and br'
+		);
 	});
 
 
@@ -790,9 +787,12 @@ define([
 			'With font attribute'
 		);
 
-		assert.equal(
-			this.filterStripWhiteSpace('<font color="red">test</font>'),
-			utils.stripWhiteSpace('<span style="color: red;">test</span>'),
+		var ret = this.filterStripWhiteSpace('<font color="red">test</font>');
+		assert.ok(
+			ret === utils.stripWhiteSpace('<span style="color: red;">' +
+				'test</span>') ||
+			ret === utils.stripWhiteSpace('<span style="color: #ff0000;">' +
+				'test</span>'),
 			'With color attribute'
 		);
 

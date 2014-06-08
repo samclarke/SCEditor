@@ -576,19 +576,19 @@ define([
 		);
 
 		assert.equal(
-			this.htmlToBBCode('<font color="#000">test</span>'),
+			this.htmlToBBCode('<font color="#000">test</font>'),
 			'[color=#000000]test[/color]',
 			'Font tag color attribute short'
 		);
 
 		assert.equal(
-			this.htmlToBBCode('<font color="#000000">test</span>'),
+			this.htmlToBBCode('<font color="#000000">test</font>'),
 			'[color=#000000]test[/color]',
 			'Font tag color attribute normal'
 		);
 
 		assert.equal(
-			this.htmlToBBCode('<font color="rgb(0,0,0)">test</span>'),
+			this.htmlToBBCode('<font color="rgb(0,0,0)">test</font>'),
 			'[color=#000000]test[/color]',
 			'Font tag color attribute rgb'
 		);
