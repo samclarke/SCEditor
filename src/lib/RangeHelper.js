@@ -5,6 +5,10 @@ define(function (require) {
 	var dom   = require('./dom');
 	var escape = require('./escape');
 
+	var _nodeToHtml = function (node) {
+		return $('<p>', node.ownerDocument).append(node).html();
+	};
+
 
 	var RangeHelper = function (w, d) {
 		var	_createMarker, _isOwner, _prepareInput,
@@ -169,8 +173,8 @@ define(function (require) {
 				base.restoreRange();
 			} else {
 				base.insertHTML(
-					$('<p>').append(node).html(),
-					endNode ? $('<p>').append(endNode).html() : null
+					_nodeToHtml(node),
+					endNode ? _nodeToHtml(endNode) : null
 				);
 			}
 		};
@@ -385,7 +389,7 @@ define(function (require) {
 			if (isW3C) {
 				range.insertNode(node);
 			} else {
-				range.pasteHTML($('<p>').append(node).html());
+				range.pasteHTML(_nodeToHtml(node));
 			}
 
 			// Reselect the current range.

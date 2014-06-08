@@ -1600,8 +1600,9 @@ define(function (require) {
 				$(currentBlockNode).parents('code').length !== 0)) {
 				return;
 			}
+
 			// Insert the HTML and save the range so the editor can be scrolled
-			// to the end of the selection. Also allow emoticons to be replaced
+			// to the end of the selection. Also allows emoticons to be replaced
 			// without affecting the cusrsor position
 			rangeHelper.insertHTML(html, endHtml);
 			rangeHelper.saveRange();
@@ -3212,7 +3213,7 @@ define(function (require) {
 		 */
 		base.css = function (css) {
 			if (!inlineCss) {
-				inlineCss = $('<style id="#inline" />')
+				inlineCss = $('<style id="#inline" />', $wysiwygDoc[0])
 					.appendTo($wysiwygDoc.find('head'))[0];
 			}
 
