@@ -1,6 +1,24 @@
 (function () {
 	'use strict';
 
+	var _formatObject = function (obj) {
+		if (!obj) {
+			return obj;
+		}
+
+		if (obj instanceof Error) {
+			var errorMsg = 'Error: ' + (obj.message || obj.description);
+
+			if (obj.stack) {
+				errorMsg += '\n' + obj.stack;
+			}
+
+			return errorMsg;
+		}
+
+		return String(obj);
+	};
+
 	var _patchConsoleMethod = function ($output, method) {
 		var originalMethod = console[method];
 
@@ -8,7 +26,7 @@
 			$output.append(
 				$('<div>')
 					.addClass(method)
-					.text(msg)
+					.text(_formatObject(msg))
 			);
 
 			$output[0].scrollTop = $output[0].scrollHeight;
