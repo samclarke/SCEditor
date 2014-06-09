@@ -2464,8 +2464,10 @@ define(function (require) {
 				return;
 			}
 
-			parent     = e ? e.newNode : rangeHelper.parentNode();
-			firstBlock = rangeHelper.getFirstBlockParent(parent);
+			if (!sourceMode) {
+				parent     = e ? e.newNode : rangeHelper.parentNode();
+				firstBlock = rangeHelper.getFirstBlockParent(parent);
+			}
 
 			while (btnIdx--) {
 				state        = 0;
