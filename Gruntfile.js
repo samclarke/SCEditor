@@ -1,9 +1,187 @@
-/*global module:false*/
+/*global module:false, process:false*/
 module.exports = function (grunt) {
 	'use strict';
 
+	var sauceBrowsers = [
+		// Chrome
+		{
+			platform: 'Linux',
+			browserName: 'chrome',
+			version: '35'
+		},
+		{
+			platform: 'Linux',
+			browserName: 'chrome',
+			version: '30'
+		},
+
+		// FF
+		{
+			platform: 'Linux',
+			browserName: 'firefox',
+			version: '29'
+		},
+		{
+			platform: 'Linux',
+			browserName: 'firefox',
+			version: '25'
+		},
+		{
+			platform: 'Linux',
+			browserName: 'firefox',
+			version: '19'
+		},
+
+		// IE
+		{
+			platform: 'Windows 8.1',
+			browserName: 'internet explorer',
+			version: '11'
+		},
+		{
+			platform: 'Windows 8',
+			browserName: 'internet explorer',
+			version: '10'
+		},
+		{
+			platform: 'Windows 7',
+			browserName: 'internet explorer',
+			version: '9'
+		},
+		{
+			platform: 'Windows 7',
+			browserName: 'internet explorer',
+			version: '8'
+		},
+		{
+			platform: 'Windows XP',
+			browserName: 'internet explorer',
+			version: '7'
+		},
+		{
+			platform: 'Windows XP',
+			browserName: 'internet explorer',
+			version: '6'
+		},
+
+		// Safari
+		{
+			platform: 'OS X 10.9',
+			browserName: 'safari',
+			version: '7'
+		},
+		{
+			platform: 'OS X 10.8',
+			browserName: 'safari',
+			version: '6'
+		},
+		{
+			platform: 'OS X 10.6',
+			browserName: 'safari',
+			version: '5'
+		},
+
+		// Android browser
+		{
+			platform: 'Linux',
+			browserName: 'android',
+			deviceName: 'Android',
+			version: '4.3'
+		},
+		{
+			platform: 'Linux',
+			browserName: 'android',
+			deviceName: 'Android',
+			version: '4.2'
+		},
+		{
+			platform: 'Linux',
+			browserName: 'android',
+			deviceName: 'Android',
+			version: '4.1'
+		},
+		{
+			platform: 'Linux',
+			browserName: 'android',
+			deviceName: 'Android',
+			version: '4.0'
+		},
+
+		// iOS
+		{
+			platform: 'OS X 10.9',
+			browserName: 'ipad',
+			deviceName: 'iPad',
+			version: '7.1'
+		},
+		{
+			platform: 'OS X 10.8',
+			browserName: 'ipad',
+			deviceName: 'iPad',
+			version: '6.1'
+		},
+		{
+			platform: 'OS X 10.6',
+			browserName: 'ipad',
+			deviceName: 'iPad',
+			version: '5.1'
+		},
+		{
+			platform: 'OS X 10.9',
+			browserName: 'iphone',
+			deviceName: 'iPhone',
+			version: '7.0'
+		},
+		{
+			platform: 'OS X 10.8',
+			browserName: 'iphone',
+			deviceName: 'iPhone',
+			version: '6.0'
+		},
+		{
+			platform: 'OS X 10.6',
+			browserName: 'iphone',
+			deviceName: 'iPhone',
+			version: '5.0'
+		}
+	];
+
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
+
+		// Used for Sauce Labs. Creates a server for the
+		// unit tests to be served from.
+		connect: {
+			server: {
+				options: {
+					port: 9999,
+					hostname: '*'
+				}
+			}
+		},
+
+		// Runs the QUnit unit tests in multiple browsers automatically.
+		'saucelabs-qunit': {
+			all: {
+				options: {
+					username: 'sceditor',
+					key: process.env.SAUCE_ACCESS_KEY ||
+						grunt.file.readJSON(process.env.HOME +
+							'/.sauce.json').key,
+					urls: ['http://127.0.0.1:9999/tests/unit/index.html'],
+					tunnelTimeout: 5,
+					build: process.env.TRAVIS_JOB_ID ||
+						('Local ' + (new Date()).toISOString()),
+					concurrency: 3,
+					browsers: sauceBrowsers,
+					'max-duration': 120,
+					sauceConfig: {
+						'video-upload-on-pass': false
+					},
+					testname: 'SCEditor QUnit unit tests'
+				}
+			}
+		},
 
 		// Runs the unit tests
 		qunit: {
@@ -148,7 +326,7 @@ module.exports = function (grunt) {
 				]
 			}
 		},
-
+//TODO: Improve webpack compression
 		// Convert modules into a single JS file
 		webpack: {
 			build: {
@@ -289,6 +467,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-compress');
 	grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-contrib-connect');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -296,13 +475,20 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-qunit');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-jscs-checker');
+	grunt.loadNpmTasks('grunt-saucelabs');
 	grunt.loadNpmTasks('grunt-webpack');
 
 
 	grunt.registerTask('default', ['test']);
 
+	// Sauce Labs. Runs the QUnit tests in multiple browsers automatically.
+	grunt.registerTask('sauce', ['connect', 'saucelabs-qunit']);
+
 	// Lints the JS and runs the unit tests
 	grunt.registerTask('test', ['jshint', 'jscs', 'qunit']);
+
+	// Lints JS, runs unit tests and then runs unit tests via Sauce Labs.
+	grunt.registerTask('full-test', ['test', 'sauce']);
 
 	// Minifies the source
 	grunt.registerTask('build', [

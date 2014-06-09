@@ -685,6 +685,7 @@ define([
 	});
 
 	asyncTest('Image dimensions when loaded', function (assert) {
+		var finished = false;
 		var plugin = this.plugin;
 		var div = utils.htmlToDiv(
 			'<img src="http://www.sceditor.com/emoticons/smile.png" ' +
@@ -692,12 +693,18 @@ define([
 		);
 
 		var loaded = function () {
+			if (finished) {
+				return;
+			}
+
 			// IE < 9 fires loaded before the image is complete
 			// so must check
 			if (!div.firstChild.complete) {
 				setTimeout(loaded, 100);
 				return;
 			}
+
+			finished = true;
 
 			assert.equal(
 				plugin.signalToSource('', $(div)),
@@ -711,9 +718,7 @@ define([
 			div.firstChild.onload = loaded;
 		}
 
-		if (div.firstChild.complete) {
-			loaded();
-		}
+		loaded();
 	});
 
 
