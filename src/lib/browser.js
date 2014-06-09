@@ -109,7 +109,7 @@ define(function (require, exports) {
 
 		// FireFox does support WYSIWYG on mobiles so override
 		// any previous value if using FF
-		if (/fennec/i.test(USER_AGENT)) {
+		if (/Firefox/i.test(USER_AGENT)) {
 			isUnsupported = false;
 		}
 
