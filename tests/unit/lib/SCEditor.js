@@ -445,17 +445,4 @@ define([
 
 		assert.equal($body.find('img[data-sceditor-emoticon]').length, 0);
 	});
-
-
-	test('css()', function (assert) {
-		var body = sceditor.getBody().get(0);
-		var para = body.firstChild;
-
-		assert.notEqual($(para).css('font-weight'), 'bold');
-// Should only be run when ready
-		sceditor.css('p { font-weight: bold }');
-
-		var weight = $(para).css('font-weight');
-		assert.ok(weight === 'bold' || weight === '700');
-	});
 });
