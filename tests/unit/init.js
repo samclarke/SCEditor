@@ -47,11 +47,11 @@
 
 		if (settings.moduleSetup) {
 			QUnit.moduleStart(function (details) {
+				$('#qunit-module-fixture').empty();
+
 				if (details.name == name) {
 					settings.moduleSetup();
 				}
-
-				$('#qunit-module-fixture').empty();
 			});
 		}
 

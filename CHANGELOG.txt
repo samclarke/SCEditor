@@ -17,12 +17,14 @@ Version 1.4.6:
 	Fixed bug with dom.extractContents() method moving extracted element
 		children into the returned documentFragment
 	Fixed bug with valueChanged event causing an error if the editor is
-		destroyed before it has done its checks.
+		destroyed before it has finished its checks.
 	Enabled valueChanged on sourceMode.
-	Updated Brazilian Portuguese translation.
+	Updated the Brazilian Portuguese translation.
 		- Thanks to @martec
 	Fixed HTML to BBCode newline handling causing extra newlines to be added.
-		- Thanks to @jetand for reportig.
+		- Thanks to @jetand for reporting.
+	Added SaurceLabs integration to automatically run QUnit tests in multiple
+		browsers.
 
 Version 1.4.5:
 	Added command shortcuts to tooltips.

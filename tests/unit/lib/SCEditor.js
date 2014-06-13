@@ -16,7 +16,7 @@ define([
 
 	var $textarea;
 	var sceditor;
-	var $fixture = $('#qunit-fixture');
+	var $fixture = $('#qunit-module-fixture');
 
 	var testPlugin = function () {
 		this.signalToWysiwyg = function () {
@@ -29,7 +29,7 @@ define([
 	};
 
 	var reloadEditor = function (config) {
-		reloadEditor.isCustomConfg = !!config;
+		reloadEditor.isCustomConfig = !!config;
 
 		if (sceditor) {
 			sceditor.destroy();
@@ -51,7 +51,7 @@ define([
 
 
 	module('lib/SCEditor', {
-		setup: function () {
+		moduleSetup: function () {
 			SCEditor.commands       = defaultCommands;
 			SCEditor.defaultOptions = defaultOptions;
 
@@ -63,7 +63,7 @@ define([
 
 			reloadEditor();
 		},
-		teardown: function () {
+		moduleTeardown: function () {
 			defaultOptions.style = 'jquery.sceditor.default.css';
 			defaultOptions.emoticonsRoot    = '';
 			defaultOptions.emoticonsEnabled = true;
@@ -73,6 +73,16 @@ define([
 			if (sceditor) {
 				sceditor.destroy();
 			}
+		},
+		setup: function () {
+			if (reloadEditor.isCustomConfig) {
+				reloadEditor();
+			}
+
+			sceditor.sourceMode(false);
+
+			sceditor.val('<p>The quick brown fox jumps over ' +
+				'the lazy dog.<br /></p>', false);
 		}
 	});
 
@@ -211,6 +221,8 @@ define([
 		// Call again to make sure no exception is thrown
 		sceditor.destroy();
 		sceditor.destroy();
+
+		reloadEditor();
 	});
 
 
