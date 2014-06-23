@@ -336,6 +336,8 @@ define([
 		var sourceEditor = $('.sceditor-container textarea').get(0);
 
 		sceditor.sourceMode(true);
+		sceditor.val('<p>The quick brown fox jumps ' +
+			'over the lazy dog.<br /></p>');
 		sceditor.sourceEditorCaret({
 			start: 13,
 			end: 13
@@ -353,6 +355,8 @@ define([
 		var sourceEditor = $('.sceditor-container textarea').get(0);
 
 		sceditor.sourceMode(true);
+		sceditor.val('<p>The quick brown fox jumps ' +
+			'over the lazy dog.<br /></p>');
 		sceditor.sourceEditorCaret({
 			start: 13,
 			end: 18
@@ -402,6 +406,8 @@ define([
 	test('getSourceEditorValue()', function (assert) {
 		sceditor.getRangeHelper().clear();
 		sceditor.sourceMode(true);
+		sceditor.val('<p>The quick brown fox jumps ' +
+			'over the lazy dog.<br /></p>');
 
 		assert.htmlEqual(
 			sceditor.getSourceEditorValue(true),
