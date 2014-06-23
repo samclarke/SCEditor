@@ -2239,14 +2239,16 @@ define(function (require) {
 			var sourceMode = base.inSourceMode();
 
 			// don't allow switching to WYSIWYG if doesn't support it
-			if (!browser.isWysiwygSupported && base.inSourceMode()) {
+			if (!browser.isWysiwygSupported && sourceMode) {
 				return;
 			}
 
-			base.blur();
+			if (!sourceMode) {
+				rangeHelper.saveRange();
+				rangeHelper.clear();
+			}
 
-			rangeHelper.clear();
-			rangeHelper.removeMarkers();
+			base.blur();
 
 			if (sourceMode) {
 				base.setWysiwygEditorValue(base.getSourceEditorValue());
