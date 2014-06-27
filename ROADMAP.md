@@ -3,7 +3,7 @@
 ## 1.4.6
 
 - [x] Update code style so that it matches what most JavaScript code uses.
-- [ ] Add undo/redo plugin
+- [x] Add undo/redo plugin
 - [ ] Add WYSIWYG DOM ready event
 - [ ] Update DOM -> BBCode converter to convert directly to tokens used by the BBCode parser.
 - [ ] Add option to disable pasting, plain text pasting and allow a callback to filter the pasted HTML/text

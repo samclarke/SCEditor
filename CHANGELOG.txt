@@ -25,6 +25,8 @@ Version 1.4.6:
 		- Thanks to @jetand for reporting.
 	Added SaurceLabs integration to automatically run QUnit tests in multiple
 		browsers.
+	Added undo plugin.
+		- Thanks to @brunoais for creating.
 
 Version 1.4.5:
 	Added command shortcuts to tooltips.
