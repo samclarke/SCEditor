@@ -48,7 +48,7 @@
 			'plugins/bbcode': ['jquery.sceditor'],
 			'plugins/xhtml': ['jquery.sceditor'],
 			'plugins/format': ['jquery.sceditor'],
-			'plugins/undoOverrider': ['jquery.sceditor']
+			'plugins/undo': ['jquery.sceditor']
 		}
 	});
 
@@ -57,7 +57,7 @@
 		'plugins/bbcode',
 		'plugins/xhtml',
 		'plugins/format',
-		'plugins/undoOverrider',
+		'plugins/undo',
 		'domReady!'
 	], function () {
 		patchConsole();
