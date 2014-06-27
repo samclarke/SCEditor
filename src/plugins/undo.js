@@ -1,7 +1,7 @@
 (function ($) {
 	'use strict';
 
-	$.sceditor.plugins.undoOverrider = function () {
+	$.sceditor.plugins.undo = function () {
 		var base = this;
 		var editor;
 		var charChangedCount = 0;
