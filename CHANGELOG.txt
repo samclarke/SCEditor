@@ -27,6 +27,8 @@ Version 1.4.6:
 		browsers.
 	Added undo plugin.
 		- Thanks to @brunoais for creating.
+	Added galician and catalan translations and updated Spaish translation.
+		- Thanks to @FranSobrino for translating.
 
 Version 1.4.5:
 	Added command shortcuts to tooltips.
