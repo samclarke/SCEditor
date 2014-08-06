@@ -2529,12 +2529,6 @@ define(function (require) {
 					return false;
 				}
 			}
-
-			// don't apply to code elements
-			if ($parentNode.is('code') ||
-				$parentNode.parents('code').length !== 0) {
-				return;
-			}
 		};
 
 		/**
