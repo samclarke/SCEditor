@@ -36,6 +36,8 @@ Version 1.4.6:
 		- Thanks to @q2apro for reporting.
 	Fixed issue with YouTube not showing fullscreen button inside the editor.
 		- Thanks to @kron-1 for reporting.
+	Fixed bug causing window to scroll when blur is called in FF.
+		- Thanks to @spuds for reporting.
 
 Version 1.4.5:
 	Added command shortcuts to tooltips.
