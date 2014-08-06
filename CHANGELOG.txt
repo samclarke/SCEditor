@@ -38,6 +38,7 @@ Version 1.4.6:
 		- Thanks to @kron-1 for reporting.
 	Fixed bug causing window to scroll when blur is called in FF.
 		- Thanks to @spuds for reporting.
+	Remove deprecated keyPress property from commands.
 
 Version 1.4.5:
 	Added command shortcuts to tooltips.

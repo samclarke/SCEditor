@@ -97,14 +97,6 @@ define(function (require) {
 		var $dropdown;
 
 		/**
-		 * Array of all the commands key press functions
-		 *
-		 * @private
-		 * @type {Array}
-		 */
-		var keyPressFuncs = [];
-
-		/**
 		 * Store the last cursor position. Needed for IE because it forgets
 		 *
 		 * @private
@@ -656,10 +648,6 @@ define(function (require) {
 		 */
 		initCommands = function () {
 			$.each(base.commands, function (name, cmd) {
-				if (cmd.keyPress) {
-					keyPressFuncs.push(cmd.keyPress);
-				}
-
 				if (cmd.forceNewLineAfter && $.isArray(cmd.forceNewLineAfter)) {
 					requireNewLineFix = $.merge(
 						requireNewLineFix,
@@ -2546,12 +2534,6 @@ define(function (require) {
 			if ($parentNode.is('code') ||
 				$parentNode.parents('code').length !== 0) {
 				return;
-			}
-
-// TODO: Remove keyPressFuncs, which are deprecated
-			i = keyPressFuncs.length;
-			while (i--) {
-				keyPressFuncs[i].call(base, e, wysiwygEditor, $sourceEditor);
 			}
 		};
 
