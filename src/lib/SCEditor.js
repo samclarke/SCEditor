@@ -143,16 +143,6 @@ define(function (require) {
 		var btnStateHandlers = [];
 
 		/**
-		 * Element which gets focused to blur the editor.
-		 *
-		 * This will be null until blur() is called.
-		 *
-		 * @type {HTMLElement}
-		 * @private
-		 */
-		var $blurElm;
-
-		/**
 		 * Plugin manager instance
 		 *
 		 * @type {jQuery.sceditor.PluginManager}
@@ -2505,7 +2495,7 @@ define(function (require) {
 		 * @private
 		 */
 		handleKeyPress = function (e) {
-			var	$parentNode, i;
+			var	$parentNode;
 
 // TODO: improve this so isn't set list, probably should just use
 // dom.hasStyling to all block parents and if one does insert a br
@@ -2527,7 +2517,8 @@ define(function (require) {
 				if ($parentNode.is(DUPLICATED_TAGS) ||
 					$parentNode.parents(DUPLICATED_TAGS).length !== 0) {
 					lastRange = null;
-// TODO: Make sure isn't last element of block where pres isn't otherwise may need to insert another
+// TODO: Make sure isn't last element of block where prev is inline
+// otherwise may need to insert another
 					base.wysiwygEditorInsertHtml('<br />', null, true);
 					return false;
 				}
