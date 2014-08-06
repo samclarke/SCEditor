@@ -2351,6 +2351,8 @@ define(function (require) {
 				/*global alert:false*/
 				alert(base._(commandObj.errorMessage));
 			}
+
+			updateActiveButtons();
 		};
 
 		/**
@@ -2525,6 +2527,7 @@ define(function (require) {
 				if ($parentNode.is(DUPLICATED_TAGS) ||
 					$parentNode.parents(DUPLICATED_TAGS).length !== 0) {
 					lastRange = null;
+// TODO: Make sure isn't last element of block where pres isn't otherwise may need to insert another
 					base.wysiwygEditorInsertHtml('<br />', null, true);
 					return false;
 				}
