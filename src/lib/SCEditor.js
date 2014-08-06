@@ -2868,23 +2868,38 @@ define(function (require) {
 		base.focus = function (handler, excludeWysiwyg, excludeSource) {
 			if ($.isFunction(handler)) {
 				base.bind('focus', handler, excludeWysiwyg, excludeSource);
-			} else {
-				if (!base.inSourceMode()) {
-					wysiwygEditor.contentWindow.focus();
-					$wysiwygBody[0].focus();
+			} else if (!base.inSourceMode()) {
+				var container,
+					rng = rangeHelper.selectedRange();
 
-					// Needed for IE < 9
-					if (lastRange) {
-						rangeHelper.selectRange(lastRange);
+				// Check if cursor is set after a BR when the BR is the only
+				// child of the parent. In Firefox this causes a line break
+				// to occur when something is typed. See issue #321
+				if (!IE_BR_FIX && rng && rng.endOffset === 1 && rng.collapsed) {
+					container = rng.endContainer;
 
-						// remove the stored range after being set.
-						// If the editor loses focus it should be
-						// saved again.
-						lastRange = null;
+					if (container && container.childNodes.length === 1 &&
+						$(container.firstChild).is('br')) {
+						rng.setStartBefore(container.firstChild);
+						rng.collapse(true);
+						rangeHelper.selectRange(rng);
 					}
-				} else {
-					sourceEditor.focus();
 				}
+
+				wysiwygEditor.contentWindow.focus();
+				$wysiwygBody[0].focus();
+
+				// Needed for IE < 9
+				if (lastRange) {
+					rangeHelper.selectRange(lastRange);
+
+					// remove the stored range after being set.
+					// If the editor loses focus it should be
+					// saved again.
+					lastRange = null;
+				}
+			} else {
+				sourceEditor.focus();
 			}
 
 			return base;
