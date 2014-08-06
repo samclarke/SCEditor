@@ -41,6 +41,8 @@ Version 1.4.6:
 	Remove deprecated keyPress property from commands.
 	Fixed bug with button states not being updated when called via shortcuts.
 		- Thanks to @echteinfachtv for reporting.
+	Added Lithuanian translation.
+		- Thanks to @q2apro for translating.
 
 Version 1.4.5:
 	Added command shortcuts to tooltips.
