@@ -44,6 +44,27 @@ define([
 	});
 
 
+	test('White space removal', function (assert) {
+		assert.htmlEqual(
+			this.filterHtml('<div>text\ntext</div>'),
+			'<div>\n\ttext text\n</div>',
+			'Text with newline between'
+		);
+
+		assert.htmlEqual(
+			this.filterHtml('<div>text  \n  text</div>'),
+			'<div>\n\ttext text\n</div>',
+			'Text with spaces and newline between'
+		);
+
+		assert.htmlEqual(
+			this.filterHtml('<div>text     text</div>'),
+			'<div>\n\ttext text\n</div>',
+			'Text with multiple spaces'
+		);
+	});
+
+
 	test('Remove empty tags', function (assert) {
 		assert.htmlEqual(
 			this.filterHtml('<div></div>'),
