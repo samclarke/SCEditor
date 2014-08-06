@@ -419,7 +419,9 @@ define(function (require) {
 			var doc, tabIndex;
 
 			$sourceEditor  = $('<textarea></textarea>').hide();
-			$wysiwygEditor = $('<iframe frameborder="0"></iframe>');
+			$wysiwygEditor = $(
+				'<iframe frameborder="0" allowfullscreen="true"></iframe>'
+			);
 
 			if (!options.spellcheck) {
 				$sourceEditor.attr('spellcheck', 'false');

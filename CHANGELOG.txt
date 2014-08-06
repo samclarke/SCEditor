@@ -34,6 +34,8 @@ Version 1.4.6:
 	Fixed bug with spaces sometimes disappearing from pasted text when using the
 		XHTML plugin.
 		- Thanks to @q2apro for reporting.
+	Fixed issue with YouTube not showing fullscreen button inside the editor.
+		- Thanks to @kron-1 for reporting.
 
 Version 1.4.5:
 	Added command shortcuts to tooltips.
