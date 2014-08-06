@@ -304,8 +304,8 @@
 		 */
 		trim = function (str) {
 			return str
-				// new lines in text nodes are always ignored in normal handling
-				.replace(/[\r\n]/, '')
+				// New lines will be shown as spaces so just convert to spaces.
+				.replace(/[\r\n]/, ' ')
 				.replace(/[^\S|\u00A0]+/g, ' ');
 		};
 

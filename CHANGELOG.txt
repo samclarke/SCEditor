@@ -27,9 +27,12 @@ Version 1.4.6:
 		browsers.
 	Added undo plugin.
 		- Thanks to @brunoais for creating.
-	Added galician and catalan translations and updated Spaish translation.
+	Added galician and catalan translations and updated Spanish translation.
 		- Thanks to @FranSobrino for translating.
 	Fixed bug with FF causing newline to appear when something is typed.
+		- Thanks to @q2apro for reporting.
+	Fixed bug with spaces sometimes disappearing from pasted text when using the
+		XHTML plugin.
 		- Thanks to @q2apro for reporting.
 
 Version 1.4.5:
