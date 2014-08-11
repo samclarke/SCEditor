@@ -442,7 +442,10 @@ define(function (require) {
 		code: {
 			forceNewLineAfter: ['code'],
 			exec: function () {
-				this.wysiwygEditorInsertHtml('<code>', '<br /></code>');
+				this.wysiwygEditorInsertHtml(
+					'<code>',
+					(IE_BR_FIX ? '' : '<br />') + '</code>'
+				);
 			},
 			tooltip: 'Code'
 		},
