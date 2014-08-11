@@ -605,7 +605,7 @@ define(function (require) {
 					end    = null;
 				// if not add a newline to the end of the inserted quote
 				} else if (this.getRangeHelper().selectedHtml() === '') {
-					end = IE_BR_FIX ? '' : '<br />' + end;
+					end = (IE_BR_FIX ? '' : '<br />') + end;
 				}
 
 				this.wysiwygEditorInsertHtml(before, end);
