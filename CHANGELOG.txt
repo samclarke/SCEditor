@@ -43,6 +43,9 @@ Version 1.4.6:
 		- Thanks to @echteinfachtv for reporting.
 	Added Lithuanian translation.
 		- Thanks to @q2apro for translating.
+	Fixed bug causing newlines to not always be added when return is pressed
+		at the end of quotes and code blocks.
+		- Thanks to @barbuslex for reporting.
 
 Version 1.4.5:
 	Added command shortcuts to tooltips.

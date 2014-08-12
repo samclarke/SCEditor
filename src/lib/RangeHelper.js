@@ -1,9 +1,17 @@
 define(function (require) {
 	'use strict';
 
-	var $     = require('jquery');
-	var dom   = require('./dom');
-	var escape = require('./escape');
+	var $       = require('jquery');
+	var dom     = require('./dom');
+	var escape  = require('./escape');
+	var browser = require('./browser');
+
+	var IE_VER = browser.ie;
+
+	// In IE < 11 a BR at the end of a block level element
+	// causes a line break. In all other browsers it's collapsed.
+	var IE_BR_FIX = IE_VER && IE_VER < 11;
+
 
 	var _nodeToHtml = function (node) {
 		return $('<p>', node.ownerDocument).append(node).html();
@@ -76,7 +84,7 @@ define(function (require) {
 		 */
 		_prepareInput = function (node, endNode, returnHtml) {
 			var lastChild, $lastChild, docFrag, $appendMarkersTo,
-				div  = doc.createElement('p'),
+				div  = doc.createElement('div'),
 				$div = $(div);
 
 			if (typeof node === 'string') {
@@ -118,8 +126,8 @@ define(function (require) {
 			// Append range markers to the child so can restore the
 			// range to them
 			$appendMarkersTo
-				.append(_createMarker(endMarker))
-				.append(_createMarker(startMarker));
+				.append(_createMarker(startMarker))
+				.append(_createMarker(endMarker));
 
 			if (returnHtml) {
 				return div.innerHTML;
@@ -493,7 +501,32 @@ define(function (require) {
 		 */
 		base.selectRange = function (range) {
 			if (isW3C) {
+				var lastChild;
 				var sel = win.getSelection();
+				var container = range.endContainer;
+
+				// Check if cursor is set after a BR when the BR is the only
+				// child of the parent. In Firefox this causes a line break
+				// to occur when something is typed. See issue #321
+				if (!IE_BR_FIX && range.collapsed && container &&
+					!dom.isInline(container, true)) {
+
+					lastChild = container.lastChild;
+					while (lastChild && $(lastChild).is('.sceditor-ignore')) {
+						lastChild = lastChild.previousSibling;
+					}
+
+					if ($(lastChild).is('br')) {
+						var rng = doc.createRange();
+						rng.setEndAfter(lastChild);
+						rng.collapse(false);
+
+						if (base.compare(range, rng)) {
+							range.setStartBefore(lastChild);
+							range.collapse(true);
+						}
+					}
+				}
 
 				if (sel) {
 					base.clear();
@@ -512,7 +545,7 @@ define(function (require) {
 		 * @memberOf RangeHelper.prototype
 		 */
 		base.restoreRange = function () {
-			var	marker,
+			var	marker, isCollapsed, previousSibling,
 				range = base.selectedRange(),
 				start = base.getMarker(startMarker),
 				end   = base.getMarker(endMarker);
@@ -521,9 +554,20 @@ define(function (require) {
 				return false;
 			}
 
+			isCollapsed = start.nextSibling === end;
+
 			if (!isW3C) {
 				range  = doc.body.createTextRange();
 				marker = doc.body.createTextRange();
+
+				// IE < 9 cannot set focus after a BR so need to insert
+				// a dummy char after it to allow the cursor to be placed
+				previousSibling = start.previousSibling;
+				if (start.nextSibling === end && (!previousSibling ||
+					!dom.isInline(previousSibling, true) ||
+					$(previousSibling).is('br'))) {
+					$(start).before('\u200B');
+				}
 
 				marker.moveToElementText(start);
 				range.setEndPoint('StartToStart', marker);
@@ -537,6 +581,10 @@ define(function (require) {
 
 				range.setStartBefore(start);
 				range.setEndAfter(end);
+			}
+
+			if (isCollapsed) {
+				range.collapse(true);
 			}
 
 			base.selectRange(range);

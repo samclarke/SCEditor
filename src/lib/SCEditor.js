@@ -2495,7 +2495,7 @@ define(function (require) {
 		 * @private
 		 */
 		handleKeyPress = function (e) {
-			var	$parentNode;
+			var	$currentBlockNode, br, brParent, lastChild;
 
 // TODO: improve this so isn't set list, probably should just use
 // dom.hasStyling to all block parents and if one does insert a br
@@ -2508,20 +2508,43 @@ define(function (require) {
 
 			base.closeDropDown();
 
-			$parentNode = $(currentNode);
+			$currentBlockNode = $(currentBlockNode);
 
 			// "Fix" (OK it's a cludge) for blocklevel elements being
 			// duplicated in some browsers when enter is pressed instead
 			// of inserting a newline
-			if (e.which === 13) {
-				if ($parentNode.is(DUPLICATED_TAGS) ||
-					$parentNode.parents(DUPLICATED_TAGS).length !== 0) {
-					lastRange = null;
-// TODO: Make sure isn't last element of block where prev is inline
-// otherwise may need to insert another
-					base.wysiwygEditorInsertHtml('<br />', null, true);
-					return false;
+			if (e.which === 13 && ($currentBlockNode.is(DUPLICATED_TAGS) ||
+				$currentBlockNode.parents(DUPLICATED_TAGS).length !== 0)) {
+				lastRange = null;
+
+				br = $wysiwygDoc[0].createElement('br');
+				rangeHelper.insertNode(br);
+
+				// Last <br> of a block will be collapsed unless it is
+				// IE < 11 so need to make sure the <br> that was inserted
+				// isn't the last node of a block.
+				if (!IE_BR_FIX) {
+					brParent    = br.parentNode;
+					lastChild = brParent.lastChild;
+
+					// Sometimes an empty next node is created after the <br>
+					if (lastChild && lastChild.nodeType === 3 &&
+						lastChild.nodeValue === '') {
+						brParent.removeChild(lastChild);
+						lastChild = brParent.lastChild;
+					}
+
+					// If this is the last BR of a block and the previous
+					// sibling is inline then will need an extra BR. This
+					// is needed because the last BR of a block will be
+					// collapsed. Fixes issue #248
+					if (!dom.isInline(brParent, true) && lastChild === br &&
+						dom.isInline(br.previousSibling)) {
+						rangeHelper.insertHTML('<br>');
+					}
 				}
+
+				return false;
 			}
 		};
 
