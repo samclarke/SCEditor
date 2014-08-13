@@ -47,6 +47,7 @@ Version 1.4.6:
 		at the end of quotes and code blocks.
 		- Thanks to @barbuslex for reporting.
 	Changed the http:// value in inputs to be a placeholder.
+	Changed createDropDown() to focus on the first input or textarea element.
 
 Version 1.4.5:
 	Added command shortcuts to tooltips.

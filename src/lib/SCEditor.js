@@ -1388,6 +1388,8 @@ define(function (require) {
 					// stop clicks within the dropdown from being handled
 					e.stopPropagation();
 				});
+
+			$dropdown.find('input,textarea').first().focus();
 		};
 
 		/**
