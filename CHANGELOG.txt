@@ -46,6 +46,7 @@ Version 1.4.6:
 	Fixed bug causing newlines to not always be added when return is pressed
 		at the end of quotes and code blocks.
 		- Thanks to @barbuslex for reporting.
+	Changed the http:// value in inputs to be a placeholder.
 
 Version 1.4.5:
 	Added command shortcuts to tooltips.

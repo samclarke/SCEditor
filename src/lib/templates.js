@@ -50,7 +50,7 @@ define(function () {
 
 		image:
 			'<div><label for="link">{url}</label> ' +
-				'<input type="text" id="image" value="http://" /></div>' +
+				'<input type="text" id="image" placeholder="http://" /></div>' +
 			'<div><label for="width">{width}</label> ' +
 				'<input type="text" id="width" size="2" /></div>' +
 			'<div><label for="height">{height}</label> ' +
@@ -66,14 +66,14 @@ define(function () {
 
 		link:
 			'<div><label for="link">{url}</label> ' +
-				'<input type="text" id="link" value="http://" /></div>' +
+				'<input type="text" id="link" placeholder="http://" /></div>' +
 			'<div><label for="des">{desc}</label> ' +
 				'<input type="text" id="des" /></div>' +
 			'<div><input type="button" class="button" value="{ins}" /></div>',
 
 		youtubeMenu:
 			'<div><label for="link">{label}</label> ' +
-				'<input type="text" id="link" value="http://" /></div>' +
+				'<input type="text" id="link" placeholder="http://" /></div>' +
 			'<div><input type="button" class="button" value="{insert}" />' +
 				'</div>',
 

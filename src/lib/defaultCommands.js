@@ -476,7 +476,7 @@ define(function (require) {
 						attrs += ' height="' + height + '"';
 					}
 
-					if (val && val !== 'http://') {
+					if (val) {
 						editor.wysiwygEditorInsertHtml(
 							'<img' + attrs + ' src="' + val + '" />'
 						);
@@ -540,7 +540,7 @@ define(function (require) {
 					var	val         = content.find('#link').val(),
 						description = content.find('#des').val();
 
-					if (val && val !== 'http://') {
+					if (val) {
 						// needed for IE to restore the last range
 						editor.focus();
 
@@ -707,10 +707,9 @@ define(function (require) {
 				content.find('.button').click(function (e) {
 					var val = content
 						.find('#link')
-						.val()
-						.replace('http://', '');
+						.val();
 
-					if (val !== '') {
+					if (val) {
 						matches = val.match(
 							/(?:v=|v\/|embed\/|youtu.be\/)(.{11})/
 						);
