@@ -647,7 +647,12 @@ define(function (require) {
 				startPos    = range.startOffset;
 
 				if (before) {
-					startPos = Math.max(0, startPos - length);
+					startPos = startPos - length;
+
+					if (startPos < 0) {
+						length += startPos;
+						startPos = 0;
+					}
 				}
 
 				ret = textContent.substr(startPos, length);
@@ -700,7 +705,7 @@ define(function (require) {
 			}
 
 			var before, beforeAndAfter, matchPos, startPos, beforeLen,
-				charsLeft, keyword, keywordLen, keywordRegex,
+				charsLeft, keyword, keywordLen,
 				wsRegex    = '[\\s\xA0\u2002\u2003\u2009]',
 				keywordIdx = keywords.length,
 				maxKeyLen  = longestKeyword ||
@@ -730,20 +735,20 @@ define(function (require) {
 				keyword      = keywords[keywordIdx][0];
 				keywordLen   = keyword.length;
 				startPos     = beforeLen - 1 - keywordLen;
-				keywordRegex = new RegExp(
-					'(?:' + wsRegex + ')' +
-					escape.regex(keyword) +
-					'(?=' + wsRegex + ')'
-				);
 
 				if (requireWhitespace) {
-					startPos--;
+					matchPos = beforeAndAfter
+						// Start position needs to be 1 char before to include
+						// any previous whitespace
+						.substr(Math.max(0, startPos - 1))
+						.search(new RegExp(
+							'(?:' + wsRegex + ')' +
+							escape.regex(keyword) +
+							'(?=' + wsRegex + ')'
+						));
+				} else {
+					matchPos = beforeAndAfter.indexOf(keyword, startPos);
 				}
-
-				startPos = Math.max(0, startPos);
-				matchPos = requireWhitespace ?
-					beforeAndAfter.substr(startPos).search(keywordRegex) :
-					beforeAndAfter.indexOf(keyword, startPos);
 
 				if (matchPos > -1) {
 					if (requireWhitespace) {
