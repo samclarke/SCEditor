@@ -50,6 +50,7 @@ Version 1.4.6:
 	Changed createDropDown() to focus on the first input or textarea element.
 	Fixed bug with lists inside quote blocks.
 		- Thanks to @barbuslex for reporting.
+	Fixed bug with code blocks not being removed when backspace is pressed.
 
 Version 1.4.5:
 	Added command shortcuts to tooltips.

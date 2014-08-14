@@ -3478,7 +3478,7 @@ define(function (require) {
 		currentStyledBlockNode = function () {
 			var block = currentBlockNode;
 
-			while (!dom.hasStyling(block) || dom.isInline(block)) {
+			while (!dom.hasStyling(block) || dom.isInline(block, true)) {
 				if (!(block = block.parentNode) || $(block).is('body')) {
 					return;
 				}
