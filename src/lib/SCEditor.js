@@ -3419,7 +3419,7 @@ define(function (require) {
 			var	node, offset, tmpRange, range, parent;
 
 			// 8 is the backspace key
-			if (IE_VER || options.disableBlockRemove || e.which !== 8 ||
+			if (options.disableBlockRemove || e.which !== 8 ||
 				!(range = rangeHelper.selectedRange())) {
 				return;
 			}

@@ -51,6 +51,7 @@ Version 1.4.6:
 	Fixed bug with lists inside quote blocks.
 		- Thanks to @barbuslex for reporting.
 	Fixed bug with code blocks not being removed when backspace is pressed.
+	Fixed bug with IE not removing blocks when backspace is pressed.
 
 Version 1.4.5:
 	Added command shortcuts to tooltips.
