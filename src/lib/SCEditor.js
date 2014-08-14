@@ -2497,11 +2497,12 @@ define(function (require) {
 		 * @private
 		 */
 		handleKeyPress = function (e) {
-			var	$currentBlockNode, br, brParent, lastChild;
+			var	$closestTag, br, brParent, lastChild;
 
 // TODO: improve this so isn't set list, probably should just use
 // dom.hasStyling to all block parents and if one does insert a br
 			var DUPLICATED_TAGS = 'code,blockquote,pre';
+			var LIST_TAGS = 'li,ul,ol';
 
 			// FF bug: https://bugzilla.mozilla.org/show_bug.cgi?id=501496
 			if (e.originalEvent.defaultPrevented) {
@@ -2510,13 +2511,15 @@ define(function (require) {
 
 			base.closeDropDown();
 
-			$currentBlockNode = $(currentBlockNode);
+			$closestTag = $(currentBlockNode)
+				.closest(DUPLICATED_TAGS + ',' + LIST_TAGS)
+				.first();
 
 			// "Fix" (OK it's a cludge) for blocklevel elements being
 			// duplicated in some browsers when enter is pressed instead
 			// of inserting a newline
-			if (e.which === 13 && ($currentBlockNode.is(DUPLICATED_TAGS) ||
-				$currentBlockNode.parents(DUPLICATED_TAGS).length !== 0)) {
+			if (e.which === 13 && $closestTag.length &&
+					!$closestTag.is(LIST_TAGS)) {
 				lastRange = null;
 
 				br = $wysiwygDoc[0].createElement('br');
