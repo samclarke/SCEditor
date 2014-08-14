@@ -4,24 +4,24 @@
 
 - [x] Update code style so that it matches what most JavaScript code uses.
 - [x] Add undo/redo plugin
-- [ ] Add WYSIWYG DOM ready event
-- [ ] Update DOM -> BBCode converter to convert directly to tokens used by the BBCode parser.
-- [ ] Add option to disable pasting, plain text pasting and allow a callback to filter the pasted HTML/text
 - [ ] Add bower support
 
 
 ## 1.4.7
 
+- [ ] Add WYSIWYG DOM ready event
+- [ ] Update DOM -> BBCode converter to convert directly to tokens used by the BBCode parser.
+- [ ] Add option to disable pasting, plain text pasting and allow a callback to filter the pasted HTML/text
 - [ ] Create version of the themes using the monocons icon font
 - [ ] Enable the themes text only commands as well as mixed text/icon
 - [ ] HTML5 drag-drop file upload plugin with callbacks to handle the upload and PHP/Node example
 - [ ] Add auto save drafts plugin.
 - [ ] Add helper methods to add/remove inline styling easily.
-- [ ] Add support for BBCodes with just their BBCode and HTML replacement.
 
 
 ## 1.4.8
 
+- [ ] Add support for BBCodes with just their BBCode and HTML replacement.
 - [ ] Image resize plugin
 - [ ] Add flash embedding command + BBCode in a plugin
 - [ ] Add mobile friendly theme with larger touch area.
