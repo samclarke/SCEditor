@@ -52,6 +52,8 @@ Version 1.4.6:
 		- Thanks to @barbuslex for reporting.
 	Fixed bug with code blocks not being removed when backspace is pressed.
 	Fixed bug with IE not removing blocks when backspace is pressed.
+	Added optional description to email dropdown.
+		- Thanks to @PaulBender for suggesting.
 
 Version 1.4.5:
 	Added command shortcuts to tooltips.

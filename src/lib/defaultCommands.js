@@ -498,19 +498,27 @@ define(function (require) {
 				var	editor  = this,
 					content = _tmpl('email', {
 						label: editor._('E-mail:'),
+						desc: editor._('Description (optional):'),
 						insert: editor._('Insert')
 					}, true);
 
 				content.find('.button').click(function (e) {
-					var val = content.find('#email').val();
+					var val         = content.find('#email').val(),
+						description = content.find('#des').val();
 
 					if (val) {
 						// needed for IE to reset the last range
 						editor.focus();
 
-						if (!editor.getRangeHelper().selectedHtml()) {
-							editor.wysiwygEditorInsertHtml('<a href="' +
-								'mailto:' + val + '">' + val + '</a>');
+						if (!editor.getRangeHelper().selectedHtml() ||
+							description) {
+							description = description || val;
+
+							editor.wysiwygEditorInsertHtml(
+								'<a href="' + 'mailto:' + val + '">' +
+									description +
+								'</a>'
+							);
 						} else {
 							editor.execCommand('createlink', 'mailto:' + val);
 						}

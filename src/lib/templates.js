@@ -61,6 +61,8 @@ define(function () {
 		email:
 			'<div><label for="email">{label}</label> ' +
 				'<input type="text" id="email" /></div>' +
+			'<div><label for="des">{desc}</label> ' +
+				'<input type="text" id="des" /></div>' +
 			'<div><input type="button" class="button" value="{insert}" />' +
 				'</div>',
 
