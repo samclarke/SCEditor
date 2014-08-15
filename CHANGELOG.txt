@@ -57,6 +57,8 @@ Version 1.4.6:
 	Fixed bug with autoUpdate causing double clicking on [sub]/[sup] to not
 		remove styling.
 		- Thanks to @q2apro for reporting.
+	Fixed possible XSS attack in IE <= 8 when using BBCode plugin to edit
+		malicious BBCode.
 
 Version 1.4.5:
 	Added command shortcuts to tooltips.

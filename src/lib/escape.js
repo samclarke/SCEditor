@@ -32,16 +32,25 @@ define(function (require, exports) {
 			return str;
 		}
 
-		str = str.replace(/&/g, '&amp;')
-			.replace(/</g, '&lt;')
-			.replace(/>/g, '&gt;')
-			.replace(/ {2}/g, ' &nbsp;')
-			.replace(/\r\n|\r/g, '\n')
-			.replace(/\n/g, '<br />');
+		var replacements = {
+			'&': '&amp;',
+			'<': '&lt;',
+			'>': '&gt;',
+			'  ': ' &nbsp;',
+			'\r\n': '\n',
+			'\r': '\n',
+			'\n': '<br />'
+		};
 
 		if (noQuotes !== false) {
-			str = str.replace(/"/g, '&#34;').replace(/'/g, '&#39;');
+			replacements['"']  = '&#34;';
+			replacements['\''] = '&#39;';
+			replacements['`']  = '&#96;';
 		}
+
+		str = str.replace(/ {2}|\r\n|[&<>\r\n'"`]/g, function (match) {
+			return replacements[match] || match;
+		});
 
 		return str;
 	};

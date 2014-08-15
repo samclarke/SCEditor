@@ -27,8 +27,8 @@ define([
 		assert.strictEqual(escape.entities(''), '');
 
 		assert.equal(
-			escape.entities('& < > " \''),
-			'&amp; &lt; &gt; &#34; &#39;'
+			escape.entities('& < > " \'    `'),
+			'&amp; &lt; &gt; &#34; &#39; &nbsp; &nbsp;&#96;'
 		);
 	});
 
@@ -36,6 +36,13 @@ define([
 		assert.equal(
 			escape.entities('<script>alert("XSS");</script>'),
 			'&lt;script&gt;alert(&#34;XSS&#34;);&lt;/script&gt;'
+		);
+	});
+
+	test('entities() - IE XSS', function (assert) {
+		assert.equal(
+			escape.entities('<img src="x" alt="``onerror=alert(1)" />'),
+			'&lt;img src=&#34;x&#34; alt=&#34;&#96;&#96;onerror=alert(1)&#34; /&gt;'
 		);
 	});
 
