@@ -229,6 +229,14 @@ define(function (require) {
 		var toolbarButtons = {};
 
 		/**
+		 * If the current autoUpdate action is canceled.
+		 *
+		 * @type {Boolean}
+		 * @private
+		 */
+		var autoUpdateCancelled;
+
+		/**
 		 * Private functions
 		 * @private
 		 */
@@ -268,7 +276,8 @@ define(function (require) {
 			currentStyledBlockNode,
 			triggerValueChanged,
 			valueChangedBlur,
-			valueChangedKeyUp;
+			valueChangedKeyUp,
+			autoUpdate;
 
 		/**
 		 * All the commands supported by the editor
@@ -468,8 +477,8 @@ define(function (require) {
 		initOptions = function () {
 			// auto-update original textbox on blur if option set to true
 			if (options.autoUpdate) {
-				$wysiwygBody.bind('blur', base.updateOriginal);
-				$sourceEditor.bind('blur', base.updateOriginal);
+				$wysiwygBody.bind('blur', autoUpdate);
+				$sourceEditor.bind('blur', autoUpdate);
 			}
 
 			if (options.rtl === null) {
@@ -2272,6 +2281,8 @@ define(function (require) {
 		 * @private
 		 */
 		handleCommand = function (caller, cmd) {
+			autoUpdateCancelled = true;
+
 			// check if in text mode and handle text commands
 			if (base.inSourceMode()) {
 				if (cmd.txtExec) {
@@ -3626,6 +3637,16 @@ define(function (require) {
 			valueChangedKeyUp.timer = setTimeout(function () {
 				triggerValueChanged();
 			}, 1500);
+		};
+
+		autoUpdate = function () {
+			autoUpdateCancelled = false;
+
+			setTimeout(function () {
+				if (!autoUpdateCancelled) {
+					base.updateOriginal();
+				}
+			});
 		};
 
 		// run the initializer

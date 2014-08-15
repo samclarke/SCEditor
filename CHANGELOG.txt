@@ -54,6 +54,9 @@ Version 1.4.6:
 	Fixed bug with IE not removing blocks when backspace is pressed.
 	Added optional description to email dropdown.
 		- Thanks to @PaulBender for suggesting.
+	Fixed bug with autoUpdate causing double clicking on [sub]/[sup] to not
+		remove styling.
+		- Thanks to @q2apro for reporting.
 
 Version 1.4.5:
 	Added command shortcuts to tooltips.
