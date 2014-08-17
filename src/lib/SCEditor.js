@@ -234,7 +234,7 @@ define(function (require) {
 		 * @type {Boolean}
 		 * @private
 		 */
-		var autoUpdateCancelled;
+		var autoUpdateCanceled;
 
 		/**
 		 * Private functions
@@ -590,6 +590,13 @@ define(function (require) {
 						.data('sceditor-txtmode', !!command.txtExec)
 						.data('sceditor-wysiwygmode', !!command.exec)
 						.toggleClass('disabled', !command.exec)
+						.mousedown(function () {
+							// IE < 8 supports unselectable attribute
+							// so don't need this
+							if (!IE_VER || IE_VER < 9) {
+								autoUpdateCanceled = true;
+							}
+						})
 						.click(function () {
 							var $this = $(this);
 
@@ -1407,7 +1414,9 @@ define(function (require) {
 		 */
 		handleDocumentClick = function (e) {
 			// ignore right clicks
-			if (e.which !== 3) {
+			if (e.which !== 3 && $dropdown) {
+				autoUpdate();
+
 				base.closeDropDown();
 			}
 		};
@@ -2281,8 +2290,6 @@ define(function (require) {
 		 * @private
 		 */
 		handleCommand = function (caller, cmd) {
-			autoUpdateCancelled = true;
-
 			// check if in text mode and handle text commands
 			if (base.inSourceMode()) {
 				if (cmd.txtExec) {
@@ -3640,13 +3647,11 @@ define(function (require) {
 		};
 
 		autoUpdate = function () {
-			autoUpdateCancelled = false;
+			if (!autoUpdateCanceled) {
+				base.updateOriginal();
+			}
 
-			setTimeout(function () {
-				if (!autoUpdateCancelled) {
-					base.updateOriginal();
-				}
-			});
+			autoUpdateCanceled = false;
 		};
 
 		// run the initializer
