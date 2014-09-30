@@ -2,6 +2,13 @@
 module.exports = function (grunt) {
 	'use strict';
 
+	var sauceConfig = process.env.HOME + '/.sauce.json';
+
+	var sauceKey = process.env.SAUCE_ACCESS_KEY;
+	if (!sauceKey && grunt.file.isFile(sauceConfig)) {
+		sauceKey = grunt.file.readJSON(sauceConfig).key;
+	}
+
 	var sauceBrowsers = [
 		// Chrome
 		{
@@ -165,9 +172,7 @@ module.exports = function (grunt) {
 			all: {
 				options: {
 					username: 'sceditor',
-					key: process.env.SAUCE_ACCESS_KEY ||
-						grunt.file.readJSON(process.env.HOME +
-							'/.sauce.json').key,
+					key: sauceKey,
 					urls: ['http://127.0.0.1:9999/tests/unit/index.html'],
 					tunnelTimeout: 5,
 					build: process.env.TRAVIS_JOB_ID ||
