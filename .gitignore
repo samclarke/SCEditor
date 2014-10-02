@@ -1,14 +1,7 @@
-build/compiler.jar
-example/test.php
-example/test.html
-example/less-1.3.0.min.js
-.project
-_site/*
-.c9revisions/*
-.settings*
 sceditor.sublime-project
 sceditor.sublime-workspace
 node_modules/*
 distributable/*
 dist/*
 minified/*
+docs/*
