@@ -505,9 +505,8 @@ module.exports = function (grunt) {
 		'cssmin:build'
 	]);
 
-// TODO: Rename to release and update docs
 	// Creates the simplified distributable ZIP
-	grunt.registerTask('dist', [
+	grunt.registerTask('release', [
 		'test',
 		'build',
 		'clean:dist',
@@ -517,4 +516,7 @@ module.exports = function (grunt) {
 		'compress:dist',
 		'clean:dist'
 	]);
+
+	// Alias dist to release for backwards compatibility
+	grunt.registerTask('dist', ['release']);
 };

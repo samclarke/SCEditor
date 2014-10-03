@@ -54,7 +54,7 @@ That's it! You can now build and test SCEditor with the following commands:
 
     grunt build # Minifies the JS and converts the LESS to CSS
     grunt test # Runs the linter and unit tests
-    grunt dist # Creates the distributable ZIP file
+    grunt release # Creates the distributable ZIP file
 
 
 
