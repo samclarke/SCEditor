@@ -1970,16 +1970,7 @@
 						} else {
 							ret += curTag;
 						}
-					} else if (node.wholeText && (!node.previousSibling ||
-						node.previousSibling.nodeType !== 3)) {
-// TODO:This should check for CSS white-space, should pass it in
-// the function to reduce css lookups which are SLOW!
-						if ($node.parents('code').length === 0) {
-							ret += node.wholeText.replace(/ +/g, ' ');
-						} else {
-							ret += node.wholeText;
-						}
-					} else if (!node.wholeText) {
+					} else {
 						ret += node.nodeValue;
 					}
 				}, false, true);
