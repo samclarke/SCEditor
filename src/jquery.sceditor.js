@@ -3446,7 +3446,7 @@
 	 */
 	$.sceditor.escapeUriScheme = function(url) {
 		var	path,
-			validSchemes = /^(?:https?|s?ftp|mailto|spotify|skype|ssh|teamspeak|tel):|(?:\/\/)/i,
+			validSchemes = /^(?:https?|s?ftp|mailto|spotify|skype|ssh|teamspeak|tel|data):|(?:\/\/)/i,
 			// If there is a : before a / then it has a scheme
 			hasScheme = /^[^\/]*:/i,
 			location = window.location;
