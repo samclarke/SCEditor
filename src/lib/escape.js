@@ -2,7 +2,7 @@ define(function (require, exports) {
 	'use strict';
 
 	var VALID_SCHEME_REGEX =
-		/^(?:https?|s?ftp|mailto|spotify|skype|ssh|teamspeak|tel):|(?:\/\/)/i;
+		/^(?:https?|s?ftp|mailto|spotify|skype|ssh|teamspeak|tel|data):|(?:\/\/)/i;
 
 	/**
 	 * Escapes a string so it's safe to use in regex
