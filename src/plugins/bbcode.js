@@ -2555,7 +2555,7 @@
 					$cite.remove();
 
 					content	= this.elementToBbcode($(element));
-					author  = '=' + author;
+					author  = '=' + author.replace(/(^\s+|\s+$)/g, '');
 
 					$elm.prepend($cite);
 				}
