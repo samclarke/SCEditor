@@ -63,4 +63,7 @@
 		'Insert a Quote': 'Inserir uma citação',
 		dateFormat: 'day/month/year'
 	};
+
+	// Set as the default Portuguese locale
+	$.sceditor.locale['pt'] = $.sceditor.locale['pt-PT'];
 })(jQuery);
