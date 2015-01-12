@@ -450,7 +450,7 @@
 		 * @private
 		 */
 		initEditor = function () {
-			var doc, tabIndex;
+			var doc, tabIndex, $clone, width, height;
 
 			$sourceEditor  = $('<textarea></textarea>').hide();
 			$wysiwygEditor = $('<iframe frameborder="0"></iframe>');
@@ -466,7 +466,25 @@
 			wysiwygEditor = $wysiwygEditor[0];
 			sourceEditor  = $sourceEditor[0];
 
-			base.dimensions(options.width || $original.width(), options.height || $original.height());
+			// Prevent the dimensions bugging out if $original is hidden
+			if(!$original.is(':visible'))
+			{
+				$clone = $original.clone();
+				// Move it off-screen to prevent graphical flickering
+				$clone.css({ 'position': 'absolute', 'top': -2000 });
+				// Add it into the closest visible element
+				$clone.appendTo($original.closest(':visible'));
+				// Then make sure it's visible itself
+				$clone.css({'display': 'block', 'visibility': 'visible'});
+			}
+
+			width = options.width || ($clone ? $clone.width() : $original.width());
+			height = options.height || ($clone ? $clone.height() : $original.height());
+
+			if ($clone)
+				$clone.remove();
+
+			base.dimensions(width, height);
 
 			doc = getWysiwygDoc();
 			doc.open();
