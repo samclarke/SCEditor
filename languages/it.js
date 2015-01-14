@@ -66,4 +66,7 @@
 
 		dateFormat: 'day-month-year'
 	};
+
+	// Set as the default Italian locale
+	$.sceditor.locale['it'] = $.sceditor.locale['it-IT'];
 })(jQuery);
