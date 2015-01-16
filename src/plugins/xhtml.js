@@ -399,14 +399,14 @@
 			var merge = {
 				bold: { txtExec: ['<strong>', '</strong>'] },
 				italic: { txtExec: ['<em>', '</em>'] },
-				underline: { txtExec: ['<span style="text-decoration: underline;">', '<span>'] },
-				strike: { txtExec: ['<span style="text-decoration: line-through;">', '<span>'] },
+				underline: { txtExec: ['<span style="text-decoration: underline;">', '</span>'] },
+				strike: { txtExec: ['<span style="text-decoration: line-through;">', '</span>'] },
 				subscript: { txtExec: ['<sub>', '</sub>'] },
 				superscript: { txtExec: ['<sup>', '</sup>'] },
-				left: { txtExec: ['<div style="text-align: left;">', '<div>'] },
-				center: { txtExec: ['<div style="text-align: center;">', '<div>'] },
-				right: { txtExec: ['<div style="text-align: right;">', '<div>'] },
-				justify: { txtExec: ['<div style="text-align: justify;">', '<div>'] },
+				left: { txtExec: ['<div style="text-align: left;">', '</div>'] },
+				center: { txtExec: ['<div style="text-align: center;">', '</div>'] },
+				right: { txtExec: ['<div style="text-align: right;">', '</div>'] },
+				justify: { txtExec: ['<div style="text-align: justify;">', '</div>'] },
 				font: { txtExec: function(caller) {
 					var editor = this;
 
