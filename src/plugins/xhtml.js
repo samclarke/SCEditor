@@ -34,13 +34,13 @@
 		underline: {
 			txtExec: [
 				'<span style="text-decoration: underline;">',
-				'<span>'
+				'</span>'
 			]
 		},
 		strike: {
 			txtExec: [
 				'<span style="text-decoration: line-through;">',
-				'<span>'
+				'</span>'
 			]
 		},
 		subscript: {
@@ -58,25 +58,25 @@
 		left: {
 			txtExec: [
 				'<div style="text-align: left;">',
-				'<div>'
+				'</div>'
 			]
 		},
 		center: {
 			txtExec: [
 				'<div style="text-align: center;">',
-				'<div>'
+				'</div>'
 			]
 		},
 		right: {
 			txtExec: [
 				'<div style="text-align: right;">',
-				'<div>'
+				'</div>'
 			]
 		},
 		justify: {
 			txtExec: [
 				'<div style="text-align: justify;">',
-				'<div>'
+				'</div>'
 			]
 		},
 		font: {
