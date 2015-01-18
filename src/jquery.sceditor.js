@@ -1408,7 +1408,7 @@
 		handlePasteData = function(elm, pastearea) {
 			// fix any invalid nesting
 			$.sceditor.dom.fixNesting(pastearea);
-// TODO: Trigger custom paste event to allow filtering (pre and post converstion?)
+
 			var pasteddata = pastearea.innerHTML;
 
 			if (pluginManager.hasHandler('toSource'))
@@ -1418,6 +1418,12 @@
 
 			if (pluginManager.hasHandler('toWysiwyg'))
 				pasteddata = pluginManager.callOnlyFirst('toWysiwyg', pasteddata, true);
+
+			if (pluginManager.hasHandler('pasteData')) {
+				pasteddata = pluginManager.callOnlyFirst(
+					'pasteData', pasteddata
+				);
+			}
 
 			rangeHelper.restoreRange();
 			base.wysiwygEditorInsertHtml(pasteddata, null, true);
