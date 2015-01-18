@@ -17,19 +17,11 @@
 	$.sceditor.plugins.disableImageStream = function () {
 		var base = this;
 
-		/**
-		 * Private functions
-		 * @private
-		 */
-		base.init = function () {
-      document.title = 'DisableImageStream Loaded';
-		};
-
-    base.signalPasteData = function(pastedata) {
-      if (/data:image/ig.test(pastedata)) {
-        return '';
-      }
-      return pastedata;
-    }
+		base.signalPasteData = function(pastedata) {
+			if (/data:image/ig.test(pastedata)) {
+				return '';
+			}
+			return pastedata;
+	    	};
 	};
 })(jQuery);
