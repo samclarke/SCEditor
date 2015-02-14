@@ -234,7 +234,7 @@ module.exports = function (grunt) {
 				src: 'languages/**/*.js',
 				options: {
 					config: '.jscsrc',
-					maximumLineLength: 400,
+					maximumLineLength: 400
 				}
 			}
 		},
@@ -460,8 +460,7 @@ module.exports = function (grunt) {
 					{
 						expand: true,
 						cwd: 'dist/',
-						src: ['**'],
-						dest: '/'
+						src: ['**']
 					}
 				]
 			}
