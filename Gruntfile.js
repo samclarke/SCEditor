@@ -440,6 +440,19 @@ module.exports = function (grunt) {
 			}
 		},
 
+        // Manage CSS vendor prefixes
+        autoprefixer: {
+            build: {
+                options: {
+                    browsers: ['last 4 versions', 'ie 6', 'ie 7', 'ie 8', 'ie 9']
+                },
+                expand: true,
+                flatten: true,
+                src: 'minified/themes/*.css',
+                dest: 'minified/themes/'
+            }
+        },
+
 		// Compress the WYSIWYG CSS
 		cssmin: {
 			build: {
@@ -469,7 +482,8 @@ module.exports = function (grunt) {
 	});
 
 
-	grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-autoprefixer');
+    grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-compress');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-connect');
@@ -502,6 +516,7 @@ module.exports = function (grunt) {
 		'webpack:build',
 		'uglify:build',
 		'less:build',
+        'autoprefixer:build',
 		'cssmin:build'
 	]);
 
