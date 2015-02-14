@@ -455,13 +455,20 @@ module.exports = function (grunt) {
 
 		// Compress the WYSIWYG CSS
 		cssmin: {
-			build: {
-				files: {
-					'minified/jquery.sceditor.default.min.css': [
-						'src/jquery.sceditor.default.css'
-					]
-				}
-			}
+            build: {
+                files: [
+                    {
+                        'minified/jquery.sceditor.default.min.css': ['src/jquery.sceditor.default.css']
+                    },
+                    {
+                        expand: true,
+                        cwd: 'minified/themes',
+                        src: ['*.min.css'],
+                        dest: 'minified/themes',
+                        ext: '.min.css'
+                    }
+                ]
+            }
 		},
 
 		// Creates the distributable ZIP file
