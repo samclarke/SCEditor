@@ -1,5 +1,6 @@
 /*global module:false, process:false*/
 module.exports = function (grunt) {
+    require('time-grunt')(grunt);
 	'use strict';
 
 	var sauceConfig = process.env.HOME + '/.sauce.json';
