@@ -1,8 +1,11 @@
+// Where to find the monocons fonts
+@monocons-location: "monocons/";
+
 @font-face {
 	font-family: 'Monocons';
-	src:url('monocons/monocons.eot');
-	src:url('monocons/monocons.eot?#iefix') format('embedded-opentype'),
-		url('monocons/monocons.ttf') format('truetype');
+	src:url('@{monocons-location}/monocons.eot');
+	src:url('@{monocons-location}/monocons.eot?#iefix') format('embedded-opentype'),
+		url('@{monocons-location}/monocons.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
