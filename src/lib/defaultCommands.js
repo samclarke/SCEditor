@@ -870,8 +870,7 @@ define(function (require) {
 
 				editor.focus();
 
-				if (!elm || $elm.is('body'))
-				{
+				if (!elm || $elm.is('body')) {
 					editor.execCommand('formatBlock', 'p');
 
 					elm  = editor.getRangeHelper().getFirstBlockParent();

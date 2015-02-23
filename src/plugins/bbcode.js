@@ -1271,7 +1271,7 @@
 				if (needsBlockWrap && !blockWrapOpen) {
 					ret.push('<div>');
 					blockWrapOpen = true;
-				} else if (!needsBlockWrap && blockWrapOpen)  {
+				} else if (!needsBlockWrap && blockWrapOpen) {
 					ret.push('</div>\n');
 					blockWrapOpen = false;
 				}

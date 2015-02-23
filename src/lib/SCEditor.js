@@ -3116,7 +3116,7 @@ define(function (require) {
 					previousText = prev.innerText || '';
 				}
 
-				if ((!prev || !noneWsRegex.test(prev.nodeValue.slice( -1))) &&
+				if ((!prev || !noneWsRegex.test(prev.nodeValue.slice(-1))) &&
 					(!next || !noneWsRegex.test((next.nodeValue || '')[0]))) {
 					return emoticon;
 				}

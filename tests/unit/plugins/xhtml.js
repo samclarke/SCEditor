@@ -133,7 +133,7 @@ define([
 
 		assert.htmlEqual(
 			this.filterHtml('<div> <br />		</div>'),
-			 '<div>\n\t <br /> \n</div>',
+			'<div>\n\t <br /> \n</div>',
 			'Single div with spaces and br'
 		);
 	});
