@@ -59,6 +59,8 @@ Version 1.4.6:
 		- Thanks to @q2apro for reporting.
 	Fixed possible XSS attack in IE <= 8 when using BBCode plugin to edit
 		malicious BBCode.
+	Improved build and added CSS autoprefixer.
+		- Thanks to @Gazenwagen for improving
 
 Version 1.4.5:
 	Added command shortcuts to tooltips.
