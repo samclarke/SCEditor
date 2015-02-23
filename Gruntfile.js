@@ -1,5 +1,6 @@
 /*global module:false, process:false*/
 module.exports = function (grunt) {
+    require('time-grunt')(grunt);
 	'use strict';
 
 	var sauceConfig = process.env.HOME + '/.sauce.json';
@@ -234,7 +235,7 @@ module.exports = function (grunt) {
 				src: 'languages/**/*.js',
 				options: {
 					config: '.jscsrc',
-					maximumLineLength: 400,
+					maximumLineLength: 400
 				}
 			}
 		},
@@ -439,15 +440,35 @@ module.exports = function (grunt) {
 			}
 		},
 
+        // Manage CSS vendor prefixes
+        autoprefixer: {
+            build: {
+                options: {
+                    browsers: ['last 4 versions', 'ie 6', 'ie 7', 'ie 8', 'ie 9']
+                },
+                expand: true,
+                flatten: true,
+                src: 'minified/themes/*.css',
+                dest: 'minified/themes/'
+            }
+        },
+
 		// Compress the WYSIWYG CSS
 		cssmin: {
-			build: {
-				files: {
-					'minified/jquery.sceditor.default.min.css': [
-						'src/jquery.sceditor.default.css'
-					]
-				}
-			}
+            build: {
+                files: [
+                    {
+                        'minified/jquery.sceditor.default.min.css': ['src/jquery.sceditor.default.css']
+                    },
+                    {
+                        expand: true,
+                        cwd: 'minified/themes',
+                        src: ['*.min.css'],
+                        dest: 'minified/themes',
+                        ext: '.min.css'
+                    }
+                ]
+            }
 		},
 
 		// Creates the distributable ZIP file
@@ -460,8 +481,7 @@ module.exports = function (grunt) {
 					{
 						expand: true,
 						cwd: 'dist/',
-						src: ['**'],
-						dest: '/'
+						src: ['**']
 					}
 				]
 			}
@@ -469,7 +489,8 @@ module.exports = function (grunt) {
 	});
 
 
-	grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-autoprefixer');
+    grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-compress');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-connect');
@@ -479,7 +500,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-contrib-qunit');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-jscs-checker');
+	grunt.loadNpmTasks('grunt-jscs');
 	grunt.loadNpmTasks('grunt-saucelabs');
 	grunt.loadNpmTasks('grunt-webpack');
 
@@ -502,6 +523,7 @@ module.exports = function (grunt) {
 		'webpack:build',
 		'uglify:build',
 		'less:build',
+        'autoprefixer:build',
 		'cssmin:build'
 	]);
 
