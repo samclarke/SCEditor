@@ -1791,11 +1791,12 @@
 				var	isLastBlockChild, parent, parentLastChild,
 					previousSibling = element.previousSibling;
 
-				// skips selection makers and other ignored
-				// items and empty inlines
+				// Skips selection makers and ignored elements
+				// Skip empty inline elements
 				while (previousSibling &&
 					($(previousSibling).hasClass('sceditor-ignore') ||
 						(previousSibling.nodeType === 1 &&
+							!$(previousSibling).is('br') &&
 							isInline(previousSibling, true) &&
 							!previousSibling.firstChild))) {
 					previousSibling = previousSibling.previousSibling;
