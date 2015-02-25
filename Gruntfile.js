@@ -4,13 +4,6 @@ module.exports = function (grunt) {
 
 	require('time-grunt')(grunt);
 
-	var sauceConfig = process.env.HOME + '/.sauce.json';
-
-	var sauceKey = process.env.SAUCE_ACCESS_KEY;
-	if (!sauceKey && grunt.file.isFile(sauceConfig)) {
-		sauceKey = grunt.file.readJSON(sauceConfig).key;
-	}
-
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 
@@ -30,7 +23,7 @@ module.exports = function (grunt) {
 			all: {
 				options: {
 					username: 'sceditor',
-					key: sauceKey,
+					key: process.env.SCEDITOR_SAUCE_KEY,
 					urls: ['http://127.0.0.1:9999/tests/unit/index.html'],
 					tunnelTimeout: 5,
 					build: process.env.TRAVIS_JOB_ID ||
