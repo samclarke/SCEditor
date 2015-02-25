@@ -4,10 +4,11 @@
 
 - [x] Update code style so that it matches what most JavaScript code uses.
 - [x] Add undo/redo plugin
+- [x] Switch to Semantic Versioning
 - [ ] Add bower support
 
 
-## 1.4.7
+## 1.5.0
 
 - [ ] Add WYSIWYG DOM ready event
 - [ ] Update DOM -> BBCode converter to convert directly to tokens used by the BBCode parser.
@@ -19,7 +20,7 @@
 - [ ] Add helper methods to add/remove inline styling easily.
 
 
-## 1.4.8
+## 1.6.0
 
 - [ ] Add support for BBCodes with just their BBCode and HTML replacement.
 - [ ] Image resize plugin
@@ -29,7 +30,7 @@
 - [ ] Possibly add mobile plugin that gives the option to go fullscreen when focused and gives option to disable the editor completely.
 
 
-## 1.4.9
+## 1.7.0
 
 - [ ] Add context menu support
 - [ ] Table editing plugin. Move table command into the plugin
