@@ -917,6 +917,9 @@ define(function (require) {
 
 		// START_COMMAND: Source
 		source: {
+			state: function () {
+				return this.sourceMode();
+			},
 			exec: function () {
 				this.toggleSourceMode();
 			},
