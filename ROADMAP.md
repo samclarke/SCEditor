@@ -1,13 +1,5 @@
 # Roadmap
 
-## 1.4.6
-
-- [x] Update code style so that it matches what most JavaScript code uses.
-- [x] Add undo/redo plugin
-- [x] Switch to Semantic Versioning
-- [ ] Add bower support
-
-
 ## 1.5.0
 
 - [ ] Add WYSIWYG DOM ready event
