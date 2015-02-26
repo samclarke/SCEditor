@@ -15,7 +15,7 @@
 /*jshint maxdepth: false*/
 // TODO: Tidy this code up and consider seperating the BBCode parser into a
 // standalone module that can be used with other JS/NodeJS
-;(function ($, window, document) {
+(function ($, window, document) {
 	'use strict';
 
 	var SCEditor        = $.sceditor;

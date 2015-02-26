@@ -1,4 +1,4 @@
-;(function ($) {
+(function ($) {
 	'use strict';
 
 	$.sceditor.plugins.undo = function () {
