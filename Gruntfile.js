@@ -120,12 +120,6 @@ module.exports = function (grunt) {
 					{
 						expand: true,
 						cwd: 'src/',
-						src: 'jquery.sceditor.js',
-						dest: 'dist/development/'
-					},
-					{
-						expand: true,
-						cwd: 'src/',
 						src: 'jquery.sceditor.default.css',
 						dest: 'dist/development/'
 					},
@@ -194,20 +188,29 @@ module.exports = function (grunt) {
 				externals: {
 					jquery: 'jQuery'
 				}
+			},
+			dist: {
+				entry: './src/jquery.sceditor.js',
+				output: {
+					path: './dist/development/',
+					filename: 'jquery.sceditor.js'
+				},
+				externals: {
+					jquery: 'jQuery'
+				}
 			}
 		},
 
-//TODO: dist should create webpack version and concat that instead
 		// Create the XHTML and BBCode bundled JS files
 		concat: {
 			dist: {
 				files: {
 					'dist/development/jquery.sceditor.bbcode.js': [
-						'src/jquery.sceditor.js',
+						'dist/development/jquery.sceditor.js',
 						'src/plugins/bbcode.js'
 					],
 					'dist/development/jquery.sceditor.xhtml.js': [
-						'src/jquery.sceditor.js',
+						'dist/development/jquery.sceditor.js',
 						'src/plugins/xhtml.js'
 					]
 				}
@@ -382,6 +385,7 @@ module.exports = function (grunt) {
 		'test',
 		'build',
 		'clean:dist',
+		'webpack:dist',
 		'concat:dist',
 		'copy:dist',
 		'less:dist',

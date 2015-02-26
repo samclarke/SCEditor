@@ -6,9 +6,11 @@
   "bugs": "https://github.com/samclarke/SCEditor/issues",
   "license": "MIT",
   "author": "Sam Clarke <sam@samclarke.com>",
-  "contributors": [{
-    "name": "brunoais"
-  }],
+  "contributors": [
+    {
+      "name": "brunoais"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/samclarke/SCEditor.git"
