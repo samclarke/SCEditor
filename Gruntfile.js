@@ -225,7 +225,7 @@ module.exports = function (grunt) {
 					compress: true,
 					mangle: true,
 					banner: '/* SCEditor v<%= pkg.version %> | ' +
-						'(C) 2014, Sam Clarke | sceditor.com/license */\n'
+						'(C) 2015, Sam Clarke | sceditor.com/license */\n'
 				},
 				files: [
 					{
