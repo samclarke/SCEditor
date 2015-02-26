@@ -11,7 +11,7 @@
  * @requires jQuery
  */
 /*global prompt: true*/
-(function ($) {
+;(function ($) {
 	'use strict';
 
 	var SCEditor        = $.sceditor;

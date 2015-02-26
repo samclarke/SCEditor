@@ -11,7 +11,7 @@
  * @author Sam Clarke
  * @requires jQuery
  */
-(function ($) {
+;(function ($) {
 	'use strict';
 
 	$.sceditor.plugins.format = function () {

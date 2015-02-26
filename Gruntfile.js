@@ -204,6 +204,9 @@ module.exports = function (grunt) {
 		// Create the XHTML and BBCode bundled JS files
 		concat: {
 			dist: {
+				options: {
+					separator: ';'
+				},
 				files: {
 					'dist/development/jquery.sceditor.bbcode.js': [
 						'dist/development/jquery.sceditor.js',
