@@ -18,6 +18,7 @@
 - [ ] HTML5 drag-drop file upload plugin with callbacks to handle the upload and PHP/Node example
 - [ ] Add auto save drafts plugin.
 - [ ] Add helper methods to add/remove inline styling easily.
+- [ ] Reduce color picker to smaller list
 
 
 ## 1.6.0
