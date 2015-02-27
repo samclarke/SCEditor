@@ -2600,7 +2600,7 @@ define(function (require) {
 					// this is the last text or br node, if its in a code or
 					// quote tag then add a newline to the end of the editor
 					if (requiresNewLine) {
-						paragraph = wysiwygDoc.createElement('p');
+						paragraph = $wysiwygDoc[0].createElement('p');
 						paragraph.className = 'sceditor-nlf';
 						paragraph.innerHTML = !IE_BR_FIX ? '<br />' : '';
 						body.appendChild(paragraph);
