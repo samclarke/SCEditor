@@ -341,6 +341,12 @@ module.exports = function (grunt) {
 					}
 				]
 			}
+		},
+
+		githooks: {
+			all: {
+				'pre-commit': 'test'
+			}
 		}
 	});
 
@@ -359,6 +365,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-jscs');
 	grunt.loadNpmTasks('grunt-saucelabs');
 	grunt.loadNpmTasks('grunt-webpack');
+	grunt.loadNpmTasks('grunt-githooks');
 
 
 	grunt.registerTask('default', ['test']);
