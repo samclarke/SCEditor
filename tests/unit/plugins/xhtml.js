@@ -95,7 +95,7 @@ define([
 	test('Should not remove non-empty tags', function (assert) {
 		assert.htmlEqual(
 			this.filterHtml('<input name="test" />'),
-			'<input name="test" />',
+			'<p>\n\t<input name="test" />\n</p>',
 			'Input tag'
 		);
 
@@ -103,13 +103,13 @@ define([
 			this.filterHtml(
 				'<iframe src="http://example.com"></iframe>'
 			),
-			'<iframe src="http://example.com"></iframe>',
+			'<p>\n\t<iframe src="http://example.com"></iframe>\n</p>',
 			'Iframe tag'
 		);
 
 		assert.htmlEqual(
 			this.filterHtml('<span>test<br /></span>'),
-			'<span>test<br /></span>',
+			'<p>\n\t<span>test<br /></span>\n</p>',
 			'Single span with text and br'
 		);
 
@@ -126,15 +126,36 @@ define([
 		);
 
 		assert.htmlEqual(
-			this.filterHtml('<span> <br /></span>'),
-			'<span> <br /></span>',
+			this.filterHtml('<span>&nbsp;<br /></span>'),
+			'<p>\n\t<span>&nbsp;<br /></span>\n</p>',
 			'Single span with space and br'
 		);
 
 		assert.htmlEqual(
-			this.filterHtml('<div> <br />		</div>'),
-			'<div>\n\t <br /> \n</div>',
+			this.filterHtml('<div>&nbsp;<br />		</div>'),
+			'<div>\n\t&nbsp;<br /> \n</div>',
 			'Single div with spaces and br'
+		);
+	});
+
+
+	test('Should wrap adjacent inline nodes of root in paragraphs', function (assert) {
+		assert.htmlEqual(
+			this.filterHtml('text\ntext'),
+			'<p>\n\ttext text\n</p>',
+			'Text with newline'
+		);
+
+		assert.htmlEqual(
+			this.filterHtml('text<strong>text</strong>text'),
+			'<p>\n\ttext<strong>text</strong>text\n</p>',
+			'Text with bold tag in between'
+		);
+
+		assert.htmlEqual(
+			this.filterHtml('\n\n   <div>text</div>   \n'),
+			'<div>\n\ttext\n</div>',
+			'Div surrounded by white space'
 		);
 	});
 
@@ -146,7 +167,7 @@ define([
 			this.filterHtml(
 				'<div><strong>test</strong><a href="#">test link</a></div>'
 			),
-			'<strong>test</strong><a href="#">test link</a>',
+			'<p>\n\t<strong>test</strong><a href="#">test link</a>\n</p>',
 			'Allowed tags in disallowed tag'
 		);
 
@@ -154,31 +175,31 @@ define([
 			this.filterHtml(
 				'<div><div><strong>test</strong></div></div>'
 			),
-			'<strong>test</strong>',
+			'<p>\n\t<strong>test</strong>\n</p>',
 			'Allowed tags in nested disallowed tag'
 		);
 
 		assert.htmlEqual(
 			this.filterHtml('<strong>test</strong><div>test</div>'),
-			'<strong>test</strong> test',
+			'<p>\n\t<strong>test</strong> test\n</p>',
 			'Allowed tag and disallowed tag'
 		);
 
 		assert.htmlEqual(
 			this.filterHtml('<div>test</div>test'),
-			'test test',
+			'<p>\n\ttest test\n</p>',
 			'Disallowed tag with text sibling'
 		);
 
 		assert.htmlEqual(
 			this.filterHtml('<div>test</div><div>test</div>'),
-			'test test',
+			'<p>\n\ttest test\n</p>',
 			'Sibling disallowed tags'
 		);
 
 		assert.htmlEqual(
 			this.filterHtml('<div>test</div>'),
-			'test',
+			'<p>\n\ttest\n</p>',
 			'Only disallowed tag'
 		);
 
@@ -194,7 +215,7 @@ define([
 			this.filterHtml(
 				'<div><strong>test</strong><a href="#">test link</a></div>'
 			),
-			'<strong>test</strong><a href="#">test link</a>',
+			'<p>\n\t<strong>test</strong><a href="#">test link</a>\n</p>',
 			'Allowed tags in disallowed tag'
 		);
 
@@ -202,37 +223,37 @@ define([
 			this.filterHtml(
 				'<div><div><strong>test</strong></div></div>'
 			),
-			'<strong>test</strong>',
+			'<p>\n\t<strong>test</strong>\n</p>',
 			'Allowed tags in nested disallowed tag'
 		);
 
 		assert.htmlEqual(
 			this.filterHtml('<strong>test</strong><div>test</div>'),
-			'<strong>test</strong> test',
+			'<p>\n\t<strong>test</strong> test\n</p>',
 			'Allowed tag and disallowed tag'
 		);
 
 		assert.htmlEqual(
 			this.filterHtml('<div>test<div>test'),
-			'test test',
+			'<p>\n\ttest test\n</p>',
 			'Disallowed tag'
 		);
 
 		assert.htmlEqual(
 			this.filterHtml('test<div>test<div>'),
-			'test test',
+			'<p>\n\ttest test\n</p>',
 			'Disallowed tag as last child'
 		);
 
 		assert.htmlEqual(
 			this.filterHtml('<div>test</div><div>test</div>'),
-			'test test',
+			'<p>\n\ttest test\n</p>',
 			'Sibling disallowed tags'
 		);
 
 		assert.htmlEqual(
 			this.filterHtml('<div>test</div>'),
-			'test',
+			'<p>\n\ttest\n</p>',
 			'Only disallowed tag'
 		);
 
@@ -272,7 +293,7 @@ define([
 
 		assert.htmlEqual(
 			this.filterHtml('<a href="#">test</a><div href="#">test</div>'),
-			'<a href="#">test</a>\n<div>\n\ttest\n</div>',
+			'<p>\n\t<a href="#">test</a>\n</p>\n<div>\n\ttest\n</div>',
 			'Allowed and disallowed attributes for specific tag'
 		);
 
@@ -324,7 +345,7 @@ define([
 
 		assert.htmlEqual(
 			this.filterHtml('<a href="#">test</a><div href="#">test</div>'),
-			'<a href="#">test</a>\n<div>\n\ttest\n</div>',
+			'<p>\n\t<a href="#">test</a>\n</p>\n<div>\n\ttest\n</div>',
 			'Allowed and disallowed attributes for specific tag'
 		);
 
@@ -354,7 +375,7 @@ define([
 
 		assert.equal(
 			this.filterHtml('<span>test</span>'),
-			'<span>test</span>',
+			'<p>\n\t<span>test</span>\n</p>',
 			'Span with text'
 		);
 
@@ -366,7 +387,7 @@ define([
 
 		assert.equal(
 			this.filterHtml('<span><span>test</span></span>'),
-			'<span><span>test</span></span>',
+			'<p>\n\t<span><span>test</span></span>\n</p>',
 			'Nested span with text'
 		);
 
@@ -378,7 +399,7 @@ define([
 
 		assert.equal(
 			this.filterHtml('<span>test<div>test</div>test</span>'),
-			'<span>test\n\t<div>\n\t\ttest\n\t</div>\n\ttest</span>',
+			'<p>\n\t<span>test\n\t\t<div>\n\t\t\ttest\n\t\t</div>\n\t\ttest</span>\n</p>',
 			'Nested span with text'
 		);
 
@@ -458,7 +479,7 @@ define([
 			this.filterHtml(
 				'<iframe src="http://example.com"></iframe>'
 			),
-			'<iframe src="http://example.com"></iframe>'
+			'<p>\n\t<iframe src="http://example.com"></iframe>\n</p>'
 		);
 	});
 
@@ -670,13 +691,13 @@ define([
 	test('Name', function (assert) {
 		assert.equal(
 			this.filterStripWhiteSpace('<img name="test" />'),
-			utils.stripWhiteSpace('<img id="test" />'),
+			utils.stripWhiteSpace('<p><img id="test" /></p>'),
 			'Image with name'
 		);
 
 		assert.equal(
 			this.filterStripWhiteSpace('<img name="test" id="one" />'),
-			utils.stripWhiteSpace('<img id="one" />'),
+			utils.stripWhiteSpace('<p><img id="one" /></p>'),
 			'Image with name and id'
 		);
 	});
@@ -686,7 +707,7 @@ define([
 		assert.equal(
 			this.filterStripWhiteSpace('<img vspace="20" />'),
 			utils.stripWhiteSpace(
-				'<img style="margin-top:20px;margin-bottom:20px;" />')
+				'<p><img style="margin-top:20px;margin-bottom:20px;" /></p>')
 		);
 	});
 
@@ -695,9 +716,9 @@ define([
 		assert.ok(
 			this.filterStripWhiteSpace('<img hspace="20" />'),
 			utils.stripWhiteSpace(
-				'<img style="margin-left:20px;margin-right:20px;" />') ||
+				'<p><img style="margin-left:20px;margin-right:20px;" /></p>') ||
 			utils.stripWhiteSpace(
-				'<img style="margin-right:20pxmargin-left:20px"/>')
+				'<p><img style="margin-right:20pxmargin-left:20px"/></p>')
 		);
 	});
 
@@ -706,14 +727,14 @@ define([
 		assert.equal(
 			this.filterStripWhiteSpace('<big>test</big>'),
 			utils.stripWhiteSpace(
-				'<span style="font-size:larger;">test</span>'),
+				'<p><span style="font-size:larger;">test</span></p>'),
 			'Single <big>'
 		);
 
 		assert.equal(
 			this.filterStripWhiteSpace('<big><big>test</big></big>'),
-			utils.stripWhiteSpace('<span style="font-size:larger;">' +
-				'<span style="font-size:larger;">test</span></span>'),
+			utils.stripWhiteSpace('<p><span style="font-size:larger;">' +
+				'<span style="font-size:larger;">test</span></span></p>'),
 			'Nested <big>'
 		);
 	});
@@ -723,14 +744,14 @@ define([
 		assert.equal(
 			this.filterStripWhiteSpace('<small>test</small>'),
 			utils.stripWhiteSpace(
-				'<span style="font-size:smaller;">test</span>'),
+				'<p><span style="font-size:smaller;">test</span></p>'),
 			'Single <small>'
 		);
 
 		assert.equal(
 			this.filterStripWhiteSpace('<small><small>test</small></small>'),
-			utils.stripWhiteSpace('<span style="font-size:smaller;">' +
-				'<span style="font-size:smaller;">test</span></span>'),
+			utils.stripWhiteSpace('<p><span style="font-size:smaller;">' +
+				'<span style="font-size:smaller;">test</span></span></p>'),
 			'Nested <small>'
 		);
 	});
@@ -739,7 +760,7 @@ define([
 	test('B - Bold', function (assert) {
 		assert.equal(
 			this.filterStripWhiteSpace('<b>test</b>'),
-			utils.stripWhiteSpace('<strong>test</strong>')
+			utils.stripWhiteSpace('<p><strong>test</strong></p>')
 		);
 	});
 
@@ -748,7 +769,7 @@ define([
 		assert.equal(
 			this.filterStripWhiteSpace('<u>test</u>'),
 			utils.stripWhiteSpace(
-				'<span style="text-decoration: underline;">test</span>')
+				'<p><span style="text-decoration: underline;">test</span></p>')
 		);
 	});
 
@@ -756,7 +777,7 @@ define([
 	test('I - Italic', function (assert) {
 		assert.equal(
 			this.filterStripWhiteSpace('<i>test</i>'),
-			utils.stripWhiteSpace('<em>test</em>')
+			utils.stripWhiteSpace('<p><em>test</em></p>')
 		);
 	});
 
@@ -765,14 +786,14 @@ define([
 		assert.equal(
 			this.filterStripWhiteSpace('<s>test</s>'),
 			utils.stripWhiteSpace(
-				'<span style="text-decoration: line-through;">test</span>'),
+				'<p><span style="text-decoration: line-through;">test</span></p>'),
 			'S tag'
 		);
 
 		assert.equal(
 			this.filterStripWhiteSpace('<strike>test</strike>'),
 			utils.stripWhiteSpace(
-				'<span style="text-decoration: line-through;">test</span>'),
+				'<p><span style="text-decoration: line-through;">test</span></p>'),
 			'Strike tag'
 		);
 	});
@@ -797,29 +818,29 @@ define([
 	test('Font', function (assert) {
 		assert.equal(
 			this.filterStripWhiteSpace('<font>test</font>'),
-			utils.stripWhiteSpace('<span>test</span>'),
+			utils.stripWhiteSpace('<p><span>test</span></p>'),
 			'Without attributes'
 		);
 
 		assert.equal(
 			this.filterStripWhiteSpace('<font face="arial">test</font>'),
 			utils.stripWhiteSpace(
-				'<span style="font-family: arial;">test</span>'),
+				'<p><span style="font-family: arial;">test</span></p>'),
 			'With font attribute'
 		);
 
 		var ret = this.filterStripWhiteSpace('<font color="red">test</font>');
 		assert.ok(
-			ret === utils.stripWhiteSpace('<span style="color: red;">' +
-				'test</span>') ||
-			ret === utils.stripWhiteSpace('<span style="color: #ff0000;">' +
-				'test</span>'),
+			ret === utils.stripWhiteSpace('<p><span style="color: red;">' +
+				'test</span></p>') ||
+			ret === utils.stripWhiteSpace('<p><span style="color: #ff0000;">' +
+				'test</span></p>'),
 			'With color attribute'
 		);
 
 		assert.equal(
 			this.filterStripWhiteSpace('<font size="5">test</font>'),
-			utils.stripWhiteSpace('<span style="font-size:24px;">test</span>'),
+			utils.stripWhiteSpace('<p><span style="font-size:24px;">test</span></p>'),
 			'With size attribute'
 		);
 	});
@@ -858,7 +879,7 @@ define([
 	test('Mozilla\'s junk attributes fix', function (assert) {
 		assert.equal(
 			this.filterStripWhiteSpace('<br type="_moz">'),
-			utils.stripWhiteSpace('<br />'),
+			utils.stripWhiteSpace('<p><br /></p>'),
 			'Type _moz on br'
 		);
 

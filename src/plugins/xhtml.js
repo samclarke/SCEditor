@@ -585,7 +585,8 @@
 			isEmpty,
 			removeTags,
 			mergeAttribsFilters,
-			removeAttribs;
+			removeAttribs,
+			wrapInlines;
 
 
 		/**
@@ -625,6 +626,7 @@
 			convertTags(domBody);
 			removeTags(domBody);
 			removeAttribs(domBody);
+			wrapInlines(domBody);
 
 			return (new SCEditor.XHTMLSerializer()).serialize(domBody, true);
 		};
@@ -837,6 +839,42 @@
 			});
 
 			return ret;
+		};
+
+		/**
+		 * Wraps adjacent inline child nodes of root
+		 * in paragraphs.
+		 *
+		 * @param {Node} root
+		 * @private
+		 */
+		wrapInlines = function (root) {
+			var adjacentInlines = [];
+			var wrapAdjacents = function () {
+				if (adjacentInlines.length) {
+					$('<p>', root.ownerDocument)
+						.insertBefore(adjacentInlines[0])
+						.append(adjacentInlines);
+
+					adjacentInlines = [];
+				}
+			};
+
+			// Strip empty text nodes so they don't get wrapped.
+			dom.removeWhiteSpace(root);
+
+			var node = root.firstChild;
+			while (node) {
+				if (dom.isInline(node) && !$(node).is('.sceditor-ignore')) {
+					adjacentInlines.push(node);
+				} else {
+					wrapAdjacents();
+				}
+
+				node = node.nextSibling;
+			}
+
+			wrapAdjacents();
 		};
 
 		/**

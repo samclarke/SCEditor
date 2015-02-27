@@ -18,7 +18,7 @@ define(function () {
 						'content="text/html;charset={charset}" />' +
 					'<link rel="stylesheet" type="text/css" href="{style}" />' +
 				'</head>' +
-				'<body contenteditable="true" {spellcheck}></body>' +
+				'<body contenteditable="true" {spellcheck}><p></p></body>' +
 			'</html>',
 
 		toolbarButton: '<a class="sceditor-button sceditor-button-{name}" ' +

@@ -859,7 +859,7 @@ define(function (require) {
 
 			if (focusEnd) {
 				if (!(node = body.lastChild)) {
-					node = doc.createElement('div');
+					node = doc.createElement('p');
 					$wysiwygBody.append(node);
 				}
 
@@ -2581,7 +2581,7 @@ define(function (require) {
 		 * @private
 		 */
 		appendNewLine = function () {
-			var name, requiresNewLine, div,
+			var name, requiresNewLine, paragraph,
 				body = $wysiwygBody[0];
 
 			dom.rTraverse(body, function (node) {
@@ -2600,10 +2600,10 @@ define(function (require) {
 					// this is the last text or br node, if its in a code or
 					// quote tag then add a newline to the end of the editor
 					if (requiresNewLine) {
-						div = body.ownerDocument.createElement('div');
-						div.className = 'sceditor-nlf';
-						div.innerHTML = !IE_BR_FIX ? '<br />' : '';
-						body.appendChild(div);
+						paragraph = wysiwygDoc.createElement('p');
+						paragraph.className = 'sceditor-nlf';
+						paragraph.innerHTML = !IE_BR_FIX ? '<br />' : '';
+						body.appendChild(paragraph);
 					}
 
 					return false;
