@@ -1,6 +1,9 @@
 # [SCEditor](http://www.sceditor.com/) v1.4.6
 
-[![Build Status](https://travis-ci.org/samclarke/SCEditor.png?branch=master)](https://travis-ci.org/samclarke/SCEditor) [![Dependency Status](https://gemnasium.com/samclarke/SCEditor.png)](https://gemnasium.com/samclarke/SCEditor)
+[![Build Status](http://img.shields.io/travis/samclarke/SCEditor/master.svg?style=flat-square)](https://travis-ci.org/samclarke/SCEditor)
+[![Dependency Status](http://img.shields.io/gemnasium/samclarke/SCEditor.svg?style=flat-square)](https://gemnasium.com/samclarke/SCEditor)
+[![SemVer](http://img.shields.io/:semver-✓-brightgreen.svg?style=flat-square)](http://semver.org)
+[![License](http://img.shields.io/npm/l/sceditor.svg?style=flat-square)](https://github.com/samclarke/SCEditor/blob/master/MIT.txt)
 
 A lightweight WYSIWYG BBCode and XHTML editor.
 
