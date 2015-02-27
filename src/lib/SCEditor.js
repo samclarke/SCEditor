@@ -2680,32 +2680,15 @@ define(function (require) {
 		 * @return void
 		 */
 		handleEvent = function (e) {
-			var	customEvent,
-				clone = $.extend({}, e);
-
 			// Send event to all plugins
-			pluginManager.call(clone.type + 'Event', e, base);
+			pluginManager.call(e.type + 'Event', e, base);
 
 			// convert the event into a custom event to send
-			delete clone.type;
-			customEvent = $.Event(
-				(e.target === sourceEditor ? 'scesrc' : 'scewys') + e.type,
-				clone
-			);
+			var prefix       = e.target === sourceEditor ? 'scesrc' : 'scewys';
+			var customEvent  = $.Event(e);
+			customEvent.type = prefix + e.type;
 
 			$editorContainer.trigger(customEvent, base);
-
-			if (customEvent.isDefaultPrevented()) {
-				e.preventDefault();
-			}
-
-			if (customEvent.isImmediatePropagationStopped()) {
-				customEvent.stopImmediatePropagation();
-			}
-
-			if (customEvent.isPropagationStopped()) {
-				customEvent.stopPropagation();
-			}
 		};
 
 		/**
