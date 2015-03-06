@@ -1,6 +1,8 @@
 Version 1.5.0:
 	Fixed bug with XHTML plugin not wrapping inline nodes in paragraphs.
 		- Thanks to @Heart1010 for reporting
+	Fixed bug with buttons appearing disabled in source mode.
+		- Thanks to @brunoais for reporting.
 
 Version 1.4.6:
 	Fixed resize issue with Android browsers.

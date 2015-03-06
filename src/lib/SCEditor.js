@@ -2456,55 +2456,45 @@ define(function (require) {
 		 * @private
 		 */
 		updateActiveButtons = function (e) {
-			var	state, stateHandler, firstBlock, $button, parent, isDisabled,
-				disabledClass = 'disabled',
-				activeClass   = 'active',
-				doc           = $wysiwygDoc[0],
-				btnIdx        = btnStateHandlers.length,
-				sourceMode    = base.sourceMode();
+			var firstBlock, parent;
+			var activeClass = 'active';
+			var doc         = $wysiwygDoc[0];
+			var isSource    = base.sourceMode();
 
 			if (base.readOnly()) {
-				$toolbar.find('.sceditor-button').removeClass(activeClass);
+				$toolbar.find(activeClass).removeClass(activeClass);
 				return;
 			}
 
-			if (!sourceMode) {
+			if (!isSource) {
 				parent     = e ? e.newNode : rangeHelper.parentNode();
 				firstBlock = rangeHelper.getFirstBlockParent(parent);
 			}
 
-			while (btnIdx--) {
-				state        = 0;
-				isDisabled   = false;
-				stateHandler = btnStateHandlers[btnIdx];
-				$button      = toolbarButtons[stateHandler.name];
+			for (var i = 0; i < btnStateHandlers.length; i++) {
+				var state      = 0;
+				var $btn       = toolbarButtons[btnStateHandlers[i].name];
+				var stateFn    = btnStateHandlers[i].state;
+				var isDisabled = (isSource && !$btn.data('sceditor-txtmode')) ||
+							(!isSource && !$btn.data('sceditor-wysiwygmode'));
 
-				isDisabled = sourceMode && !$button.data('sceditor-txtmode') ||
-					!sourceMode && !$button.data('sceditor-wysiwygmode');
-
-				if (!isDisabled) {
-					if (typeof stateHandler.state === 'string') {
+				if (!isDisabled && !isSource) {
+					if (typeof stateFn === 'string') {
 						try {
-							state = doc.queryCommandEnabled(
-								stateHandler.state
-							) ? 0 : -1;
+							state = doc.queryCommandEnabled(stateFn) ? 0 : -1;
 
 							/*jshint maxdepth: false*/
 							if (state > -1) {
-								state = doc.queryCommandState(
-									stateHandler.state
-								) ? 1 : 0;
+								state = doc.queryCommandState(stateFn) ? 1 : 0;
 							}
 						} catch (ex) {}
 					} else {
-						state = stateHandler.state.call(
-							base, parent, firstBlock
-						);
+						state = stateFn.call(base, parent, firstBlock);
 					}
 				}
 
-				$button
-					.toggleClass(disabledClass, isDisabled || state < 0)
+				$btn
+					.toggleClass('disabled', isDisabled || state < 0)
 					.toggleClass(activeClass, state > 0);
 			}
 		};
