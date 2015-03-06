@@ -544,7 +544,7 @@ define(function (require) {
 				.mousedown(handleMouseDown)
 				.blur(valueChangedBlur)
 				.bind(CHECK_SELECTION_EVENTS, checkSelectionChanged)
-				.bind('beforedeactivate keyup', saveRange)
+				.bind('beforedeactivate keyup mouseup', saveRange)
 				.keyup(appendNewLine)
 				.focus(function () {
 					lastRange = null;

@@ -1,4 +1,4 @@
-Version 1.5.0:
+Version 1.4.7:
 	Fixed bug with XHTML plugin not wrapping inline nodes in paragraphs.
 		- Thanks to @Heart1010 for reporting
 	Fixed bug with buttons appearing disabled in source mode.
@@ -6,6 +6,8 @@ Version 1.5.0:
 	Fixed bug with undo plugin when the valueChanged event is triggered before
 		the ready event.
 	Fixed bug with undo plugin and IE < 8 compatibility.
+	Fixed bug in IE where styles are not applied to text inside of a table cell.
+		- Thanks to @AlbertPraveen for reporting.
 
 Version 1.4.6:
 	Fixed resize issue with Android browsers.
