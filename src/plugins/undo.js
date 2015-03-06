@@ -54,7 +54,7 @@
 
 			// Calculate the start
 			for (start = 0; start < length; start++) {
-				if (strA[start] !== strB[start]) {
+				if (strA.charAt(start) !== strB.charAt(start)) {
 					break;
 				}
 			}
@@ -64,7 +64,8 @@
 			bLenDiff = bLength < aLength ? aLength - bLength : 0;
 
 			for (end = length - 1; end >= 0; end--) {
-				if (strA[end - aLenDiff] !== strB[end - bLenDiff]) {
+				if (strA.charAt(end - aLenDiff) !==
+						strB.charAt(end - bLenDiff)) {
 					break;
 				}
 			}
@@ -128,15 +129,15 @@
 		};
 
 		base.signalReady = function () {
-			var rawEditorValue = editor.val(null, false);
+			var rawValue = editor.val(null, false);
 
 			// Store the initial value as the last value
-			previousValue = rawEditorValue;
+			previousValue = rawValue;
 
 			undoStates.push({
 				'caret': this.sourceEditorCaret(),
 				'sourceMode': this.sourceMode(),
-				'value': rawEditorValue
+				'value': rawValue
 			});
 		};
 
@@ -149,36 +150,38 @@
 		 * @return {void}
 		 */
 		base.signalValuechangedEvent = function (e) {
-			var rawEditorValue = e.rawValue;
+			var rawValue = e.rawValue;
 
 			if (undoLimit > 0 && undoStates.length > undoLimit) {
 				undoStates.shift();
 			}
 
-			if (ignoreNextValueChanged || previousValue === rawEditorValue) {
+			// If the editor hasn't fully loaded yet,
+			// then the previous value won't be set.
+			if (ignoreNextValueChanged || !previousValue ||
+					previousValue === rawValue) {
 				return;
 			}
 
 			// Value has changed so remove all redo states
 			redoStates.length = 0;
-			charChangedCount += simpleDiff(previousValue, rawEditorValue);
+			charChangedCount += simpleDiff(previousValue, rawValue);
 
 			if (charChangedCount < 20) {
 				return;
-			} else if (charChangedCount < 50 &&
-// ??
-				!e.rawValue[e.rawValue.length - 1].match(/\s/g)) {
+			// ??
+			} else if (charChangedCount < 50 && !/\s$/g.test(e.rawValue)) {
 				return;
 			}
 
 			undoStates.push({
 				'caret': editor.sourceEditorCaret(),
 				'sourceMode': editor.sourceMode(),
-				'value': rawEditorValue
+				'value': rawValue
 			});
 
 			charChangedCount = 0;
-			previousValue = rawEditorValue;
+			previousValue = rawValue;
 		};
 	};
 }(jQuery));

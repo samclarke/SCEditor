@@ -3,6 +3,9 @@ Version 1.5.0:
 		- Thanks to @Heart1010 for reporting
 	Fixed bug with buttons appearing disabled in source mode.
 		- Thanks to @brunoais for reporting.
+	Fixed bug with undo plugin when the valueChanged event is triggered before
+		the ready event.
+	Fixed bug with undo plugin and IE < 8 compatibility.
 
 Version 1.4.6:
 	Fixed resize issue with Android browsers.
