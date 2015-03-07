@@ -8,6 +8,8 @@ Version 1.4.7:
 	Fixed bug with undo plugin and IE < 8 compatibility.
 	Fixed bug in IE where styles are not applied to text inside of a table cell.
 		- Thanks to @AlbertPraveen for reporting.
+	Fixed bug with IE placing cursor at the start of the editor when a dropdown
+		contains a textarea or input.
 
 Version 1.4.6:
 	Fixed resize issue with Android browsers.

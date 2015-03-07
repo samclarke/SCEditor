@@ -1405,7 +1405,12 @@ define(function (require) {
 					e.stopPropagation();
 				});
 
-			$dropdown.find('input,textarea').first().focus();
+			// If try to focus the first input immediately IE will
+			// place the cursor at the start of the editor instead
+			// of focusing on the input.
+			setTimeout(function () {
+				$dropdown.find('input,textarea').first().focus();
+			});
 		};
 
 		/**
@@ -2374,7 +2379,7 @@ define(function (require) {
 		 * @private
 		 */
 		checkSelectionChanged = function () {
-			var check = function () {
+			function check () {
 				// rangeHelper could be null if editor was destroyed
 				// before the timeout had finished
 				if (rangeHelper && !rangeHelper.compare(currentSelection)) {
