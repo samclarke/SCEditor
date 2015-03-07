@@ -896,6 +896,7 @@ define(function (require) {
 
 			range.collapse(!focusEnd);
 			rangeHelper.selectRange(range);
+			currentSelection = range;
 
 			if (focusEnd) {
 				$wysiwygDoc.scrollTop(body.scrollHeight);
@@ -2388,7 +2389,7 @@ define(function (require) {
 				}
 
 				isSelectionCheckPending = false;
-			};
+			}
 
 			if (isSelectionCheckPending) {
 				return;
@@ -2851,6 +2852,12 @@ define(function (require) {
 			} else if (!base.inSourceMode()) {
 				var container,
 					rng = rangeHelper.selectedRange();
+
+				// Fix FF bug where it shows the cursor in the wrong place
+				// if the editor hasn't had focus before. See issue #393
+				if (!currentSelection) {
+					autofocus();
+				}
 
 				// Check if cursor is set after a BR when the BR is the only
 				// child of the parent. In Firefox this causes a line break

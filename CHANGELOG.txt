@@ -10,6 +10,9 @@ Version 1.4.7:
 		- Thanks to @AlbertPraveen for reporting.
 	Fixed bug with IE placing cursor at the start of the editor when a dropdown
 		contains a textarea or input.
+	Fixed bug with FF showing the cursor in the wrong position when it hasn't
+		had focus before.
+		- Thanks to @cyphix333 for reporting.
 
 Version 1.4.6:
 	Fixed resize issue with Android browsers.
