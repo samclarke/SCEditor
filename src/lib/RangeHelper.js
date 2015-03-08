@@ -114,11 +114,16 @@ define(function (require) {
 			if (dom.canHaveChildren(lastChild)) {
 				$lastChild = $(lastChild);
 
-				// IE < 8 and Webkit won't allow the cursor to be placed
+				// IE <= 8 and Webkit won't allow the cursor to be placed
 				// inside an empty tag, so add a zero width space to it.
 				if (!lastChild.lastChild) {
 					$lastChild.append('\u200B');
 				}
+			}
+
+			// Needed so IE <= 8 can place the cursor after emoticons and images
+			if (IE_VER && IE_VER < 9 && $(lastChild).is('img')) {
+				$div.append('\u200B');
 			}
 
 			base.removeMarkers();
