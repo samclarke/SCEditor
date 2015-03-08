@@ -13,6 +13,8 @@ Version 1.4.7:
 	Fixed bug with FF showing the cursor in the wrong position when it hasn't
 		had focus before.
 		- Thanks to @cyphix333 for reporting.
+	Fixed bug with IE placing cursor inside table tag when inserted.
+		- Thanks to @jetand for reporting.
 
 Version 1.4.6:
 	Fixed resize issue with Android browsers.

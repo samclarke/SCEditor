@@ -83,7 +83,7 @@ define(function (require) {
 		 * @private
 		 */
 		_prepareInput = function (node, endNode, returnHtml) {
-			var lastChild, $lastChild, docFrag, $appendMarkersTo,
+			var lastChild, $lastChild,
 				div  = doc.createElement('div'),
 				$div = $(div);
 
@@ -92,7 +92,7 @@ define(function (require) {
 					node += base.selectedHtml() + endNode;
 				}
 
-				div.innerHTML = node;
+				$div.html(node);
 			} else {
 				$div.append(node);
 
@@ -107,38 +107,33 @@ define(function (require) {
 				return;
 			}
 
-			// Clear any current markers
-			base.removeMarkers();
+			while (!dom.isInline(lastChild.lastChild, true)) {
+				lastChild = lastChild.lastChild;
+			}
+
 			if (dom.canHaveChildren(lastChild)) {
 				$lastChild = $(lastChild);
 
 				// IE < 8 and Webkit won't allow the cursor to be placed
 				// inside an empty tag, so add a zero width space to it.
 				if (!lastChild.lastChild) {
-					$lastChild.append(doc.createTextNode('\u200B'));
+					$lastChild.append('\u200B');
 				}
-
-				$appendMarkersTo = $lastChild;
-			} else {
-				$appendMarkersTo = $div;
 			}
 
-			// Append range markers to the child so can restore the
-			// range to them
-			$appendMarkersTo
+			base.removeMarkers();
+
+			// Append marks to last child so when restored cursor will be in
+			// the right place
+			($lastChild || $div)
 				.append(_createMarker(startMarker))
 				.append(_createMarker(endMarker));
 
 			if (returnHtml) {
-				return div.innerHTML;
+				return $div.html();
 			}
 
-			docFrag = doc.createDocumentFragment();
-			while (div.firstChild) {
-				docFrag.appendChild(div.firstChild);
-			}
-
-			return docFrag;
+			return $(doc.createDocumentFragment()).append($div.contents())[0];
 		};
 
 		/**
