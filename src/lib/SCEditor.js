@@ -2484,8 +2484,8 @@ define(function (require) {
 				var isDisabled = (isSource && !$btn.data('sceditor-txtmode')) ||
 							(!isSource && !$btn.data('sceditor-wysiwygmode'));
 
-				if (!isDisabled && !isSource) {
-					if (typeof stateFn === 'string') {
+				if (typeof stateFn === 'string') {
+					if (!isSource) {
 						try {
 							state = doc.queryCommandEnabled(stateFn) ? 0 : -1;
 
@@ -2494,9 +2494,9 @@ define(function (require) {
 								state = doc.queryCommandState(stateFn) ? 1 : 0;
 							}
 						} catch (ex) {}
-					} else {
-						state = stateFn.call(base, parent, firstBlock);
 					}
+				} else if (!isDisabled) {
+					state = stateFn.call(base, parent, firstBlock);
 				}
 
 				$btn
