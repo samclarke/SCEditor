@@ -61,6 +61,29 @@ runner.test({
 });
 
 runner.test({
+	title: 'WYSIWYG Keypress prevent default',
+	instructions: 'Press any key in the WYSIWYG editor.',
+	setup: function () {
+		this.editor.val('');
+	},
+	teardown: function () {
+		this.editor.unbind('keypress', this.handler);
+	}
+}, function (done) {
+	var that = this;
+
+	this.handler = function (e) {
+		e.preventDefault();
+
+		setTimeout(function () {
+			done(that.editor.getBody().text() === '');
+		}, 100);
+	};
+
+	this.editor.bind('keypress', this.handler);
+});
+
+runner.test({
 	title: 'WYSIWYG shortcut',
 	instructions: 'Press ctrl+j in the WYSIWYG editor.',
 	teardown: function () {
@@ -272,6 +295,29 @@ runner.test({
 	};
 
 	this.editor.bind('keyup', this.handler);
+});
+
+runner.test({
+	title: 'Source Keypress prevent default',
+	instructions: 'Press any key in the WYSIWYG editor.',
+	setup: function () {
+		this.editor.val('');
+	},
+	teardown: function () {
+		this.editor.unbind('keypress', this.handler);
+	}
+}, function (done) {
+	var that = this;
+
+	this.handler = function (e) {
+		e.preventDefault();
+
+		setTimeout(function () {
+			done(that.editor.val() === '');
+		}, 100);
+	};
+
+	this.editor.bind('keypress', this.handler);
 });
 
 runner.test({
