@@ -2855,7 +2855,7 @@ define(function (require) {
 
 				// Fix FF bug where it shows the cursor in the wrong place
 				// if the editor hasn't had focus before. See issue #393
-				if (!currentSelection) {
+				if (!currentSelection && !rangeHelper.hasSelection()) {
 					autofocus();
 				}
 
