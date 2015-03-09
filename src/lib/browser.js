@@ -104,7 +104,8 @@ define(function (require, exports) {
 
 		// iOS 5+ supports content editable
 		if (exports.ios) {
-			isUnsupported = !/OS [5-9](_\d)+ like Mac OS X/i.test(USER_AGENT);
+			// Block any version <= 4_x(_x)
+			isUnsupported = /OS [0-4](_\d)+ like Mac/i.test(USER_AGENT);
 		}
 
 		// FireFox does support WYSIWYG on mobiles so override
