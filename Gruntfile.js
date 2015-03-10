@@ -347,7 +347,16 @@ module.exports = function (grunt) {
 			all: {
 				'pre-commit': 'test'
 			}
-		}
+		},
+
+        devUpdate: {
+            main: {
+                options: {
+                    updateType: 'force',
+                    semver: false
+                }
+            }
+        }
 	});
 
 
@@ -366,6 +375,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-saucelabs');
 	grunt.loadNpmTasks('grunt-webpack');
 	grunt.loadNpmTasks('grunt-githooks');
+    grunt.loadNpmTasks('grunt-dev-update');
 
 
 	grunt.registerTask('default', ['test']);
@@ -405,4 +415,9 @@ module.exports = function (grunt) {
 
 	// Alias dist to release for backwards compatibility
 	grunt.registerTask('dist', ['release']);
+
+    // Update dev dependencies
+    grunt.registerTask('dev-upd', [
+        'devUpdate:main'
+    ]);
 };
