@@ -47,6 +47,7 @@
     "grunt-jscs": "^1.5.0",
     "grunt-saucelabs": "^8.6.0",
     "grunt-webpack": "^1.0.8",
+    "grunt-dev-update": "^1.1.0",
     "time-grunt": "^1.0.0"
   }
 }
