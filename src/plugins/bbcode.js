@@ -2574,6 +2574,7 @@
 				code: null
 			},
 			isInline: false,
+			codeInputModeInside: true,
 			allowedChildren: ['#', '#newline'],
 			format: '[code]{0}[/code]',
 			html: '<code>{0}</code>'
