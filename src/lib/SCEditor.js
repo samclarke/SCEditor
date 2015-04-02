@@ -1438,8 +1438,47 @@ define(function (require) {
 			}, codeInputHandle);
 
 		};
+
+		/**
+		 * Adds a handle used to remap keys to make them more useful for
+		 * code input
+		 *
+		 * @private
+		 */
+		var codeInputHandle = function (e) {
+
+			if (e.ctrlKey || e.altKey || e.metaKey) {
 				return;
 			}
+
+			// For now, only Enter and Tab have defined executions
+			if (e.which !== 13 &&	// Enter
+				e.which !== 9		// tab
+			) {
+				return;
+			}
+
+			if (e.shiftKey && e.which !== 9) {
+				return;
+			}
+
+			if (!rangeHelper.getFirstBlockParent().
+				matches(e.data.searchSelector)) {
+				return;
+			}
+
+			rangeHelper.mergeTextNodesAtCaret();
+
+
+			var currentRange = rangeHelper.selectedRange();
+				return;
+			}
+
+			e.preventDefault();
+			return;
+
+		};
+
 		/**
 		 * Handles any document click and closes the dropdown if open
 		 * @private
