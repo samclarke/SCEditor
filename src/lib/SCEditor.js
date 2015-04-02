@@ -1471,6 +1471,14 @@ define(function (require) {
 
 
 			var currentRange = rangeHelper.selectedRange();
+
+
+			if (e.which === 13) {	// Enter
+				rangeHelper.insertHTML('\n');
+				triggerValueChanged();
+				e.preventDefault();
+				return;
+			}
 				return;
 			}
 
