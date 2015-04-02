@@ -1479,6 +1479,24 @@ define(function (require) {
 				e.preventDefault();
 				return;
 			}
+
+			if (e.shiftKey && e.which === 9) {	// unindent the Tab
+				var rangeContainer = currentRange.startContainer;
+				var theTextNode = rangeContainer.nodeValue;
+				var cursorPosition = currentRange.startOffset - 1;
+				var searchPos = theTextNode.lastIndexOf('\n',
+					cursorPosition) + 1;
+				if (theTextNode[searchPos] === '\t') {
+					currentRange.startContainer.nodeValue =
+						theTextNode.slice(0, searchPos) +
+						theTextNode.slice(searchPos + 1);
+
+					rangeHelper.placeCaretAt(rangeContainer.
+						firstChild, cursorPosition);
+
+					triggerValueChanged();
+				}
+
 				return;
 			}
 
