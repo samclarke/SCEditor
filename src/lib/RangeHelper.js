@@ -635,6 +635,24 @@ define(function (require) {
 		};
 
 		/**
+		 * Places the caret in a specified position in the document
+		 * without any selections
+		 *
+		 * @function
+		 * @name placeCaretAt
+		 * @memberOf RangeHelper.prototype
+		 */
+		base.placeCaretAt = function (container, offset) {
+			var range = doc.createRange();
+			range.setStart(container, offset);
+			range.collapse(true);
+
+			var selection = win.getSelection();
+			selection.removeAllRanges();
+			selection.addRange(range);
+		};
+
+		/**
 		 * Restores the last range saved by saveRange() or insertMarkers()
 		 *
 		 * @function
