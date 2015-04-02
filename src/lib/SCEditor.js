@@ -661,6 +661,9 @@ define(function (require) {
 						cmd.forceNewLineAfter
 					);
 				}
+				if (cmd.codeInputModeInside) {
+					addBodyCodeInputHandle(name, cmd.codeInputModeInside);
+				}
 			});
 
 			appendNewLine();
@@ -1421,6 +1424,20 @@ define(function (require) {
 			});
 		};
 
+
+		/**
+		 * Adds a handle used to remap keys to make them more useful for code
+		 * input
+		 *
+		 * @private
+		 */
+		var addBodyCodeInputHandle = function (searchName, searchSelectors) {
+			$wysiwygBody.on('keydown', null,
+			{
+				'searchSelector': searchSelectors.join(',')
+			}, codeInputHandle);
+
+		};
 				return;
 			}
 		/**
