@@ -1421,73 +1421,7 @@ define(function (require) {
 			});
 		};
 
-			if (e.shiftKey && e.which === 9){	// unindent the Tab
 				return;
-				// TODO: I can't make this work, for some reason...
-				// I'll be back later to try again, regardless
-
-				// console.log("Tab replace");
-				// // base.wysiwygEditorInsertHtml("\t", null, true);
-				// // rangeHelper.insertHTML("\t");
-				// console.log(currentRange);
-				// console.log(rangeHelper.getOuterText(true, 2000));
-				// console.log(rangeHelper.getOuterText(false, 2000));
-				// if(/(?:^|\r?\n)([ \t]+[^\r\n]*)(?!\r?\n)$/i.test(
-				// rangeHelper.getOuterText(true, 2000))){
-					// var findChar =
-					// /(?:^|\r?\n)([ \t]+[^\r\n]*)(?!\r?\n)$/i.exec(
-					// rangeHelper.getOuterText(true, 2000));
-					// console.log(findChar[1].length);
-					// console.log(findChar);
-
-					// var goBackLengthLeft = findChar[1].length;
-					// var numbers = [];
-					// var currentTextElement = currentRange.startContainer;
-					// goBackLengthLeft -= currentRange.startOffset;
-					// while(goBackLengthLeft -
-					// currentTextElement.nodeValue.length > 0){
-						// goBackLengthLeft -=
-						// 	currentTextElement.nodeValue.length;
-						// currentTextElement =
-						// 	currentTextElement.previousSibling;
-						// numbers.push(goBackLengthLeft);
-					// }
-
-					// // goBackLengthLeft++;
-					// goBackLengthLeft--;
-
-					// console.log(numbers);
-
-					// if(currentTextElement.length == 1){
-						// currentTextElement.parentNode.removeChild(
-						// currentTextElement);
-					// }else if(goBackLengthLeft == 0){
-						// // last character... lucky!
-						// console.log(
-							// currentTextElement.nodeValue =
-							// currentTextElement.nodeValue.substr(0,
-							// currentTextElement.nodeValue.length - 1) +
-						// // );
-						// // console.log(
-							// ""
-						// );
-					// }else{
-						// console.log(
-							// currentTextElement.nodeValue.substr(0,
-							// currentTextElement.nodeValue.length -
-							// goBackLengthLeft - 2) +
-						// // );
-						// // console.log(
-							// currentTextElement.nodeValue.substr(
-							// currentTextElement.nodeValue.length -
-							// goBackLengthLeft)
-						// );
-					// }
-
-				// }
-				// // console.log(currentRange.endOffset);
-				// e.preventDefault();
-				// return;
 			}
 		/**
 		 * Handles any document click and closes the dropdown if open
