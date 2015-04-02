@@ -602,6 +602,39 @@ define(function (require) {
 		};
 
 		/**
+		 * Merges all text nodes in the specified tag and restores the
+		 * caret into its original position.
+		 * Best used with SCE's codeInputModeInside option
+		 * Caution: This method removes ALL HTML inside the caret's
+		 * parent tag.
+		 *
+		 * @function
+		 * @name mergeTextNodesAtCaret
+		 * @memberOf RangeHelper.prototype
+		 */
+		base.mergeTextNodesAtCaret = function () {
+
+			var currentRange = base.selectedRange();
+			var currentTextNode = currentRange.startContainer;
+
+			var fullOffset = 0;
+			var mrParent = currentTextNode.parentNode;
+			var currentElem = currentTextNode.previousSibling;
+
+			while (currentElem) {
+				fullOffset += currentElem.length;
+				currentElem = currentElem.previousSibling;
+			}
+
+			fullOffset += currentRange.startOffset;
+
+			var text = currentTextNode.wholeText;
+			currentTextNode.parentNode.textContent = text;
+
+			base.placeCaretAt(mrParent.firstChild, fullOffset);
+		};
+
+		/**
 		 * Restores the last range saved by saveRange() or insertMarkers()
 		 *
 		 * @function
