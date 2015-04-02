@@ -774,6 +774,19 @@ define(function (require) {
 			range.collapse(!before);
 
 			if (!isW3C) {
+				if (range.startContainer.nodeType === Node.TEXT_NODE) {
+					// In this case, I have to find the parent and count
+					// all characters from previous nodes until this node
+
+					var currentContainer = range.startContainer;
+					while (currentContainer.previousSibling) {
+						startPos += currentContainer.previousSibling.
+							nodeValue.length;
+						currentContainer = currentContainer.previousSibling;
+					}
+					textContent = range.startContainer.wholeText;
+				}
+
 				if (before) {
 					range.moveStart(CHARACTER, 0 - length);
 				} else {
