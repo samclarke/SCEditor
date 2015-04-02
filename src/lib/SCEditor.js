@@ -1497,6 +1497,10 @@ define(function (require) {
 					triggerValueChanged();
 				}
 
+			} else if (e.which === 9) {	// Tab
+				rangeHelper.insertHTML('\t');
+				triggerValueChanged();
+				e.preventDefault();
 				return;
 			}
 
