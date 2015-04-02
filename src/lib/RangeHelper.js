@@ -693,9 +693,23 @@ define(function (require) {
 				range.moveEnd(CHARACTER, 0);
 			} else {
 				range = doc.createRange();
-
-				range.setStartBefore(start);
-				range.setEndAfter(end);
+				if (isCollapsed) {
+					var startOn;
+					var startAtLength;
+					if (end.nextSibling) {
+						startOn = end.nextSibling;
+						startAtLength = 0;
+					} else {
+						startOn = start.previousSibling;
+						startAtLength = start.previousSibling.
+							textContent.length - 1;
+					}
+					range.setStart(startOn, startAtLength);
+					range.setEnd(startOn, startAtLength);
+				} else {
+					range.setStartBefore(start);
+					range.setEndAfter(end);
+				}
 			}
 
 			if (isCollapsed) {
