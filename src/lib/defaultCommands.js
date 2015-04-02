@@ -440,11 +440,11 @@ define(function (require) {
 
 		// START_COMMAND: Code
 		code: {
+			codeInputModeInside: ['code'],
 			forceNewLineAfter: ['code'],
 			exec: function () {
 				this.wysiwygEditorInsertHtml(
-					'<code>',
-					(IE_BR_FIX ? '' : '<br />') + '</code>'
+					'<code>', '</code>'
 				);
 			},
 			tooltip: 'Code'
