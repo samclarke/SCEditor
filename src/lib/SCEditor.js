@@ -1469,12 +1469,23 @@ define(function (require) {
 
 			rangeHelper.mergeTextNodesAtCaret();
 
-
 			var currentRange = rangeHelper.selectedRange();
 
-
 			if (e.which === 13) {	// Enter
-				rangeHelper.insertHTML('\n');
+				var rangeContainer = currentRange.startContainer;
+				var sourceText = rangeContainer.nodeValue;
+				searchPos = sourceText.lastIndexOf('\n',
+				searchPos - 1) + 1;
+				var newTabs = 0;
+				var newTabsStr = '';
+				while (sourceText.charAt(searchPos + newTabs) === '\t') {
+					newTabs++;
+					newTabsStr += '\t';
+				}
+
+				rangeHelper.insertHTML('\n' + newTabsStr);
+				triggerValueChanged();
+
 				triggerValueChanged();
 				e.preventDefault();
 				return;
