@@ -1554,6 +1554,92 @@ define(function (require) {
 
 		};
 
+		var addSourceCodeInputHandle = function (searchSubstrings) {
+			
+			var startStrings = [];
+			var endStrings =  [];
+			for (var i = 0; i < searchSubstrings.length; i++){
+				startStrings.push(searchSubstrings[i][0]);
+				endStrings.push(searchSubstrings[i][1]); 
+			}
+			
+			$sourceEditor.on('keydown', null,
+			{
+				'startStrings': startStrings,
+				'endStrings': endStrings
+			}, textCodeInputHandle);
+
+		};
+
+		var textCodeInputHandle = function (e) {
+			if (e.ctrlKey || e.altKey || e.metaKey) {
+				return;
+			}
+
+			// For now, only Enter and Tab have defined executions
+			if (e.which !== 13 &&	// Enter
+				e.which !== 9		// tab
+			) {
+				return;
+			}
+
+			if (e.shiftKey && e.which !== 9) {
+				return;
+			}
+
+			if (!base.inText(sourceEditor, e.data.startStrings, 
+					e.data.endStrings)) {
+				return;
+			}
+
+			var cursorPosition = sourceEditor.selectionStart;
+			var sourceText = sourceEditor.value;
+			var searchPos = sourceText.lastIndexOf('\n',
+				cursorPosition - 1);
+
+			if (e.which === 13) {	// Enter
+				searchPos = sourceText.lastIndexOf('\n',
+				searchPos - 1) + 1;
+				var newTabs = 0;
+				var newTabsStr = '';
+				while (sourceText.charAt(searchPos + newTabs) === '\t') {
+					newTabs++;
+					newTabsStr += '\t';
+				}
+
+				base.sourceEditorInsertText('\n' + newTabsStr);
+				triggerValueChanged();
+
+				e.preventDefault();
+				return;
+			}
+
+			if (e.shiftKey && e.which === 9) {	// unindent the Tab
+				// Incrementing helps with the math
+				searchPos++;
+				// console.log(sourceText[searchPos]);
+				if (sourceText[searchPos] === '\t') {
+					sourceEditor.value = 	sourceText.slice(0, searchPos) +
+											sourceText.slice(searchPos + 1);
+					
+					console.log(sourceText[cursorPosition - 1] !== '\n');
+					if (sourceText[cursorPosition - 1] !== '\n') {
+						cursorPosition--;
+					}
+					sourceEditor.setSelectionRange(cursorPosition,
+						cursorPosition);
+
+					triggerValueChanged();
+				}
+			} else if (e.which === 9) {	// Tab
+				base.sourceEditorInsertText('\t');
+				triggerValueChanged();
+			}
+
+			e.preventDefault();
+			return;
+		};
+
 		/**
 		 * Handles any document click and closes the dropdown if open
 		 * @private
