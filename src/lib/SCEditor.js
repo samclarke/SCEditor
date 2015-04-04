@@ -654,10 +654,10 @@ define(function (require) {
 		 * @private
 		 */
 		initCommands = function () {
-			
+
 			var bodyCodeInputHandles = [];
 			var sourceCodeInputHandles = [];
-			
+
 			$.each(base.commands, function (name, cmd) {
 				if (cmd.forceNewLineAfter && $.isArray(cmd.forceNewLineAfter)) {
 					requireNewLineFix = $.merge(
@@ -1478,7 +1478,7 @@ define(function (require) {
 			rangeHelper.mergeTextNodesAtCaret();
 
 			var currentRange = rangeHelper.selectedRange();
-			
+
 			if (!rangeHelper.getFirstBlockParent().
 				matches(e.data.searchSelector)) {
 				return;
@@ -1529,9 +1529,9 @@ define(function (require) {
 						// caret appears in the line before although it is
 						// ready to type in the line after.
 						// This fixes that by recalculating after the split
-						if ( rangeContainer.nodeValue.length === 
+						if ( rangeContainer.nodeValue.length ===
 							cursorPosition &&
-							rangeContainer.nextSibling) {								
+							rangeContainer.nextSibling) {
 								rangeHelper.placeCaretAt(
 									rangeContainer.nextSibling
 									, 0
@@ -1555,14 +1555,14 @@ define(function (require) {
 		};
 
 		var addSourceCodeInputHandle = function (searchSubstrings) {
-			
+
 			var startStrings = [];
 			var endStrings =  [];
 			for (var i = 0; i < searchSubstrings.length; i++){
 				startStrings.push(searchSubstrings[i][0]);
-				endStrings.push(searchSubstrings[i][1]); 
+				endStrings.push(searchSubstrings[i][1]);
 			}
-			
+
 			$sourceEditor.on('keydown', null,
 			{
 				'startStrings': startStrings,
@@ -1587,7 +1587,7 @@ define(function (require) {
 				return;
 			}
 
-			if (!base.inText(sourceEditor, e.data.startStrings, 
+			if (!base.inText(sourceEditor, e.data.startStrings,
 					e.data.endStrings)) {
 				return;
 			}
@@ -1621,7 +1621,7 @@ define(function (require) {
 				if (sourceText[searchPos] === '\t') {
 					sourceEditor.value = 	sourceText.slice(0, searchPos) +
 											sourceText.slice(searchPos + 1);
-					
+
 					console.log(sourceText[cursorPosition - 1] !== '\n');
 					if (sourceText[cursorPosition - 1] !== '\n') {
 						cursorPosition--;
