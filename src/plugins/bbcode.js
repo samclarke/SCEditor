@@ -145,7 +145,8 @@
 			txtExec: ['[hr]']
 		},
 		code: {
-			txtExec: ['[code]', '[/code]']
+			txtExec: ['[code]', '[/code]'],
+			txtCodeInputModeInside: ['[code', '[/code]']
 		},
 		image: {
 			txtExec: function (caller, selected) {
