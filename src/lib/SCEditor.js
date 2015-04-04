@@ -654,6 +654,10 @@ define(function (require) {
 		 * @private
 		 */
 		initCommands = function () {
+			
+			var bodyCodeInputHandles = [];
+			var sourceCodeInputHandles = [];
+			
 			$.each(base.commands, function (name, cmd) {
 				if (cmd.forceNewLineAfter && $.isArray(cmd.forceNewLineAfter)) {
 					requireNewLineFix = $.merge(
@@ -662,9 +666,18 @@ define(function (require) {
 					);
 				}
 				if (cmd.codeInputModeInside) {
-					addBodyCodeInputHandle(name, cmd.codeInputModeInside);
+					bodyCodeInputHandles.push(cmd.codeInputModeInside);
+				}
+				if (cmd.txtCodeInputModeInside) {
+					sourceCodeInputHandles.push(cmd.txtCodeInputModeInside);
 				}
 			});
+			if (bodyCodeInputHandles.length > 0) {
+				addBodyCodeInputHandle(bodyCodeInputHandles);
+			}
+			if (sourceCodeInputHandles.length > 0) {
+				addSourceCodeInputHandle(sourceCodeInputHandles);
+			}
 
 			appendNewLine();
 		};
