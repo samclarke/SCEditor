@@ -1488,7 +1488,8 @@ define(function (require) {
 				var rangeContainer = currentRange.startContainer;
 				var sourceText = rangeContainer.nodeValue;
 				searchPos = sourceText.lastIndexOf('\n',
-				searchPos - 1) + 1;
+						sourceText.lastIndexOf('\n',
+							searchPos - 1) - 1) + 1;
 				var newTabs = 0;
 				var newTabsStr = '';
 				while (sourceText.charAt(searchPos + newTabs) === '\t') {
