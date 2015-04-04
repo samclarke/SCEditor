@@ -1510,12 +1510,34 @@ define(function (require) {
 				var searchPos = theTextNode.lastIndexOf('\n',
 					cursorPosition) + 1;
 				if (theTextNode[searchPos] === '\t') {
-					currentRange.startContainer.nodeValue =
+					rangeContainer.nodeValue =
 						theTextNode.slice(0, searchPos) +
 						theTextNode.slice(searchPos + 1);
+					// tempfix: for some reason, the caret is being placed in
+					// the previous line if it was near the \n...
+					// After some hours, I can't find why...
+					if (theTextNode[cursorPosition] === '\n') {
+						cursorPosition++;
+					}
+					rangeHelper.placeCaretAt(rangeContainer
+						, cursorPosition);
 
-					rangeHelper.placeCaretAt(rangeContainer.
-						firstChild, cursorPosition);
+					setTimeout(function (){
+						// At least in firefox, the text node is split after
+						// editing where the cursor is placed.
+						// If the cursor is placed just after the \n, the
+						// caret appears in the line before although it is
+						// ready to type in the line after.
+						// This fixes that by recalculating after the split
+						if ( rangeContainer.nodeValue.length === 
+							cursorPosition &&
+							rangeContainer.nextSibling) {								
+								rangeHelper.placeCaretAt(
+									rangeContainer.nextSibling
+									, 0
+								);
+							}
+					}, 10);
 
 					triggerValueChanged();
 				}
