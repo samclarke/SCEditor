@@ -1484,15 +1484,16 @@ define(function (require) {
 				return;
 			}
 
+			var rangeContainer = currentRange.startContainer;
+			var theTextNode = rangeContainer.nodeValue;
+			var cursorPosition = currentRange.startOffset - 1;
+			var searchPos = theTextNode.lastIndexOf('\n', cursorPosition) + 1;
+
 			if (e.which === 13) {	// Enter
-				var rangeContainer = currentRange.startContainer;
-				var sourceText = rangeContainer.nodeValue;
-				searchPos = sourceText.lastIndexOf('\n',
-						sourceText.lastIndexOf('\n',
-							searchPos - 1) - 1) + 1;
+				searchPos = theTextNode.lastIndexOf('\n', searchPos - 1) + 1;
 				var newTabs = 0;
 				var newTabsStr = '';
-				while (sourceText.charAt(searchPos + newTabs) === '\t') {
+				while (theTextNode.charAt(searchPos + newTabs) === '\t') {
 					newTabs++;
 					newTabsStr += '\t';
 				}
@@ -1504,11 +1505,6 @@ define(function (require) {
 			}
 
 			if (e.shiftKey && e.which === 9) {	// unindent the Tab
-				var rangeContainer = currentRange.startContainer;
-				var theTextNode = rangeContainer.nodeValue;
-				var cursorPosition = currentRange.startOffset - 1;
-				var searchPos = theTextNode.lastIndexOf('\n',
-					cursorPosition) + 1;
 				if (theTextNode[searchPos] === '\t') {
 					rangeContainer.nodeValue =
 						theTextNode.slice(0, searchPos) +
@@ -1519,8 +1515,7 @@ define(function (require) {
 					if (theTextNode[cursorPosition] === '\n') {
 						cursorPosition++;
 					}
-					rangeHelper.placeCaretAt(rangeContainer
-						, cursorPosition);
+					rangeHelper.placeCaretAt(rangeContainer, cursorPosition);
 
 					setTimeout(function (){
 						// At least in firefox, the text node is split after
@@ -1598,8 +1593,7 @@ define(function (require) {
 				cursorPosition - 1);
 
 			if (e.which === 13) {	// Enter
-				searchPos = sourceText.lastIndexOf('\n',
-				searchPos - 1) + 1;
+				searchPos++;
 				var newTabs = 0;
 				var newTabsStr = '';
 				while (sourceText.charAt(searchPos + newTabs) === '\t') {
@@ -1617,12 +1611,10 @@ define(function (require) {
 			if (e.shiftKey && e.which === 9) {	// unindent the Tab
 				// Incrementing helps with the math
 				searchPos++;
-				// console.log(sourceText[searchPos]);
 				if (sourceText[searchPos] === '\t') {
 					sourceEditor.value = 	sourceText.slice(0, searchPos) +
 											sourceText.slice(searchPos + 1);
 
-					console.log(sourceText[cursorPosition - 1] !== '\n');
 					if (sourceText[cursorPosition - 1] !== '\n') {
 						cursorPosition--;
 					}
