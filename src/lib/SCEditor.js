@@ -1431,7 +1431,7 @@ define(function (require) {
 		 *
 		 * @private
 		 */
-		var addBodyCodeInputHandle = function (searchName, searchSelectors) {
+		var addBodyCodeInputHandle = function (searchSelectors) {
 			$wysiwygBody.on('keydown', null,
 			{
 				'searchSelector': searchSelectors.join(',')
@@ -1484,8 +1484,6 @@ define(function (require) {
 				}
 
 				rangeHelper.insertHTML('\n' + newTabsStr);
-				triggerValueChanged();
-
 				triggerValueChanged();
 				e.preventDefault();
 				return;
