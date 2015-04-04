@@ -1626,7 +1626,7 @@
 			ol: ['li', 'ol', 'ul'],
 			table: ['tr'],
 			tr: ['td', 'th'],
-			code: ['br', 'p', 'div']
+			code: []
 		};
 
 		/**
@@ -2578,6 +2578,7 @@
 				code: null
 			},
 			isInline: false,
+			isPreFormatted: true,
 			codeInputModeInside: true,
 			allowedChildren: ['#', '#newline'],
 			format: '[code]{0}[/code]',
