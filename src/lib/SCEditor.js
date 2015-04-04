@@ -2414,6 +2414,54 @@ define(function (require) {
 		};
 
 		/**
+		* Quick check if cursor in textarea is currently between any of the
+		* start and any of the end substrings
+		*
+		* @param {object} textarea Textarea DOM object
+		* @param {Array} startTags List of start tags to look for
+		*		For example, Array('[code]', '[code=')
+		* @param {Array} endTags List of end tags to look for
+		*		For example, Array('[/code]')
+		* @source Based on phpbb.inBBCodeTag from phpBB 3.1
+		*
+		* @return {boolean} True if cursor is in between the substrings
+		*/
+		base.inText = function (textarea, startStrings, endString) {
+			var start = textarea.selectionStart,
+				lastEnd = -1,
+				lastStart = -1,
+				i, index, value;
+
+			if (typeof start !== 'number') {
+				return false;
+			}
+
+			value = textarea.value.toLowerCase();
+
+			for (i = 0; i < startStrings.length; i++) {
+				var stringLength = startStrings[i].length;
+				if (start >= stringLength) {
+					index = value.lastIndexOf(startStrings[i],
+						start - stringLength);
+					lastStart = Math.max(lastStart, index);
+				}
+			}
+			if (lastStart === -1) {
+				return false;
+			}
+
+			if (start > 0) {
+				for (i = 0; i < endString.length; i++) {
+					index = value.lastIndexOf(endString[i], start - 1);
+					lastEnd = Math.max(lastEnd, index);
+				}
+			}
+
+			return (lastEnd < lastStart);
+		};
+
+
+		/**
 		 * Handles the passed command
 		 * @private
 		 */
