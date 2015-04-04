@@ -440,7 +440,7 @@ define(function (require) {
 
 		// START_COMMAND: Code
 		code: {
-			codeInputModeInside: ['code'],
+			codeInputModeInside: 'code',
 			forceNewLineAfter: ['code'],
 			exec: function () {
 				this.wysiwygEditorInsertHtml(
