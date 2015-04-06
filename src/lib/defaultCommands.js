@@ -21,21 +21,21 @@ define(function (require) {
 		bold: {
 			exec: 'bold',
 			tooltip: 'Bold',
-			shortcut: 'ctrl+b'
+			shortcut: 'Ctrl+B'
 		},
 		// END_COMMAND
 		// START_COMMAND: Italic
 		italic: {
 			exec: 'italic',
 			tooltip: 'Italic',
-			shortcut: 'ctrl+i'
+			shortcut: 'Ctrl+I'
 		},
 		// END_COMMAND
 		// START_COMMAND: Underline
 		underline: {
 			exec: 'underline',
 			tooltip: 'Underline',
-			shortcut: 'ctrl+u'
+			shortcut: 'Ctrl+U'
 		},
 		// END_COMMAND
 		// START_COMMAND: Strikethrough
@@ -911,7 +911,7 @@ define(function (require) {
 				this.maximize(!this.maximize());
 			},
 			tooltip: 'Maximize',
-			shortcut: 'ctrl+shift+m'
+			shortcut: 'Ctrl+Shift+M'
 		},
 		// END_COMMAND
 
@@ -927,7 +927,7 @@ define(function (require) {
 				this.toggleSourceMode();
 			},
 			tooltip: 'View source',
-			shortcut: 'ctrl+shift+s'
+			shortcut: 'Ctrl+Shift+S'
 		},
 		// END_COMMAND
 

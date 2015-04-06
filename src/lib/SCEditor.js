@@ -612,7 +612,7 @@ define(function (require) {
 						$button.attr(
 							'title',
 							base._(command.tooltip) +
-								(shortcut ? '(' + shortcut + ')' : '')
+								(shortcut ? ' (' + shortcut + ')' : '')
 						);
 					}
 
