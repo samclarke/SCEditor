@@ -1528,8 +1528,7 @@ define(function (require) {
 							cursorPosition &&
 							rangeContainer.nextSibling) {
 								rangeHelper.placeCaretAt(
-									rangeContainer.nextSibling
-									, 0
+									rangeContainer.nextSibling, 0
 								);
 							}
 					}, 10);

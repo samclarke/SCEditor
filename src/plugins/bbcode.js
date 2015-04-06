@@ -1184,7 +1184,8 @@
 						token.children[token.children.length - 1] || {};
 					bbcode         = base.bbcodes[token.name];
 					needsBlockWrap = isRoot && isInline(bbcode);
-					content        = convertToHTML(token.children, false, bbcode);
+					content        = 
+						convertToHTML(token.children, false, bbcode);
 
 					if (bbcode && bbcode.html) {
 						// Only add a line break to the end if this is
