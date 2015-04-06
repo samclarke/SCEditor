@@ -66,5 +66,5 @@
 
 		dateFormat: 'day/month/year'
 	};	
-	$.sceditor.locale['fr'] = $.sceditor.locale['fr-FR']
+	$.sceditor.locale['fr'] = $.sceditor.locale['fr-FR'];
 })(jQuery);
