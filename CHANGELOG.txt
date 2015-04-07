@@ -1,3 +1,7 @@
+Version 1.5.0:
+	Updated French translation.
+		- Thanks to @KaseiFR
+
 Version 1.4.7:
 	Fixed bug with XHTML plugin not wrapping inline nodes in paragraphs.
 		- Thanks to @Heart1010 for reporting
