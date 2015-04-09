@@ -7,6 +7,8 @@ Version 1.5.0:
 		- Thanks to @OlafvdSpek for reporting.
 	Fixed IE selection bug when repeatedly opening dropdowns.
 		- Thanks to @q2apro for reporting.
+	Fixed bug with selection being modified when calling val().
+		- Thanks to @q2apro for reporting.
 
 Version 1.4.7:
 	Fixed bug with XHTML plugin not wrapping inline nodes in paragraphs.

@@ -1956,41 +1956,23 @@ define(function (require) {
 		 * @memberOf jQuery.sceditor.prototype
 		 */
 		base.getWysiwygEditorValue = function (filter) {
-			var	html, ieBookmark,
-				hasSelection = rangeHelper.hasSelection();
+			var	html;
+			// Create a tmp node to store contents so it can be modified
+			// without affecting anything else.
+			var $tmp = $('<div>')
+				.appendTo(document.body)
+				.append($wysiwygBody.clone());
 
-			if (hasSelection) {
-				rangeHelper.saveRange();
-			// IE <= 8 bookmark the current TextRange position
-			// and restore it after
-			} else if (lastRange && lastRange.getBookmark) {
-				ieBookmark = lastRange.getBookmark();
-			}
+			dom.fixNesting($tmp[0]);
 
-			dom.fixNesting($wysiwygBody[0]);
+			html = $tmp.html();
 
 			// filter the HTML and DOM through any plugins
-			html = $wysiwygBody.html();
-
 			if (filter !== false && pluginManager.hasHandler('toSource')) {
-				html = pluginManager.callOnlyFirst(
-					'toSource', html, $wysiwygBody
-				);
+				html = pluginManager.callOnlyFirst('toSource', html, $tmp);
 			}
 
-			if (hasSelection) {
-				rangeHelper.restoreRange();
-
-				// remove the last stored range for
-				// IE as it no longer applies
-				lastRange = null;
-			} else if (ieBookmark) {
-				lastRange.moveToBookmark(ieBookmark);
-
-				// remove the last stored range for
-				// IE as it no longer applies
-				lastRange = null;
-			}
+			$tmp.remove();
 
 			return html;
 		};
