@@ -5,6 +5,8 @@ Version 1.5.0:
 		- Thanks to @KaseiFR
 	Fixed bug with wrong button state with autofocus.
 		- Thanks to @OlafvdSpek for reporting.
+	Fixed IE selection bug when repeatedly opening dropdowns.
+		- Thanks to @q2apro for reporting.
 
 Version 1.4.7:
 	Fixed bug with XHTML plugin not wrapping inline nodes in paragraphs.

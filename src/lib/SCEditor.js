@@ -1371,7 +1371,9 @@ define(function (require) {
 				cssClass = 'sceditor-' + name,
 				onlyclose = $dropdown && $dropdown.is('.' + cssClass);
 
-			base.closeDropDown();
+			// Will re-focus the editor. This is needed for IE
+			// as it has special logic to save/restore the selection
+			base.closeDropDown(true);
 
 			if (onlyclose) {
 				return;
