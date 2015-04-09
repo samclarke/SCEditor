@@ -2889,6 +2889,8 @@ define(function (require) {
 				sourceEditor.focus();
 			}
 
+			updateActiveButtons();
+
 			return base;
 		};
 
