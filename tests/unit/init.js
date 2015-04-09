@@ -77,6 +77,10 @@
 		return rangy;
 	});
 
+	define('qunit', [], function () {
+		return QUnit;
+	});
+
 	require.config({
 		baseUrl: '../../src',
 		paths: {
