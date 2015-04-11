@@ -1475,14 +1475,14 @@ define(function (require) {
 				return;
 			}
 
-			rangeHelper.mergeTextNodesAtCaret();
-
 			var currentRange = rangeHelper.selectedRange();
 
 			if (!rangeHelper.getFirstBlockParent().
 				matches(e.data.searchSelector)) {
 				return;
 			}
+
+			rangeHelper.mergeTextNodesAtCaret();
 
 			var rangeContainer = currentRange.startContainer;
 			var theTextNode = rangeContainer.nodeValue;
