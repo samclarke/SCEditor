@@ -1874,6 +1874,10 @@
 			}
 
 			SCEditor.dom.removeWhiteSpace($body[0]);
+
+			// Remove all the stuff that is meant to be ignored
+			$(".sceditor-ignore", $body).remove();
+
 			bbcode = base.elementToBbcode($body);
 
 			if ($tmpContainer) {
