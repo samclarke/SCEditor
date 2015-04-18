@@ -1795,9 +1795,9 @@
 				// Skip empty inline elements
 				while (previousSibling &&
 						previousSibling.nodeType === 1 &&
-							!$(previousSibling).is('br') &&
-							isInline(previousSibling, true) &&
-							!previousSibling.firstChild)) {
+						!$(previousSibling).is('br') &&
+						isInline(previousSibling, true) &&
+						!previousSibling.firstChild) {
 					previousSibling = previousSibling.previousSibling;
 				}
 
@@ -1871,7 +1871,7 @@
 			SCEditor.dom.removeWhiteSpace($body[0]);
 
 			// Remove all the stuff that is meant to be ignored
-			$(".sceditor-ignore", $body).remove();
+			$('.sceditor-ignore', $body).remove();
 
 			bbcode = base.elementToBbcode($body);
 
