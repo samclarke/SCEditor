@@ -583,7 +583,7 @@ define(function (require) {
 					shortcut = command.shortcut;
 					$button  = _tmpl('toolbarButton', {
 						name: commandName,
-						dispName: base._(command.tooltip || commandName)
+						dispName: base._(command.name || command.tooltip || commandName)
 					}, true);
 
 					$button
