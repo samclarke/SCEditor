@@ -1325,6 +1325,10 @@ define(function (require) {
 			lastRange     = null;
 			pluginManager = null;
 
+			if ($dropdown) {
+				$dropdown.unbind().remove();
+			}
+
 			$globalDoc.unbind('click', handleDocumentClick);
 			$globalWin.unbind('resize orientationChanged', handleWindowResize);
 

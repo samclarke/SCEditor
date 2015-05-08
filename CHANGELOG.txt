@@ -9,6 +9,8 @@ Version 1.5.0:
 		- Thanks to @q2apro for reporting.
 	Fixed bug with selection being modified when calling val().
 		- Thanks to @q2apro for reporting.
+	Fixed bug with dropdown not being removed when the editor is destroyed.
+		- Thanks to @odungern for reporting.
 
 Version 1.4.7:
 	Fixed bug with XHTML plugin not wrapping inline nodes in paragraphs.
