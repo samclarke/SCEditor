@@ -632,41 +632,54 @@ define(function (require) {
 		 * @memberOf RangeHelper.prototype
 		 */
 		base.getOuterText = function (before, length) {
-			var	textContent, startPos,
-				ret   = '',
+			var	node, offset, nodeValue, remaining, start,
+				text  = '',
 				range = base.cloneSelected();
 
 			if (!range) {
-				return '';
+				return text;
 			}
 
 			range.collapse(!before);
 
-			if (isW3C) {
-				textContent = range.startContainer.textContent;
-				startPos    = range.startOffset;
-
-				if (before) {
-					startPos = startPos - length;
-
-					if (startPos < 0) {
-						length += startPos;
-						startPos = 0;
-					}
-				}
-
-				ret = textContent.substr(startPos, length);
-			} else {
+			if (!isW3C) {
 				if (before) {
 					range.moveStart(CHARACTER, 0 - length);
 				} else {
 					range.moveEnd(CHARACTER, length);
 				}
 
-				ret = range.text;
+				return range.text;
 			}
 
-			return ret;
+			node = range.startContainer;
+			offset = range.startOffset;
+
+			// 3 = text node
+			if (node && node.nodeType !== 3) {
+				node = node.childNodes[offset];
+				offset = 0;
+			}
+
+			while (text.length < length && node && node.nodeType === 3) {
+				nodeValue = node.nodeValue;
+				remaining = length - text.length;
+
+				if (before) {
+					start = Math.max(offset - remaining, 0);
+					text = nodeValue.substr(start, offset - start) + text;
+
+					node = node.previousSibling;
+					offset = node ? node.nodeValue.length : 0;
+				} else {
+					text += nodeValue.substr(offset, remaining);
+
+					node = node.nextSibling;
+					offset = 0;
+				}
+			}
+
+			return text;
 		};
 
 		/**

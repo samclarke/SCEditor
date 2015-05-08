@@ -431,6 +431,46 @@ define([
 		assert.strictEqual(rangeHelper.getOuterText(true, 4), 'fox ');
 	});
 
+	test('getOuterText() - Before split nodes', function (assert) {
+		var range = rangy.createRangyRange();
+		var sel   = rangy.getSelection();
+
+		editableDiv.innerHTML = '<p></p>';
+
+		var para = editableDiv.firstChild;
+		var doc = para.ownerDocument;
+
+		para.appendChild(doc.createTextNode('The quick brown '));
+		para.appendChild(doc.createTextNode('fox '));
+		para.appendChild(doc.createTextNode('jumps over the lazy dog.'));
+
+		range.setStart(para.childNodes[2], 0);
+
+		sel.setSingleRange(range);
+
+		assert.strictEqual(rangeHelper.getOuterText(true, 10), 'brown fox ');
+	});
+
+	test('getOuterText() - Before with paragraph as start', function (assert) {
+		var range = rangy.createRangyRange();
+		var sel   = rangy.getSelection();
+
+		editableDiv.innerHTML = '<p></p>';
+
+		var para = editableDiv.firstChild;
+		var doc = para.ownerDocument;
+
+		para.appendChild(doc.createTextNode('The quick brown '));
+		para.appendChild(doc.createTextNode('fox '));
+		para.appendChild(doc.createTextNode('jumps over the lazy dog.'));
+
+		range.setStart(para, 2);
+
+		sel.setSingleRange(range);
+
+		assert.strictEqual(rangeHelper.getOuterText(true, 10), 'brown fox ');
+	});
+
 	test('getOuterText() - After', function (assert) {
 		var range = rangy.createRangyRange();
 		var sel   = rangy.getSelection();
@@ -444,6 +484,47 @@ define([
 		sel.setSingleRange(range);
 
 		assert.strictEqual(rangeHelper.getOuterText(false, 5), 'jumps');
+	});
+
+	test('getOuterText() - After split nodes', function (assert) {
+		var range = rangy.createRangyRange();
+		var sel   = rangy.getSelection();
+
+		editableDiv.innerHTML = '<p></p>';
+
+		var para = editableDiv.firstChild;
+		var doc = para.ownerDocument;
+
+		para.appendChild(doc.createTextNode('The quick brown '));
+		para.appendChild(doc.createTextNode('fox '));
+		para.appendChild(doc.createTextNode('jumps over the lazy dog.'));
+
+		range.setStart(para.firstChild, 16);
+
+		sel.setSingleRange(range);
+
+		assert.strictEqual(rangeHelper.getOuterText(false, 9), 'fox jumps');
+	});
+
+	test('getOuterText() - After with paragraph as start', function (assert) {
+		var range = rangy.createRangyRange();
+		var sel   = rangy.getSelection();
+
+		editableDiv.innerHTML = '<p></p>';
+
+		var para = editableDiv.firstChild;
+		var doc = para.ownerDocument;
+
+		para.appendChild(doc.createTextNode('The quick brown '));
+		para.appendChild(doc.createTextNode('fox '));
+		para.appendChild(doc.createTextNode('jumps over the lazy dog.'));
+
+		range.setStart(para, 0);
+
+		sel.setSingleRange(range);
+
+		assert.strictEqual(rangeHelper.getOuterText(false, 25),
+				'The quick brown fox jumps');
 	});
 
 
