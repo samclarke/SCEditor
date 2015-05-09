@@ -17,6 +17,68 @@ define(function (require) {
 		return $('<p>', node.ownerDocument).append(node).html();
 	};
 
+	/**
+	 * Gets the text, start/end node and offset for
+	 * length chars left or right of the passed node
+	 * at the specified offset.
+	 *
+	 * @param  {Node}  node
+	 * @param  {Number}  offset
+	 * @param  {Boolean} isLeft
+	 * @param  {Number}  length
+	 * @return {Object}
+	 * @private
+	 */
+	var outerText = function (range, isLeft, length) {
+		var nodeValue, remaining, start, end, node,
+			text = '',
+			next = range.startContainer,
+			offset = range.startOffset;
+
+		// Handle cases where node is a paragraph and offset
+		// refers to the index of a text node.
+		// 3 = text node
+		if (next && next.nodeType !== 3) {
+			next = next.childNodes[offset];
+			offset = 0;
+		}
+
+		start = end = offset;
+
+		while (length > text.length && next && next.nodeType === 3) {
+			nodeValue = next.nodeValue;
+			remaining = length - text.length;
+
+			// If not the first node, start and end should be at their
+			// max values as will be updated when getting the text
+			if (node) {
+				end = nodeValue.length;
+				start = 0;
+			}
+
+			node = next;
+
+			if (isLeft) {
+				start = Math.max(end - remaining, 0);
+				offset = start;
+
+				text = nodeValue.substr(start, end - start) + text;
+				next = node.previousSibling;
+			} else {
+				end = Math.min(remaining, nodeValue.length);
+				offset = start + end;
+
+				text += nodeValue.substr(start, end);
+				next = node.nextSibling;
+			}
+		}
+
+		return {
+			node: node || next,
+			offset: offset,
+			text: text
+		};
+	};
 
 	var RangeHelper = function (w, d) {
 		var	_createMarker, _isOwner, _prepareInput,
@@ -602,7 +664,8 @@ define(function (require) {
 		 * @memberOf RangeHelper.prototype
 		 */
 		base.selectOuterText = function (left, right) {
-			var range = base.cloneSelected();
+			var start, end,
+				range = base.cloneSelected();
 
 			if (!range) {
 				return false;
@@ -614,8 +677,11 @@ define(function (require) {
 				range.moveStart(CHARACTER, 0 - left);
 				range.moveEnd(CHARACTER, right);
 			} else {
-				range.setStart(range.startContainer, range.startOffset - left);
-				range.setEnd(range.endContainer, range.endOffset + right);
+				start = outerText(range, true, left);
+				end = outerText(range, false, right);
+
+				range.setStart(start.node, start.offset);
+				range.setEnd(end.node, end.offset);
 			}
 
 			base.selectRange(range);
@@ -632,12 +698,10 @@ define(function (require) {
 		 * @memberOf RangeHelper.prototype
 		 */
 		base.getOuterText = function (before, length) {
-			var	node, offset, nodeValue, remaining, start,
-				text  = '',
-				range = base.cloneSelected();
+			var	range = base.cloneSelected();
 
 			if (!range) {
-				return text;
+				return '';
 			}
 
 			range.collapse(!before);
@@ -652,34 +716,7 @@ define(function (require) {
 				return range.text;
 			}
 
-			node = range.startContainer;
-			offset = range.startOffset;
-
-			// 3 = text node
-			if (node && node.nodeType !== 3) {
-				node = node.childNodes[offset];
-				offset = 0;
-			}
-
-			while (text.length < length && node && node.nodeType === 3) {
-				nodeValue = node.nodeValue;
-				remaining = length - text.length;
-
-				if (before) {
-					start = Math.max(offset - remaining, 0);
-					text = nodeValue.substr(start, offset - start) + text;
-
-					node = node.previousSibling;
-					offset = node ? node.nodeValue.length : 0;
-				} else {
-					text += nodeValue.substr(offset, remaining);
-
-					node = node.nextSibling;
-					offset = 0;
-				}
-			}
-
-			return text;
+			return outerText(range, before, length).text;
 		};
 
 		/**

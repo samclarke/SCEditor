@@ -415,6 +415,38 @@ define([
 		), 0);
 	});
 
+	test('selectOuterText() - Left & Right over adjacent nodes', function (assert) {
+		var range = rangy.createRangyRange();
+		var sel   = rangy.getSelection();
+
+		editableDiv.innerHTML = '<p></p>';
+
+		var para = editableDiv.firstChild;
+		var doc = para.ownerDocument;
+
+		para.appendChild(doc.createTextNode('The quick brown '));
+		para.appendChild(doc.createTextNode('fox '));
+		para.appendChild(doc.createTextNode('jumps over the lazy dog.'));
+
+		range.setStart(para.childNodes[1], 2);
+		range.setEnd(para.childNodes[1], 2);
+
+		sel.setSingleRange(range);
+
+		rangeHelper.selectOuterText(10, 10);
+
+		range.setStart(para.firstChild, 8);
+		range.setEnd(para.lastChild, 8);
+
+		assert.strictEqual(range.compareBoundaryPoints(
+			range.START_TO_START, sel.getRangeAt(0)
+		), 0);
+
+		assert.strictEqual(range.compareBoundaryPoints(
+			range.END_TO_END, sel.getRangeAt(0)
+		), 0);
+	});
+
 
 	test('getOuterText() - Before', function (assert) {
 		var range = rangy.createRangyRange();
