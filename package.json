@@ -38,16 +38,16 @@
     "grunt-contrib-concat": "~0.5.1",
     "grunt-contrib-connect": "^0.10.1",
     "grunt-contrib-copy": "^0.8.0",
-    "grunt-contrib-cssmin": "^0.12.2",
-    "grunt-contrib-jshint": "~0.11.1",
+    "grunt-contrib-cssmin": "^0.12.3",
+    "grunt-contrib-jshint": "^0.11.2",
     "grunt-contrib-less": "^1.0.1",
-    "grunt-contrib-qunit": "~0.7.0",
+    "grunt-contrib-qunit": "^0.7.0",
     "grunt-contrib-uglify": "^0.9.1",
+    "grunt-dev-update": "^1.2.0",
     "grunt-githooks": "^0.3.1",
-    "grunt-jscs": "^1.6.0",
-    "grunt-saucelabs": "^8.6.0",
+    "grunt-jscs": "^1.8.0",
+    "grunt-saucelabs": "^8.6.1",
     "grunt-webpack": "^1.0.8",
-    "grunt-dev-update": "^1.1.0",
-    "time-grunt": "^1.1.0"
+    "time-grunt": "^1.2.0"
   }
 }
