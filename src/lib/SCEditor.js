@@ -1863,6 +1863,35 @@ define(function (require) {
 		};
 
 		/**
+		 * Deletes all elements that match elementSelector
+		 *
+		 *
+		 * Example (examples show result of the .outerHTML parameter applied
+		 * to "<strong>"):
+		 * If the commonParent is "<strong>" and cutElement is
+		 * "<!--break-->" in:
+		 * <strong>hi there, how <em>are <span>y<!--break-->ou</span>
+		 * doing</em> today</strong>
+		 * After executing:
+		 * <strong>hi there, how <em>are <span>y</span></em><!--break-->
+		 * <em><span>ou</span> doing</em> today?</strong>
+		 *
+		 *
+		 * @param {String} elementSelector
+		 * @return {this}
+		 * @function
+		 * @name splitElement
+		 * @memberOf RangeHelper.prototype
+		 * @author brunoais
+		 */
+		base.splitRemoveInSelection = function (elementSelector) {
+			base.getRangeHelper().splitAtSelection(elementSelector);
+			triggerValueChanged();
+			return base;
+		};
+
+
+		/**
 		 * <p>Inserts HTML/BBCode into the editor</p>
 		 *
 		 * <p>If end is supplied any selected text will be placed between
