@@ -433,6 +433,81 @@ define(function (require) {
 		};
 
 		/**
+		 * Replace elements with provided selector inside user selection with
+		 * their children
+		 *
+		 * This method provides an easier way to have the same final aspect
+		 * for HTML as powerful as the browser's native execCommand() method
+		 * when removing HTML tag formatting.
+		 *
+		 * This method is mostly meant to be used with <b>inline</b> HTML
+		 * Elements. Having it working with block level elements is not
+		 * guaranteed.
+		 *
+		 *
+		 * @param {String} removeElementSelector Selector match what to delete
+		 * @return undefined
+		 * @function
+		 * @name splitAtSelection
+		 * @memberOf RangeHelper.prototype
+		 * @author brunoais
+		 */
+		base.splitAtSelection = function (removeElementSelector) {
+			
+			var commonParent = base.getFirstBlockParent();
+			
+			base.insertMarkers();
+			
+			var startMarkerElement = base.getMarker(startMarker);
+			var endMarkerElement = base.getMarker(endMarker);
+			startMarkerElement.parentNode.normalize();
+			
+			base.splitElement(commonParent, startMarkerElement);
+			base.splitElement(commonParent, endMarkerElement);
+
+			if (!removeElementSelector) {
+				base.removeMarkers();
+				return;
+			}
+
+			var parentOfRemoval = startMarkerElement.nextElementSibling;
+			
+			while (parentOfRemoval && parentOfRemoval.id != endMarker) {
+				
+				var removalElement = ($(parentOfRemoval).
+					is(removeElementSelector) && parentOfRemoval) || null;
+				
+				var removalElements = parentOfRemoval.
+					querySelectorAll(removeElementSelector);
+				
+				// This has to be after querySelectorAll to allow specifying a
+				// selector for multiple HTML tags forming the removal
+				if (removalElement) {
+					var fragment = document.createDocumentFragment();
+					while (removalElement.firstChild) {
+						fragment.appendChild(removalElement.firstChild);
+					}
+					removalElement.parentNode.replaceChild(fragment,
+						removalElement);
+				}
+
+				for (var i = 0; i < removalElements.length; i++) {
+					var fragment = document.createDocumentFragment();
+					while (removalElements[i].firstChild) {
+						fragment.appendChild(removalElements[i].firstChild);
+					}
+					removalElements[i].parentNode.replaceChild(fragment,
+						removalElements[i]);
+				}
+				
+				parentOfRemoval = parentOfRemoval.nextElementSibling;
+				
+			}
+			
+			base.removeMarkers();
+		};
+
+		/**
 		 * Gets the parent node of the selected contents in the range
 		 *
 		 * @return {HTMLElement}
