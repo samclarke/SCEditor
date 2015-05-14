@@ -439,21 +439,11 @@ define(function (require) {
 				// This has to be after querySelectorAll to allow specifying a
 				// selector for multiple HTML tags forming the removal
 				if (removalElement) {
-					fragment = document.createDocumentFragment();
-					while (removalElement.firstChild) {
-						fragment.appendChild(removalElement.firstChild);
-					}
-					removalElement.parentNode.replaceChild(fragment,
-						removalElement);
+					$(removalElement).replaceWith(removalElement.childNodes);
 				}
 
 				for (var i = 0; i < removalElements.length; i++) {
-					fragment = document.createDocumentFragment();
-					while (removalElements[i].firstChild) {
-						fragment.appendChild(removalElements[i].firstChild);
-					}
-					removalElements[i].parentNode.replaceChild(fragment,
-						removalElements[i]);
+					$(removalElement[i]).replaceWith(removalElements[i].childNodes);
 				}
 
 				parentOfRemoval = $(parentOfRemoval).next()[0];
