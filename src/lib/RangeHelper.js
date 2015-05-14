@@ -480,10 +480,11 @@ define(function (require) {
 				var removalElements = parentOfRemoval.
 					querySelectorAll(removeElementSelector);
 				
+				var fragment;
 				// This has to be after querySelectorAll to allow specifying a
 				// selector for multiple HTML tags forming the removal
 				if (removalElement) {
-					var fragment = document.createDocumentFragment();
+					fragment = document.createDocumentFragment();
 					while (removalElement.firstChild) {
 						fragment.appendChild(removalElement.firstChild);
 					}
