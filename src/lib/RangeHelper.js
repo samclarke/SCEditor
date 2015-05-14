@@ -453,15 +453,15 @@ define(function (require) {
 		 * @author brunoais
 		 */
 		base.splitAtSelection = function (removeElementSelector) {
-			
+
 			var commonParent = base.getFirstBlockParent();
-			
+
 			base.insertMarkers();
-			
+
 			var startMarkerElement = base.getMarker(startMarker);
 			var endMarkerElement = base.getMarker(endMarker);
 			startMarkerElement.parentNode.normalize();
-			
+
 			base.splitElement(commonParent, startMarkerElement);
 			base.splitElement(commonParent, endMarkerElement);
 
@@ -471,15 +471,15 @@ define(function (require) {
 			}
 
 			var parentOfRemoval = startMarkerElement.nextElementSibling;
-			
+
 			while (parentOfRemoval && parentOfRemoval.id !== endMarker) {
-				
+
 				var removalElement = ($(parentOfRemoval).
 					is(removeElementSelector) && parentOfRemoval) || null;
-				
+
 				var removalElements = parentOfRemoval.
 					querySelectorAll(removeElementSelector);
-				
+
 				var fragment;
 				// This has to be after querySelectorAll to allow specifying a
 				// selector for multiple HTML tags forming the removal
@@ -500,11 +500,11 @@ define(function (require) {
 					removalElements[i].parentNode.replaceChild(fragment,
 						removalElements[i]);
 				}
-				
+
 				parentOfRemoval = parentOfRemoval.nextElementSibling;
-				
+
 			}
-			
+
 			base.removeMarkers();
 		};
 
