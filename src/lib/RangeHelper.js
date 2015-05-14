@@ -426,15 +426,14 @@ define(function (require) {
 				return;
 			}
 
-			var parentOfRemoval = startMarkerElement.nextElementSibling;
+			var parentOfRemoval = $(startMarkerElement).next()[0];
 
 			while (parentOfRemoval && parentOfRemoval.id !== endMarker) {
 
 				var removalElement = ($(parentOfRemoval).
 					is(removeElementSelector) && parentOfRemoval) || null;
 
-				var removalElements = parentOfRemoval.
-					querySelectorAll(removeElementSelector);
+				var removalElements = $(removeElementSelector, parentOfRemoval);
 
 				var fragment;
 				// This has to be after querySelectorAll to allow specifying a
@@ -457,7 +456,7 @@ define(function (require) {
 						removalElements[i]);
 				}
 
-				parentOfRemoval = parentOfRemoval.nextElementSibling;
+				parentOfRemoval = $(parentOfRemoval).next()[0];
 
 			}
 
