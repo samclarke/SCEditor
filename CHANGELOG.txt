@@ -13,6 +13,8 @@ Version 1.5.0:
 		- Thanks to @odungern for reporting.
 	Fixed bug with getOuterText() not always getting all the text.
 	Fixed bug with selectOuterText() not selecting text across adjacent nodes.
+	Fixed bug with lists in WebKit which could cause infinite loops.
+		- Thanks to @taekvideo for reporting.
 
 Version 1.4.7:
 	Fixed bug with XHTML plugin not wrapping inline nodes in paragraphs.

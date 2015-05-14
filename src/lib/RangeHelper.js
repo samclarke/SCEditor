@@ -296,7 +296,9 @@ define(function (require) {
 				}
 
 				range = doc.createRange();
-				range.setStart(firstChild, 0);
+				// Must be setStartBefore otherwise it can cause infinite
+				// loops with lists in WebKit. See issue 442
+				range.setStartBefore(firstChild);
 
 				sel.addRange(range);
 			}
