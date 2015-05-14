@@ -407,7 +407,7 @@ define(function (require) {
 		 * <em><span>ou</span> doing</em> today?</strong>
 		 *
 		 *
-		 * @param {DOMElement} commonParent The common ancestor of clipping point
+		 * @param {DOMElement} commonParent The common ancestor at clipping
 		 * @param {DOMNode} cutElement Where the closing and re-opening happens
 		 * @return undefined
 		 * @function
@@ -472,7 +472,7 @@ define(function (require) {
 
 			var parentOfRemoval = startMarkerElement.nextElementSibling;
 			
-			while (parentOfRemoval && parentOfRemoval.id != endMarker) {
+			while (parentOfRemoval && parentOfRemoval.id !== endMarker) {
 				
 				var removalElement = ($(parentOfRemoval).
 					is(removeElementSelector) && parentOfRemoval) || null;
@@ -492,7 +492,7 @@ define(function (require) {
 				}
 
 				for (var i = 0; i < removalElements.length; i++) {
-					var fragment = document.createDocumentFragment();
+					fragment = document.createDocumentFragment();
 					while (removalElements[i].firstChild) {
 						fragment.appendChild(removalElements[i].firstChild);
 					}
