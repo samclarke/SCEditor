@@ -423,7 +423,7 @@ define(function (require) {
 			if (startInSourceMode) {
 				$editorContainer.addClass('sourceMode');
 				$wysiwygEditor.hide();
-			}else{
+			} else {
 				$editorContainer.addClass('wysiwygMode');
 				$sourceEditor.hide();
 			}
