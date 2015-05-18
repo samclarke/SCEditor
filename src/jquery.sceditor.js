@@ -69,8 +69,8 @@ define(function (require) {
 
 		options = options || {};
 
-		if (!options.runWithoutWysiwygSupport && !browser.isWysiwygSupported) {
-			return;
+		if (options.runWithoutWysiwygSupport || !browser.isWysiwygSupported) {
+			SCEditor.isWysiwygSupported = false;
 		}
 
 		this.each(function () {

@@ -341,7 +341,7 @@ define(function (require) {
 
 			// force into source mode if is a browser that can't handle
 			// full editing
-			if (!browser.isWysiwygSupported) {
+			if (!SCEditor.isWysiwygSupported) {
 				base.toggleSourceMode();
 			}
 
@@ -2234,7 +2234,7 @@ define(function (require) {
 			var sourceMode = base.inSourceMode();
 
 			// don't allow switching to WYSIWYG if doesn't support it
-			if (!browser.isWysiwygSupported && sourceMode) {
+			if (!SCEditor.isWysiwygSupported && sourceMode) {
 				return;
 			}
 
