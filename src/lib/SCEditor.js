@@ -1966,7 +1966,7 @@ define(function (require) {
 			// without affecting anything else.
 			var $tmp = $('<div>')
 				.appendTo(document.body)
-				.append($wysiwygBody.clone());
+				.append($($wysiwygBody[0].childNodes).clone());
 
 			dom.fixNesting($tmp[0]);
 
