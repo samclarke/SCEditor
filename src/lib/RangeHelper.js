@@ -701,8 +701,12 @@ define(function (require) {
 						startAtLength = 0;
 					} else {
 						startOn = start.previousSibling;
-						startAtLength = start.previousSibling.
-							textContent.length;
+						// If it is an element, go as deep as possible to
+						// a text node
+						while (startOn.lastChild) {
+							startOn = startOn.lastChild;
+						}
+						startAtLength = startOn.nodeValue.length;
 					}
 					range.setStart(startOn, startAtLength);
 					range.setEnd(startOn, startAtLength);
