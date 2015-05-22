@@ -702,7 +702,7 @@ define(function (require) {
 					} else {
 						startOn = start.previousSibling;
 						startAtLength = start.previousSibling.
-							textContent.length - 1;
+							textContent.length;
 					}
 					range.setStart(startOn, startAtLength);
 					range.setEnd(startOn, startAtLength);
