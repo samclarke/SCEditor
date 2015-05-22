@@ -1517,14 +1517,14 @@ define(function (require) {
 					}
 					rangeHelper.placeCaretAt(rangeContainer, cursorPosition);
 
-					setTimeout(function (){
+					setTimeout(function () {
 						// At least in firefox, the text node is split after
 						// editing where the cursor is placed.
 						// If the cursor is placed just after the \n, the
 						// caret appears in the line before although it is
 						// ready to type in the line after.
 						// This fixes that by recalculating after the split
-						if ( rangeContainer.nodeValue.length ===
+						if (rangeContainer.nodeValue.length ===
 							cursorPosition &&
 							rangeContainer.nextSibling) {
 								rangeHelper.placeCaretAt(
@@ -1552,7 +1552,7 @@ define(function (require) {
 
 			var startStrings = [];
 			var endStrings =  [];
-			for (var i = 0; i < searchSubstrings.length; i++){
+			for (var i = 0; i < searchSubstrings.length; i++) {
 				startStrings.push(searchSubstrings[i][0]);
 				endStrings.push(searchSubstrings[i][1]);
 			}
@@ -1611,7 +1611,7 @@ define(function (require) {
 				// Incrementing helps with the math
 				searchPos++;
 				if (sourceText[searchPos] === '\t') {
-					sourceEditor.value = 	sourceText.slice(0, searchPos) +
+					sourceEditor.value =	sourceText.slice(0, searchPos) +
 											sourceText.slice(searchPos + 1);
 
 					if (sourceText[cursorPosition - 1] !== '\n') {

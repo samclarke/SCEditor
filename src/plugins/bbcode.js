@@ -1184,7 +1184,7 @@
 						token.children[token.children.length - 1] || {};
 					bbcode         = base.bbcodes[token.name];
 					needsBlockWrap = isRoot && isInline(bbcode);
-					content        = 
+					content        =
 						convertToHTML(token.children, false, bbcode);
 
 					if (bbcode && bbcode.html) {
@@ -1224,7 +1224,7 @@
 					if (!isRoot) {
 						if (myself && myself.isPreFormatted) {
 							ret.push('\n');
-						}else{
+						} else {
 							ret.push('<br />');
 						}
 						continue;
