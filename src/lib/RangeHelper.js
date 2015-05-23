@@ -435,7 +435,6 @@ define(function (require) {
 
 				var removalElements = $(removeElementSelector, parentOfRemoval);
 
-				var fragment;
 				// This has to be after querySelectorAll to allow specifying a
 				// selector for multiple HTML tags forming the removal
 				if (removalElement) {
@@ -443,7 +442,8 @@ define(function (require) {
 				}
 
 				for (var i = 0; i < removalElements.length; i++) {
-					$(removalElement[i]).replaceWith(removalElements[i].childNodes);
+					$(removalElement[i]).
+						replaceWith(removalElements[i].childNodes);
 				}
 
 				parentOfRemoval = $(parentOfRemoval).next()[0];
