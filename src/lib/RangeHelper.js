@@ -782,6 +782,8 @@ define(function (require) {
 					// In this case, I have to find the parent and count
 					// all characters from previous nodes until this node
 
+					var startPos,
+						textContent;
 					var currentContainer = range.startContainer;
 					while (currentContainer.previousSibling) {
 						startPos += currentContainer.previousSibling.
