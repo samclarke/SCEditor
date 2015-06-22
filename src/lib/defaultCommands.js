@@ -670,7 +670,7 @@ define(function (require) {
 						}
 					});
 
-					if (!includeMore) {
+					if (!includeMore && editor.opts.emoticons.more) {
 						$moreLink = $(
 							'<a class="sceditor-more">' +
 								editor._('More') + '</a>'
