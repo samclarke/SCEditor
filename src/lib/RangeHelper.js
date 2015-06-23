@@ -756,11 +756,12 @@ define(function (require) {
 				});
 			}
 
-			var before, beforeAndAfter, matchPos, startPos, beforeLen,
+			var outerText, matchPos, startIndex, leftLen,
 				charsLeft, keyword, keywordLen,
-				wsRegex    = '[\\s\xA0\u2002\u2003\u2009]',
-				keywordIdx = keywords.length,
-				maxKeyLen  = longestKeyword ||
+				whitespaceRegex = '[\\s\xA0\u2002\u2003\u2009]',
+				keywordIdx      = keywords.length,
+				whitespaceLen   = requireWhitespace ? 1 : 0,
+				maxKeyLen       = longestKeyword ||
 					keywords[keywordIdx - 1][0].length;
 
 			if (requireWhitespace) {
@@ -774,57 +775,57 @@ define(function (require) {
 				maxKeyLen++;
 			}
 
-			keypressChar   = keypressChar || '';
-			before         = base.getOuterText(true, maxKeyLen);
-			beforeLen      = before.length;
-			beforeAndAfter = before + keypressChar;
+			keypressChar = keypressChar || '';
+			outerText    = base.getOuterText(true, maxKeyLen);
+			leftLen      = outerText.length;
+			outerText   += keypressChar;
 
 			if (includeAfter) {
-				beforeAndAfter += base.getOuterText(false, maxKeyLen);
+				outerText += base.getOuterText(false, maxKeyLen);
 			}
 
 			while (keywordIdx--) {
-				keyword      = keywords[keywordIdx][0];
-				keywordLen   = keyword.length;
-				startPos     = beforeLen - 1 - keywordLen;
+				keyword    = keywords[keywordIdx][0];
+				keywordLen = keyword.length;
+				startIndex = Math.max(0, leftLen - keywordLen - whitespaceLen);
 
 				if (requireWhitespace) {
-					matchPos = beforeAndAfter
-						// Start position needs to be 1 char before to include
-						// any previous whitespace
-						.substr(Math.max(0, startPos - 1))
+					matchPos = outerText
+						.substr(startIndex)
 						.search(new RegExp(
-							'(?:' + wsRegex + ')' +
+							'(?:' + whitespaceRegex + ')' +
 							escape.regex(keyword) +
-							'(?=' + wsRegex + ')'
+							'(?=' + whitespaceRegex + ')'
 						));
 				} else {
-					matchPos = beforeAndAfter.indexOf(keyword, startPos);
+					matchPos = outerText.indexOf(keyword, startIndex);
 				}
 
 				if (matchPos > -1) {
+					// Add the length of the text that was removed by substr()
+					// when matching and also add 1 for the whitespace
 					if (requireWhitespace) {
-						matchPos += startPos + 1;
+						matchPos += startIndex + 1;
 					}
 
-					// Make sure the substr is between before and
-					// after not entirely in one or the other
-					if (matchPos > beforeLen ||
-						matchPos + keywordLen + (requireWhitespace ? 1 : 0) <
-						beforeLen) {
-						continue;
+					// Make sure the match is between before and
+					// after, not just entirely in one side or the other
+					if (matchPos <= leftLen &&
+						matchPos + keywordLen + whitespaceLen >= leftLen) {
+						charsLeft = leftLen - matchPos;
+
+						// If the keypress char is white space then it should
+						// not be replaced, only chars that are part of the
+						// key should be replaced.
+						base.selectOuterText(
+							charsLeft,
+							keywordLen - charsLeft -
+								(/^\S/.test(keypressChar) ? 1 : 0)
+						);
+
+						base.insertHTML(keywords[keywordIdx][1]);
+						return true;
 					}
-
-					charsLeft = beforeLen - matchPos;
-
-					base.selectOuterText(
-						charsLeft,
-						keywordLen - charsLeft -
-							(/^\S/.test(keypressChar) ? 1 : 0)
-					);
-
-					base.insertHTML(keywords[keywordIdx][1]);
-					return true;
 				}
 			}
 

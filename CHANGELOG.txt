@@ -17,6 +17,8 @@ Version 1.5.0:
 		- Thanks to @taekvideo for reporting.
 	Removed more button from emoticons unless there are actually more.
 		- Thanks to @Destroy666x for reporting and @brunoais for fixing.
+	Fixed bug with emoticonsCompat sometimes removing surrounding text
+		when typing emoticons.
 
 Version 1.4.7:
 	Fixed bug with XHTML plugin not wrapping inline nodes in paragraphs.
