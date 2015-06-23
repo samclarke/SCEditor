@@ -15,6 +15,8 @@ Version 1.5.0:
 	Fixed bug with selectOuterText() not selecting text across adjacent nodes.
 	Fixed bug with lists in WebKit which could cause infinite loops.
 		- Thanks to @taekvideo for reporting.
+	Removed more button from emoticons unless there are actually more.
+		- Thanks to @Destroy666x for reporting and @brunoais for fixing.
 
 Version 1.4.7:
 	Fixed bug with XHTML plugin not wrapping inline nodes in paragraphs.
