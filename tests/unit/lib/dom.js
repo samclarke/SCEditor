@@ -146,6 +146,23 @@ define([
 		);
 	});
 
+	test('convertElement() - Invalid attribute name', function (assert) {
+		var node = utils.htmlToDiv(
+			'<i size"2"="" good="attr">test</i>'
+		);
+
+		var newNode = dom.convertElement(node.firstChild, 'em');
+
+		assert.equal(newNode, node.firstChild);
+
+		assert.nodesEqual(
+			newNode,
+			utils.htmlToNode(
+				'<em good="attr">test</em>'
+			)
+		);
+	});
+
 
 	test('fixNesting() - With styling', function (assert) {
 		var node = utils.htmlToDiv(

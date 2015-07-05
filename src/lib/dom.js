@@ -118,7 +118,12 @@ define(function (require) {
 					if (browser.ie < 8 && /style/i.test(attr.name)) {
 						dom.copyCSS(oldElm, newElm);
 					} else {
-						newElm.setAttribute(attr.name, attr.value);
+						// Some browsers parse invalid attributes names like
+						// 'size"2' which throw an exception when set, just
+						// ignore these.
+						try {
+							newElm.setAttribute(attr.name, attr.value);
+						} catch (ex) {}
 					}
 				}
 			}
@@ -157,9 +162,9 @@ define(function (require) {
 			// List of empty HTML tags seperated by bar (|) character.
 			// Source: http://www.w3.org/TR/html4/index/elements.html
 			// Source: http://www.w3.org/TR/html5/syntax.html#void-elements
-			return ('|iframe|area|base|basefont|br|col|frame|hr|img|input|' +
-				'isindex|link|meta|param|command|embed|keygen|source|track|' +
-				'wbr|').indexOf('|' + node.nodeName.toLowerCase() + '|') < 0;
+			return ('|iframe|area|base|basefont|br|col|frame|hr|img|input|wbr' +
+				'|isindex|link|meta|param|command|embed|keygen|source|track|' +
+				'object|').indexOf('|' + node.nodeName.toLowerCase() + '|') < 0;
 		},
 
 		/**
@@ -458,12 +463,11 @@ define(function (require) {
 					$elm.is('hr') || $elm.is('th')) {
 					return '';
 				}
-
+// check all works with changes and merge with prev?
 				// IE changes text-align to the same as the current direction
 				// so skip unless its not the same
-				if (direction && styleValue &&
-					((/right/i.test(styleValue) && direction === 'rtl') ||
-					(/left/i.test(styleValue) && direction === 'ltr'))) {
+				if ((/right/i.test(styleValue) && direction === 'rtl') ||
+					(/left/i.test(styleValue) && direction === 'ltr')) {
 					return '';
 				}
 			}

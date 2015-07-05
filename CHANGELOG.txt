@@ -19,6 +19,8 @@ Version 1.5.0:
 		- Thanks to @Destroy666x for reporting and @brunoais for fixing.
 	Fixed bug with emoticonsCompat sometimes removing surrounding text
 		when typing emoticons.
+	Fixed bug with XHTML plugin when input value contains invalid attributes.
+		- Thanks to Tim for reporting
 
 Version 1.4.7:
 	Fixed bug with XHTML plugin not wrapping inline nodes in paragraphs.
