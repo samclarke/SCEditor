@@ -61,7 +61,7 @@
 		'Enter URL:': 'Informe o endereço URL:',
 		'Enter the YouTube video URL or ID:': 'Informe o endereço URL ou ID do YouTube:',
 		'Insert a Quote': 'Inserir uma citação',
-		'Invalid YouTube video': 'Vídeo do TouTube inválido',
+		'Invalid YouTube video': 'Vídeo do YouTube inválido',
 		dateFormat: 'day-month-year'
 	};
 })(jQuery);
