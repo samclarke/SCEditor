@@ -1417,7 +1417,9 @@ define(function (require) {
 			// place the cursor at the start of the editor instead
 			// of focusing on the input.
 			setTimeout(function () {
-				$dropdown.find('input,textarea').first().focus();
+				if ($dropdown) {
+					$dropdown.find('input,textarea').first().focus();
+				}
 			});
 		};
 
