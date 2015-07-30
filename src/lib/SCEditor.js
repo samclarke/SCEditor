@@ -438,7 +438,7 @@ define(function (require) {
 			doc.write(_tmpl('html', {
 				// Add IE version class to the HTML element so can apply
 				// conditional styling without CSS hacks
-				attrs: IE_VER ? ' class="ie ie"' + IE_VER : '',
+				attrs: IE_VER ? ' class="ie ie' + IE_VER + '"' : '',
 				spellcheck: options.spellcheck ? '' : 'spellcheck="false"',
 				charset: options.charset,
 				style: options.style
