@@ -66,7 +66,7 @@ define(function (require, exports) {
 			editableAttr = $('<p contenteditable="true">')[0].contentEditable;
 
 		// Check if the contenteditable attribute is supported
-		if (editableAttr === undef && editableAttr === 'inherit') {
+		if (editableAttr === undef || editableAttr === 'inherit') {
 			return false;
 		}
 
