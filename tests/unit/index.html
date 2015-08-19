@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>SCEditor Tests</title>
+
+
+		<link rel="stylesheet/less" type="text/css"
+			href="../../src/themes/default.less" />
+		<script>
+		var less = {
+			env: 'development',
+			logLevel: 1,
+			relativeUrls: true
+		};
+		</script>
+
+		<!-- Needed for sinon t work in IE6 -->
+		<!--[if IE 6]>
+		<script>
+		window.XMLHttpRequest = function () {};
+		</script>
+		<![endif]-->
+
+		<!-- This is needed for LessJS to work in IE < 9 -->
+		<script src="../libs/es5-shim.js"></script>
+		<script src="../libs/less-1.7.0.min.js"></script>
+		<link rel="stylesheet" href="../libs/qunit-1.14.0.css">
+		<script src="../libs/jquery-1.11.1.js"></script>
+		<script src="../libs/rangy-1.2.3/rangy-core.js"></script>
+		<script src="../libs/qunit-1.14.0.js"></script>
+		<script src="../libs/sinon-1.9.1.js"></script>
+		<script src="../libs/sinon-qunit-1.0.0.js"></script>
+		<script src="../libs/require-2.1.11.js"></script>
+		<!--[if gt IE 8]><!-->
+		<script src="../libs/blanket-1.1.5.min.js" data-cover-only="src/"
+			data-cover-never="['tests/', '/unit']"
+			data-cover-flags="branchTracking"></script>
+		<!--<![endif]-->
+
+		<style>
+		#qunit-module-fixture {
+			position: absolute;
+			top: -10000px;
+			left: -10000px;
+			width: 1000px;
+			height: 1000px;
+		}
+		</style>
+		<script src="init.js"></script>
+		<script>
+			require([
+				// Load all tests as dependancies
+				'tests/unit/lib/PluginManager',
+				'tests/unit/lib/RangeHelper',
+				'tests/unit/lib/SCEditor',
+				'tests/unit/lib/dom',
+				'tests/unit/lib/escape',
+				'tests/unit/plugins/bbcode',
+				'tests/unit/plugins/bbcode.parser',
+				'tests/unit/plugins/xhtml',
+				'tests/unit/jquery.sceditor',
+				'tests/unit/closeAssert',
+				'tests/unit/htmlAssert',
+				'domReady!'
+			], function () {
+				// Start QUnit
+				QUnit.load();
+				QUnit.start();
+			});
+		</script>
+	</head>
+	<body>
+		<div id="qunit"></div>
+		<div id="qunit-fixture"></div>
+		<div id="qunit-module-fixture"></div>
+	</body>
+</html>

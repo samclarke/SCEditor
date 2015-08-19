@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+
+		<title>Memory Test - SCEditor</title>
+
+		<link rel="stylesheet/less" href="../../../src/themes/default.less"
+			type="text/css">
+		<script>
+			window.less = {
+				env: 'development',
+				relativeUrls: true
+			};
+		</script>
+		<!-- This is needed for LessJS to work in IE < 9 -->
+		<script src="../../libs/es5-shim.js"></script>
+		<script src="../../libs/less-1.7.0.min.js"></script>
+
+		<script src="../../libs/jquery-1.11.1.js"></script>
+		<script src="../../libs/require-2.1.11.js"></script>
+
+		<link rel="stylesheet" type="text/css"
+			href="http://fonts.googleapis.com/css?family=Open+Sans:400,500,700">
+		<link rel="stylesheet" type="text/css" href="../style.css">
+
+		<script src="./test.js"></script>
+	</head>
+	<body>
+		<h1 class="memory-header">Memory Tests</h1>
+
+		<div id="container">
+			<div id="editor">
+				<h2>Test Area</h2>
+
+				<p>This test will create and destroy SCEditor 100 times.
+				To make sure there are no memory leaks you will need to manually
+				check the memory usage.</p>
+
+				<p>To do this you will need to create heap snapshots:</p>
+				<ul>
+					<li>
+						Chrome:
+							Developer tools -> Profiles -> Take Heap Snapshot
+					</li>
+					<li>
+						IE 11+:
+							Developer tools -> Memory -> Take Heap Snapshot
+					</li>
+				</ul>
+
+				<p>To perform this test:</p>
+				<ol>
+					<li>
+						Start the test and once complete create the first heap
+						snapshot.
+					</li>
+					<li>
+						Run the test again and create another heap snapshot.
+					</li>
+					<li>
+						Compare the memory usage between the two snapshots.
+					</li>
+				</ol>
+				<p>If the memory usage is less than or equal to the memory usage
+					of the first snapshot then there's no leaks.
+					If the memory usage has increased compared to the first
+					snapshot then you will need to search though the snapshot to
+					make sure there are no references to SCEditor left.</p>
+
+
+				<p><input type="submit" value="Begin Test" /></p>
+
+				<div id="progress-bar-container">
+					<div id="progress-bar">
+						<div id="progress" style="width: 0%"> </div>
+					</div>
+				</div>
+
+				<textarea id="testarea"></textarea>
+			</div>
+		</div>
+	</body>
+</html>

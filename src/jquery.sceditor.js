@@ -2,7 +2,7 @@
  * SCEditor
  * http://www.sceditor.com/
  *
- * Copyright (C) 2011-2013, Sam Clarke (samclarke.com)
+ * Copyright (C) 2014, Sam Clarke (samclarke.com)
  *
  * SCEditor is licensed under the MIT license:
  *	http://www.opensource.org/licenses/mit-license.php
@@ -11,6 +11,8 @@
  * @author Sam Clarke
  * @requires jQuery
  */
+define(function (require) {
+	'use strict';
 
 // ==ClosureCompiler==
 // @output_file_name jquery.sceditor.min.js
@@ -5531,50 +5533,26 @@
 		 */
 		runWithoutWysiwygSupport: false,
 
-		/**
-		 * Optional ID to give the editor.
-		 * @type {String}
-		 */
-		id: null,
 
-		/**
-		 * Comma separated list of plugins
-		 * @type {String}
-		 */
-		plugins: '',
+	// For backwards compatibility
+	$.sceditor = SCEditor;
 
-		/**
-		 * z-index to set the editor container to. Needed for jQuery UI dialog.
-		 * @type {Int}
-		 */
-		zIndex: null,
+	SCEditor.commands       = require('./lib/defaultCommands');
+	SCEditor.defaultOptions = require('./lib/defaultOptions');
+	SCEditor.RangeHelper    = require('./lib/RangeHelper');
+	SCEditor.dom            = require('./lib/dom');
 
-		/**
-		 * If to trim the BBCode. Removes any spaces at the start and end of the BBCode string.
-		 * @type {Boolean}
-		 */
-		bbcodeTrim: false,
+	SCEditor.ie                 = browser.ie;
+	SCEditor.ios                = browser.ios;
+	SCEditor.isWysiwygSupported = browser.isWysiwygSupported;
 
-		/**
-		 * If to disable removing block level elements by pressing backspace at the start of them
-		 * @type {Boolean}
-		 */
-		disableBlockRemove: false,
+	SCEditor.regexEscape     = escape.regex;
+	SCEditor.escapeEntities  = escape.entities;
+	SCEditor.escapeUriScheme = escape.uriScheme;
 
-		/**
-		 * BBCode parser options, only applies if using the editor in BBCode mode.
-		 *
-		 * See $.sceditor.BBCodeParser.defaults for list of valid options
-		 * @type {Object}
-		 */
-		parserOptions: { },
+	SCEditor.PluginManager = PluginManager;
+	SCEditor.plugins       = PluginManager.plugins;
 
-		/**
-		 * CSS that will be added to the to dropdown menu (eg. z-index)
-		 * @type {Object}
-		 */
-		dropDownCss: { }
-	};
 
 	/**
 	 * Creates an instance of sceditor on all textareas
@@ -5594,38 +5572,45 @@
 	 * one textarea is matched it will return an array of
 	 * instances each textarea.
 	 *
-	 * @param  {Object|String} options Should either be an Object of options or the strings "state" or "instance"
+	 * @param  {Object|String} options Should either be an Object of options or
+	 *                                 the strings "state" or "instance"
 	 * @return {this|Array|jQuery.sceditor|Bool}
 	 */
 	$.fn.sceditor = function (options) {
-		var	$this,
+		var	$this, instance,
 			ret = [];
 
 		options = options || {};
 
-		if(!options.runWithoutWysiwygSupport && !$.sceditor.isWysiwygSupported)
+		if (!options.runWithoutWysiwygSupport && !browser.isWysiwygSupported) {
 			return;
+		}
 
 		this.each(function () {
-
 			$this = this.jquery ? this : $(this);
+			instance = $this.data('sceditor');
+
 			// Don't allow the editor to be initilised on it's own source editor
-			if($this.parents('.sceditor-container').length > 0)
+			if ($this.parents('.sceditor-container').length > 0) {
 				return;
+			}
 
 			// Add state of instance to ret if that is what options is set to
-			if(options === 'state')
-				ret.push(!!$this.data('sceditor'));
-			else if(options === 'instance')
-				ret.push($this.data('sceditor'));
-			else if(!$this.data('sceditor'))
-				(new $.sceditor(this, options));
+			if (options === 'state') {
+				ret.push(!!instance);
+			} else if (options === 'instance') {
+				ret.push(instance);
+			} else if (!instance) {
+				/*jshint -W031*/
+				(new SCEditor(this, options));
+			}
 		});
 
 		// If nothing in the ret array then must be init so return this
-		if(!ret.length)
+		if (!ret.length) {
 			return this;
+		}
 
 		return ret.length === 1 ? ret[0] : $(ret);
 	};
-})(jQuery, window, document);
+});

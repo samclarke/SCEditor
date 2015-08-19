@@ -2,7 +2,11 @@ language: node_js
 node_js:
   - 0.10
 before_script:
+  - npm install -g grunt-cli
   - "phantomjs --version"
 notifications:
   email:
     - sam@sceditor.com
+env:
+  global:
+    - secure: "HS25tSQonqybcBqS8Z4n1cqsxLbfORBKXDpBkHm8zq7uET/Ej3UY0Ev5YPi5O0l3/qk7fLqm1YUlYkqHuLI8cwHUVEBMq/lbOkoSt57HM22z0r2VC5N3SDmEsvoSdyCVBAhs3I41QeJgCnRmKkiVWfT6Cedq6wXIgQ7uaTxd4nI="

@@ -1,3 +1,154 @@
+Version 1.5.0:
+	Updated French translation.
+		- Thanks to @KaseiFR
+	Updated shortcuts to be prettier.
+		- Thanks to @KaseiFR
+	Fixed bug with wrong button state with autofocus.
+		- Thanks to @OlafvdSpek for reporting.
+	Fixed IE selection bug when repeatedly opening dropdowns.
+		- Thanks to @q2apro for reporting.
+	Fixed bug with selection being modified when calling val().
+		- Thanks to @q2apro for reporting.
+	Fixed bug with dropdown not being removed when the editor is destroyed.
+		- Thanks to @odungern for reporting.
+	Fixed bug with getOuterText() not always getting all the text.
+	Fixed bug with selectOuterText() not selecting text across adjacent nodes.
+	Fixed bug with lists in WebKit which could cause infinite loops.
+		- Thanks to @taekvideo for reporting.
+	Removed more button from emoticons unless there are actually more.
+		- Thanks to @Destroy666x for reporting and @brunoais for fixing.
+	Fixed bug with emoticonsCompat sometimes removing surrounding text
+		when typing emoticons.
+	Fixed bug with XHTML plugin when input value contains invalid attributes.
+		- Thanks to Tim for reporting
+
+Version 1.4.7:
+	Fixed bug with XHTML plugin not wrapping inline nodes in paragraphs.
+		- Thanks to @Heart1010 for reporting
+	Fixed bug with buttons appearing disabled in source mode.
+		- Thanks to @brunoais for reporting.
+	Fixed bug with undo plugin when the valueChanged event is triggered before
+		the ready event.
+	Fixed bug with undo plugin and IE < 8 compatibility.
+	Fixed bug in IE where styles are not applied to text inside of a table cell.
+		- Thanks to @AlbertPraveen for reporting.
+	Fixed bug with IE placing cursor at the start of the editor when a dropdown
+		contains a textarea or input.
+	Fixed bug with FF showing the cursor in the wrong position when it hasn't
+		had focus before.
+		- Thanks to @cyphix333 for reporting.
+	Fixed bug with IE placing cursor inside table tag when inserted.
+		- Thanks to @jetand for reporting.
+	Fixed bug with IE placing the cursor before emoticons after inserting them.
+
+Version 1.4.6:
+	Fixed resize issue with Android browsers.
+		- Thanks to @scripple for fixing.
+	Fixed bug with table being turned into paragraphs.
+		- Thanks to @jetand for fixing.
+	Refactored the code so that it's in modules.
+		The code is now much more readable and far easier to maintain and test.
+		This change is 100% backwards compatible with the minified version and
+		running the build will also create a backwards compatible non-minified
+		version.
+		The non-minified non-built code will require an AMD module loader to
+		load it.
+	Refactored all the unit tests for the new modules.
+	Added manual tests.
+	Fixed bug with RangeHelper.getOuterText() in IE < 9 when getting text after
+	Fixed bug with RangeHelper.insertNode() in IE < 9 when inserting a documentFragment
+	Fixed bug with dom.extractContents() method moving extracted element
+		children into the returned documentFragment
+	Fixed bug with valueChanged event causing an error if the editor is
+		destroyed before it has finished its checks.
+	Enabled valueChanged on sourceMode.
+	Updated the Brazilian Portuguese translation.
+		- Thanks to @martec
+	Fixed HTML to BBCode newline handling causing extra newlines to be added.
+		- Thanks to @jetand for reporting.
+	Added SaurceLabs integration to automatically run QUnit tests in multiple
+		browsers.
+	Added undo plugin.
+		- Thanks to @brunoais for creating.
+	Added galician and catalan translations and updated Spanish translation.
+		- Thanks to @FranSobrino for translating.
+	Fixed bug with FF causing newline to appear when something is typed.
+		- Thanks to @q2apro for reporting.
+	Fixed bug with spaces sometimes disappearing from pasted text when using the
+		XHTML plugin.
+		- Thanks to @q2apro for reporting.
+	Fixed issue with YouTube not showing fullscreen button inside the editor.
+		- Thanks to @kron-1 for reporting.
+	Fixed bug causing window to scroll when blur is called in FF.
+		- Thanks to @spuds for reporting.
+	Remove deprecated keyPress property from commands.
+	Fixed bug with button states not being updated when called via shortcuts.
+		- Thanks to @echteinfachtv for reporting.
+	Added Lithuanian translation.
+		- Thanks to @q2apro for translating.
+	Fixed bug causing newlines to not always be added when return is pressed
+		at the end of quotes and code blocks.
+		- Thanks to @barbuslex for reporting.
+	Changed the http:// value in inputs to be a placeholder.
+	Changed createDropDown() to focus on the first input or textarea element.
+	Fixed bug with lists inside quote blocks.
+		- Thanks to @barbuslex for reporting.
+	Fixed bug with code blocks not being removed when backspace is pressed.
+	Fixed bug with IE not removing blocks when backspace is pressed.
+	Added optional description to email dropdown.
+		- Thanks to @PaulBender for suggesting.
+	Fixed bug with autoUpdate causing double clicking on [sub]/[sup] to not
+		remove styling.
+		- Thanks to @q2apro for reporting.
+	Fixed possible XSS attack in IE <= 8 when using BBCode plugin to edit
+		malicious BBCode.
+	Improved build and added CSS autoprefixer.
+		- Thanks to @Gazenwagen for improving
+	Added Czech translation
+		- Thanks to Daniel Vítek for translating
+	Fixed source button not showing as active when in source mode.
+		- Thanks to @cyphix333 for reporting.
+	Fixed bug with extra newlines being added.
+		- Thanks to @cyphix333 for reporting.
+
+Version 1.4.5:
+	Added command shortcuts to tooltips.
+		- Thanks to @brunoais
+	Added Portuguese translation.
+		- Thanks to @brunoais
+	Added list indent and outdent commands.
+		- Thanks to @brunoais
+	Added Ukrainian translation.
+		Thanks to @aqrln for translating
+	Fixed bug with BBCode source editor creating links with [img] tags selected.
+		- Thanks to @liamdawe for reporting.
+	Fixed issue with insert() and FF.
+		- Thanks to @martec for reporting.
+	Fixed in IE8 and below with XHTML font size attribute conversion.
+	Fixed typo in German translation.
+		- Thanks to Ulf for reporting.
+	Removed build.sh as grunt now does everything build.sh could.
+	Added Italian translation.
+		- Thanks to Tropico for translating.
+	Fixed bug when insert empty node.
+		- Thanks to @spuds for reporting.
+	Fixed FF bug with dropdowns not opening via shortcuts.
+		- Thanks to @echteinfachtv for reporting.
+	Improved inserting so only scrolls if the end of the inserted HTML isn't in view.
+	Added zh-TW translation.
+		- Thanks to @gan068 for translating.
+	Updated Polish translation.
+		- Thanks to @gnysek for updating.
+	Fix possible XSS if editing loading BBCode that someone else has written.
+		- Thanks to for Sergiu reporting.
+	Fixed default font size.
+		- Thanks to @jetand for fixing.
+	Added Japanese translation.
+		- Thanks to @PyYoshi for translating.
+	Fixed bug with XHTML plugin stripping iframes.
+		- Thanks to @tim-se for reporting.
+	Fixed bug with IE11 newline handling.
+
 Version 1.4.4:
 	Fixed height auto expanding when resized.
 		- Thanks to @TimWardC3 for reporting
@@ -24,7 +175,7 @@ Version 1.4.4:
 		- Thanks to @Dr1ks for reporting.
 	Fixed issue with Opera adding blank lines.
 		- Thanks to @Dr1ks for reporting.
-	Improved unlink to remove links without selecing the whole link.
+	Improved unlink to remove links without selecting the whole link.
 		- Thanks to @liamdawe for reporting.
 	Fixed newline after [quote] being stripped.
 		- Thanks to @liamdawe for reporting.

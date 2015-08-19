@@ -22,6 +22,16 @@
 	font-weight: bold;
 
 	.rounded(4px);
+
+	// Fix for Bootstrap 3 and any other page that changes
+	// the default box-sizing. Would be much easier to use
+	// the border-box but IE 7 support means SCEditor can't
+	// use it.
+	*, *:before, *:after {
+		-webkit-box-sizing: content-box;
+		-moz-box-sizing: content-box;
+		box-sizing: content-box;
+	}
 }
 
 .sceditor-container,
@@ -300,9 +310,6 @@ div.sceditor-dropdown div
 		line-height: 0;
 		text-align: left;
 
-		-webkit-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
 		user-select: none;
 
 		.rounded(3px 3px 0 0);

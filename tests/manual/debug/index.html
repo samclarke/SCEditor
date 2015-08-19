@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+
+		<title>Debug Test - SCEditor</title>
+
+		<link rel="stylesheet/less" href="../../../src/themes/default.less"
+			type="text/css">
+		<script>
+			window.less = {
+				env: 'development',
+				relativeUrls: true
+			};
+		</script>
+		<!-- This is needed for LessJS to work in IE < 9 -->
+		<script src="../../libs/es5-shim.js"></script>
+		<script src="../../libs/less-1.7.0.min.js"></script>
+
+		<script src="../../libs/jquery-1.11.1.js"></script>
+		<script src="../../libs/require-2.1.11.js"></script>
+
+		<link rel="stylesheet" type="text/css"
+			href="http://fonts.googleapis.com/css?family=Open+Sans:400,500,700">
+		<link rel="stylesheet" type="text/css" href="../style.css">
+
+		<script src="../patchConsole.js"></script>
+		<script src="./test.js"></script>
+	</head>
+	<body>
+		<h1 class="debug-header">Debug Test</h1>
+
+		<div id="container">
+			<div id="debug-options">
+				<h2>Constructor Options</h2>
+
+				<textarea>{
+	rtl: null,
+	plugins: 'bbcode',
+	autofocus: true,
+	enablePasteFiltering: true,
+	emoticonsRoot: '../../../',
+	style: '../../../src/jquery.sceditor.default.css'
+}</textarea>
+				<input type="submit" value="Create Editor" />
+			</div>
+
+			<div id="editor">
+				<h2>Testing Area</h2>
+
+				<textarea id="testarea"></textarea>
+			</div>
+
+			<div id="console">
+				<h2>Output:</h2>
+
+				<div id="console-output"></div>
+
+				<div id="console-input">
+					<textarea placeholder="Console input..."></textarea>
+
+					<input type="submit" value="Execute" />
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,227 @@
+*,
+*:before,
+*:after {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+html, input, textarea {
+	font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 1em;
+}
+html, body {
+	margin: 0;
+	padding: 0;
+}
+html {
+	color: #444;
+	background: #ecf0f1;
+	height: 100%;
+}
+body {
+	max-width: 1048px;
+	margin: 2em auto;
+	padding: 2em 2em;
+	background: #fff;
+	border-radius: .25em;
+	box-shadow: #bdc3c7 0px 0px 20px 0px;
+	min-height: 100%;
+}
+h1 {
+	text-align: center;
+	padding: 1em;
+	margin: 0 0 1em;
+	background: #16a085;
+	color: #fff;
+	font-weight: 500;
+	font-size: 3em;
+	margin: 0 0 .5em;
+}
+.tests-header, .index-header {
+	background: #2c3e50;
+}
+.memory-header {
+	background: #95a5a6;
+}
+.events-header {
+	background: #16a085;
+}
+.debug-header {
+	background: #8e44ad;
+}
+.default-commands-header {
+	background: #2980b9;
+}
+.valuechanged-header {
+	background: #c0392b;
+}
+h2 {
+	font-weight: 500;
+	font-size: 1.85em;
+	margin: 1em 0 .75em;
+	padding: 0 0 .25em;
+	border-bottom: 1px solid #eee;
+}
+
+#container textarea {
+	width: 100%;
+	height: 20em;
+}
+
+
+#tests {
+	position: relative;
+	height: 15em;
+	overflow-y: auto;
+	padding: 0;
+}
+.test {
+	position: relative;
+	margin: 0 0 1em;
+	padding: 1em;
+
+	border: 4px solid #bdc3c7;
+	background: #ecf0f1;
+}
+.test:last-child {
+	margin: 0;
+}
+.test.passed {
+	border: 4px solid #27ae60;
+	background: #84C692;
+	color: #333;
+}
+.test.failed {
+	border: 4px solid #CE5F53;
+	background: #FF948A;
+	color: #333;
+}
+.test h3 {
+	margin: 0 0 .25em;
+}
+.test p {
+	margin: .5em 0 0;
+}
+#manual-tests .test a, #manual-tests .test a:active {
+	position: absolute;
+	font-size: 1em;
+	top: 0;
+	right: 0;
+	padding: .5em .75em;
+	color: #444;
+}
+
+#progress-bar-container {
+	overflow: hidden;
+	margin: 1.5em .5em;
+}
+#progress-bar-container p {
+	text-align: right;
+	margin: .5em .5em 0 0;
+}
+#progress-bar {
+	background: #ecf0f1;
+	border-radius: .5em;
+	overflow: hidden;
+	margin: 0;
+}
+#progress {
+	width: 0%;
+	background: #16a085;
+	text-align: center;
+	height: .75em;
+	color: #fff;
+}
+
+
+#console-output {
+	font-family: Consolas, monaco, monospace;
+	background: #333;
+	height: 20em;
+	padding: .75em 1em;
+	font-size: 0.95em;
+	color: #fff;
+	overflow-y: auto;
+	word-wrap: break-word;
+	white-space: pre;
+}
+#console-output div {
+	margin: .25em 0;
+}
+#console-output .assert-failed, #console-output .error {
+	color: red;
+}
+#console-output .assert-passed {
+	color: #58CC0D;
+}
+#console-output .info {
+	color: #7FC7F7;
+}
+#console-input {
+	position: relative;
+	margin: 1em 0 0;
+	padding: 0 7em 0 0;
+}
+#console-input textarea {
+	height: 5em;
+	outline: none;
+	border: 1px solid #ccc;
+	border-radius: 0;
+	padding: .25em .4em;
+}
+#console-input input {
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 6em;
+	height: 5em;
+	color: #fff;
+	background: #34495E;
+	border: 0;
+	outline: none;
+	cursor: pointer;
+}
+
+#debug-options textarea {
+	height: 10em;
+}
+
+
+#manual-tests .option {
+	margin: 1em;
+
+}
+#manual-tests a, #manual-tests a:active {
+	display: block;
+	color: #fff;
+	text-decoration: none;
+	font-size: 1.75em;
+	padding: 1.5em 2em;
+}
+
+
+#counter {
+	margin: 1.5em 0;
+}
+#counter div {
+	margin: .5em 0;
+}
+
+
+@media all and (max-width: 700px) {
+	html {
+		padding: 0;
+	}
+}
+@media all and (max-width: 600px) {
+	html {
+		padding: 0;
+		min-width: 450px;
+	}
+	body {
+		padding: 0;
+	}
+	#container {
+		padding: 0 1em;
+	}
+}
