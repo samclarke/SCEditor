@@ -802,7 +802,7 @@ define([
 		assert.htmlEqual(
 			this.parser.toHTML('[youtube]xyz[/youtube]'),
 			'<div><iframe width="560" height="315" ' +
-				'src="http://www.youtube.com/embed/xyz?wmode=opaque" ' +
+				'src="https://www.youtube.com/embed/xyz?wmode=opaque" ' +
 				'data-youtube-id="xyz" frameborder="0" allowfullscreen>' +
 				'</iframe></div>\n',
 			'Normal'

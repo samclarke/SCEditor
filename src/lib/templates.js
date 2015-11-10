@@ -75,13 +75,13 @@ define(function () {
 
 		youtubeMenu:
 			'<div><label for="link">{label}</label> ' +
-				'<input type="text" id="link" placeholder="http://" /></div>' +
+				'<input type="text" id="link" placeholder="https://" /></div>' +
 			'<div><input type="button" class="button" value="{insert}" />' +
 				'</div>',
 
 		youtube:
 			'<iframe width="560" height="315" ' +
-			'src="//www.youtube.com/embed/{id}?wmode=opaque" ' +
+			'src="https://www.youtube.com/embed/{id}?wmode=opaque" ' +
 			'data-youtube-id="{id}" frameborder="0" allowfullscreen></iframe>'
 	};
 
