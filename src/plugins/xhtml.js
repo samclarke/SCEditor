@@ -212,7 +212,7 @@
 					function (id) {
 						editor.insertText(
 							'<iframe width="560" height="315" ' +
-							'src="http://www.youtube.com/embed/{id}?' +
+							'src="https://www.youtube.com/embed/{id}?' +
 							'wmode=opaque" data-youtube-id="' + id + '" ' +
 							'frameborder="0" allowfullscreen></iframe>'
 						);
