@@ -297,10 +297,12 @@ module.exports = function (grunt) {
 		},
 
 		// Manage CSS vendor prefixes
-		autoprefixer: {
+		postcss: {
 			build: {
 				options: {
-					browsers: ['last 4 versions', 'ie 6', 'ie 7', 'ie 8', 'ie 9']
+					processors: [
+						require('autoprefixer')({browsers: ['last 4 versions', 'ie 6', 'ie 7', 'ie 8', 'ie 9']})
+					]
 				},
 				expand: true,
 				flatten: true,
@@ -360,7 +362,7 @@ module.exports = function (grunt) {
 	});
 
 
-	grunt.loadNpmTasks('grunt-autoprefixer');
+	grunt.loadNpmTasks('grunt-postcss');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-compress');
 	grunt.loadNpmTasks('grunt-contrib-concat');
@@ -396,7 +398,7 @@ module.exports = function (grunt) {
 		'webpack:build',
 		'uglify:build',
 		'less:build',
-		'autoprefixer:build',
+		'postcss:build',
 		'cssmin:build'
 	]);
 
