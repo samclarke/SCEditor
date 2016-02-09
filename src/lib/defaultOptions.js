@@ -271,6 +271,13 @@ define(function (require) {
 		 * @type {Boolean}
 		 */
 		autoExpand: false,
+		
+		/**
+		 * If set to true it will expand passed any maximum height that has been set.
+		 * 
+		 * @type {Boolean}
+		 */
+		ignoreMaxHeight: false,
 
 		/**
 		 * If to auto update original textbox on blur
