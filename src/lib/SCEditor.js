@@ -355,7 +355,7 @@ define(function (require) {
 				}
 
 				if (options.autoExpand) {
-					base.expandToContent( options.ignoreMaxHeight );
+					base.expandToContent(options.ignoreMaxHeight);
 				}
 
 				// Page width might have changed after CSS is loaded so
