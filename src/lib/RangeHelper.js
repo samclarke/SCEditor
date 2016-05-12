@@ -96,7 +96,7 @@ define(function (require) {
 		 *
 		 * <p>If endHTML is specified the selected contents will be put between
 		 * html and endHTML. If there is nothing selected html and endHTML are
-		 * just concated together.</p>
+		 * just concatenate together.</p>
 		 *
 		 * @param {string} html
 		 * @param {string} endHTML
@@ -738,11 +738,11 @@ define(function (require) {
 		 *                                    set to the pressed character
 		 * @return {boolean}
 		 * @function
-		 * @name raplaceKeyword
+		 * @name replaceKeyword
 		 * @memberOf RangeHelper.prototype
 		 */
 		/*jshint maxparams: false*/
-		base.raplaceKeyword = function (
+		base.replaceKeyword = function (
 			keywords,
 			includeAfter,
 			keywordsSorted,

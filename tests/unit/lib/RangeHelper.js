@@ -560,7 +560,7 @@ define([
 	});
 
 
-	test('raplaceKeyword() - No matches', function (assert) {
+	test('replaceKeyword() - No matches', function (assert) {
 		var range = rangy.createRangyRange();
 		var sel   = rangy.getSelection();
 
@@ -573,7 +573,7 @@ define([
 		sel.setSingleRange(range);
 
 		assert.strictEqual(
-			rangeHelper.raplaceKeyword(
+			rangeHelper.replaceKeyword(
 				KEYWORDS,
 				true,
 				false,
@@ -584,7 +584,7 @@ define([
 		);
 	});
 
-	test('raplaceKeyword() - Match after', function (assert) {
+	test('replaceKeyword() - Match after', function (assert) {
 		var range = rangy.createRangyRange();
 		var sel   = rangy.getSelection();
 
@@ -597,7 +597,7 @@ define([
 		sel.setSingleRange(range);
 
 		assert.strictEqual(
-			rangeHelper.raplaceKeyword(
+			rangeHelper.replaceKeyword(
 				KEYWORDS,
 				true,
 				false,
@@ -613,7 +613,7 @@ define([
 		);
 	});
 
-	test('raplaceKeyword() - Match before', function (assert) {
+	test('replaceKeyword() - Match before', function (assert) {
 		var range = rangy.createRangyRange();
 		var sel   = rangy.getSelection();
 
@@ -626,7 +626,7 @@ define([
 		sel.setSingleRange(range);
 
 		assert.strictEqual(
-			rangeHelper.raplaceKeyword(
+			rangeHelper.replaceKeyword(
 				KEYWORDS,
 				true,
 				false,
@@ -642,7 +642,7 @@ define([
 		);
 	});
 
-	test('raplaceKeyword() - Match after with current char', function (assert) {
+	test('replaceKeyword() - Match after with current char', function (assert) {
 		var range = rangy.createRangyRange();
 		var sel   = rangy.getSelection();
 
@@ -655,7 +655,7 @@ define([
 		sel.setSingleRange(range);
 
 		assert.strictEqual(
-			rangeHelper.raplaceKeyword(
+			rangeHelper.replaceKeyword(
 				KEYWORDS,
 				true,
 				false,
@@ -672,7 +672,7 @@ define([
 		);
 	});
 
-	test('raplaceKeyword() - Match before with current char', function (assert) {
+	test('replaceKeyword() - Match before with current char', function (assert) {
 		var range = rangy.createRangyRange();
 		var sel   = rangy.getSelection();
 
@@ -685,7 +685,7 @@ define([
 		sel.setSingleRange(range);
 
 		assert.strictEqual(
-			rangeHelper.raplaceKeyword(
+			rangeHelper.replaceKeyword(
 				KEYWORDS,
 				true,
 				false,
@@ -702,7 +702,7 @@ define([
 		);
 	});
 
-	test('raplaceKeyword() - Match that is too far behind', function (assert) {
+	test('replaceKeyword() - Match that is too far behind', function (assert) {
 		var range = rangy.createRangyRange();
 		var sel   = rangy.getSelection();
 
@@ -715,7 +715,7 @@ define([
 		sel.setSingleRange(range);
 
 		assert.strictEqual(
-			rangeHelper.raplaceKeyword(
+			rangeHelper.replaceKeyword(
 				KEYWORDS,
 				true,
 				false,
@@ -727,7 +727,7 @@ define([
 		);
 	});
 
-	test('raplaceKeyword() - Match that is too far forward', function (assert) {
+	test('replaceKeyword() - Match that is too far forward', function (assert) {
 		var range = rangy.createRangyRange();
 		var sel   = rangy.getSelection();
 
@@ -740,7 +740,7 @@ define([
 		sel.setSingleRange(range);
 
 		assert.strictEqual(
-			rangeHelper.raplaceKeyword(
+			rangeHelper.replaceKeyword(
 				KEYWORDS,
 				true,
 				false,
@@ -752,7 +752,7 @@ define([
 		);
 	});
 
-	test('raplaceKeyword() - Match in middle', function (assert) {
+	test('replaceKeyword() - Match in middle', function (assert) {
 		var range = rangy.createRangyRange();
 		var sel   = rangy.getSelection();
 
@@ -765,7 +765,7 @@ define([
 		sel.setSingleRange(range);
 
 		assert.strictEqual(
-			rangeHelper.raplaceKeyword(
+			rangeHelper.replaceKeyword(
 				KEYWORDS,
 				true,
 				false,
@@ -782,7 +782,7 @@ define([
 		);
 	});
 
-	test('raplaceKeyword() - Middle with spaces required', function (assert) {
+	test('replaceKeyword() - Middle with spaces required', function (assert) {
 		// This is not supported n IE 8 and below
 		if (browser.ie && browser.ie < 9) {
 			return expect(0);
@@ -800,7 +800,7 @@ define([
 		sel.setSingleRange(range);
 
 		assert.strictEqual(
-			rangeHelper.raplaceKeyword(
+			rangeHelper.replaceKeyword(
 				KEYWORDS,
 				true,
 				false,
@@ -817,7 +817,7 @@ define([
 		);
 	});
 
-	test('raplaceKeyword() - No match space required', function (assert) {
+	test('replaceKeyword() - No match space required', function (assert) {
 		// This is not supported n IE 8 and below
 		if (browser.ie && browser.ie < 9) {
 			return expect(0);
@@ -835,7 +835,7 @@ define([
 		sel.setSingleRange(range);
 
 		assert.strictEqual(
-			rangeHelper.raplaceKeyword(
+			rangeHelper.replaceKeyword(
 				KEYWORDS,
 				true,
 				false,
@@ -848,7 +848,7 @@ define([
 	});
 
 	test(
-		'raplaceKeyword() - Current char space when spaces required',
+		'replaceKeyword() - Current char space when spaces required',
 		function (assert) {
 			// This is not supported n IE 8 and below
 			if (browser.ie && browser.ie < 9) {
@@ -867,7 +867,7 @@ define([
 			sel.setSingleRange(range);
 
 			assert.strictEqual(
-				rangeHelper.raplaceKeyword(
+				rangeHelper.replaceKeyword(
 					KEYWORDS,
 					true,
 					false,
