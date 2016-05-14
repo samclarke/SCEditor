@@ -1359,7 +1359,7 @@ define(function (require) {
 		 * Creates a menu item drop down
 		 *
 		 * @param  {HTMLElement} menuItem The button to align the dropdown with
-		 * @param  {string} name          Used for styling the dropown, will be
+		 * @param  {string} name          Used for styling the dropdown, will be
 		 *                                a class sceditor-name
 		 * @param  {HTMLElement} content  The HTML content of the dropdown
 		 * @param  {bool} ieFix           If to add the unselectable attribute
@@ -1586,7 +1586,7 @@ define(function (require) {
 		 *
 		 * <p>If endHtml is specified, any selected text will be placed
 		 * between html and endHtml. If there is no selected text html
-		 * and endHtml will just be concated together.</p>
+		 * and endHtml will just be concatenate together.</p>
 		 *
 		 * @param {string} html
 		 * @param {string} [endHtml=null]
@@ -1616,7 +1616,7 @@ define(function (require) {
 
 			// Insert the HTML and save the range so the editor can be scrolled
 			// to the end of the selection. Also allows emoticons to be replaced
-			// without affecting the cusrsor position
+			// without affecting the cursor position
 			rangeHelper.insertHTML(html, endHtml);
 			rangeHelper.saveRange();
 			replaceEmoticons($wysiwygBody[0]);
@@ -1664,7 +1664,7 @@ define(function (require) {
 		 *
 		 * <p>If endText is specified any selected text will be placed between
 		 * text and endText. If no text is selected text and endText will
-		 * just be concated together.</p>
+		 * just be concatenate together.</p>
 		 *
 		 * @param {String} text
 		 * @param {String} [endText=null]
@@ -1689,7 +1689,7 @@ define(function (require) {
 		 *
 		 * <p>If endText is specified any selected text will be placed between
 		 * text and endText. If no text is selected text and endText will
-		 * just be concated together.</p>
+		 * just be concatenate together.</p>
 		 *
 		 * <p>The cursor will be placed after the text param. If endText is
 		 * specified the cursor will be placed before endText, so passing:<br />
@@ -1867,7 +1867,7 @@ define(function (require) {
 		 *
 		 * <p>If end is supplied any selected text will be placed between
 		 * start and end. If there is no selected text start and end
-		 * will be concated together.</p>
+		 * will be concatenate together.</p>
 		 *
 		 * <p>If the filter param is set to true, the HTML/BBCode will be
 		 * passed through any plugin filters. If using the BBCode plugin
@@ -1888,7 +1888,7 @@ define(function (require) {
 		 *
 		 * <p>If end is supplied any selected text will be placed between
 		 * start and end. If there is no selected text start and end
-		 * will be concated together.</p>
+		 * will be concatenate together.</p>
 		 *
 		 * <p>If the filter param is set to true, the HTML/BBCode will be
 		 * passed through any plugin filters. If using the BBCode plugin
@@ -2814,7 +2814,7 @@ define(function (require) {
 		};
 
 		/**
-		 * Fucuses the editors input area
+		 * Focuses the editors input area
 		 *
 		 * @return {this}
 		 * @function
@@ -2941,7 +2941,7 @@ define(function (require) {
 		/**
 		 * <p>Adds a handler to the node changed event.</p>
 		 *
-		 * <p>Happends whenever the node containing the selection/caret
+		 * <p>Happens whenever the node containing the selection/caret
 		 * changes in WYSIWYG mode.</p>
 		 *
 		 * @param  {Function} handler
@@ -3040,7 +3040,7 @@ define(function (require) {
 					emoticonsCache[emoticonsCache.length - 1][0].length;
 			}
 
-			replacedEmoticon = rangeHelper.raplaceKeyword(
+			replacedEmoticon = rangeHelper.replaceKeyword(
 				base.emoticonsCache,
 				true,
 				true,
@@ -3074,7 +3074,7 @@ define(function (require) {
 				noneWsRegex  = /[^\s\xA0\u2002\u2003\u2009\u00a0]+/;
 
 			currentEmoticons = $.map(currentEmoticons, function (emoticon) {
-				// Ignore emotiocons that have been removed from DOM
+				// Ignore emoticons that have been removed from DOM
 				if (!emoticon || !emoticon.parentNode) {
 					return null;
 				}
@@ -3422,7 +3422,7 @@ define(function (require) {
 				node     = range.parentElement();
 				tmpRange = $wysiwygDoc[0].selection.createRange();
 
-				// Select te entire parent and set the end
+				// Select the entire parent and set the end
 				// as start of the current range
 				tmpRange.moveToElementText(node);
 				tmpRange.setEndPoint('EndToStart', range);
@@ -3512,7 +3512,7 @@ define(function (require) {
 		};
 
 		/**
-		 * Triggers the valueChnaged signal if there is
+		 * Triggers the valueChanged signal if there is
 		 * a plugin that handles it.
 		 *
 		 * If rangeHelper.saveRange() has already been

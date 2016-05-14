@@ -160,7 +160,7 @@ define(function (require) {
 					content      = $('<div />'),
 					colorColumns = editor.opts.colors ?
 						editor.opts.colors.split('|') : new Array(21),
-					// IE is slow at string concation so use an array
+					// IE is slow at string concatenation so use an array
 					html         = [],
 					cmd          = defaultCommnds.color;
 
@@ -331,7 +331,7 @@ define(function (require) {
 						endParent   = range.endContainer.parentNode;
 
 // TODO: could use nodeType for this?
-// Maybe just check the firstBlock contins both the start and end conatiners
+// Maybe just check the firstBlock contains both the start and end containers
 						// Select the tag, not the textNode
 						// (that's why the parentNode)
 						if (startParent !==

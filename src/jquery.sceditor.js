@@ -46,7 +46,7 @@ define(function (require) {
 	 * matched by the jQuery selector.
 	 *
 	 * If options is set to "state" it will return bool value
-	 * indicating if the editor has been initilised on the
+	 * indicating if the editor has been initialised on the
 	 * matched textarea(s). If there is only one textarea
 	 * it will return the bool value for that textarea.
 	 * If more than one textarea is matched it will
@@ -77,7 +77,8 @@ define(function (require) {
 			$this = this.jquery ? this : $(this);
 			instance = $this.data('sceditor');
 
-			// Don't allow the editor to be initilised on it's own source editor
+			// Don't allow the editor to be initialised
+			// on it's own source editor
 			if ($this.parents('.sceditor-container').length > 0) {
 				return;
 			}
