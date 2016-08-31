@@ -77,7 +77,7 @@ define(function (require) {
 		/**
 		 * Checks if an element has any styling.
 		 *
-		 * It has styiling if it is not a plain <div> or <p> or
+		 * It has styling if it is not a plain <div> or <p> or
 		 * if it has a class, style attribute or data.
 		 *
 		 * @param  {HTMLElement} elm
@@ -110,7 +110,7 @@ define(function (require) {
 			while (attrsIdx--) {
 				attr = oldAttrs[attrsIdx];
 
-				// IE < 8 returns all possible attribtues instead of just
+				// IE < 8 returns all possible attributes instead of just
 				// the specified ones so have to check it is specified.
 				if (!browser.ie || attr.specified) {
 					// IE < 8 doesn't return the CSS for the style attribute
@@ -153,13 +153,13 @@ define(function (require) {
 		 */
 		canHaveChildren: function (node) {
 			// 1  = Element
-			// 9  = Docuemnt
+			// 9  = Document
 			// 11 = Document Fragment
 			if (!/11?|9/.test(node.nodeType)) {
 				return false;
 			}
 
-			// List of empty HTML tags seperated by bar (|) character.
+			// List of empty HTML tags separated by bar (|) character.
 			// Source: http://www.w3.org/TR/html4/index/elements.html
 			// Source: http://www.w3.org/TR/html5/syntax.html#void-elements
 			return ('|iframe|area|base|basefont|br|col|frame|hr|img|input|wbr' +

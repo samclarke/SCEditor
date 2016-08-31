@@ -1,4 +1,4 @@
-define(function (require) {
+﻿define(function (require) {
 	'use strict';
 
 	var $             = require('jquery');
@@ -348,7 +348,7 @@ define(function (require) {
 			updateActiveButtons();
 
 			var loaded = function () {
-				$globalWin.unbind('load', loaded);
+				$globalWin.off('load', loaded);
 
 				if (options.autofocus) {
 					autofocus();
@@ -364,7 +364,7 @@ define(function (require) {
 
 				pluginManager.call('ready');
 			};
-			$globalWin.load(loaded);
+			$globalWin.on('load', loaded);
 			if (globalDoc.readyState && globalDoc.readyState === 'complete') {
 				loaded();
 			}
@@ -438,7 +438,7 @@ define(function (require) {
 			doc.write(_tmpl('html', {
 				// Add IE version class to the HTML element so can apply
 				// conditional styling without CSS hacks
-				attrs: IE_VER ? ' class="ie ie"' + IE_VER : '',
+				attrs: IE_VER ? ' class="ie ie' + IE_VER + '"' : '',
 				spellcheck: options.spellcheck ? '' : 'spellcheck="false"',
 				charset: options.charset,
 				style: options.style
@@ -456,7 +456,7 @@ define(function (require) {
 				$wysiwygBody.height('100%');
 
 				if (!IE_VER) {
-					$wysiwygBody.bind('touchend', base.focus);
+					$wysiwygBody.on('touchend', base.focus);
 				}
 			}
 
@@ -477,8 +477,8 @@ define(function (require) {
 		initOptions = function () {
 			// auto-update original textbox on blur if option set to true
 			if (options.autoUpdate) {
-				$wysiwygBody.bind('blur', autoUpdate);
-				$sourceEditor.bind('blur', autoUpdate);
+				$wysiwygBody.on('blur', autoUpdate);
+				$sourceEditor.on('blur', autoUpdate);
 			}
 
 			if (options.rtl === null) {
@@ -488,7 +488,7 @@ define(function (require) {
 			base.rtl(!!options.rtl);
 
 			if (options.autoExpand) {
-				$wysiwygDoc.bind('keyup', base.expandToContent);
+				$wysiwygDoc.on('keyup', base.expandToContent);
 			}
 
 			if (options.resizeEnabled) {
@@ -514,10 +514,10 @@ define(function (require) {
 			$globalDoc.click(handleDocumentClick);
 
 			$(original.form)
-				.bind('reset', handleFormReset)
+				.on('reset', handleFormReset)
 				.submit(base.updateOriginal);
 
-			$globalWin.bind('resize orientationChanged', handleWindowResize);
+			$globalWin.on('resize orientationChanged', handleWindowResize);
 
 			$wysiwygBody
 				.keypress(handleKeyPress)
@@ -526,9 +526,9 @@ define(function (require) {
 				.keyup(appendNewLine)
 				.blur(valueChangedBlur)
 				.keyup(valueChangedKeyUp)
-				.bind('paste', handlePasteEvt)
-				.bind(CHECK_SELECTION_EVENTS, checkSelectionChanged)
-				.bind(EVENTS_TO_FORWARD, handleEvent);
+				.on('paste', handlePasteEvt)
+				.on(CHECK_SELECTION_EVENTS, checkSelectionChanged)
+				.on(EVENTS_TO_FORWARD, handleEvent);
 
 			if (options.emoticonsCompat && globalWin.getSelection) {
 				$wysiwygBody.keyup(emoticonsCheckWhitespace);
@@ -538,22 +538,22 @@ define(function (require) {
 				.blur(valueChangedBlur)
 				.keyup(valueChangedKeyUp)
 				.keydown(handleKeyDown)
-				.bind(EVENTS_TO_FORWARD, handleEvent);
+				.on(EVENTS_TO_FORWARD, handleEvent);
 
 			$wysiwygDoc
 				.mousedown(handleMouseDown)
 				.blur(valueChangedBlur)
-				.bind(CHECK_SELECTION_EVENTS, checkSelectionChanged)
-				.bind('beforedeactivate keyup mouseup', saveRange)
+				.on(CHECK_SELECTION_EVENTS, checkSelectionChanged)
+				.on('beforedeactivate keyup mouseup', saveRange)
 				.keyup(appendNewLine)
 				.focus(function () {
 					lastRange = null;
 				});
 
 			$editorContainer
-				.bind('selectionchanged', checkNodeChanged)
-				.bind('selectionchanged', updateActiveButtons)
-				.bind('selectionchanged valuechanged nodechanged', handleEvent);
+				.on('selectionchanged', checkNodeChanged)
+				.on('selectionchanged', updateActiveButtons)
+				.on('selectionchanged valuechanged nodechanged', handleEvent);
 		};
 
 		/**
@@ -753,8 +753,8 @@ define(function (require) {
 
 				$cover.hide();
 				$editorContainer.removeClass('resizing').height('auto');
-				$globalDoc.unbind(moveEvents, mouseMoveFunc);
-				$globalDoc.unbind(endEvents, mouseUpFunc);
+				$globalDoc.off(moveEvents, mouseMoveFunc);
+				$globalDoc.off(endEvents, mouseUpFunc);
 
 				e.preventDefault();
 			};
@@ -762,7 +762,7 @@ define(function (require) {
 			$editorContainer.append($grip);
 			$editorContainer.append($cover.hide());
 
-			$grip.bind('touchstart mousedown', function (e) {
+			$grip.on('touchstart mousedown', function (e) {
 				// iOS uses window.event
 				if (e.type === 'touchstart') {
 					e      = globalWin.event;
@@ -779,8 +779,8 @@ define(function (require) {
 
 				$editorContainer.addClass('resizing');
 				$cover.show();
-				$globalDoc.bind(moveEvents, mouseMoveFunc);
-				$globalDoc.bind(endEvents, mouseUpFunc);
+				$globalDoc.on(moveEvents, mouseMoveFunc);
+				$globalDoc.on(endEvents, mouseUpFunc);
 
 				// The resize cover will not fill the container in
 				// IE6 unless a height is specified.
@@ -1326,22 +1326,22 @@ define(function (require) {
 			pluginManager = null;
 
 			if ($dropdown) {
-				$dropdown.unbind().remove();
+				$dropdown.off().remove();
 			}
 
-			$globalDoc.unbind('click', handleDocumentClick);
-			$globalWin.unbind('resize orientationChanged', handleWindowResize);
+			$globalDoc.off('click', handleDocumentClick);
+			$globalWin.off('resize orientationChanged', handleWindowResize);
 
 			$(original.form)
-				.unbind('reset', handleFormReset)
-				.unbind('submit', base.updateOriginal);
+				.off('reset', handleFormReset)
+				.off('submit', base.updateOriginal);
 
-			$wysiwygBody.unbind();
-			$wysiwygDoc.unbind().find('*').remove();
+			$wysiwygBody.off();
+			$wysiwygDoc.off().find('*').remove();
 
-			$sourceEditor.unbind().remove();
+			$sourceEditor.off().remove();
 			$toolbar.remove();
-			$editorContainer.unbind().find('*').unbind().remove();
+			$editorContainer.off().find('*').off().remove();
 			$editorContainer.remove();
 
 			$original
@@ -1359,7 +1359,7 @@ define(function (require) {
 		 * Creates a menu item drop down
 		 *
 		 * @param  {HTMLElement} menuItem The button to align the dropdown with
-		 * @param  {string} name          Used for styling the dropown, will be
+		 * @param  {string} name          Used for styling the dropdown, will be
 		 *                                a class sceditor-name
 		 * @param  {HTMLElement} content  The HTML content of the dropdown
 		 * @param  {bool} ieFix           If to add the unselectable attribute
@@ -1556,7 +1556,7 @@ define(function (require) {
 		 */
 		base.closeDropDown = function (focus) {
 			if ($dropdown) {
-				$dropdown.unbind().remove();
+				$dropdown.off().remove();
 				$dropdown = null;
 			}
 
@@ -1588,7 +1588,7 @@ define(function (require) {
 		 *
 		 * <p>If endHtml is specified, any selected text will be placed
 		 * between html and endHtml. If there is no selected text html
-		 * and endHtml will just be concated together.</p>
+		 * and endHtml will just be concatenate together.</p>
 		 *
 		 * @param {string} html
 		 * @param {string} [endHtml=null]
@@ -1618,7 +1618,7 @@ define(function (require) {
 
 			// Insert the HTML and save the range so the editor can be scrolled
 			// to the end of the selection. Also allows emoticons to be replaced
-			// without affecting the cusrsor position
+			// without affecting the cursor position
 			rangeHelper.insertHTML(html, endHtml);
 			rangeHelper.saveRange();
 			replaceEmoticons($wysiwygBody[0]);
@@ -1666,7 +1666,7 @@ define(function (require) {
 		 *
 		 * <p>If endText is specified any selected text will be placed between
 		 * text and endText. If no text is selected text and endText will
-		 * just be concated together.</p>
+		 * just be concatenate together.</p>
 		 *
 		 * @param {String} text
 		 * @param {String} [endText=null]
@@ -1691,7 +1691,7 @@ define(function (require) {
 		 *
 		 * <p>If endText is specified any selected text will be placed between
 		 * text and endText. If no text is selected text and endText will
-		 * just be concated together.</p>
+		 * just be concatenate together.</p>
 		 *
 		 * <p>The cursor will be placed after the text param. If endText is
 		 * specified the cursor will be placed before endText, so passing:<br />
@@ -1869,7 +1869,7 @@ define(function (require) {
 		 *
 		 * <p>If end is supplied any selected text will be placed between
 		 * start and end. If there is no selected text start and end
-		 * will be concated together.</p>
+		 * will be concatenate together.</p>
 		 *
 		 * <p>If the filter param is set to true, the HTML/BBCode will be
 		 * passed through any plugin filters. If using the BBCode plugin
@@ -1890,7 +1890,7 @@ define(function (require) {
 		 *
 		 * <p>If end is supplied any selected text will be placed between
 		 * start and end. If there is no selected text start and end
-		 * will be concated together.</p>
+		 * will be concatenate together.</p>
 		 *
 		 * <p>If the filter param is set to true, the HTML/BBCode will be
 		 * passed through any plugin filters. If using the BBCode plugin
@@ -2726,11 +2726,11 @@ define(function (require) {
 					// Also allows unbinding without unbinding the editors own
 					// event handlers.
 					if (!excludeWysiwyg) {
-						$editorContainer.bind('scewys' + events[i], handler);
+						$editorContainer.on('scewys' + events[i], handler);
 					}
 
 					if (!excludeSource) {
-						$editorContainer.bind('scesrc' + events[i], handler);
+						$editorContainer.on('scesrc' + events[i], handler);
 					}
 
 					// Start sending value changed events
@@ -2768,11 +2768,11 @@ define(function (require) {
 			while (i--) {
 				if ($.isFunction(handler)) {
 					if (!excludeWysiwyg) {
-						$editorContainer.unbind('scewys' + events[i], handler);
+						$editorContainer.off('scewys' + events[i], handler);
 					}
 
 					if (!excludeSource) {
-						$editorContainer.unbind('scesrc' + events[i], handler);
+						$editorContainer.off('scesrc' + events[i], handler);
 					}
 				}
 			}
@@ -2805,7 +2805,7 @@ define(function (require) {
 		 */
 		base.blur = function (handler, excludeWysiwyg, excludeSource) {
 			if ($.isFunction(handler)) {
-				base.bind('blur', handler, excludeWysiwyg, excludeSource);
+				base.on('blur', handler, excludeWysiwyg, excludeSource);
 			} else if (!base.sourceMode()) {
 				$wysiwygBody.blur();
 			} else {
@@ -2816,7 +2816,7 @@ define(function (require) {
 		};
 
 		/**
-		 * Fucuses the editors input area
+		 * Focuses the editors input area
 		 *
 		 * @return {this}
 		 * @function
@@ -2839,7 +2839,7 @@ define(function (require) {
 		 */
 		base.focus = function (handler, excludeWysiwyg, excludeSource) {
 			if ($.isFunction(handler)) {
-				base.bind('focus', handler, excludeWysiwyg, excludeSource);
+				base.on('focus', handler, excludeWysiwyg, excludeSource);
 			} else if (!base.inSourceMode()) {
 				var container,
 					rng = rangeHelper.selectedRange();
@@ -2900,7 +2900,7 @@ define(function (require) {
 		 * @since 1.4.1
 		 */
 		base.keyDown = function (handler, excludeWysiwyg, excludeSource) {
-			return base.bind('keydown', handler, excludeWysiwyg, excludeSource);
+			return base.on('keydown', handler, excludeWysiwyg, excludeSource);
 		};
 
 		/**
@@ -2919,7 +2919,7 @@ define(function (require) {
 		 */
 		base.keyPress = function (handler, excludeWysiwyg, excludeSource) {
 			return base
-				.bind('keypress', handler, excludeWysiwyg, excludeSource);
+				.on('keypress', handler, excludeWysiwyg, excludeSource);
 		};
 
 		/**
@@ -2937,13 +2937,13 @@ define(function (require) {
 		 * @since 1.4.1
 		 */
 		base.keyUp = function (handler, excludeWysiwyg, excludeSource) {
-			return base.bind('keyup', handler, excludeWysiwyg, excludeSource);
+			return base.on('keyup', handler, excludeWysiwyg, excludeSource);
 		};
 
 		/**
 		 * <p>Adds a handler to the node changed event.</p>
 		 *
-		 * <p>Happends whenever the node containing the selection/caret
+		 * <p>Happens whenever the node containing the selection/caret
 		 * changes in WYSIWYG mode.</p>
 		 *
 		 * @param  {Function} handler
@@ -2954,7 +2954,7 @@ define(function (require) {
 		 * @since 1.4.1
 		 */
 		base.nodeChanged = function (handler) {
-			return base.bind('nodechanged', handler, false, true);
+			return base.on('nodechanged', handler, false, true);
 		};
 
 		/**
@@ -2970,7 +2970,7 @@ define(function (require) {
 		 * @since 1.4.1
 		 */
 		base.selectionChanged = function (handler) {
-			return base.bind('selectionchanged', handler, false, true);
+			return base.on('selectionchanged', handler, false, true);
 		};
 
 		/**
@@ -2996,7 +2996,7 @@ define(function (require) {
 		 */
 		base.valueChanged = function (handler, excludeWysiwyg, excludeSource) {
 			return base
-				.bind('valuechanged', handler, excludeWysiwyg, excludeSource);
+				.on('valuechanged', handler, excludeWysiwyg, excludeSource);
 		};
 
 		/**
@@ -3042,7 +3042,7 @@ define(function (require) {
 					emoticonsCache[emoticonsCache.length - 1][0].length;
 			}
 
-			replacedEmoticon = rangeHelper.raplaceKeyword(
+			replacedEmoticon = rangeHelper.replaceKeyword(
 				base.emoticonsCache,
 				true,
 				true,
@@ -3076,7 +3076,7 @@ define(function (require) {
 				noneWsRegex  = /[^\s\xA0\u2002\u2003\u2009\u00a0]+/;
 
 			currentEmoticons = $.map(currentEmoticons, function (emoticon) {
-				// Ignore emotiocons that have been removed from DOM
+				// Ignore emoticons that have been removed from DOM
 				if (!emoticon || !emoticon.parentNode) {
 					return null;
 				}
@@ -3183,7 +3183,7 @@ define(function (require) {
 					});
 
 				currentEmoticons = [];
-				$wysiwygBody.unbind('keypress', emoticonsKeyPress);
+				$wysiwygBody.off('keypress', emoticonsKeyPress);
 
 				triggerValueChanged();
 			}
@@ -3424,7 +3424,7 @@ define(function (require) {
 				node     = range.parentElement();
 				tmpRange = $wysiwygDoc[0].selection.createRange();
 
-				// Select te entire parent and set the end
+				// Select the entire parent and set the end
 				// as start of the current range
 				tmpRange.moveToElementText(node);
 				tmpRange.setEndPoint('EndToStart', range);
@@ -3514,7 +3514,7 @@ define(function (require) {
 		};
 
 		/**
-		 * Triggers the valueChnaged signal if there is
+		 * Triggers the valueChanged signal if there is
 		 * a plugin that handles it.
 		 *
 		 * If rangeHelper.saveRange() has already been

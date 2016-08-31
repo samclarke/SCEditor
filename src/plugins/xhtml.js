@@ -212,7 +212,7 @@
 					function (id) {
 						editor.insertText(
 							'<iframe width="560" height="315" ' +
-							'src="http://www.youtube.com/embed/{id}?' +
+							'src="https://www.youtube.com/embed/{id}?' +
 							'wmode=opaque" data-youtube-id="' + id + '" ' +
 							'frameborder="0" allowfullscreen></iframe>'
 						);
@@ -250,7 +250,7 @@
 
 		/**
 		 * Array containing the output, used as it's faster
-		 * than string concation in slow browsers.
+		 * than string concatenation in slow browsers.
 		 * @type {Array}
 		 * @private
 		 */
@@ -427,7 +427,7 @@
 			while (attrIdx--) {
 				attr = node.attributes[attrIdx];
 
-				// IE < 8 returns all possible attribtues not just specified
+				// IE < 8 returns all possible attributes not just specified
 				// ones. IE < 8 also doesn't say value on input is specified
 				// so just assume it is.
 				if (!SCEditor.ie || attr.specified ||
