@@ -21,6 +21,8 @@ Version 1.5.0:
 		when typing emoticons.
 	Fixed bug with XHTML plugin when input value contains invalid attributes.
 		- Thanks to Tim for reporting
+	Fixed types in Russian & Ukrainian translations.
+		- Thanks to @Dr1ks
 
 Version 1.4.7:
 	Fixed bug with XHTML plugin not wrapping inline nodes in paragraphs.
