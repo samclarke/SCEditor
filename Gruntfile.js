@@ -27,7 +27,7 @@ module.exports = function (grunt) {
 					urls: ['http://127.0.0.1:9999/tests/unit/index.html'],
 					tunnelTimeout: 5,
 					build: process.env.TRAVIS_JOB_ID ||
-						('Local ' + (new Date()).toISOString()),
+					('Local ' + (new Date()).toISOString()),
 					concurrency: 3,
 					browsers: grunt.file.readJSON('browsers.json'),
 					'max-duration': 120,
@@ -228,7 +228,7 @@ module.exports = function (grunt) {
 					compress: true,
 					mangle: true,
 					banner: '/* SCEditor v<%= pkg.version %> | ' +
-						'(C) 2015, Sam Clarke | sceditor.com/license */\n'
+					'(C) 2015, Sam Clarke | sceditor.com/license */\n'
 				},
 				files: [
 					{
@@ -297,10 +297,12 @@ module.exports = function (grunt) {
 		},
 
 		// Manage CSS vendor prefixes
-		autoprefixer: {
+		postcss: {
 			build: {
 				options: {
-					browsers: ['last 4 versions', 'ie 6', 'ie 7', 'ie 8', 'ie 9']
+					processors: [
+						require('autoprefixer')({browsers: ['last 4 versions', 'ie 6', 'ie 7', 'ie 8', 'ie 9']})
+					]
 				},
 				expand: true,
 				flatten: true,
@@ -360,7 +362,7 @@ module.exports = function (grunt) {
 	});
 
 
-	grunt.loadNpmTasks('grunt-autoprefixer');
+	grunt.loadNpmTasks('grunt-postcss');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-compress');
 	grunt.loadNpmTasks('grunt-contrib-concat');
@@ -396,7 +398,7 @@ module.exports = function (grunt) {
 		'webpack:build',
 		'uglify:build',
 		'less:build',
-		'autoprefixer:build',
+		'postcss:build',
 		'cssmin:build'
 	]);
 
