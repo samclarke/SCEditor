@@ -25,8 +25,10 @@ Version 1.5.0:
 		- Thanks to @Dr1ks
 	Added jQuery 3 support.
 		- Thanks to @iam1me
-	Fixed bug with YouTube embeding on HTTPS webpages.
+	Fixed bug with YouTube embedding on HTTPS webpages.
 		- Thanks to @MadSpindel for fixing.
+	Fixed type in Brazilian Portuguese translation.
+		- Thanks to @vinny
 
 Version 1.4.7:
 	Fixed bug with XHTML plugin not wrapping inline nodes in paragraphs.
