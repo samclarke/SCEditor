@@ -23,6 +23,8 @@ Version 1.5.0:
 		- Thanks to Tim for reporting
 	Fixed types in Russian & Ukrainian translations.
 		- Thanks to @Dr1ks
+	Added jQuery 3 support.
+		- Thanks to @iam1me
 
 Version 1.4.7:
 	Fixed bug with XHTML plugin not wrapping inline nodes in paragraphs.
