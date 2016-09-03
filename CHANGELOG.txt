@@ -29,6 +29,8 @@ Version 1.5.0:
 		- Thanks to @MadSpindel for fixing.
 	Fixed type in Brazilian Portuguese translation.
 		- Thanks to @vinny
+	Fixed bug with IE causing IndexSizeError when getting the selected range.
+		- Thanks to @jetand for fixing.
 
 Version 1.4.7:
 	Fixed bug with XHTML plugin not wrapping inline nodes in paragraphs.

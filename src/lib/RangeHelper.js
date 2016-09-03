@@ -303,7 +303,7 @@ define(function (require) {
 				sel.addRange(range);
 			}
 
-			if (isW3C) {
+			if (isW3C && sel.rangeCount > 0) {
 				range = sel.getRangeAt(0);
 			}
 
