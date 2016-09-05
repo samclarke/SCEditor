@@ -334,7 +334,7 @@
 			initPlugins();
 			initEmoticons();
 			initToolBar();
-			initEditor();
+			initEditor(!!options.startInSourceMode);
 			initCommands();
 			initOptions();
 			initEvents();
@@ -404,15 +404,29 @@
 
 		/**
 		 * Creates the editor iframe and textarea
+		 * @param {boolean} startInSourceMode Force loading the editor in this
+		 *																	mode
 		 * @private
 		 */
-		initEditor = function () {
+		initEditor = function (startInSourceMode) {
 			var doc, tabIndex;
 
-			$sourceEditor  = $('<textarea></textarea>').hide();
+			$sourceEditor  = $('<textarea></textarea>');
 			$wysiwygEditor = $(
 				'<iframe frameborder="0" allowfullscreen="true"></iframe>'
 			);
+
+			/* This needs to be done right after they are created because,
+			 * for any reason, the user may not want the value to be tinkered
+			 * by any filters.
+			 */
+			if (startInSourceMode) {
+				$editorContainer.addClass('sourceMode');
+				$wysiwygEditor.hide();
+			} else {
+				$editorContainer.addClass('wysiwygMode');
+				$sourceEditor.hide();
+			}
 
 			if (!options.spellcheck) {
 				$sourceEditor.attr('spellcheck', 'false');

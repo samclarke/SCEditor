@@ -295,6 +295,14 @@ define(function (require) {
 		runWithoutWysiwygSupport: false,
 
 		/**
+		 * If to load the editor in source mode and still allow switching
+		 * between WYSIWYG and source mode
+		 *
+		 * @type {Boolean}
+		 */
+		startInSourceMode: false,
+
+		/**
 		 * Optional ID to give the editor.
 		 *
 		 * @type {String}
