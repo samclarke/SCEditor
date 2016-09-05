@@ -723,6 +723,10 @@
 				return true;
 			}
 
+			if ($(node).hasClass('sceditor-ignore')) {
+				return true;
+			}
+
 			if (!dom.canHaveChildren(node)) {
 				return false;
 			}

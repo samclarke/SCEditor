@@ -79,6 +79,12 @@ define([
 		);
 
 		assert.htmlEqual(
+			this.filterHtml('<div><br /></div><div><br /></div>'),
+			'<div>\n\t<br />\n</div>\n<div>\n\t<br />\n</div>',
+			'Single div with br and sibling'
+		);
+
+		assert.htmlEqual(
 			this.filterHtml('<div><strong><br /></strong></div>'),
 			'',
 			'Single div with single strong with br'
@@ -88,6 +94,12 @@ define([
 			this.filterHtml('<span><br /></span>'),
 			'',
 			'Single span with br'
+		);
+
+		assert.htmlEqual(
+			this.filterHtml('<p><span class="sceditor-ignore">ignored</span></p>'),
+			'',
+			'Single p with ignored child'
 		);
 
 		assert.htmlEqual(
@@ -654,6 +666,8 @@ define([
 		assert.ok(
 			result === utils.stripWhiteSpace(
 				'<div style="font-family: arial black;">test</div>') ||
+			result === utils.stripWhiteSpace(
+				'<div style="font-family: &quot;arial black&quot;;">test</div>') ||
 			result === utils.stripWhiteSpace(
 				'<div style="font-family: \'arial black\';">test</div>'),
 			'Div font with space'
