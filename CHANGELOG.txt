@@ -31,6 +31,8 @@ Version 1.5.0:
 		- Thanks to @vinny
 	Fixed bug with IE causing IndexSizeError when getting the selected range.
 		- Thanks to @jetand for fixing.
+	Added startInSourceMode option to start the editor in source mode.
+		- Thanks to @brunoais
 
 Version 1.4.7:
 	Fixed bug with XHTML plugin not wrapping inline nodes in paragraphs.
