@@ -33,6 +33,8 @@ Version 1.5.0:
 		- Thanks to @jetand for fixing.
 	Added startInSourceMode option to start the editor in source mode.
 		- Thanks to @brunoais
+	Fixed issue with XHTML removing some nodes containing only a <br />.
+		- Thanks to @kt3k
 
 Version 1.4.7:
 	Fixed bug with XHTML plugin not wrapping inline nodes in paragraphs.
