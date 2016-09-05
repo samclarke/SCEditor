@@ -79,6 +79,12 @@ define([
 		);
 
 		assert.htmlEqual(
+			this.filterHtml('<div><strong><br /></strong></div>'),
+			'',
+			'Single div with single strong with br'
+		);
+
+		assert.htmlEqual(
 			this.filterHtml('<span><br /></span>'),
 			'',
 			'Single span with br'
@@ -123,6 +129,12 @@ define([
 			this.filterHtml('<div>test</div><div><br /></div>'),
 			'<div>\n\ttest\n</div>\n<div>\n\t<br />\n</div>',
 			'Div with br as line seperator'
+		);
+
+		assert.htmlEqual(
+			this.filterHtml('<div><strong>test</strong></div><div><strong><br /></strong></div>'),
+			'<div>\n\t<strong>test</strong>\n</div>\n<div>\n\t<strong><br /></strong>\n</div>',
+			'Div with strong with br as line seperator'
 		);
 
 		assert.htmlEqual(

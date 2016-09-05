@@ -734,7 +734,7 @@
 
 			while (childrenLength--) {
 				if (!isEmpty(childNodes[childrenLength],
-					!node.previousSibling && !node.nextSibling)) {
+					excludeBr && !node.previousSibling && !node.nextSibling)) {
 					return false;
 				}
 			}
@@ -747,20 +747,23 @@
 		 * tags are white listed it will remove any tags that
 		 * are black listed.
 		 *
-		 * @param  {Node} node
+		 * @param  {Node} rootNode
 		 * @return {Void}
 		 * @private
 		 */
-		removeTags = function (node) {
-			dom.traverse(node, function (node) {
+		removeTags = function (rootNode) {
+			dom.traverse(rootNode, function (node) {
 				var	remove,
 					tagName         = node.nodeName.toLowerCase(),
-					empty           = tagName !== 'iframe' && isEmpty(node),
 					parentNode      = node.parentNode,
 					nodeType        = node.nodeType,
 					isBlock         = !dom.isInline(node),
 					previousSibling = node.previousSibling,
 					nextSibling     = node.nextSibling,
+					isTopLevel      = parentNode === rootNode,
+					noSiblings      = !previousSibling && !nextSibling,
+					empty           = tagName !== 'iframe' && isEmpty(node,
+						isTopLevel && noSiblings && tagName !== 'br'),
 					document        = node.ownerDocument,
 					allowedtags     = sceditorPlugins.xhtml.allowedTags,
 					disallowedTags  = sceditorPlugins.xhtml.disallowedTags;
