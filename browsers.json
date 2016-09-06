@@ -2,24 +2,24 @@
 	{
 		"platform": "Linux",
 		"browserName": "chrome",
-		"version": "35"
+		"version": "latest"
 	},
 	{
 		"platform": "Linux",
 		"browserName": "chrome",
-		"version": "30"
+		"version": "latest-1"
 	},
 
 
 	{
 		"platform": "Linux",
 		"browserName": "firefox",
-		"version": "29"
+		"version": "latest"
 	},
 	{
 		"platform": "Linux",
 		"browserName": "firefox",
-		"version": "25"
+		"version": "latest-1"
 	},
 
 
@@ -93,6 +93,12 @@
 
 
 	{
+		"platform": "OS X 10.11",
+		"browserName": "iphone",
+		"deviceName": "iPhone",
+		"version": "9.3"
+	},
+	{
 		"platform": "OS X 10.9",
 		"browserName": "iphone",
 		"deviceName": "iPhone",
@@ -103,11 +109,5 @@
 		"browserName": "iphone",
 		"deviceName": "iPhone",
 		"version": "7.0"
-	},
-	{
-		"platform": "OS X 10.8",
-		"browserName": "iphone",
-		"deviceName": "iPhone",
-		"version": "6.0"
 	}
 ]

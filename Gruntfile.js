@@ -1,5 +1,5 @@
 /*global module:false, require:false, process:false*/
-module.exports = function (grunt) {
+module.exports = (grunt) => {
 	'use strict';
 
 	require('time-grunt')(grunt);
@@ -23,12 +23,12 @@ module.exports = function (grunt) {
 			all: {
 				options: {
 					username: 'sceditor',
-					key: process.env.SCEDITOR_SAUCE_KEY,
+					key: () => process.env.SCEDITOR_SAUCE_KEY,
 					urls: ['http://127.0.0.1:9999/tests/unit/index.html'],
 					tunnelTimeout: 5,
 					build: process.env.TRAVIS_JOB_ID ||
-					('Local ' + (new Date()).toISOString()),
-					concurrency: 3,
+						('Local ' + (new Date()).toISOString()),
+					concurrency: 5,
 					browsers: grunt.file.readJSON('browsers.json'),
 					'max-duration': 120,
 					sauceConfig: {
@@ -301,7 +301,15 @@ module.exports = function (grunt) {
 			build: {
 				options: {
 					processors: [
-						require('autoprefixer')({browsers: ['last 4 versions', 'ie 6', 'ie 7', 'ie 8', 'ie 9']})
+						require('autoprefixer')({
+							browsers: [
+								'last 4 versions',
+								'ie 6',
+								'ie 7',
+								'ie 8',
+								'ie 9'
+							]
+						})
 					]
 				},
 				expand: true,
@@ -316,7 +324,9 @@ module.exports = function (grunt) {
 			build: {
 				files: [
 					{
-						'minified/jquery.sceditor.default.min.css': ['src/jquery.sceditor.default.css']
+						'minified/jquery.sceditor.default.min.css': [
+							'src/jquery.sceditor.default.css'
+						]
 					},
 					{
 						expand: true,
