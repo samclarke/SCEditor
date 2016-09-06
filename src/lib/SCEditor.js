@@ -355,7 +355,7 @@
 				}
 
 				if (options.autoExpand) {
-					base.expandToContent();
+					base.expandToContent(options.ignoreMaxHeight);
 				}
 
 				// Page width might have changed after CSS is loaded so

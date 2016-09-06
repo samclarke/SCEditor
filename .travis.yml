@@ -1,12 +1,19 @@
 language: node_js
 node_js:
-  - 0.10
+- 0.1
 before_script:
-  - npm install -g grunt-cli
-  - "phantomjs --version"
+- npm install -g grunt-cli
+- phantomjs --version
 notifications:
   email:
-    - sam@sceditor.com
-env:
-  global:
-    - secure: "HS25tSQonqybcBqS8Z4n1cqsxLbfORBKXDpBkHm8zq7uET/Ej3UY0Ev5YPi5O0l3/qk7fLqm1YUlYkqHuLI8cwHUVEBMq/lbOkoSt57HM22z0r2VC5N3SDmEsvoSdyCVBAhs3I41QeJgCnRmKkiVWfT6Cedq6wXIgQ7uaTxd4nI="
+  - bigjonroberts@gmail.com
+deploy:
+  provider: s3
+  access_key_id: AKIAIJUE2HKVHSHENFHQ
+  secret_access_key:
+    secure: VbvB+cYmM1Vvwvs+DaNVBN8I6+UitjQyNpnKyC8eNAXVugK94c0nlJIHA5joC4CLJMfPWoewHraNtChqt7TNmTMFqv8T9zMgOMZNeKWJdvo74Q0OqxM7V7GonEaIRqwUlGXD8fcQ2oG8FvcjTmnCYBSsfmoR9hERYGNjHG+gDkVCr9onR58k7kKB8kAqjfbZZ/5QJdCijrsJLIpQ7+u7vjoyEk/Jy769r3nJ5rM5GLYSCE2n55OjZPPkHAxWXKz6xDZpulIpUXbBa1ad2UdIS37q3JMy8tDKwdP2kaIAzGLNf/dYyRjEKggnqn1o+2TK5KNncTnxelobvvisDVzxPEKV9/RP2T28WrT1FPZbi5OU7LEccFukkzPhPWoptfEOT8gglvtkUupHCN4XyU2IUoZFsEfxlSFo5RjoIA1Z91PSexk9THb7mY3bW1mkFLI+OHXc7GJX7y3GN2Vvi+Xf4hDN9YRFJqP/IihLWwRxOcSk+hmpiMBPvwKrtLpTUtI78lV07ANo5dks74JVr856LlfBCpkaMrl/hYNhrx89RcWyBrv+4z78fEzqYwJ0YgTSo7GqXrv/s0y/EO20P5J3mpUoLyHgpL6gkx4yIGDxrRfxpPwuGmhDIioPP2NjheUMOkjZiC4AnO81ftHiQCm1FvhztAtaWxdLDIaTcMPH7bU=
+  bucket: bjropen
+  upload-dir: SCEditor
+  acl: bucket_owner_full_control
+  on:
+    repo: bigjonroberts/SCEditor
