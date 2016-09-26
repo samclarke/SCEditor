@@ -3354,7 +3354,7 @@
 				character = SPECIAL_KEYS[which] ||
 					String.fromCharCode(which).toLowerCase();
 
-			if (e.ctrlKey||e.metaKey) {
+			if (e.ctrlKey || e.metaKey) {
 				shortcut.push('ctrl');
 			}
 
