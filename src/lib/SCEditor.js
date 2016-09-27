@@ -617,6 +617,9 @@
 
 							if (!$this.hasClass('disabled')) {
 								handleCommand($this, command);
+								
+								// trigger command
+								base.getContentAreaContainer().trigger('sceditorCommand_' + commandName);
 							}
 
 							updateActiveButtons();
