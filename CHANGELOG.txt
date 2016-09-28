@@ -36,6 +36,8 @@ Version 1.5.0:
 	Fixed issue with XHTML removing some nodes containing only a <br />.
 		- Thanks to @kt3k
 	Fixed XHTML not removing empty tags containing .sceditor-ignore nodes.
+	Mapped command to ctrl for Mac shortcuts.
+		- Thanks to @webevolutis
 
 Version 1.4.7:
 	Fixed bug with XHTML plugin not wrapping inline nodes in paragraphs.
