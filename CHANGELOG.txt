@@ -39,6 +39,7 @@ Version 1.5.0:
 	Mapped command to ctrl for Mac shortcuts.
 		- Thanks to @webevolutis
 	Fixed bug with IE edge not editing correctly.
+	Created bower "sceditor" package.
 
 Version 1.4.7:
 	Fixed bug with XHTML plugin not wrapping inline nodes in paragraphs.
