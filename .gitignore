@@ -1,5 +1,6 @@
 sceditor.sublime-project
 sceditor.sublime-workspace
+/.vscode
 /node_modules
 /distributable
 /dist
