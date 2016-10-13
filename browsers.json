@@ -24,6 +24,11 @@
 
 
 	{
+		"platform": "Windows 10",
+		"browserName": "MicrosoftEdge",
+		"version": "13.10586"
+	},
+	{
 		"platform": "Windows 8.1",
 		"browserName": "internet explorer",
 		"version": "11"
@@ -103,11 +108,5 @@
 		"browserName": "iphone",
 		"deviceName": "iPhone",
 		"version": "8.1"
-	},
-	{
-		"platform": "OS X 10.9",
-		"browserName": "iphone",
-		"deviceName": "iPhone",
-		"version": "7.0"
 	}
 ]
