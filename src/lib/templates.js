@@ -15,7 +15,7 @@ define(function () {
 					'<style>.ie * {min-height: auto !important} ' +
 						'.ie table td {height:15px} ' +
 						// Target Edge (fixes edge issues)
-						'@supports (-ms-accelerator:true) { ' +
+						'@supports (-ms-ime-align:auto) { ' +
 							'* { min-height: auto !important; } ' +
 						'}' +
 						'</style>' +

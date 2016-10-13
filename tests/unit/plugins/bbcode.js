@@ -820,18 +820,20 @@ define([
 
 
 	test('Left', function (assert) {
+		var isIeOrEdge = browser.ie || 'msImeAlign' in document.body.style;
+
 		// IE will return text-align when a parents direction is changed
 		// so will be skipped in IE unless the direction is different
 		// from the parent alignment
 		assert.equal(
 			this.htmlToBBCode('<div style="text-align: left">test</div>'),
-			browser.ie ? 'test' : '[left]test[/left]\n',
+			isIeOrEdge ? 'test' : '[left]test[/left]\n',
 			'CSS text-align'
 		);
 
 		assert.equal(
 			this.htmlToBBCode('<div align="left">test</div>'),
-			browser.ie ? 'test' : '[left]test[/left]\n',
+			isIeOrEdge ? 'test' : '[left]test[/left]\n',
 			'Align attribute'
 		);
 	});
