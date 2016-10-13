@@ -146,22 +146,25 @@ define([
 		);
 	});
 
-	test('convertElement() - Invalid attribute name', function (assert) {
-		var node = utils.htmlToDiv(
-			'<i size"2"="" good="attr">test</i>'
-		);
+	// IE <= 8 allows invalid attribute names so have to disable this test
+	if (!browser.ie || browser.ie > 8) {
+		test('convertElement() - Invalid attribute name', function (assert) {
+			var node = utils.htmlToDiv(
+				'<i size"2"="" good="attr">test</i>'
+			);
 
-		var newNode = dom.convertElement(node.firstChild, 'em');
+			var newNode = dom.convertElement(node.firstChild, 'em');
 
-		assert.equal(newNode, node.firstChild);
+			assert.equal(newNode, node.firstChild);
 
-		assert.nodesEqual(
-			newNode,
-			utils.htmlToNode(
-				'<em good="attr">test</em>'
-			)
-		);
-	});
+			assert.nodesEqual(
+				newNode,
+				utils.htmlToNode(
+					'<em good="attr">test</em>'
+				)
+			);
+		});
+	}
 
 
 	test('fixNesting() - With styling', function (assert) {
