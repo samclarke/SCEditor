@@ -1,75 +1,38 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg width="16px" height="16px" viewBox="0 0 16 16"
+     xmlns="http://www.w3.org/2000/svg" version="1.1">
 
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   version="1.1"
-   id="svg2"
-   sodipodi:docname="orderedlist.svg"
-   inkscape:export-ydpi="90"
-   inkscape:export-xdpi="90"
-   inkscape:export-filename="/home/samclarke/Desktop/new icons/bullet-list.png"
-   inkscape:version="0.48.4 r9939"
-   x="0px"
-   y="0px"
-   width="16px"
-   height="16px"
-   viewBox="0 0 16 16"
-   enable-background="new 0 0 16 16"
-   xml:space="preserve"><metadata
-     id="metadata10"><rdf:RDF><cc:Work
-         rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><title
-     id="title3184">SCEditor</title><defs
-     id="defs4"><inkscape:perspective
-       inkscape:persp3d-origin="8 : 5.3333333 : 1"
-       inkscape:vp_z="16 : 8 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 8 : 1"
-       sodipodi:type="inkscape:persp3d"
-       id="perspective3023" /></defs><sodipodi:namedview
-     inkscape:window-maximized="0"
-     inkscape:snap-global="true"
-     inkscape:snap-bbox="true"
-     inkscape:window-y="271"
-     inkscape:window-x="715"
-     inkscape:window-height="667"
-     inkscape:window-width="906"
-     inkscape:current-layer="svg2"
-     inkscape:document-units="px"
-     inkscape:pageshadow="2"
-     inkscape:pageopacity="0"
-     showgrid="true"
-     borderopacity="1.0"
-     bordercolor="#666666"
-     pagecolor="#ffffff"
-     inkscape:cy="7.9534734"
-     inkscape:cx="5.4149432"
-     inkscape:zoom="22.627417"
-     id="base"
-     showguides="true"
-     inkscape:guide-bbox="true"><inkscape:grid
-       snapvisiblegridlinesonly="true"
-       spacingy="1px"
-       spacingx="1px"
-       empspacing="5"
-       id="grid3041"
-       visible="true"
-       type="xygrid"
-       originy="-2.7755576e-17px"
-       originx="2.7755576e-17px"
-       enabled="true" /><sodipodi:guide
-       orientation="0,1"
-       position="6.5,-0.5"
-       id="guide2999" /></sodipodi:namedview><path
-     id="path3005"
-     style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
-     d="M 1,5 1,6 3,6 3,7 1.5,7 1,7 1,7.5 1,9.5 1,10 1.5,10 4,10 4,9 2,9 2,8 3.5,8 4,8 4,7.5 4,5.5 4,5 3.5,5 z m 0,6 0,1 2,0 0,1 -2,0 0,1 2,0 0,1 -2,0 0,1 2.5,0 L 4,16 4,15.5 4,14 4,13.5 4,13 4,11.5 4,11 3.5,11 z M 1,0 1,1 2,1 2,4 3,4 3,0.5 3,0 2.5,0 z m 5,2 0,1 9,0 0,-1 z m 0,5 0,1 9,0 0,-1 z m -0.031,5 0,0.9998 9.031,0 L 15,12 z"
-     inkscape:connector-curvature="0"
-     sodipodi:nodetypes="ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" /></svg>
+  <!--<rect x="5" y="2" width="9" height="3" shape-rendering="crispEdges"/>
+  <rect x="5" y="7" width="9" height="3" shape-rendering="crispEdges"/>
+  <rect x="5" y="12" width="9" height="3" shape-rendering="crispEdges"/>
+
+ <text x="1" y="3" text-anchor="start" alignment-baseline="central"
+  	font-family="Segoe UI, Frutiger, Dejavu Sans, Helvetica Neue, Arial, sans-serif"
+    font-size="5" font-weight="bold">1.</text>
+  
+  <text x="1" y="8" text-anchor="start" alignment-baseline="central"
+  	font-family="Segoe UI, Frutiger, Dejavu Sans, Helvetica Neue, Arial, sans-serif"
+    font-size="5" font-weight="bold">2.</text>
+
+  <text x="1" y="13" text-anchor="start" alignment-baseline="central"
+  	font-family="Segoe UI, Frutiger, Dejavu Sans, Helvetica Neue, Arial, sans-serif"
+    font-size="5" font-weight="bold">3.</text>-->
+
+  <rect x="6" y="2" width="9" height="2" />
+  <rect x="6" y="7" width="9" height="2" />
+  <rect x="6" y="12" width="9" height="2" />
+
+  <g>
+    <path
+       d="M 3.2010498,12.845657 Q 3.5927429,12.946823 3.7950745,13.198441 4,13.447464 4,13.833969 q 0,0.575867 -0.440979,0.87677 -0.440979,0.298309 -1.2866211,0.298309 -0.2983093,0 -0.5992126,-0.04928 -0.2983094,-0.04669 -0.5914307,-0.14267 l 0,-0.770416 q 0.2801514,0.140075 0.5551147,0.212707 0.2775574,0.07004 0.5447388,0.07004 0.3968811,0 0.6069946,-0.137482 0.2127076,-0.137481 0.2127076,-0.394287 0,-0.264587 -0.2178956,-0.399475 -0.2153015,-0.137482 -0.6381225,-0.137482 l -0.3994751,0 0,-0.64331 0.420227,0 q 0.3761292,0 0.5603028,-0.11673 0.1841736,-0.119324 0.1841736,-0.360565 0,-0.223084 -0.1789856,-0.345001 -0.1789856,-0.121918 -0.5058289,-0.121918 -0.2412414,0 -0.4876709,0.05447 -0.2464294,0.05447 -0.4902649,0.160828 l 0,-0.731507 q 0.2957153,-0.08301 0.5862427,-0.124512 0.2905273,-0.0415 0.5706787,-0.0415 0.7548523,0 1.1283875,0.249023 0.3761291,0.246429 0.3761291,0.744476 0,0.339814 -0.1789856,0.557709 -0.1789856,0.215302 -0.5291748,0.303497 z"/>
+  </g>
+  <g
+     transform="translate(0.1336365,9.9999999e-8)">
+    <path
+       d="m 2.1621094,9.2373352 1.7042541,0 0,0.7341003 -2.8144836,0 0,-0.7341003 1.4137268,-1.2477112 q 0.1893616,-0.1712036 0.2801514,-0.3346252 0.09079,-0.1634217 0.09079,-0.3398133 0,-0.2723693 -0.1841736,-0.438385 -0.1815796,-0.1660156 -0.4850769,-0.1660156 -0.2334595,0 -0.5110169,0.1011658 -0.2775574,0.098572 -0.5940246,0.2957153 l 0,-0.8508301 q 0.3372192,-0.1115417 0.6666565,-0.1686096 0.3294372,-0.059662 0.6459045,-0.059662 0.6951904,0 1.0791016,0.3060913 0.3865051,0.3060913 0.3865051,0.853424 0,0.3164673 -0.1634216,0.5914307 Q 3.5135803,8.0518799 2.9895935,8.5110168 L 2.1621094,9.2373352 Z" />
+  </g>
+  <g
+     transform="translate(0.1430054,0)">
+    <path
+       d="m 1.085144,4.2757416 0.90271,0 0,-2.5621033 -0.9266052,0.1911621 0,-0.6956177 0.9212951,-0.1911621 0.9717408,0 0,3.257721 0.9027099,0 0,0.7062378 -2.7718506,0 0,-0.7062378 z" />
+  </g>
+</svg>

@@ -1,16 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1"
-	 id="Layer_1" sodipodi:docname="newfont.svg" inkscape:version="0.48.3.1 r9886" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="16px" height="16px"
-	 viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
-<sodipodi:namedview  id="namedview11" inkscape:window-y="27" inkscape:window-x="0" inkscape:window-height="817" inkscape:window-width="1180" inkscape:current-layer="Layer_1" inkscape:pageshadow="2" inkscape:pageopacity="0" inkscape:zoom="29.5" guidetolerance="10" showgrid="true" objecttolerance="10" borderopacity="1" bordercolor="#666666" gridtolerance="10" pagecolor="#ffffff" inkscape:cy="6.3728814" inkscape:cx="8.5588329" inkscape:window-maximized="0">
-	
-		<inkscape:grid  originy="-1px" originx="0.2px" enabled="true" visible="true" id="grid2992" type="xygrid" empspacing="5" snapvisiblegridlinesonly="true">
-		</inkscape:grid>
-</sodipodi:namedview>
-<path d="M7.953,9.75h-4.06c-0.131,0.379-0.263,0.76-0.395,1.141S3.244,11.643,3.13,12H0.7c0.391-1.119,0.762-2.154,1.113-3.105
+<svg width="16px" height="16px" viewBox="0 0 16 16"
+     xmlns="http://www.w3.org/2000/svg" version="1.1">
+  <path d="M7.953,9.75h-4.06c-0.131,0.379-0.263,0.76-0.395,1.141S3.244,11.643,3.13,12H0.7c0.391-1.119,0.762-2.154,1.113-3.105
 	c0.351-0.95,0.694-1.846,1.031-2.686c0.336-0.84,0.667-1.637,0.993-2.393c0.326-0.754,0.664-1.492,1.016-2.212h2.218
 	c0.342,0.72,0.679,1.458,1.01,2.212c0.331,0.756,0.665,1.553,1.001,2.393c0.337,0.84,0.105,0.338,0.458,1.288
 	S8.085,10.127,7.953,9.75z M5.912,3.959C5.86,4.11,5.783,4.316,5.683,4.575c-0.1,0.26-0.215,0.56-0.343,0.901

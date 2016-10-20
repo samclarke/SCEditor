@@ -1,27 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1"
-	 id="svg2" sodipodi:docname="color.svg" inkscape:export-ydpi="90" inkscape:export-xdpi="90" inkscape:export-filename="/home/samclarke/Desktop/new icons/bullet-list.png" inkscape:version="0.48.3.1 r9886" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="16px" height="16px"
-	 viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
-<title  id="title3184">SCEditor</title>
-<defs>
-	
-	
-		<inkscape:perspective  inkscape:persp3d-origin="8 : 5.3333333 : 1" inkscape:vp_z="16 : 8 : 1" inkscape:vp_y="0 : 1000 : 0" inkscape:vp_x="0 : 8 : 1" sodipodi:type="inkscape:persp3d" id="perspective3023">
-		</inkscape:perspective>
-</defs>
-<sodipodi:namedview  inkscape:window-maximized="0" inkscape:snap-global="true" inkscape:snap-bbox="true" inkscape:window-y="91" inkscape:window-x="732" inkscape:window-height="750" inkscape:window-width="1063" inkscape:current-layer="layer1" inkscape:document-units="px" inkscape:pageshadow="2" inkscape:pageopacity="0" showgrid="true" borderopacity="1.0" bordercolor="#666666" pagecolor="#ffffff" inkscape:cy="8.0012029" inkscape:cx="6.8251299" inkscape:zoom="32" id="base">
-	
-		<inkscape:grid  snapvisiblegridlinesonly="true" spacingy="1px" spacingx="1px" empspacing="5" id="grid3041" visible="true" type="xygrid" originy="2.7755576e-17px" originx="2.7755576e-17px" enabled="true">
-		</inkscape:grid>
-</sodipodi:namedview>
-<path id="layer1" transform="translate(0,-1036.3622)" inkscape:groupmode="layer" inkscape:label="Layer 1" d="M7.219,1039.362
+<svg width="16px" height="16px" viewBox="0 0 16 16"
+     xmlns="http://www.w3.org/2000/svg" version="1.1">
+
+  <text x="50%" y="8" text-anchor="middle" dy="0.5ex"
+  	font-family="Segoe UI, Frutiger, Dejavu Sans, Helvetica Neue, Arial, sans-serif"
+	font-size="13" font-weight="bold">A</text>
+  
+  <rect x="2" y="13" width="12" height="2" fill="#000"/>
+
+<!--<path transform="translate(0,-1036.3622)" d="M7.219,1039.362
 	c-0.303,0.641-0.589,1.279-0.875,1.938s-0.581,1.366-0.875,2.094c-0.286,0.728-0.572,1.498-0.875,2.313s-0.631,1.694-0.969,2.656
 	h1.688c0.121-0.347,0.254-0.685,0.375-1.031c0.13-0.355,0.254-0.729,0.375-1.094h3.781c0.121,0.364,0.276,0.716,0.406,1.063
 	s0.254,0.707,0.375,1.063h1.75c-0.338-0.962-0.656-1.842-0.969-2.656c-0.303-0.814-0.611-1.584-0.906-2.313
 	c-0.286-0.728-0.558-1.435-0.844-2.094s-0.572-1.296-0.875-1.938H7.219z M7.969,1041.081c0.19,0.442,0.396,1.02,0.656,1.688
 	s0.535,1.385,0.813,2.156H6.469c0.277-0.771,0.561-1.498,0.813-2.156C7.541,1042.11,7.77,1041.54,7.969,1041.081z M2,1049.362v2h12
-	v-2H2z"/>
+	v-2H2z"/>-->
 </svg>

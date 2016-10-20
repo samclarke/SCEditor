@@ -1,112 +1,53 @@
 // Where to find the monocons fonts
-@monocons-location: "monocons/";
+@monocons-location: "./src/monocons/optimized/";
 
-@font-face {
-	font-family: 'Monocons';
-	src:url('@{monocons-location}/monocons.eot');
-	src:url('@{monocons-location}/monocons.eot?#iefix') format('embedded-opentype'),
-		url('@{monocons-location}/monocons.ttf') format('truetype');
-	font-weight: normal;
-	font-style: normal;
+.sceditor-button div {
+	width: 16px;
+	height: 16px;
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
 }
+.sceditor-button-youtube div { background-image: data-uri("@{monocons-location}youtube.svg"); }
+.sceditor-button-unlink div { background-image: data-uri("@{monocons-location}unlink.svg"); }
+.sceditor-button-underline div { background-image: data-uri("@{monocons-location}underline.svg"); }
+.sceditor-button-time div { background-image: data-uri("@{monocons-location}time.svg"); }
+.sceditor-button-table div { background-image: data-uri("@{monocons-location}table.svg"); }
+.sceditor-button-superscript div { background-image: data-uri("@{monocons-location}superscript.svg"); }
+.sceditor-button-subscript div { background-image: data-uri("@{monocons-location}subscript.svg"); }
+.sceditor-button-strike div { background-image: data-uri("@{monocons-location}strike.svg"); }
+.sceditor-button-source div { background-image: data-uri("@{monocons-location}source.svg"); }
+.sceditor-button-size div { background-image: data-uri("@{monocons-location}size.svg"); }
+.sceditor-button-rtl div { background-image: data-uri("@{monocons-location}rtl.svg"); }
+.sceditor-button-right div { background-image: data-uri("@{monocons-location}right.svg"); }
+.sceditor-button-removeformat div { background-image: data-uri("@{monocons-location}removeformat.svg"); }
+.sceditor-button-quote div { background-image: data-uri("@{monocons-location}quote.svg"); }
+.sceditor-button-print div { background-image: data-uri("@{monocons-location}print.svg"); }
+.sceditor-button-pastetext div { background-image: data-uri("@{monocons-location}pastetext.svg"); }
+.sceditor-button-paste div { background-image: data-uri("@{monocons-location}paste.svg"); }
+.sceditor-button-orderedlist div { background-image: data-uri("@{monocons-location}orderedlist.svg"); }
+.sceditor-button-maximize div { background-image: data-uri("@{monocons-location}maximize.svg"); }
+.sceditor-button-ltr div { background-image: data-uri("@{monocons-location}ltr.svg"); }
+.sceditor-button-link div { background-image: data-uri("@{monocons-location}link.svg"); }
+.sceditor-button-left div { background-image: data-uri("@{monocons-location}left.svg"); }
+.sceditor-button-justify div { background-image: data-uri("@{monocons-location}justify.svg"); }
+.sceditor-button-italic div { background-image: data-uri("@{monocons-location}italic.svg"); }
+.sceditor-button-image div { background-image: data-uri("@{monocons-location}image.svg"); }
+.sceditor-button-horizontalrule div { background-image: data-uri("@{monocons-location}horizontalrule.svg"); }
+.sceditor-button-format div { background-image: data-uri("@{monocons-location}format.svg"); }
+.sceditor-button-font div { background-image: data-uri("@{monocons-location}font.svg"); }
+.sceditor-button-emoticon div { background-image: data-uri("@{monocons-location}emoticon.svg"); }
+.sceditor-button-email div { background-image: data-uri("@{monocons-location}email.svg"); }
+.sceditor-button-bold div { background-image: data-uri("@{monocons-location}bold.svg"); }
+.sceditor-button-date div { background-image: data-uri("@{monocons-location}date.svg"); }
+.sceditor-button-cut div { background-image: data-uri("@{monocons-location}cut.svg"); }
+.sceditor-button-copy div { background-image: data-uri("@{monocons-location}copy.svg"); }
+.sceditor-button-color div { background-image: data-uri("@{monocons-location}color.svg"); }
+.sceditor-button-code div { background-image: data-uri("@{monocons-location}code.svg"); }
+.sceditor-button-center div { background-image: data-uri("@{monocons-location}center.svg"); }
+.sceditor-button-bulletlist div { background-image: data-uri("@{monocons-location}bulletlist.svg"); }
+.sceditor-button-indent div { background-image: data-uri("@{monocons-location}indent.svg"); }
+.sceditor-button-outdent div { background-image: data-uri("@{monocons-location}outdent.svg"); }
 
-.sceditor-button div:before, div.sceditor-grip {
-	font-family: 'Monocons';
-	font-size: 16px;
-	speak: none;
-	font-style: normal;
-	font-weight: normal;
-	font-variant: normal;
-	text-transform: none;
-	line-height: 1;
-	-webkit-font-smoothing: antialiased;
-}
-
-.old-ie-icon(@inner) {
-	// add check to see if set and if it is, skip it
-	*zoom: ~"expression(this.runtimeStyle['zoom'] = '1', this.innerHTML = '@{inner}')";
-}
-
-.sceditor-button-youtube div { .old-ie-icon("\e000"); }
-.sceditor-button-unlink div { .old-ie-icon("\e001"); }
-.sceditor-button-underline div { .old-ie-icon("\e002"); }
-.sceditor-button-time div { .old-ie-icon("\e003"); }
-.sceditor-button-table div { .old-ie-icon("\e004"); }
-.sceditor-button-superscript div { .old-ie-icon("\e005"); }
-.sceditor-button-subscript div { .old-ie-icon("\e006"); }
-.sceditor-button-strike div { .old-ie-icon("\e007"); }
-.sceditor-button-source div { .old-ie-icon("\e008"); }
-.sceditor-button-size div { .old-ie-icon("\e009"); }
-.sceditor-button-rtl div { .old-ie-icon("\e00a"); }
-.sceditor-button-right div { .old-ie-icon("\e00b"); }
-.sceditor-button-removeformat div { .old-ie-icon("\e00c"); }
-.sceditor-button-quote div { .old-ie-icon("\e00d"); }
-.sceditor-button-print div { .old-ie-icon("\e00e"); }
-.sceditor-button-pastetext div { .old-ie-icon("\e00f"); }
-.sceditor-button-paste div { .old-ie-icon("\e010"); }
-.sceditor-button-orderedlist div { .old-ie-icon("\e011"); }
-.sceditor-button-maximize div { .old-ie-icon("\e012"); }
-.sceditor-button-ltr div { .old-ie-icon("\e013"); }
-.sceditor-button-link div { .old-ie-icon("\e014"); }
-.sceditor-button-left div { .old-ie-icon("\e015"); }
-.sceditor-button-justify div { .old-ie-icon("\e016"); }
-.sceditor-button-italic div { .old-ie-icon("\e017"); }
-.sceditor-button-image div { .old-ie-icon("\e018"); }
-.sceditor-button-horizontalrule div { .old-ie-icon("\e019"); }
-.sceditor-button-format div { .old-ie-icon("\e01c"); }
-.sceditor-button-font div { .old-ie-icon("\e01d"); }
-.sceditor-button-emoticon div { .old-ie-icon("\e01e"); }
-.sceditor-button-email div { .old-ie-icon("\e01f"); }
-.sceditor-button-bold div { .old-ie-icon("\e020"); }
-.sceditor-button-date div { .old-ie-icon("\e021"); }
-.sceditor-button-cut div { .old-ie-icon("\e022"); }
-.sceditor-button-copy div { .old-ie-icon("\e023"); }
-.sceditor-button-color div { .old-ie-icon("\e024"); }
-.sceditor-button-code div { .old-ie-icon("\e025"); }
-.sceditor-button-center div { .old-ie-icon("\e026"); }
-.sceditor-button-bulletlist div { .old-ie-icon("\e027"); }
-div.sceditor-grip { .old-ie-icon("\e01b"); }
-.rtl div.sceditor-grip { .old-ie-icon("\e01a"); }
-
-
-.sceditor-button-youtube div:before { content: "\e000"; }
-.sceditor-button-unlink div:before { content: "\e001"; }
-.sceditor-button-underline div:before { content: "\e002"; }
-.sceditor-button-time div:before { content: "\e003"; }
-.sceditor-button-table div:before { content: "\e004"; }
-.sceditor-button-superscript div:before { content: "\e005"; }
-.sceditor-button-subscript div:before { content: "\e006"; }
-.sceditor-button-strike div:before { content: "\e007"; }
-.sceditor-button-source div:before { content: "\e008"; }
-.sceditor-button-size div:before { content: "\e009"; }
-.sceditor-button-rtl div:before { content: "\e00a"; }
-.sceditor-button-right div:before { content: "\e00b"; }
-.sceditor-button-removeformat div:before { content: "\e00c"; }
-.sceditor-button-quote div:before { content: "\e00d"; }
-.sceditor-button-print div:before { content: "\e00e"; }
-.sceditor-button-pastetext div:before { content: "\e00f"; }
-.sceditor-button-paste div:before { content: "\e010"; }
-.sceditor-button-orderedlist div:before { content: "\e011"; }
-.sceditor-button-maximize div:before { content: "\e012"; }
-.sceditor-button-ltr div:before { content: "\e013"; }
-.sceditor-button-link div:before { content: "\e014"; }
-.sceditor-button-left div:before { content: "\e015"; }
-.sceditor-button-justify div:before { content: "\e016"; }
-.sceditor-button-italic div:before { content: "\e017"; }
-.sceditor-button-image div:before { content: "\e018"; }
-.sceditor-button-horizontalrule div:before { content: "\e019"; }
-.sceditor-button-format div:before { content: "\e01c"; }
-.sceditor-button-font div:before { content: "\e01d"; }
-.sceditor-button-emoticon div:before { content: "\e01e"; }
-.sceditor-button-email div:before { content: "\e01f"; }
-.sceditor-button-bold div:before { content: "\e020"; }
-.sceditor-button-date div:before { content: "\e021"; }
-.sceditor-button-cut div:before { content: "\e022"; }
-.sceditor-button-copy div:before { content: "\e023"; }
-.sceditor-button-color div:before { content: "\e024"; }
-.sceditor-button-code div:before { content: "\e025"; }
-.sceditor-button-center div:before { content: "\e026"; }
-.sceditor-button-bulletlist div:before { content: "\e027"; }
-
-div.sceditor-grip:before { content: "\e01b"; }
-.rtl div.sceditor-grip:before { content: "\e01a"; }
+div.sceditor-grip { background-image: data-uri("@{monocons-location}grip.svg"); }
+.rtl div.sceditor-grip { background-image: data-uri("@{monocons-location}grip-rtl.svg"); }
