@@ -155,6 +155,12 @@ module.exports = (grunt) => {
 						expand: true,
 						src: 'emoticons/**',
 						dest: 'dist/'
+					},
+					{
+						expand: true,
+						cwd: 'src/themes/inc/',
+						src: 'iesize.htc',
+						dest: 'dist/development/themes/'
 					}
 				]
 			},
@@ -171,6 +177,12 @@ module.exports = (grunt) => {
 						expand: true,
 						cwd: 'src/themes/icons/',
 						src: 'monocons/**',
+						dest: 'minified/themes/'
+					},
+					{
+						expand: true,
+						cwd: 'src/themes/inc',
+						src: 'iesize.htc',
 						dest: 'minified/themes/'
 					}
 				]
@@ -264,7 +276,7 @@ module.exports = (grunt) => {
 		less: {
 			build: {
 				options: {
-					paths: ['src/themes/'],
+					paths: ['src/themes/', 'src/themes/icons'],
 					cleancss: true
 				},
 				files: [
@@ -272,7 +284,7 @@ module.exports = (grunt) => {
 						expand: true,
 						filter: 'isFile',
 						cwd: 'src/themes/',
-						src: ['*'],
+						src: ['*.less'],
 						dest: 'minified/themes/',
 						ext: '.min.css'
 					}
@@ -280,7 +292,7 @@ module.exports = (grunt) => {
 			},
 			dist: {
 				options: {
-					paths: ['src/themes/'],
+					paths: ['src/themes/', 'src/themes/icons'],
 					cleancss: true
 				},
 				files: [
@@ -288,7 +300,7 @@ module.exports = (grunt) => {
 						expand: true,
 						filter: 'isFile',
 						cwd: 'src/themes/',
-						src: ['*'],
+						src: ['*.less'],
 						dest: 'dist/development/themes/',
 						ext: '.css'
 					}

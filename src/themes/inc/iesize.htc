@@ -1,0 +1,118 @@
+<!--
+SCEditor IE 9 fix for lack of flexbox support
+Version 1.0.0
+License MIT
+-->
+<PUBLIC:COMPONENT lightWeight="true">
+<!-- saved from url=(0014)about:internet -->
+<PUBLIC:ATTACH EVENT="oncontentready" FOR="element" ONEVENT="init()" />
+<PUBLIC:ATTACH EVENT="ondocumentready" FOR="element" ONEVENT="init()" />
+<PUBLIC:ATTACH EVENT="ondetach" FOR="element" ONEVENT="remove()" />
+
+<script type="text/javascript">
+var previousWidth = -1;
+var previousHeight = -1;
+var wysiwygEditor;
+var sourceEditor;
+var toolbarContainer;
+var elm = element;
+var doc = elm.ownerDocument;
+
+function marginY(node) {
+  var style = node.currentStyle || getComputedStyle(node);
+  
+  return parseInt(style.marginTop) + parseInt(style.marginBottom);
+}
+
+function marginX(node) {
+  var style = node.currentStyle || getComputedStyle(node);
+
+  return parseInt(style.marginLeft) + parseInt(style.marginRight);
+}
+
+function fixSizes() {
+  var width = elm.clientWidth;
+  var height = elm.clientHeight;
+
+  if (!wysiwygEditor || !sourceEditor || (!width && !height)) {
+    return;
+  }
+
+  if (width !== previousWidth || height !== previousHeight) {
+    previousWidth = width;
+    previousHeight = height;
+
+    wysiwygEditor.style.setProperty('width',
+        width - marginX(wysiwygEditor) + 'px', 'important');
+
+    sourceEditor.style.setProperty('width',
+        width - marginX(sourceEditor) + 'px', 'important');
+
+    if (toolbarContainer) {
+		  height -= toolbarContainer.offsetHeight + marginY(toolbarContainer);
+    }
+
+    wysiwygEditor.style.setProperty('height',
+        Math.max(0, height - marginY(wysiwygEditor)) + 'px', 'important');
+
+    sourceEditor.style.setProperty('height',
+        Math.max(0, height - marginY(sourceEditor)) + 'px', 'important');
+  }
+}
+
+function handleChange(e) {
+  if (e.propertyName === 'style.display' ||
+      e.propertyName === 'style.width' ||
+      e.propertyName === 'style.height') {
+    fixSizes();
+  }
+}
+
+function attach() {
+  var node = element;
+
+  while (node) {
+    node.attachEvent('onpropertychange', handleChange);
+    node = node.parentNode;
+  }
+
+  window.attachEvent('onresize', fixSizes);
+}
+
+function detach() {
+  var node = element;
+
+  while (node) {
+    node.detachEvent('onpropertychange', handleChange);
+    node = node.parentNode;
+  }
+
+  window.detachEvent('onresize', fixSizes);
+}
+
+function init() {
+  if (doc.media !== 'print') {
+    toolbarContainer = elm.querySelector('.sceditor-toolbar');
+    wysiwygEditor = elm.getElementsByTagName('iframe')[0];
+    sourceEditor = elm.getElementsByTagName('textarea')[0];
+
+    attach();
+
+    fixSizes();
+  }
+}
+
+function remove() {
+  if (doc.media !== 'print') {
+    detach();
+  }
+}
+
+if (elm.readyState === 'complete') {
+  init();
+}
+</script>
+
+<!-- Fix potential IE bug -->
+<script type="text/vbscript"></script>
+</PUBLIC:COMPONENT>
