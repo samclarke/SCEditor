@@ -237,6 +237,15 @@
 		var autoUpdateCanceled;
 
 		/**
+		 * Last scroll position before maximizing so
+		 * it can be restored when finished.
+		 *
+		 * @type {number}
+		 * @private
+		 */
+		var maximizeScrollPosiotion;
+
+		/**
 		 * Private functions
 		 * @private
 		 */
@@ -1182,20 +1191,26 @@
 		 * @return {this}
 		 */
 		base.maximize = function (maximize) {
+			var maximizeSize = 'sceditor-maximize';
+
 			if (typeof maximize === 'undefined') {
-				return $editorContainer.is('.sceditor-maximize');
+				return $editorContainer.is('.' + maximizeSize);
 			}
 
 			maximize = !!maximize;
 
-			// IE 6 fix
-			if (IE_VER < 7) {
-				$('html, body').toggleClass('sceditor-maximize', maximize);
+			if (maximize) {
+				maximizeScrollPosiotion = $globalWin.scrollTop();
 			}
 
-			$editorContainer.toggleClass('sceditor-maximize', maximize);
+			$('html, body').toggleClass(maximizeSize, maximize);
+			$editorContainer.toggleClass(maximizeSize, maximize);
 			base.width(maximize ? '100%' : options.width, false);
 			base.height(maximize ? '100%' : options.height, false);
+
+			if (!maximize) {
+				$globalWin.scrollTop(maximizeScrollPosiotion);
+			}
 
 			return base;
 		};
