@@ -2726,7 +2726,7 @@
 		 */
 		base.blur = function (handler, excludeWysiwyg, excludeSource) {
 			if ($.isFunction(handler)) {
-				base.on('blur', handler, excludeWysiwyg, excludeSource);
+				base.bind('blur', handler, excludeWysiwyg, excludeSource);
 			} else if (!base.sourceMode()) {
 				$wysiwygBody.blur();
 			} else {
@@ -2760,7 +2760,7 @@
 		 */
 		base.focus = function (handler, excludeWysiwyg, excludeSource) {
 			if ($.isFunction(handler)) {
-				base.on('focus', handler, excludeWysiwyg, excludeSource);
+				base.bind('focus', handler, excludeWysiwyg, excludeSource);
 			} else if (!base.inSourceMode()) {
 				var container,
 					rng = rangeHelper.selectedRange();
@@ -2821,7 +2821,7 @@
 		 * @since 1.4.1
 		 */
 		base.keyDown = function (handler, excludeWysiwyg, excludeSource) {
-			return base.on('keydown', handler, excludeWysiwyg, excludeSource);
+			return base.bind('keydown', handler, excludeWysiwyg, excludeSource);
 		};
 
 		/**
@@ -2840,7 +2840,7 @@
 		 */
 		base.keyPress = function (handler, excludeWysiwyg, excludeSource) {
 			return base
-				.on('keypress', handler, excludeWysiwyg, excludeSource);
+				.bind('keypress', handler, excludeWysiwyg, excludeSource);
 		};
 
 		/**
@@ -2858,7 +2858,7 @@
 		 * @since 1.4.1
 		 */
 		base.keyUp = function (handler, excludeWysiwyg, excludeSource) {
-			return base.on('keyup', handler, excludeWysiwyg, excludeSource);
+			return base.bind('keyup', handler, excludeWysiwyg, excludeSource);
 		};
 
 		/**
@@ -2875,7 +2875,7 @@
 		 * @since 1.4.1
 		 */
 		base.nodeChanged = function (handler) {
-			return base.on('nodechanged', handler, false, true);
+			return base.bind('nodechanged', handler, false, true);
 		};
 
 		/**
@@ -2891,7 +2891,7 @@
 		 * @since 1.4.1
 		 */
 		base.selectionChanged = function (handler) {
-			return base.on('selectionchanged', handler, false, true);
+			return base.bind('selectionchanged', handler, false, true);
 		};
 
 		/**
@@ -2917,7 +2917,7 @@
 		 */
 		base.valueChanged = function (handler, excludeWysiwyg, excludeSource) {
 			return base
-				.on('valuechanged', handler, excludeWysiwyg, excludeSource);
+				.bind('valuechanged', handler, excludeWysiwyg, excludeSource);
 		};
 
 		/**
