@@ -1,8 +1,17 @@
 define(function (require, exports) {
 	'use strict';
 
+	/* jshint maxlen: false */
+	// Must start with a valid scheme
+	// 		^
+	// Schemes that are considered safe
+	// 		(https?|s?ftp|mailto|spotify|skype|ssh|teamspeak|tel):|
+	// Relative schemes (//:) are considered safe
+	// 		(\\/\\/)|
+	// Image data URI's are considered safe
+	// 		data:image\\/(png|bmp|gif|p?jpe?g);
 	var VALID_SCHEME_REGEX =
-		/^(?:https?|s?ftp|mailto|spotify|skype|ssh|teamspeak|tel):|(?:\/\/)/i;
+		/^(https?|s?ftp|mailto|spotify|skype|ssh|teamspeak|tel):|(\/\/)|data:image\/(png|bmp|gif|p?jpe?g);/i;
 
 	/**
 	 * Escapes a string so it's safe to use in regex
@@ -72,6 +81,7 @@ define(function (require, exports) {
 	 * teamspeak
 	 * tel
 	 * //
+	 * data:image/(png|jpeg|jpg|pjpeg|bmp|gif);
 	 *
 	 * **IMPORTANT**: This does not escape any HTML in a url, for
 	 * that use the escape.entities() method.

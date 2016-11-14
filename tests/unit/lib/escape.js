@@ -77,7 +77,11 @@ define([
 			'ssh:user@host.com:22',
 			'teamspeak:12345',
 			'tel:12345',
-			'//www.example.com/test?id=123'
+			'//www.example.com/test?id=123',
+			'data:image/png;test',
+			'data:image/gif;test',
+			'data:image/jpg;test',
+			'data:image/bmp;test'
 		];
 
 		expect(urls.length);
@@ -101,7 +105,8 @@ define([
 		var urls = [
 			'javascript:alert("XSS");',
 			'jav	ascript:alert(\'XSS\');',
-			'vbscript:msgbox("XSS")'
+			'vbscript:msgbox("XSS")',
+			'data:application/javascript;alert("xss")'
 		];
 
 		expect(urls.length);
