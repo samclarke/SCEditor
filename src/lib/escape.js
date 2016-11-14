@@ -36,9 +36,10 @@ define(function (require, exports) {
 			'&': '&amp;',
 			'<': '&lt;',
 			'>': '&gt;',
+			'\t': ' &nbsp; &nbsp;',
 			'  ': ' &nbsp;',
-			'\r\n': '\n',
-			'\r': '\n',
+			'\r\n': '<br />',
+			'\r': '<br />',
 			'\n': '<br />'
 		};
 
@@ -48,7 +49,7 @@ define(function (require, exports) {
 			replacements['`']  = '&#96;';
 		}
 
-		str = str.replace(/ {2}|\r\n|[&<>\r\n'"`]/g, function (match) {
+		str = str.replace(/ {2}|\r\n|[&<>\r\n\t'"`]/g, function (match) {
 			return replacements[match] || match;
 		});
 

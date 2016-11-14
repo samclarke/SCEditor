@@ -25,6 +25,7 @@ define([
 	test('entities()', function (assert) {
 		assert.strictEqual(escape.entities(null), null);
 		assert.strictEqual(escape.entities(''), '');
+		assert.strictEqual(escape.entities('\t'), ' &nbsp; &nbsp;');
 
 		assert.equal(
 			escape.entities('& < > " \'    `'),
