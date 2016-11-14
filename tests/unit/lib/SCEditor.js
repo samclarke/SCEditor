@@ -463,4 +463,23 @@ define([
 
 		assert.equal($body.find('img[data-sceditor-emoticon]').length, 0);
 	});
+
+	test('emoticons() - Longest first', function (assert) {
+		reloadEditor({
+			emoticons: {
+				dropdown: {
+					'>:(': 'emoticons/angry.png',
+					':(': 'emoticons/sad.png'
+				}
+			}
+		});
+
+		var $body = sceditor.getBody();
+
+		sceditor.emoticons(true);
+		sceditor.val('<p>Testing :( >:( </p>');
+
+		assert.equal($body.find('img[data-sceditor-emoticon=">:("]').length, 1);
+		assert.equal($body.find('img[data-sceditor-emoticon=":("]').length, 1);
+	});
 });

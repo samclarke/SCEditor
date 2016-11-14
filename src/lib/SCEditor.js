@@ -2054,7 +2054,7 @@
 			var	doc           = node.ownerDocument,
 				whitespace    = '\\s|\xA0|\u2002|\u2003|\u2009|&nbsp;',
 				emoticonCodes = [],
-				emoticonRegex = [],
+				emoticonRegex = {},
 				emoticons     = $.extend(
 					{},
 					options.emoticons.more,
@@ -2063,6 +2063,7 @@
 				);
 // TODO: cache the emoticonCodes and emoticonCodes objects and share them with
 // the AYT converstion
+
 			$.each(emoticons, function (key) {
 				if (options.emoticonsCompat) {
 					emoticonRegex[key] = new RegExp(
@@ -2074,6 +2075,12 @@
 
 				emoticonCodes.push(key);
 			});
+
+			// Sort keys shortest to longest (so can replace in reverse loop)
+			emoticonCodes.sort(function (a, b) {
+				return a.length - b.length;
+			});
+
 // TODO: tidy below
 			var convertEmoticons = function (node) {
 				node = node.firstChild;
