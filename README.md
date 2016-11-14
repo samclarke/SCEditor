@@ -12,28 +12,34 @@ For more information visit [sceditor.com](http://www.sceditor.com/)
 
 ## Usage
 
-Include the JQuery and SCEditor JavaScript
+Include the JQuery and SCEditor JavaScript:
 
-	<link rel="stylesheet" href="minified/jquery.sceditor.min.css" type="text/css" media="all" />
-	<script type="text/javascript" src="minified/jquery.sceditor.bbcode.min.js"></script>
+```html
+<link rel="stylesheet" href="minified/jquery.sceditor.min.css" type="text/css" media="all" />
+<script type="text/javascript" src="minified/jquery.sceditor.bbcode.min.js"></script>
+```
 
 Then to change all textareas to WYSIWYG editors, simply do:
 
-	$(function() {
-		$("textarea").sceditor({
-			plugins: 'xhtml',
-			style: 'minified/jquery.sceditor.default.min.css'
-		});
+```js
+$(function() {
+	$("textarea").sceditor({
+		plugins: 'xhtml',
+		style: 'minified/jquery.sceditor.default.min.css'
 	});
+});
+```
 
 or for a BBCode WYSIWYG editor do:
 
-	$(function() {
-		$("textarea").sceditor({
-			plugins: 'bbcode',
-			style: 'minified/jquery.sceditor.default.min.css'
-		});
+```js
+$(function() {
+	$("textarea").sceditor({
+		plugins: 'bbcode',
+		style: 'minified/jquery.sceditor.default.min.css'
 	});
+});
+```
 
 
 
