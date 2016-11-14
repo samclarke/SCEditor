@@ -20,6 +20,7 @@
 	// causes a line break. In all other browsers it's collapsed.
 	var IE_BR_FIX = IE_VER && IE_VER < 11;
 
+	var IMAGE_MIME_REGEX = /^image\/(p?jpe?g|gif|png|bmp)$/i;
 
 	/**
 	 * SCEditor - A lightweight WYSIWYG editor
@@ -244,6 +245,16 @@
 		 * @private
 		 */
 		var maximizeScrollPosiotion;
+
+		/**
+		 * Stores the contents while a paste is taking place.
+		 *
+		 * Needed to support browsers that lack clipboard API support.
+		 *
+		 * @type {?DocumentFragment}
+		 * @private
+		 */
+		var pasteContentFragment;
 
 		/**
 		 * Private functions
@@ -1381,108 +1392,114 @@
 		 * @private
 		 */
 		handlePasteEvt = function (e) {
-			var	html, handlePaste, scrollTop,
-				elm             = $wysiwygBody[0],
-				doc             = $wysiwygDoc[0],
-				checkCount      = 0,
-				pastearea       = globalDoc.createElement('div'),
-				prePasteContent = doc.createDocumentFragment(),
-				clipboardData   = e ? e.clipboardData : false;
-
-			if (options.disablePasting) {
-				return false;
-			}
-
-			if (!options.enablePasteFiltering) {
-				return;
-			}
-
-			rangeHelper.saveRange();
-			globalDoc.body.appendChild(pastearea);
-
-			if (clipboardData && clipboardData.getData) {
-				if ((html = clipboardData.getData('text/html')) ||
-					(html = clipboardData.getData('text/plain'))) {
-					pastearea.innerHTML = html;
-					handlePasteData(elm, pastearea);
-
-					return false;
-				}
-			}
-
-			// Save the scroll position so can be restored
-			// when contents is restored
-			scrollTop = $wysiwygBody.scrollTop() || $wysiwygDoc.scrollTop();
-
-			while (elm.firstChild) {
-				prePasteContent.appendChild(elm.firstChild);
-			}
-
-// try make pastearea contenteditable and redirect to that? Might work.
-// Check the tests if still exist, if not re-0create
-			handlePaste = function (elm, pastearea) {
-				if (elm.childNodes.length > 0 || checkCount > 25) {
-					while (elm.firstChild) {
-						pastearea.appendChild(elm.firstChild);
-					}
-
-					while (prePasteContent.firstChild) {
-						elm.appendChild(prePasteContent.firstChild);
-					}
-
-					$wysiwygBody.scrollTop(scrollTop);
-					$wysiwygDoc.scrollTop(scrollTop);
-
-					if (pastearea.childNodes.length > 0) {
-						handlePasteData(elm, pastearea);
-					} else {
-						rangeHelper.restoreRange();
-					}
-				} else {
-					// Allow max 25 checks before giving up.
-					// Needed in case an empty string is pasted or
-					// something goes wrong.
-					checkCount++;
-					setTimeout(function () {
-						handlePaste(elm, pastearea);
-					}, 20);
-				}
+			var isIeOrEdge = IE_VER || browser.edge;
+			var editable = $wysiwygBody[0];
+			var clipboard = e.originalEvent.clipboardData;
+			var loadImage = function (file) {
+				var reader = new FileReader();
+				reader.onload = function (e) {
+					handlePasteData({
+						html: '<img src="' + e.target.result + '" />'
+					});
+				};
+				reader.readAsDataURL(file);
 			};
-			handlePaste(elm, pastearea);
 
-			base.focus();
-			return true;
+			// Modern browsers with clipboard API - everything other than _very_
+			// old android web views and UC browseer which doesn't support the
+			// paste event at all.
+			if (clipboard && !isIeOrEdge) {
+				var data = {};
+				var types = clipboard.types;
+				var items = clipboard.items;
+
+				e.preventDefault();
+
+				for (var i = 0; i < types.length; i++) {
+					// Normalise image pasting to paste as a data-uri
+					if (window.FileReader && items &&
+						IMAGE_MIME_REGEX.test(items[i].type)) {
+						return loadImage(clipboard.items[i].getAsFile());
+					}
+
+					data[types[i]] = clipboard.getData(types[i]);
+				}
+				// Call plugins here with file?
+				data.text = data['text/plain'];
+				data.html = data['text/html'];
+
+				handlePasteData(data);
+			// If contentsFragment exists then we are already waiting for a
+			// previous paste so let the handler for that handle this one too
+			} else if (!pasteContentFragment) {
+				// Save the scroll position so can be restored
+				// when contents is restored
+				var scrollTop = editable.scrollTop;
+
+				rangeHelper.saveRange();
+
+				pasteContentFragment = document.createDocumentFragment();
+				while (editable.firstChild) {
+					pasteContentFragment.appendChild(editable.firstChild);
+				}
+
+				setTimeout(function () {
+					var html = editable.innerHTML;
+
+					editable.innerHTML = '';
+					editable.appendChild(pasteContentFragment);
+					editable.scrollTop = scrollTop;
+					pasteContentFragment = false;
+
+					rangeHelper.restoreRange();
+
+					handlePasteData({ html: html });
+				}, 0);
+			}
 		};
 
 		/**
 		 * Gets the pasted data, filters it and then inserts it.
-		 * @param {Element} elm
-		 * @param {Element} pastearea
+		 * @param {Object} data
 		 * @private
 		 */
-		handlePasteData = function (elm, pastearea) {
-			// fix any invalid nesting
-			dom.fixNesting(pastearea);
-// TODO: Trigger custom paste event to allow filtering
-// (pre and post converstion?)
-			var pasteddata = pastearea.innerHTML;
+		handlePasteData = function (data) {
+			var pastearea = $wysiwygDoc[0].createElement('div');
+
+			pluginManager.call('pasteRaw', data);
+
+			if (data.html) {
+				pastearea.innerHTML = data.html;
+
+				// fix any invalid nesting
+				dom.fixNesting(pastearea);
+			} else {
+				pastearea.innerHTML = escape.entities(data.text || '');
+			}
+
+			var paste = {
+				val: pastearea.innerHTML
+			};
 
 			if (pluginManager.hasHandler('toSource')) {
-				pasteddata = pluginManager.callOnlyFirst(
-					'toSource', pasteddata, $(pastearea)
-				);
+				$wysiwygBody.append(pastearea);
+
+				paste.val = pluginManager
+					.callOnlyFirst('toSource', paste.val, $(pastearea));
+
+				$(pastearea).remove();
 			}
 
-			pastearea.parentNode.removeChild(pastearea);
+			pluginManager.call('paste', paste);
 
 			if (pluginManager.hasHandler('toWysiwyg')) {
-				pasteddata = pluginManager.callOnlyFirst(
-					'toWysiwyg', pasteddata, true
-				);
+				paste.val = pluginManager
+					.callOnlyFirst('toWysiwyg', paste.val, true);
 			}
 
-			rangeHelper.restoreRange();
-			base.wysiwygEditorInsertHtml(pasteddata, null, true);
+			pluginManager.call('pasteHtml', paste);
+
+			base.wysiwygEditorInsertHtml(paste.val, null, true);
 		};
 
 		/**
@@ -2762,6 +2779,11 @@
 			if ($.isFunction(handler)) {
 				base.bind('focus', handler, excludeWysiwyg, excludeSource);
 			} else if (!base.inSourceMode()) {
+				// Already has focus so do nothing
+				if (rangeHelper.hasSelection()) {
+					return;
+				}
+
 				var container,
 					rng = rangeHelper.selectedRange();
 

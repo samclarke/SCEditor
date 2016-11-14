@@ -42,6 +42,8 @@ define(function (require, exports) {
 		return v > 4 ? v : undef;
 	}());
 
+	exports.edge = '-ms-ime-align' in document.documentElement.style;
+
 	/**
 	 * <p>Detects if the browser is iOS</p>
 	 *
