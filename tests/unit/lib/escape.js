@@ -25,11 +25,11 @@ define([
 	test('entities()', function (assert) {
 		assert.strictEqual(escape.entities(null), null);
 		assert.strictEqual(escape.entities(''), '');
-		assert.strictEqual(escape.entities('\t'), ' &nbsp; &nbsp;');
+		assert.strictEqual(escape.entities('\t'), '&nbsp; &nbsp; ');
 
 		assert.equal(
 			escape.entities('& < > " \'    `'),
-			'&amp; &lt; &gt; &#34; &#39; &nbsp; &nbsp;&#96;'
+			'&amp; &lt; &gt; &#34; &#39;&nbsp; &nbsp; &#96;'
 		);
 	});
 
