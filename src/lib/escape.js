@@ -45,7 +45,6 @@ define(function (require, exports) {
 			'&': '&amp;',
 			'<': '&lt;',
 			'>': '&gt;',
-			'\t': '&nbsp; &nbsp; ',
 			'  ': '&nbsp; ',
 			'\r\n': '<br />',
 			'\r': '<br />',

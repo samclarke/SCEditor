@@ -1923,9 +1923,9 @@
 			var	html;
 			// Create a tmp node to store contents so it can be modified
 			// without affecting anything else.
-			var $tmp = $('<div>')
-				.appendTo(document.body)
-				.append($($wysiwygBody[0].childNodes).clone());
+			var $tmp = $('<div>', $wysiwygDoc[0])
+				.append($($wysiwygBody[0].childNodes).clone())
+				.appendTo($wysiwygBody);
 
 			dom.fixNesting($tmp[0]);
 
