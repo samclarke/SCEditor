@@ -1,5 +1,7 @@
 define(function () {
 	'use strict';
+	
+	var $ = require('jquery');
 
 	/**
 	 * HTML templates used by the editor and default commands
