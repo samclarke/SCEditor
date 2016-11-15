@@ -6,11 +6,6 @@ define([
 ], function (SCEditor, utils, browser) {
 	'use strict';
 
-	// In IE < 11 a BR at the end of a block level element
-	// causes a line break. In all other browsers it's collapsed.
-	var IE_BR_FIX = browser.ie && browser.ie < 11;
-	var IE_BR_STR = IE_BR_FIX ? '' : '<br />';
-
 	var moduleSetup = function () {
 		this.mockEditor = {
 			opts: $.extend({}, SCEditor.defaultOptions)

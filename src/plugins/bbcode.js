@@ -12,7 +12,7 @@
  * @requires jQuery
  */
 /*global prompt: true*/
-/*jshint maxdepth: false*/
+/*eslint max-depth: off*/
 // TODO: Tidy this code up and consider seperating the BBCode parser into a
 // standalone module that can be used with other JS/NodeJS
 (function ($, window, document) {
@@ -249,10 +249,10 @@
 	 * @private
 	 */
 	var TokenType = {
-		OPEN:    'open',
+		OPEN: 'open',
 		CONTENT: 'content',
 		NEWLINE: 'newline',
-		CLOSE:   'close'
+		CLOSE: 'close'
 	};
 
 
@@ -272,8 +272,8 @@
 	 * @name TokenizeToken
 	 * @memberOf jQuery.sceditor.BBCodeParser.prototype
 	 */
+	// eslint-disable-next-line max-params
 	var TokenizeToken = function (
-		/*jshint maxparams: false*/
 		type, name, val, attrs, children, closing
 	) {
 		var base      = this;
@@ -649,7 +649,7 @@
 		 * @private
 		 */
 		parseTokens = function (toks) {
-			var	token, bbcode, curTok, clone, i, previous, next,
+			var	token, bbcode, curTok, clone, i, next,
 				cloned     = [],
 				output     = [],
 				openTags   = [],
@@ -688,7 +688,6 @@
 			while ((token = toks.shift())) {
 				next = toks[0];
 
-				/* jshint indent:false */
 				switch (token.type) {
 					case TokenType.OPEN:
 						// Check it this closes a parent,
@@ -814,8 +813,6 @@
 						addTag(token);
 						break;
 				}
-
-				previous = token;
 			}
 
 			return output;

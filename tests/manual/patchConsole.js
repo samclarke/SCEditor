@@ -85,7 +85,7 @@
 			if (originalMethod.apply) {
 				originalMethod.apply(this, arguments);
 			} else {
-				originalMethod(msg);
+				originalMethod();
 			}
 		};
 	};

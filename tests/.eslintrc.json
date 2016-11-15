@@ -1,0 +1,26 @@
+{
+  "env": {
+    "qunit": true
+  },
+  "globals": {
+    "QUnit": true,
+    "module": true,
+    "test": true,
+    "asyncTest": true,
+    "rangy": true,
+    "sinon": true,
+    "runner": true,
+    "patchConsole": true
+  },
+  "rules": {
+    "new-cap": "off",
+    "strict": "off",
+    "max-params": "off",
+    "max-depth": ["error", 6],
+    "max-len": ["error", {
+      "code": 120,
+      "ignoreUrls": true,
+      "ignoreRegExpLiterals": true
+    }]
+  }
+}

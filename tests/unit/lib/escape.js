@@ -102,6 +102,7 @@ define([
 
 		/*jshint scripturl:true*/
 		var urls = [
+			// eslint-disable-next-line no-script-url
 			'javascript:alert("XSS");',
 			'jav	ascript:alert(\'XSS\');',
 			'vbscript:msgbox("XSS")',

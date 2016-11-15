@@ -60,7 +60,7 @@
 		'Enter the displayed text:': 'Vložte zobrazovaný text',
 		'Enter URL:': 'Vložte adresu',
 		'Enter the YouTube video URL or ID:': 'Vložte adresu YouTube videa nebo ID videa',
-		'Insert a Quote':'Vložit citát',
+		'Insert a Quote': 'Vložit citát',
 		'Invalid YouTube video': 'Neplatné YouTube video',
 		'Add indent': 'Posunout na další úroveň',
 		'Remove one indent': 'Posunout na předchozí úroveň',

@@ -1,9 +1,5 @@
-define(function (require) {
+define(function () {
 	'use strict';
-
-	var browser = require('lib/browser');
-	var escape  = require('lib/escape');
-
 
 	var htmlToDiv = function (html) {
 		var container = document.createElement('div');
@@ -46,20 +42,6 @@ define(function (require) {
 
 		return frag;
 	};
-/*
-	String.prototype.ieUrlFix = function (str) {
-		if(!browser.ie || browser.ie > 7) {
-			return this;
-		}
-
-		var urlParts = window.location.href.split('/');
-		urlParts.pop();
-
-		return this.replace(
-			new RegExp(escape.regexEscape(urlParts.join('/')) + '/', 'g'),
-			''
-		);
-	};*/
 
 	var nodeToHtml = function (node) {
 		var container = document.createElement('div');

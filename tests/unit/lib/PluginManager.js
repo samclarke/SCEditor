@@ -1,7 +1,6 @@
 define([
-	'lib/PluginManager',
-	'tests/unit/utils'
-], function (PluginManager, utils) {
+	'lib/PluginManager'
+], function (PluginManager) {
 	'use strict';
 
 	var fakeEditor = {};

@@ -89,7 +89,7 @@ define(function (require) {
 			} else if (options === 'instance') {
 				ret.push(instance);
 			} else if (!instance) {
-				/*jshint -W031*/
+				/*eslint no-new: off*/
 				(new SCEditor(this, options));
 			}
 		});

@@ -7,7 +7,7 @@
 
 			console.info('> ' + code);
 
-			/*jshint -W061*/
+			// eslint-disable-next-line no-eval
 			eval.call(window, code);
 		} catch (ex) {
 			console.error(ex);
@@ -23,7 +23,7 @@
 		}
 
 		try {
-			/*jshint -W054*/
+			// eslint-disable-next-line no-new-func
 			options = (new Function('return ' + optionsStr))();
 
 			$('#testarea').sceditor(options);
@@ -64,20 +64,20 @@
 		createEditor();
 
 		$('#console-input textarea').keypress(function (e) {
-			if (e.which == 13) {
+			if (e.which === 13) {
 				evalConsoleInput();
 
 				return false;
 			}
 		});
 
-		$('#console-input input').click(function (e) {
+		$('#console-input input').click(function () {
 			evalConsoleInput();
 
 			return false;
 		});
 
-		$('#debug-options input').click(function (e) {
+		$('#debug-options input').click(function () {
 			createEditor();
 
 			return false;

@@ -1,0 +1,10 @@
+{
+  "rules": {
+	"dot-notation": "off",
+    "max-len": ["error", {
+      "code": 400,
+      "ignoreUrls": true,
+      "ignoreRegExpLiterals": true
+    }]
+  }
+}

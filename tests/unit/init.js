@@ -1,7 +1,6 @@
 (function () {
 	// Report QUnit results to SauceLabs
 	var log = [];
-	var testName;
 
 	QUnit.done(function (testResults) {
 		var tests = [];
@@ -19,7 +18,7 @@
 
 		testResults.tests = tests;
 
-		/*jshint -W069 */
+		// eslint-disable-next-line dot-notation
 		window['global_test_results'] = testResults;
 	});
 
@@ -49,7 +48,7 @@
 			QUnit.moduleStart(function (details) {
 				$('#qunit-module-fixture').empty();
 
-				if (details.name == name) {
+				if (details.name === name) {
 					settings.moduleSetup();
 				}
 			});
@@ -57,7 +56,7 @@
 
 		if (settings.moduleTeardown) {
 			QUnit.moduleDone(function (details) {
-				if (details.name == name) {
+				if (details.name === name) {
 					settings.moduleTeardown();
 				}
 

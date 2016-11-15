@@ -741,7 +741,7 @@ define(function (require) {
 		 * @name replaceKeyword
 		 * @memberOf RangeHelper.prototype
 		 */
-		/*jshint maxparams: false*/
+		// eslint-disable-next-line max-params
 		base.replaceKeyword = function (
 			keywords,
 			includeAfter,

@@ -11,6 +11,7 @@
 		},
 		equal: function (actual, expected, description) {
 			_assert.ok(
+				// eslint-disable-next-line eqeqeq
 				actual == expected,
 				description,
 				'Expected "' + actual + '" == "' + expected + '"'
@@ -25,6 +26,7 @@
 		},
 		notEqual: function (actual, expected, description) {
 			_assert.ok(
+				// eslint-disable-next-line eqeqeq
 				actual != expected,
 				description,
 				'Expected "' + actual + '" != "' + expected + '"'
@@ -60,6 +62,7 @@
 				);
 			} else {
 				_assert.ok(
+					// eslint-disable-next-line eqeqeq
 					exception == expected,
 					description,
 					'Expected exception and actual exception did not match.'
@@ -165,8 +168,7 @@
 
 	TestRunner.prototype._setupTests = function () {
 		var	$test, test, testIdx,
-			that   = this,
-			result = [];
+			that   = this;
 
 		for (testIdx = 0; testIdx < this._tests.length; testIdx++) {
 			test = this._tests[testIdx];

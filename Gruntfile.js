@@ -44,48 +44,24 @@ module.exports = (grunt) => {
 			all: ['tests/unit/index.html']
 		},
 
-		// Linting for JS files with JSHint
-		jshint: {
+		// Style checking of JS code using ESLint
+		eslint: {
 			source: {
 				src: ['src/**/*.js'],
 				options: {
-					jshintrc: '.jshintrc'
-				}
-			},
-			tests: {
-				src: ['tests/**/*.js'],
-				options: {
-					ignores: ['tests/libs/**/*.js'],
-					jshintrc: 'tests/.jshintrc'
-				}
-			},
-			translations: {
-				src: 'languages/**/*.js',
-				options: {
-					jshintrc: 'languages/.jshintrc'
-				}
-			}
-		},
-
-		// Style checking of JS code using JSCS
-		jscs: {
-			source: {
-				src: ['src/**/*.js'],
-				options: {
-					config: '.jscsrc'
+					configFile: '.eslintrc.json'
 				}
 			},
 			tests: {
 				src: ['tests/**/*.js', '!tests/libs/**/*.js'],
 				options: {
-					config: '.jscsrc'
+					configFile: 'tests/.eslintrc.json'
 				}
 			},
 			translations: {
 				src: 'languages/**/*.js',
 				options: {
-					config: '.jscsrc',
-					maximumLineLength: 400
+					configFile: 'languages/.eslintrc.json'
 				}
 			}
 		},
@@ -391,13 +367,12 @@ module.exports = (grunt) => {
 	grunt.loadNpmTasks('grunt-contrib-connect');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
-	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-contrib-qunit');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-jscs');
 	grunt.loadNpmTasks('grunt-saucelabs');
 	grunt.loadNpmTasks('grunt-webpack');
+	grunt.loadNpmTasks('grunt-eslint');
 	grunt.loadNpmTasks('grunt-githooks');
 	grunt.loadNpmTasks('grunt-dev-update');
 
@@ -408,7 +383,7 @@ module.exports = (grunt) => {
 	grunt.registerTask('sauce', ['connect', 'saucelabs-qunit']);
 
 	// Lints the JS and runs the unit tests
-	grunt.registerTask('test', ['jshint', 'jscs', 'qunit']);
+	grunt.registerTask('test', ['eslint', 'qunit']);
 
 	// Lints JS, runs unit tests and then runs unit tests via Sauce Labs.
 	grunt.registerTask('full-test', ['test', 'sauce']);

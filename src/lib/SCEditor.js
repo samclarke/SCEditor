@@ -445,8 +445,8 @@
 				$sourceEditor.attr('spellcheck', 'false');
 			}
 
-			/*jshint scripturl: true*/
 			if (globalWin.location.protocol === 'https:') {
+				// eslint-disable-next-line no-script-url
 				$wysiwygEditor.attr('src', 'javascript:false');
 			}
 
@@ -1867,8 +1867,8 @@
 		 * @name insert^2
 		 * @memberOf jQuery.sceditor.prototype
 		 */
+		// eslint-disable-next-line max-params
 		base.insert = function (
-			/*jshint maxparams: false */
 			start, end, filter, convertEmoticons, allowMixed
 		) {
 			if (base.inSourceMode()) {
@@ -2315,7 +2315,7 @@
 
 			try {
 				executed = $wysiwygDoc[0].execCommand(command, false, param);
-			} catch (ex) {}
+			} catch (ex) { }
 
 			// show error if execution failed and an error message exists
 			if (!executed && commandObj && commandObj.errorMessage) {
@@ -2335,7 +2335,7 @@
 		 * @private
 		 */
 		checkSelectionChanged = function () {
-			function check () {
+			function check() {
 				// rangeHelper could be null if editor was destroyed
 				// before the timeout had finished
 				if (rangeHelper && !rangeHelper.compare(currentSelection)) {
@@ -2444,7 +2444,7 @@
 						try {
 							state = doc.queryCommandEnabled(stateFn) ? 0 : -1;
 
-							/*jshint maxdepth: false*/
+							// eslint-disable-next-line max-depth
 							if (state > -1) {
 								state = doc.queryCommandState(stateFn) ? 1 : 0;
 							}
@@ -3227,8 +3227,8 @@
 					40: 'down',
 					45: 'insert',
 					46: 'del',
-					91:  'win',
-					92:  'win',
+					91: 'win',
+					92: 'win',
 					93: 'select',
 					96: '0',
 					97: '1',

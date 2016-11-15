@@ -1,8 +1,0 @@
-{
-	"globals": {
-		"QUnit": true,
-		"module": true,
-		"test": true,
-		"asyncTest": true
-	}
-}

@@ -1,7 +1,6 @@
 define(function (require, exports) {
 	'use strict';
 
-	/* jshint maxlen: false */
 	// Must start with a valid scheme
 	// 		^
 	// Schemes that are considered safe
@@ -92,7 +91,6 @@ define(function (require, exports) {
 	 * @since 1.4.5
 	 */
 	exports.uriScheme = function (url) {
-		/*jshint maxlen:false*/
 		var	path,
 			// If there is a : before a / then it has a scheme
 			hasScheme = /^[^\/]*:/i,

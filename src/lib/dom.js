@@ -21,7 +21,7 @@ define(function (require) {
 		 * @param  {bool} siblingsOnly   If to only traverse the nodes siblings
 		 * @param  {bool} reverse        If to traverse the nodes in reverse
 		 */
-		/*jshint maxparams: false*/
+		// eslint-disable-next-line max-params
 		traverse: function (node, func, innermostFirst, siblingsOnly, reverse) {
 			if (node) {
 				node = reverse ? node.lastChild : node.firstChild;
