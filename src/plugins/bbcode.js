@@ -145,7 +145,8 @@
 			txtExec: ['[hr]']
 		},
 		code: {
-			txtExec: ['[code]', '[/code]']
+			txtExec: ['[code]', '[/code]'],
+			txtCodeInputModeInside: ['[code', '[/code]']
 		},
 		image: {
 			txtExec: function (caller, selected) {
@@ -1160,7 +1161,7 @@
 		/**
 		 * @private
 		 */
-		convertToHTML = function (tokens, isRoot) {
+		convertToHTML = function (tokens, isRoot, myself) {
 			var	undef, token, bbcode, content, html, needsBlockWrap,
 				blockWrapOpen, isInline, lastChild,
 				ret = [];
@@ -1180,7 +1181,8 @@
 						token.children[token.children.length - 1] || {};
 					bbcode         = base.bbcodes[token.name];
 					needsBlockWrap = isRoot && isInline(bbcode);
-					content        = convertToHTML(token.children, false);
+					content        =
+						convertToHTML(token.children, false, bbcode);
 
 					if (bbcode && bbcode.html) {
 						// Only add a line break to the end if this is
@@ -1217,7 +1219,11 @@
 					}
 				} else if (token.type === TokenType.NEWLINE) {
 					if (!isRoot) {
-						ret.push('<br />');
+						if (myself && myself.isPreFormatted) {
+							ret.push('\n');
+						} else {
+							ret.push('<br />');
+						}
 						continue;
 					}
 
@@ -1619,7 +1625,7 @@
 			ol: ['li', 'ol', 'ul'],
 			table: ['tr'],
 			tr: ['td', 'th'],
-			code: ['br', 'p', 'div']
+			code: []
 		};
 
 		/**
@@ -2571,6 +2577,8 @@
 				code: null
 			},
 			isInline: false,
+			isPreFormatted: true,
+			codeInputModeInside: true,
 			allowedChildren: ['#', '#newline'],
 			format: '[code]{0}[/code]',
 			html: '<code>{0}</code>'

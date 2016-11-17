@@ -680,6 +680,10 @@
 		 * @private
 		 */
 		initCommands = function () {
+
+			var bodyCodeInputHandles = [];
+			var sourceCodeInputHandles = [];
+
 			$.each(base.commands, function (name, cmd) {
 				if (cmd.forceNewLineAfter && $.isArray(cmd.forceNewLineAfter)) {
 					requireNewLineFix = $.merge(
@@ -687,7 +691,19 @@
 						cmd.forceNewLineAfter
 					);
 				}
+				if (cmd.codeInputModeInside) {
+					bodyCodeInputHandles.push(cmd.codeInputModeInside);
+				}
+				if (cmd.txtCodeInputModeInside) {
+					sourceCodeInputHandles.push(cmd.txtCodeInputModeInside);
+				}
 			});
+			if (bodyCodeInputHandles.length > 0) {
+				addBodyCodeInputHandle(bodyCodeInputHandles);
+			}
+			if (sourceCodeInputHandles.length > 0) {
+				addSourceCodeInputHandle(sourceCodeInputHandles);
+			}
 
 			appendNewLine();
 		};
@@ -1372,6 +1388,200 @@
 					$dropdown.find('input,textarea').first().focus();
 				}
 			});
+		};
+
+
+		/**
+		 * Adds a handle used to remap keys to make them more useful for code
+		 * input
+		 *
+		 * @private
+		 */
+		var addBodyCodeInputHandle = function (searchSelectors) {
+			$wysiwygBody.on('keydown', null,
+			{
+				'searchSelector': searchSelectors.join(',')
+			}, codeInputHandle);
+
+		};
+
+		/**
+		 * Adds a handle used to remap keys to make them more useful for
+		 * code input
+		 *
+		 * @private
+		 */
+		var codeInputHandle = function (e) {
+
+			if (e.ctrlKey || e.altKey || e.metaKey) {
+				return;
+			}
+
+			// For now, only Enter and Tab have defined executions
+			if (e.which !== 13 &&	// Enter
+				e.which !== 9		// tab
+			) {
+				return;
+			}
+
+			if (e.shiftKey && e.which !== 9) {
+				return;
+			}
+
+			var currentRange = rangeHelper.selectedRange();
+
+			if (!rangeHelper.getFirstBlockParent().
+				matches(e.data.searchSelector)) {
+				return;
+			}
+
+			rangeHelper.mergeTextNodesAtCaret();
+
+			var rangeContainer = currentRange.startContainer;
+			var theTextNode = rangeContainer.nodeValue;
+			var cursorPosition = currentRange.startOffset - 1;
+			var searchPos = theTextNode.lastIndexOf('\n', cursorPosition) + 1;
+
+			if (e.which === 13) {	// Enter
+				searchPos = theTextNode.lastIndexOf('\n', searchPos - 1) + 1;
+				var newTabs = 0;
+				var newTabsStr = '';
+				while (theTextNode.charAt(searchPos + newTabs) === '\t') {
+					newTabs++;
+					newTabsStr += '\t';
+				}
+
+				rangeHelper.insertHTML('\n' + newTabsStr);
+				triggerValueChanged();
+				e.preventDefault();
+				return;
+			}
+
+			if (e.shiftKey && e.which === 9) {	// unindent the Tab
+				if (theTextNode[searchPos] === '\t') {
+					rangeContainer.nodeValue =
+						theTextNode.slice(0, searchPos) +
+						theTextNode.slice(searchPos + 1);
+					// tempfix: for some reason, the caret is being placed in
+					// the previous line if it was near the \n...
+					// After some hours, I can't find why...
+					if (theTextNode[cursorPosition] === '\n') {
+						cursorPosition++;
+					}
+					rangeHelper.placeCaretAt(rangeContainer, cursorPosition);
+
+					setTimeout(function () {
+						// At least in firefox, the text node is split after
+						// editing where the cursor is placed.
+						// If the cursor is placed just after the \n, the
+						// caret appears in the line before although it is
+						// ready to type in the line after.
+						// This fixes that by recalculating after the split
+						if (rangeContainer.nodeValue.length ===
+							cursorPosition &&
+							rangeContainer.nextSibling) {
+								rangeHelper.placeCaretAt(
+									rangeContainer.nextSibling, 0
+								);
+							}
+					}, 10);
+
+					triggerValueChanged();
+				}
+
+			} else if (e.which === 9) {	// Tab
+				rangeHelper.insertHTML('\t');
+				triggerValueChanged();
+				e.preventDefault();
+				return;
+			}
+
+			e.preventDefault();
+			return;
+
+		};
+
+		var addSourceCodeInputHandle = function (searchSubstrings) {
+
+			var startStrings = [];
+			var endStrings =  [];
+			for (var i = 0; i < searchSubstrings.length; i++) {
+				startStrings.push(searchSubstrings[i][0]);
+				endStrings.push(searchSubstrings[i][1]);
+			}
+
+			$sourceEditor.on('keydown', null,
+			{
+				'startStrings': startStrings,
+				'endStrings': endStrings
+			}, textCodeInputHandle);
+
+		};
+
+		var textCodeInputHandle = function (e) {
+			if (e.ctrlKey || e.altKey || e.metaKey) {
+				return;
+			}
+
+			// For now, only Enter and Tab have defined executions
+			if (e.which !== 13 &&	// Enter
+				e.which !== 9		// tab
+			) {
+				return;
+			}
+
+			if (e.shiftKey && e.which !== 9) {
+				return;
+			}
+
+			if (!base.inText(sourceEditor, e.data.startStrings,
+					e.data.endStrings)) {
+				return;
+			}
+
+			var cursorPosition = sourceEditor.selectionStart;
+			var sourceText = sourceEditor.value;
+			var searchPos = sourceText.lastIndexOf('\n',
+				cursorPosition - 1);
+
+			if (e.which === 13) {	// Enter
+				searchPos++;
+				var newTabs = 0;
+				var newTabsStr = '';
+				while (sourceText.charAt(searchPos + newTabs) === '\t') {
+					newTabs++;
+					newTabsStr += '\t';
+				}
+
+				base.sourceEditorInsertText('\n' + newTabsStr);
+				triggerValueChanged();
+
+				e.preventDefault();
+				return;
+			}
+
+			if (e.shiftKey && e.which === 9) {	// unindent the Tab
+				// Incrementing helps with the math
+				searchPos++;
+				if (sourceText[searchPos] === '\t') {
+					sourceEditor.value =	sourceText.slice(0, searchPos) +
+											sourceText.slice(searchPos + 1);
+
+					if (sourceText[cursorPosition - 1] !== '\n') {
+						cursorPosition--;
+					}
+					sourceEditor.setSelectionRange(cursorPosition,
+						cursorPosition);
+
+					triggerValueChanged();
+				}
+			} else if (e.which === 9) {	// Tab
+				base.sourceEditorInsertText('\t');
+				triggerValueChanged();
+			}
+
+			e.preventDefault();
+			return;
 		};
 
 		/**
@@ -2245,6 +2455,54 @@
 				return globalDoc.selection.createRange().text;
 			}
 		};
+
+		/**
+		* Quick check if cursor in textarea is currently between any of the
+		* start and any of the end substrings
+		*
+		* @param {object} textarea Textarea DOM object
+		* @param {Array} startTags List of start tags to look for
+		*		For example, Array('[code]', '[code=')
+		* @param {Array} endTags List of end tags to look for
+		*		For example, Array('[/code]')
+		* @source Based on phpbb.inBBCodeTag from phpBB 3.1
+		*
+		* @return {boolean} True if cursor is in between the substrings
+		*/
+		base.inText = function (textarea, startStrings, endString) {
+			var start = textarea.selectionStart,
+				lastEnd = -1,
+				lastStart = -1,
+				i, index, value;
+
+			if (typeof start !== 'number') {
+				return false;
+			}
+
+			value = textarea.value.toLowerCase();
+
+			for (i = 0; i < startStrings.length; i++) {
+				var stringLength = startStrings[i].length;
+				if (start >= stringLength) {
+					index = value.lastIndexOf(startStrings[i],
+						start - stringLength);
+					lastStart = Math.max(lastStart, index);
+				}
+			}
+			if (lastStart === -1) {
+				return false;
+			}
+
+			if (start > 0) {
+				for (i = 0; i < endString.length; i++) {
+					index = value.lastIndexOf(endString[i], start - 1);
+					lastEnd = Math.max(lastEnd, index);
+				}
+			}
+
+			return (lastEnd < lastStart);
+		};
+
 
 		/**
 		 * Handles the passed command

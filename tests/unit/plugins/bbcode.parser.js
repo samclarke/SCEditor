@@ -205,7 +205,7 @@ define([
 
 		assert.htmlEqual(
 			this.parser.toHTML('[code]test\nline\n[/code]'),
-			'<code>test<br />line<br />' + IE_BR_STR + '</code>',
+			'<code>test\nline\n</code>',
 			'Code test'
 		);
 
@@ -750,13 +750,13 @@ define([
 	test('Code', function (assert) {
 		assert.htmlEqual(
 			this.parser.toHTML('[code]Testing 1.2.3....[/code]'),
-			'<code>Testing 1.2.3....' + IE_BR_STR + '</code>',
+			'<code>Testing 1.2.3....</code>',
 			'Normal'
 		);
 
 		assert.htmlEqual(
 			this.parser.toHTML('[code]Testing [b]test[/b][/code]'),
-			'<code>Testing [b]test[/b]' + IE_BR_STR + '</code>',
+			'<code>Testing [b]test[/b]</code>',
 			'Normal'
 		);
 	});

@@ -602,6 +602,57 @@ define(function (require) {
 		};
 
 		/**
+		 * Merges all text nodes in the specified tag and restores the
+		 * caret into its original position.
+		 * Best used with SCE's codeInputModeInside option
+		 * Caution: This method removes ALL HTML inside the caret's
+		 * parent tag.
+		 *
+		 * @function
+		 * @name mergeTextNodesAtCaret
+		 * @memberOf RangeHelper.prototype
+		 */
+		base.mergeTextNodesAtCaret = function () {
+
+			var currentRange = base.selectedRange();
+			var currentTextNode = currentRange.startContainer;
+
+			var fullOffset = 0;
+			var mrParent = currentTextNode.parentNode;
+			var currentElem = currentTextNode.previousSibling;
+
+			while (currentElem) {
+				fullOffset += currentElem.length;
+				currentElem = currentElem.previousSibling;
+			}
+
+			fullOffset += currentRange.startOffset;
+
+			var text = currentTextNode.wholeText;
+			currentTextNode.parentNode.textContent = text;
+
+			base.placeCaretAt(mrParent.firstChild, fullOffset);
+		};
+
+		/**
+		 * Places the caret in a specified position in the document
+		 * without any selections
+		 *
+		 * @function
+		 * @name placeCaretAt
+		 * @memberOf RangeHelper.prototype
+		 */
+		base.placeCaretAt = function (container, offset) {
+			var range = doc.createRange();
+			range.setStart(container, offset);
+			range.collapse(true);
+
+			var selection = win.getSelection();
+			selection.removeAllRanges();
+			selection.addRange(range);
+		};
+
+		/**
 		 * Restores the last range saved by saveRange() or insertMarkers()
 		 *
 		 * @function
@@ -642,9 +693,27 @@ define(function (require) {
 				range.moveEnd(CHARACTER, 0);
 			} else {
 				range = doc.createRange();
-
-				range.setStartBefore(start);
-				range.setEndAfter(end);
+				if (isCollapsed) {
+					var startOn;
+					var startAtLength;
+					if (end.nextSibling) {
+						startOn = end.nextSibling;
+						startAtLength = 0;
+					} else {
+						startOn = start.previousSibling;
+						// If it is an element, go as deep as possible to
+						// a text node
+						while (startOn.lastChild) {
+							startOn = startOn.lastChild;
+						}
+						startAtLength = startOn.nodeValue.length;
+					}
+					range.setStart(startOn, startAtLength);
+					range.setEnd(startOn, startAtLength);
+				} else {
+					range.setStartBefore(start);
+					range.setEndAfter(end);
+				}
 			}
 
 			if (isCollapsed) {
@@ -709,6 +778,21 @@ define(function (require) {
 			range.collapse(!before);
 
 			if (!isW3C) {
+				if (range.startContainer.nodeType === Node.TEXT_NODE) {
+					// In this case, I have to find the parent and count
+					// all characters from previous nodes until this node
+
+					var startPos,
+						textContent;
+					var currentContainer = range.startContainer;
+					while (currentContainer.previousSibling) {
+						startPos += currentContainer.previousSibling.
+							nodeValue.length;
+						currentContainer = currentContainer.previousSibling;
+					}
+					textContent = range.startContainer.wholeText;
+				}
+
 				if (before) {
 					range.moveStart(CHARACTER, 0 - length);
 				} else {
