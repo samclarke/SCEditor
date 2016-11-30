@@ -38,7 +38,8 @@
     "node": ">= 0.10.0"
   },
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt test",
+    "build": "grunt build"
   },
   "devDependencies": {
     "autoprefixer": "^6.3.1",
