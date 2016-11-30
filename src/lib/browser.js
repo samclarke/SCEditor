@@ -125,6 +125,11 @@ define(function (require, exports) {
 			isUnsupported = false;
 		}
 
+		// IE <= 8 is not supported any more
+		if (exports.ie < 9) {
+			isUnsupported = true;
+		}
+
 		return !isUnsupported;
 	}());
 });

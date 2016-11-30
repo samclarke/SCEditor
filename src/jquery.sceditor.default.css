@@ -51,9 +51,6 @@ code {
 	padding: .25em;
 	display: block;
 }
-.ie6 code, .ie7 code {
-	margin-top: 0;
-}
 code:before, code {
 	display: block;
 	text-align: left;

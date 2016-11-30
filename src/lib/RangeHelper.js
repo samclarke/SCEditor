@@ -13,10 +13,6 @@ define(function (require) {
 	var IE_BR_FIX = IE_VER && IE_VER < 11;
 
 
-	var _nodeToHtml = function (node) {
-		return $('<p>', node.ownerDocument).append(node).html();
-	};
-
 	/**
 	 * Gets the text, start/end node and offset for
 	 * length chars left or right of the passed node
@@ -80,14 +76,11 @@ define(function (require) {
 		};
 	};
 
-	var RangeHelper = function (w, d) {
-		var	_createMarker, _isOwner, _prepareInput,
-			doc          = d || w.contentDocument || w.document,
-			win          = w,
-			isW3C        = !!w.getSelection,
+	var RangeHelper = function (win, d) {
+		var	_createMarker, _prepareInput,
+			doc          = d || win.contentDocument || win.document,
 			startMarker  = 'sceditor-start-marker',
 			endMarker    = 'sceditor-end-marker',
-			CHARACTER    = 'character', // Used to improve minification
 			base         = this;
 
 		/**
@@ -113,24 +106,19 @@ define(function (require) {
 				return false;
 			}
 
-			if (isW3C) {
-				if (endHTML) {
-					html += base.selectedHtml() + endHTML;
-				}
-
-				div           = doc.createElement('p');
-				node          = doc.createDocumentFragment();
-				div.innerHTML = html;
-
-				while (div.firstChild) {
-					node.appendChild(div.firstChild);
-				}
-
-				base.insertNode(node);
-			} else {
-				range.pasteHTML(_prepareInput(html, endHTML, true));
-				base.restoreRange();
+			if (endHTML) {
+				html += base.selectedHtml() + endHTML;
 			}
+
+			div           = doc.createElement('p');
+			node          = doc.createDocumentFragment();
+			div.innerHTML = html;
+
+			while (div.firstChild) {
+				node.appendChild(div.firstChild);
+			}
+
+			base.insertNode(node);
 		};
 
 		/**
@@ -183,11 +171,6 @@ define(function (require) {
 				}
 			}
 
-			// Needed so IE <= 8 can place the cursor after emoticons and images
-			if (IE_VER && IE_VER < 9 && $(lastChild).is('img')) {
-				$div.append('\u200B');
-			}
-
 			base.removeMarkers();
 
 			// Append marks to last child so when restored cursor will be in
@@ -218,35 +201,28 @@ define(function (require) {
 		 * @memberOf RangeHelper.prototype
 		 */
 		base.insertNode = function (node, endNode) {
-			if (isW3C) {
-				var	input  = _prepareInput(node, endNode),
-					range  = base.selectedRange(),
-					parent = range.commonAncestorContainer;
+			var	input  = _prepareInput(node, endNode),
+				range  = base.selectedRange(),
+				parent = range.commonAncestorContainer;
 
-				if (!input) {
-					return false;
-				}
-
-				range.deleteContents();
-
-				// FF allows <br /> to be selected but inserting a node
-				// into <br /> will cause it not to be displayed so must
-				// insert before the <br /> in FF.
-				// 3 = TextNode
-				if (parent && parent.nodeType !== 3 &&
-					!dom.canHaveChildren(parent)) {
-					parent.parentNode.insertBefore(input, parent);
-				} else {
-					range.insertNode(input);
-				}
-
-				base.restoreRange();
-			} else {
-				base.insertHTML(
-					_nodeToHtml(node),
-					endNode ? _nodeToHtml(endNode) : null
-				);
+			if (!input) {
+				return false;
 			}
+
+			range.deleteContents();
+
+			// FF allows <br /> to be selected but inserting a node
+			// into <br /> will cause it not to be displayed so must
+			// insert before the <br /> in FF.
+			// 3 = TextNode
+			if (parent && parent.nodeType !== 3 &&
+				!dom.canHaveChildren(parent)) {
+				parent.parentNode.insertBefore(input, parent);
+			} else {
+				range.insertNode(input);
+			}
+
+			base.restoreRange();
 		};
 
 		/**
@@ -264,7 +240,7 @@ define(function (require) {
 			var range = base.selectedRange();
 
 			if (range) {
-				return isW3C ? range.cloneRange() : range.duplicate();
+				return range.cloneRange();
 			}
 		};
 
@@ -281,7 +257,7 @@ define(function (require) {
 		 */
 		base.selectedRange = function () {
 			var	range, firstChild,
-				sel = isW3C ? win.getSelection() : doc.selection;
+				sel = win.getSelection();
 
 			if (!sel) {
 				return;
@@ -303,40 +279,11 @@ define(function (require) {
 				sel.addRange(range);
 			}
 
-			if (isW3C && sel.rangeCount > 0) {
+			if (sel.rangeCount > 0) {
 				range = sel.getRangeAt(0);
 			}
 
-			if (!isW3C && sel.type !== 'Control') {
-				range = sel.createRange();
-			}
-
-			// IE fix to make sure only return selections that
-			// are part of the WYSIWYG iframe
-			return _isOwner(range) ? range : null;
-		};
-
-		/**
-		 * Checks if an IE TextRange range belongs to
-		 * this document or not.
-		 *
-		 * Returns true if the range isn't an IE range or
-		 * if the range is null.
-		 *
-		 * @private
-		 */
-		_isOwner = function (range) {
-			var parent;
-
-			if (range && !isW3C) {
-				parent = range.parentElement();
-			}
-
-			// IE fix to make sure only return selections
-			// that are part of the WYSIWYG iframe
-			return parent ?
-				parent.ownerDocument === doc :
-				true;
+			return range;
 		};
 
 		/**
@@ -349,13 +296,9 @@ define(function (require) {
 		 * @memberOf RangeHelper.prototype
 		 */
 		base.hasSelection = function () {
-			var	sel = isW3C ? win.getSelection() : doc.selection;
+			var	sel = win.getSelection();
 
-			if (isW3C || !sel) {
-				return sel && sel.rangeCount > 0;
-			}
-
-			return sel.type !== 'None' && _isOwner(sel.createRange());
+			return sel && sel.rangeCount > 0;
 		};
 
 		/**
@@ -371,17 +314,10 @@ define(function (require) {
 				range = base.selectedRange();
 
 			if (range) {
+				div = doc.createElement('p');
+				div.appendChild(range.cloneContents());
 
-				// IE9+ and all other browsers
-				if (isW3C) {
-					div = doc.createElement('p');
-					div.appendChild(range.cloneContents());
-
-					return div.innerHTML;
-				// IE < 9
-				} else if (range.text !== '' && range.htmlText) {
-					return range.htmlText;
-				}
+				return div.innerHTML;
 			}
 
 			return '';
@@ -457,12 +393,7 @@ define(function (require) {
 			}
 
 			range.collapse(start);
-
-			if (isW3C) {
-				range.insertNode(node);
-			} else {
-				range.pasteHTML(_nodeToHtml(node));
-			}
+			range.insertNode(node);
 
 			// Reselect the current range.
 			// Fixes issue with Chrome losing the selection. Issue#82
@@ -564,40 +495,36 @@ define(function (require) {
 		 * @memberOf RangeHelper.prototype
 		 */
 		base.selectRange = function (range) {
-			if (isW3C) {
-				var lastChild;
-				var sel = win.getSelection();
-				var container = range.endContainer;
+			var lastChild;
+			var sel = win.getSelection();
+			var container = range.endContainer;
 
-				// Check if cursor is set after a BR when the BR is the only
-				// child of the parent. In Firefox this causes a line break
-				// to occur when something is typed. See issue #321
-				if (!IE_BR_FIX && range.collapsed && container &&
-					!dom.isInline(container, true)) {
+			// Check if cursor is set after a BR when the BR is the only
+			// child of the parent. In Firefox this causes a line break
+			// to occur when something is typed. See issue #321
+			if (!IE_BR_FIX && range.collapsed && container &&
+				!dom.isInline(container, true)) {
 
-					lastChild = container.lastChild;
-					while (lastChild && $(lastChild).is('.sceditor-ignore')) {
-						lastChild = lastChild.previousSibling;
-					}
-
-					if ($(lastChild).is('br')) {
-						var rng = doc.createRange();
-						rng.setEndAfter(lastChild);
-						rng.collapse(false);
-
-						if (base.compare(range, rng)) {
-							range.setStartBefore(lastChild);
-							range.collapse(true);
-						}
-					}
+				lastChild = container.lastChild;
+				while (lastChild && $(lastChild).is('.sceditor-ignore')) {
+					lastChild = lastChild.previousSibling;
 				}
 
-				if (sel) {
-					base.clear();
-					sel.addRange(range);
+				if ($(lastChild).is('br')) {
+					var rng = doc.createRange();
+					rng.setEndAfter(lastChild);
+					rng.collapse(false);
+
+					if (base.compare(range, rng)) {
+						range.setStartBefore(lastChild);
+						range.collapse(true);
+					}
 				}
-			} else {
-				range.select();
+			}
+
+			if (sel) {
+				base.clear();
+				sel.addRange(range);
 			}
 		};
 
@@ -609,7 +536,7 @@ define(function (require) {
 		 * @memberOf RangeHelper.prototype
 		 */
 		base.restoreRange = function () {
-			var	marker, isCollapsed, previousSibling,
+			var	isCollapsed,
 				range = base.selectedRange(),
 				start = base.getMarker(startMarker),
 				end   = base.getMarker(endMarker);
@@ -620,32 +547,9 @@ define(function (require) {
 
 			isCollapsed = start.nextSibling === end;
 
-			if (!isW3C) {
-				range  = doc.body.createTextRange();
-				marker = doc.body.createTextRange();
-
-				// IE < 9 cannot set focus after a BR so need to insert
-				// a dummy char after it to allow the cursor to be placed
-				previousSibling = start.previousSibling;
-				if (start.nextSibling === end && (!previousSibling ||
-					!dom.isInline(previousSibling, true) ||
-					$(previousSibling).is('br'))) {
-					$(start).before('\u200B');
-				}
-
-				marker.moveToElementText(start);
-				range.setEndPoint('StartToStart', marker);
-				range.moveStart(CHARACTER, 0);
-
-				marker.moveToElementText(end);
-				range.setEndPoint('EndToStart', marker);
-				range.moveEnd(CHARACTER, 0);
-			} else {
-				range = doc.createRange();
-
-				range.setStartBefore(start);
-				range.setEndAfter(end);
-			}
+			range = doc.createRange();
+			range.setStartBefore(start);
+			range.setEndAfter(end);
 
 			if (isCollapsed) {
 				range.collapse(true);
@@ -675,16 +579,11 @@ define(function (require) {
 
 			range.collapse(false);
 
-			if (!isW3C) {
-				range.moveStart(CHARACTER, 0 - left);
-				range.moveEnd(CHARACTER, right);
-			} else {
-				start = outerText(range, true, left);
-				end = outerText(range, false, right);
+			start = outerText(range, true, left);
+			end = outerText(range, false, right);
 
-				range.setStart(start.node, start.offset);
-				range.setEnd(end.node, end.offset);
-			}
+			range.setStart(start.node, start.offset);
+			range.setEnd(end.node, end.offset);
 
 			base.selectRange(range);
 		};
@@ -707,16 +606,6 @@ define(function (require) {
 			}
 
 			range.collapse(!before);
-
-			if (!isW3C) {
-				if (before) {
-					range.moveStart(CHARACTER, 0 - length);
-				} else {
-					range.moveEnd(CHARACTER, length);
-				}
-
-				return range.text;
-			}
 
 			return outerText(range, before, length).text;
 		};
@@ -765,13 +654,6 @@ define(function (require) {
 					keywords[keywordIdx - 1][0].length;
 
 			if (requireWhitespace) {
-				// requireWhitespace doesn't work with textRanges as they
-				// select text on the other side of elements causing
-				// space-img-key to match when it shouldn't.
-				if (!isW3C) {
-					return false;
-				}
-
 				maxKeyLen++;
 			}
 
@@ -838,28 +720,21 @@ define(function (require) {
 		 * If rangeB is undefined it will be set to
 		 * the current selected range
 		 *
-		 * @param  {Range|TextRange} rangeA
-		 * @param  {Range|TextRange} rangeB
+		 * @param  {Range} rngA
+		 * @param  {Range} [rngB]
 		 * @return {boolean}
 		 */
-		base.compare = function (rangeA, rangeB) {
-			var	END_TO_END     = isW3C ? Range.END_TO_END : 'EndToEnd',
-				START_TO_START = isW3C ? Range.START_TO_START : 'StartToStart',
-				comparePoints  = isW3C ?
-					'compareBoundaryPoints' :
-					'compareEndPoints';
-
-			if (!rangeB) {
-				rangeB = base.selectedRange();
+		base.compare = function (rngA, rngB) {
+			if (!rngB) {
+				rngB = base.selectedRange();
 			}
 
-			if (!rangeA || !rangeB) {
-				return !rangeA && !rangeB;
+			if (!rngA || !rngB) {
+				return !rngA && !rngB;
 			}
 
-			return _isOwner(rangeA) && _isOwner(rangeB) &&
-				rangeA[comparePoints](END_TO_END, rangeB) === 0 &&
-				rangeA[comparePoints](START_TO_START, rangeB) === 0;
+			return rngA.compareBoundaryPoints(Range.END_TO_END, rngB) === 0 &&
+				rngA.compareBoundaryPoints(Range.START_TO_START, rngB) === 0;
 		};
 
 		/**
@@ -868,7 +743,7 @@ define(function (require) {
 		 * @since 1.4.6
 		 */
 		base.clear = function () {
-			var sel = isW3C ? win.getSelection() : doc.selection;
+			var sel = win.getSelection();
 
 			if (sel) {
 				if (sel.removeAllRanges) {

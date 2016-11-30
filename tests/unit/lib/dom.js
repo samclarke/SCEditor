@@ -1,8 +1,7 @@
 define([
 	'lib/dom',
-	'lib/browser',
 	'tests/unit/utils'
-], function (dom, browser, utils) {
+], function (dom, utils) {
 	'use strict';
 
 	module('lib/dom');
@@ -146,25 +145,22 @@ define([
 		);
 	});
 
-	// IE <= 8 allows invalid attribute names so have to disable this test
-	if (!browser.ie || browser.ie > 8) {
-		test('convertElement() - Invalid attribute name', function (assert) {
-			var node = utils.htmlToDiv(
-				'<i size"2"="" good="attr">test</i>'
-			);
+	test('convertElement() - Invalid attribute name', function (assert) {
+		var node = utils.htmlToDiv(
+			'<i size"2"="" good="attr">test</i>'
+		);
 
-			var newNode = dom.convertElement(node.firstChild, 'em');
+		var newNode = dom.convertElement(node.firstChild, 'em');
 
-			assert.equal(newNode, node.firstChild);
+		assert.equal(newNode, node.firstChild);
 
-			assert.nodesEqual(
-				newNode,
-				utils.htmlToNode(
-					'<em good="attr">test</em>'
-				)
-			);
-		});
-	}
+		assert.nodesEqual(
+			newNode,
+			utils.htmlToNode(
+				'<em good="attr">test</em>'
+			)
+		);
+	});
 
 
 	test('fixNesting() - With styling', function (assert) {
@@ -235,31 +231,24 @@ define([
 		);
 	});
 
+	test('removeWhiteSpace() - Preserve line breaks', function (assert) {
+		var node = utils.htmlToDiv(
+			'<div style="white-space: pre-line">    ' +
+				'<span>  \n\ncontent\n\n  </span>\n\n  ' +
+			'</div>'
+		);
 
-	// innerHTML in IE < 9 messes with the whitespace.
-	// Because of that this test will always fail even
-	// though there isn't anything wrong with the code
-	// it IE's bug.
-	if (!browser.ie || browser.ie > 8) {
-		test('removeWhiteSpace() - Preserve line breaks', function (assert) {
-			var node = utils.htmlToDiv(
-				'<div style="white-space: pre-line">    ' +
-					'<span>  \n\ncontent\n\n  </span>\n\n  ' +
+		dom.removeWhiteSpace(node);
+
+		assert.nodesEqual(
+			node,
+			utils.htmlToDiv(
+				'<div style="white-space: pre-line">' +
+					'<span>\n\ncontent\n\n </span>\n\n ' +
 				'</div>'
-			);
-
-			dom.removeWhiteSpace(node);
-
-			assert.nodesEqual(
-				node,
-				utils.htmlToDiv(
-					'<div style="white-space: pre-line">' +
-						'<span>\n\ncontent\n\n </span>\n\n ' +
-					'</div>'
-				)
-			);
-		});
-	}
+			)
+		);
+	});
 
 	test(
 		'removeWhiteSpace() - Siblings with start and end spaces',

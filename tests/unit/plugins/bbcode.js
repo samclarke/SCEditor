@@ -166,8 +166,7 @@ define([
 			this.htmlToBBCode(
 				'<b><span><span><span></span><span></span></span>   </span></b>'
 			),
-			// IE < 9 removes whitespace from innerHTML
-			browser.ie < 9 ? '' : ' ',
+			' ',
 			'Empty tag with only whitespace content'
 		);
 
@@ -186,13 +185,6 @@ define([
 
 
 	test('Should not remove whitespace in code tags', function (assert) {
-		// IE messes with the whitespace when it's set as innerHTML which
-		// causes this test to fail so skip in IE < 9.
-		if (browser.ie && browser.ie < 9) {
-			expect(0);
-			return;
-		}
-
 		var result = this.htmlToBBCode(
 			'<code><pre>Some    White \n   \n   space</pre></code>'
 		);

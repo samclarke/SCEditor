@@ -1,9 +1,8 @@
 define([
 	'lib/RangeHelper',
-	'lib/browser',
 	'tests/unit/utils',
 	'rangy'
-], function (RangeHelper, browser, utils, rangy) {
+], function (RangeHelper, utils, rangy) {
 	'use strict';
 
 	var editableDiv, rangeHelper;
@@ -237,10 +236,7 @@ define([
 
 		sel.setSingleRange(range);
 
-		assert.strictEqual(
-			rangeHelper.parentNode(),
-			browser.ie && browser.ie < 9 ? para : para.firstChild
-		);
+		assert.strictEqual(rangeHelper.parentNode(), para.firstChild);
 	});
 
 	test('parentNode() - Text plus part of node', function (assert) {
@@ -783,11 +779,6 @@ define([
 	});
 
 	test('replaceKeyword() - Middle with spaces required', function (assert) {
-		// This is not supported n IE 8 and below
-		if (browser.ie && browser.ie < 9) {
-			return expect(0);
-		}
-
 		var range = rangy.createRangyRange();
 		var sel   = rangy.getSelection();
 
@@ -818,11 +809,6 @@ define([
 	});
 
 	test('replaceKeyword() - No match space required', function (assert) {
-		// This is not supported n IE 8 and below
-		if (browser.ie && browser.ie < 9) {
-			return expect(0);
-		}
-
 		var range = rangy.createRangyRange();
 		var sel   = rangy.getSelection();
 
@@ -850,11 +836,6 @@ define([
 	test(
 		'replaceKeyword() - Current char space when spaces required',
 		function (assert) {
-			// This is not supported n IE 8 and below
-			if (browser.ie && browser.ie < 9) {
-				return expect(0);
-			}
-
 			var range = rangy.createRangyRange();
 			var sel   = rangy.getSelection();
 

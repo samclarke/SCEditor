@@ -427,21 +427,10 @@
 			while (attrIdx--) {
 				attr = node.attributes[attrIdx];
 
-				// IE < 8 returns all possible attributes not just specified
-				// ones. IE < 8 also doesn't say value on input is specified
-				// so just assume it is.
-				if (!SCEditor.ie || attr.specified ||
-					(tagName === 'input' && attr.name === 'value')) {
-					// IE < 8 doesn't return the CSS for the style attribute
-					if (SCEditor.ie < 8 && /style/i.test(attr.name)) {
-						attrValue = node.style.cssText;
-					} else {
-						attrValue = attr.value;
-					}
+				attrValue = attr.value;
 
-					output(' ' + attr.name.toLowerCase() + '="' +
-						escapeEntites(attrValue) + '"', false);
-				}
+				output(' ' + attr.name.toLowerCase() + '="' +
+					escapeEntites(attrValue) + '"', false);
 			}
 			output(selfClosing ? ' />' : '>', false);
 
@@ -672,9 +661,7 @@
 
 						attr = node.getAttributeNode(attr);
 
-						// IE < 8 always returns an attribute regardless of if
-						// it has been specified so must check it.
-						if (!attr || (SCEditor.ie < 8 && !attr.specified)) {
+						if (!attr) {
 							return;
 						}
 
@@ -986,11 +973,7 @@
 				}
 			},
 			conv: function (node, $node) {
-				if (SCEditor.ie < 8) {
-					node.removeAttribute('value');
-				} else {
-					$node.removeAttr('value');
-				}
+				$node.removeAttr('value');
 			}
 		},
 		{
@@ -1201,31 +1184,6 @@
 				// IE < 8 sets a font tag with no size to +0 so
 				// should just skip it.
 				if (fontSize !== '+0') {
-					// IE 8 and below incorrectly returns the value of the size
-					// attribute instead of the px value so must convert it
-					if (SCEditor.ie < 9) {
-						fontSize = 10;
-
-						if (size > 1) {
-							fontSize = 13;
-						}
-						if (size > 2) {
-							fontSize = 16;
-						}
-						if (size > 3) {
-							fontSize = 18;
-						}
-						if (size > 4) {
-							fontSize = 24;
-						}
-						if (size > 5) {
-							fontSize = 32;
-						}
-						if (size > 6) {
-							fontSize = 48;
-						}
-					}
-
 					$node.css('fontSize', fontSize);
 				}
 

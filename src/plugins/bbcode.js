@@ -1224,22 +1224,6 @@
 					// If not already in a block wrap then start a new block
 					if (!blockWrapOpen) {
 						ret.push('<div>');
-
-						// If it's an empty DIV and compatibility mode is below
-						// IE8 then we must add a non-breaking space to the div
-						// otherwise the div will be collapsed. Adding a BR
-						// works but when you press enter to make a newline it
-						// suddenly goes back to the normal IE div behavior and
-						// creates two lines, one for the newline and one for
-						// the BR. I'm sure there must be a better fix but I've
-						// yet to find one.
-						// Cannot do zoom: 1; or set a height on the div to fix
-						// it as that causes resize handles to be added to the
-						// div when it's clicked on.
-						if (IE_VER < 8 || (document.documentMode &&
-							document.documentMode < 8)) {
-							ret.push('\u00a0');
-						}
 					}
 
 					// Putting BR in a div in IE causes it

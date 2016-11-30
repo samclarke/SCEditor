@@ -617,13 +617,6 @@
 						.data('sceditor-txtmode', !!command.txtExec)
 						.data('sceditor-wysiwygmode', !!command.exec)
 						.toggleClass('disabled', !command.exec)
-						.mousedown(function () {
-							// IE < 8 supports unselectable attribute
-							// so don't need this
-							if (!IE_VER || IE_VER < 9) {
-								autoUpdateCanceled = true;
-							}
-						})
 						.click(function () {
 							var $this = $(this);
 

@@ -1,8 +1,7 @@
 define(function (require) {
 	'use strict';
 
-	var $       = require('jquery');
-	var browser = require('./browser');
+	var $ = require('jquery');
 
 	var _propertyNameCache = {};
 
@@ -110,22 +109,12 @@ define(function (require) {
 			while (attrsIdx--) {
 				attr = oldAttrs[attrsIdx];
 
-				// IE < 8 returns all possible attributes instead of just
-				// the specified ones so have to check it is specified.
-				if (!browser.ie || attr.specified) {
-					// IE < 8 doesn't return the CSS for the style attribute
-					// so must copy it manually
-					if (browser.ie < 8 && /style/i.test(attr.name)) {
-						dom.copyCSS(oldElm, newElm);
-					} else {
-						// Some browsers parse invalid attributes names like
-						// 'size"2' which throw an exception when set, just
-						// ignore these.
-						try {
-							newElm.setAttribute(attr.name, attr.value);
-						} catch (ex) {}
-					}
-				}
+				// Some browsers parse invalid attributes names like
+				// 'size"2' which throw an exception when set, just
+				// ignore these.
+				try {
+					newElm.setAttribute(attr.name, attr.value);
+				} catch (ex) {}
 			}
 
 			while ((child = oldElm.firstChild)) {

@@ -1,9 +1,8 @@
 define([
 	'lib/SCEditor',
 	'tests/unit/utils',
-	'lib/browser',
 	'plugins/xhtml'
-], function (SCEditor, utils, browser) {
+], function (SCEditor, utils) {
 	'use strict';
 
 	var moduleSetup = function () {
@@ -150,14 +149,11 @@ define([
 			'Single span with space and br'
 		);
 
-		// Another test that IE <= 8 doesn't like so just skip it
-		if (!browser.ie || browser.ie > 8) {
-			assert.htmlEqual(
-				this.filterHtml('<div>&nbsp; <br />		</div>'),
-				'<div>\n\t&nbsp; <br /> \n</div>',
-				'Single div with spaces and br'
-			);
-		}
+		assert.htmlEqual(
+			this.filterHtml('<div>&nbsp; <br />		</div>'),
+			'<div>\n\t&nbsp; <br /> \n</div>',
+			'Single div with spaces and br'
+		);
 	});
 
 
