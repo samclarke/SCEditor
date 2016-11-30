@@ -34,7 +34,7 @@ module.exports = (grunt) => {
 					sauceConfig: {
 						'video-upload-on-pass': false
 					},
-					testname: 'SCEditor QUnit unit tests'
+					testname: 'SCEditor QUnit tests'
 				}
 			}
 		},
@@ -164,7 +164,7 @@ module.exports = (grunt) => {
 				]
 			}
 		},
-//TODO: Improve webpack compression
+		//TODO: Improve webpack compression
 		// Convert modules into a single JS file
 		webpack: {
 			build: {
@@ -416,7 +416,5 @@ module.exports = (grunt) => {
 	grunt.registerTask('dist', ['release']);
 
 	// Update dev dependencies
-	grunt.registerTask('dev-upd', [
-		'devUpdate:main'
-	]);
+	grunt.registerTask('dev-upd', ['devUpdate:main']);
 };
