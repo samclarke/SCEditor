@@ -430,8 +430,17 @@ define(function (require) {
 		 * @name insertMarkers
 		 */
 		base.insertMarkers = function () {
+			var	currentRange = base.selectedRange();
+
 			base.insertNodeAt(true, _createMarker(startMarker));
-			base.insertNodeAt(false, _createMarker(endMarker));
+
+			// Fixes issue with end marker sometimes being placed before
+			// the start marker when the range is collapsed.
+			if (currentRange && currentRange.collapsed) {
+				$(base.getMarker(startMarker)).after(_createMarker(endMarker));
+			} else {
+				base.insertNodeAt(false, _createMarker(endMarker));
+			}
 		};
 
 		/**

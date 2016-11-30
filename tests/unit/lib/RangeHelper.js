@@ -355,6 +355,48 @@ define([
 	});
 
 
+	test('saveRange() - Start is before end marker', function (assert) {
+		var range = rangy.createRangyRange();
+		var sel   = rangy.getSelection();
+
+		editableDiv.innerHTML =
+			'<p>The quick brown fox <br />jumps over the lazy dog.</p>';
+
+		var para = editableDiv.firstChild;
+
+		range.setStart(para.firstChild, 20);
+		sel.setSingleRange(range);
+
+		rangeHelper.saveRange();
+
+		var $markers = $(editableDiv).find('.sceditor-selection');
+
+		assert.ok($($markers[0]).is('#sceditor-start-marker'));
+		assert.ok($($markers[1]).is('#sceditor-end-marker'));
+	});
+
+	test('saveRange() - Start is before end in selection', function (assert) {
+		var range = rangy.createRangyRange();
+		var sel   = rangy.getSelection();
+
+		editableDiv.innerHTML =
+			'<p>The quick brown fox jumps over the lazy dog.</p>';
+
+		var para = editableDiv.firstChild;
+
+		range.setStart(para.firstChild, 4);
+		range.setEnd(para.firstChild, 39);
+		sel.setSingleRange(range);
+
+		rangeHelper.saveRange();
+
+		var $markers = $(editableDiv).find('.sceditor-selection');
+
+		assert.ok($($markers[0]).is('#sceditor-start-marker'));
+		assert.ok($($markers[1]).is('#sceditor-end-marker'));
+	});
+
+
 	test('selectOuterText() - Left only', function (assert) {
 		var range = rangy.createRangyRange();
 		var sel   = rangy.getSelection();
