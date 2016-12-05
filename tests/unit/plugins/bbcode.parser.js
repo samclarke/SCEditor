@@ -116,6 +116,13 @@ define([
 			'[color][b][s][i]test[/i][/s][/b][/color]',
 			'Closing parent tag from deeply nested child tag'
 		);
+
+		assert.equal(
+			this.parser.toBBCode('[left][list][*]xyz[/left][list][*]abc[/list]'),
+			'[left][list]\n[*]xyz[/*]\n[/list]\n[/left]\n[list]\n[*][list]\n' +
+				'[*]abc[/*]\n[/list]\n[/*]\n[/list]\n',
+			'Closing parent tag from list item'
+		);
 	});
 
 

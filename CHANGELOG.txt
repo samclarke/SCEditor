@@ -1,3 +1,8 @@
+Version 1.5.2:
+	Fixed BBCode parser bug that can cause content to be lost under certain
+		types of invalid nesting.
+		- Thanks to Jones for reporting.
+
 Version 1.5.1:
 	Fixed bug with event handlers throwing an error.
 		- Thanks to @agungsijawir for reporting

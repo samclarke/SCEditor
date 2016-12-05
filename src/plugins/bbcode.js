@@ -751,7 +751,7 @@
 								// previously cloned tags as it's children
 								clone = curTok.clone();
 
-								if (cloned.length > 1) {
+								if (cloned.length) {
 									clone.children.push(last(cloned));
 								}
 
