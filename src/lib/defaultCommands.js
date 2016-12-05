@@ -155,60 +155,28 @@ define(function (require) {
 		// START_COMMAND: Colour
 		color: {
 			_dropDown: function (editor, caller, callback) {
-				var	i, x, color, colors,
-					genColor     = {r: 255, g: 255, b: 255},
-					content      = $('<div />'),
-					colorColumns = editor.opts.colors ?
-						editor.opts.colors.split('|') : new Array(21),
-					// IE is slow at string concatenation so use an array
-					html         = [],
-					cmd          = defaultCommnds.color;
+				var	content = $('<div />'),
+					html    = '',
+					cmd     = defaultCommnds.color;
 
 				if (!cmd._htmlCache) {
-					for (i = 0; i < colorColumns.length; ++i) {
-						colors = colorColumns[i] ?
-							colorColumns[i].split(',') : new Array(21);
+					editor.opts.colors.split('|').forEach(function (column) {
+						html += '<div class="sceditor-color-column">';
 
-						html.push('<div class="sceditor-color-column">');
-
-						for (x = 0; x < colors.length; ++x) {
-							// use pre defined colour if can otherwise use the
-							// generated color
-							color = colors[x] || '#' +
-								genColor.r.toString(16) +
-								genColor.g.toString(16) +
-								genColor.b.toString(16);
-
-							html.push(
+						column.split(',').forEach(function (color) {
+							html +=
 								'<a href="#" class="sceditor-color-option"' +
 								' style="background-color: ' + color + '"' +
-								' data-color="' + color + '"></a>'
-							);
+								' data-color="' + color + '"></a>';
+						});
 
-							if (x % 5 === 0) {
-								genColor.g -= 51;
-								genColor.b = 255;
-							} else {
-								genColor.b -= 51;
-							}
-						}
+						html += '</div>';
+					});
 
-						html.push('</div>');
-
-						if (i % 5 === 0) {
-							genColor.r -= 51;
-							genColor.g = 255;
-							genColor.b = 255;
-						} else {
-							genColor.g = 255;
-							genColor.b = 255;
-						}
-					}
-
-					cmd._htmlCache = html.join('');
+					cmd._htmlCache = html;
 				}
 
-				content.append(cmd._htmlCache)
+				content.html(cmd._htmlCache)
 					.find('a')
 					.click(function (e) {
 						callback($(this).attr('data-color'));
