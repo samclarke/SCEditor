@@ -1138,14 +1138,6 @@
 		},
 		{
 			tags: {
-				i: null
-			},
-			conv: function (node) {
-				$(this.convertTagTo(node, 'em'));
-			}
-		},
-		{
-			tags: {
 				s: null,
 				strike: null
 			},

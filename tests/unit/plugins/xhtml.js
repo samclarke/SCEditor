@@ -226,6 +226,15 @@ define([
 	});
 
 
+	test('Should not convert the I tag', function (assert) {
+		// Should be left as it's part of HTML5'
+		assert.equal(
+			this.filterStripWhiteSpace('<i>test</i>'),
+			utils.stripWhiteSpace('<p><i>test</i></p>')
+		);
+	});
+
+
 	test('Disallowed tags', function (assert) {
 		$.sceditor.plugins.xhtml.disallowedTags = ['div'];
 
@@ -790,14 +799,6 @@ define([
 			this.filterStripWhiteSpace('<u>test</u>'),
 			utils.stripWhiteSpace(
 				'<p><span style="text-decoration: underline;">test</span></p>')
-		);
-	});
-
-
-	test('I - Italic', function (assert) {
-		assert.equal(
-			this.filterStripWhiteSpace('<i>test</i>'),
-			utils.stripWhiteSpace('<p><em>test</em></p>')
 		);
 	});
 
