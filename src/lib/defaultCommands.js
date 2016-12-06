@@ -505,38 +505,49 @@ define(function (require) {
 		// START_COMMAND: Link
 		link: {
 			exec: function (caller) {
-				var	editor  = this,
-					content = _tmpl('link', {
-						url: editor._('URL:'),
-						desc: editor._('Description (optional):'),
-						ins: editor._('Insert')
-					}, true);
+				var	url, text;
+				var	editor  = this;
+				var content = _tmpl('link', {
+					url: editor._('URL:'),
+					desc: editor._('Description (optional):'),
+					ins: editor._('Insert')
+				}, true);
+				var $link = content.find('#link');
+				var $description = content.find('#des');
 
-				content.find('.button').click(function (e) {
-					var	val         = content.find('#link').val(),
-						description = content.find('#des').val();
+				function insertUrl(e) {
+					url  = $link.val();
+					text = $description.val();
 
-					if (val) {
+					if (url) {
 						// needed for IE to restore the last range
 						editor.focus();
 
 						// If there is no selected text then must set the URL as
 						// the text. Most browsers do this automatically, sadly
 						// IE doesn't.
-						if (!editor.getRangeHelper().selectedHtml() ||
-							description) {
-							description = description || val;
+						if (!editor.getRangeHelper().selectedHtml() || text) {
+							text = text || url;
 
 							editor.wysiwygEditorInsertHtml(
-								'<a href="' + val + '">' + description + '</a>'
+								'<a href="' + url + '">' + text + '</a>'
 							);
 						} else {
-							editor.execCommand('createlink', val);
+							editor.execCommand('createlink', url);
 						}
 					}
 
 					editor.closeDropDown(true);
 					e.preventDefault();
+				}
+
+				content.find('.button').click(insertUrl);
+
+				$link.add($description).keypress(function (e) {
+					// 13 = enter key
+					if (e.which === 13 && $link.val()) {
+						insertUrl(e);
+					}
 				});
 
 				editor.createDropDown(caller, 'insertlink', content);
