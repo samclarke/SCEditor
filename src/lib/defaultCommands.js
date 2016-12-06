@@ -505,8 +505,8 @@ define(function (require) {
 		// START_COMMAND: Link
 		link: {
 			exec: function (caller) {
-				var	url, text;
-				var	editor  = this;
+				var url, text;
+				var editor  = this;
 				var content = _tmpl('link', {
 					url: editor._('URL:'),
 					desc: editor._('Description (optional):'),
