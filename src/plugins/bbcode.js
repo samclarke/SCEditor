@@ -159,15 +159,16 @@
 		},
 		email: {
 			txtExec: function (caller, selected) {
-				var	editor  = this,
+				var	text, editor  = this,
 					display = selected && selected.indexOf('@') > -1 ?
 						null : selected,
 					email	= prompt(editor._('Enter the e-mail address:'),
-						(display ? '' : selected)),
-					text	= prompt(editor._('Enter the displayed text:'),
-						display || email) || email;
+						(display ? '' : selected));
 
 				if (email) {
+					text = prompt(editor._('Enter the displayed text:'),
+						display || email) || email;
+
 					editor.insertText('[email=' + email + ']' +
 						text + '[/email]');
 				}
