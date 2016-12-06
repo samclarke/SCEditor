@@ -412,8 +412,17 @@ module.exports = (grunt) => {
 		'clean:dist'
 	]);
 
-	// Alias dist to release for backwards compatibility
-	grunt.registerTask('dist', ['release']);
+	// Creates a directory containing the contents of
+	// the release ZIP but without compressing it
+	grunt.registerTask('dist', [
+		'test',
+		'build',
+		'clean:dist',
+		'webpack:dist',
+		'concat:dist',
+		'copy:dist',
+		'less:dist',
+	]);
 
 	// Update dev dependencies
 	grunt.registerTask('dev-upd', ['devUpdate:main']);
