@@ -48,7 +48,9 @@
 			'plugins/bbcode': ['jquery.sceditor'],
 			'plugins/xhtml': ['jquery.sceditor'],
 			'plugins/format': ['jquery.sceditor'],
-			'plugins/undo': ['jquery.sceditor']
+			'plugins/undo': ['jquery.sceditor'],
+			'plugins/autoyoutube': ['jquery.sceditor'],
+			'plugins/plaintext': ['jquery.sceditor']
 		}
 	});
 
@@ -58,6 +60,8 @@
 		'plugins/xhtml',
 		'plugins/format',
 		'plugins/undo',
+		'plugins/autoyoutube',
+		'plugins/plaintext',
 		'domReady!'
 	], function () {
 		patchConsole();
