@@ -654,9 +654,9 @@ define(function (require) {
 				});
 			}
 
-			var outerText, matchPos, startIndex, leftLen,
-				charsLeft, keyword, keywordLen,
-				whitespaceRegex = '[\\s\xA0\u2002\u2003\u2009]',
+			var outerText, match, matchPos, startIndex,
+				leftLen, charsLeft, keyword, keywordLen,
+				whitespaceRegex = '(^|[\\s\xA0\u2002\u2003\u2009])',
 				keywordIdx      = keywords.length,
 				whitespaceLen   = requireWhitespace ? 1 : 0,
 				maxKeyLen       = longestKeyword ||
@@ -679,26 +679,24 @@ define(function (require) {
 				keyword    = keywords[keywordIdx][0];
 				keywordLen = keyword.length;
 				startIndex = Math.max(0, leftLen - keywordLen - whitespaceLen);
+				matchPos   = -1;
 
 				if (requireWhitespace) {
-					matchPos = outerText
+					match = outerText
 						.substr(startIndex)
-						.search(new RegExp(
-							'(?:' + whitespaceRegex + ')' +
-							escape.regex(keyword) +
-							'(?=' + whitespaceRegex + ')'
-						));
+						.match(new RegExp(whitespaceRegex +
+							escape.regex(keyword) + whitespaceRegex));
+
+					if (match) {
+						// Add the length of the text that was removed by
+						// substr() and also add 1 for the whitespace
+						matchPos = match.index + startIndex + match[1].length;
+					}
 				} else {
 					matchPos = outerText.indexOf(keyword, startIndex);
 				}
 
 				if (matchPos > -1) {
-					// Add the length of the text that was removed by substr()
-					// when matching and also add 1 for the whitespace
-					if (requireWhitespace) {
-						matchPos += startIndex + 1;
-					}
-
 					// Make sure the match is between before and
 					// after, not just entirely in one side or the other
 					if (matchPos <= leftLen &&
