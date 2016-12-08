@@ -9,6 +9,45 @@ define(function (require) {
 	// causes a line break. In all other browsers it's collapsed.
 	var IE_BR_FIX = IE_VER && IE_VER < 11;
 
+	/**
+	 * Fixes a bug in FF where it sometimes wraps
+	 * new lines in their own list item.
+	 * See issue #359
+	 */
+	function fixFirefoxListBug(editor) {
+		// Only apply to firefox as will break other browsers.
+		if ('mozHidden' in document) {
+			var node = editor.getBody()[0];
+			var next;
+
+			while (node) {
+				next = node;
+
+				if (next.firstChild) {
+					next = next.firstChild;
+				} else {
+
+					while (next && !next.nextSibling) {
+						next = next.parentNode;
+					}
+
+					if (next) {
+						next = next.nextSibling;
+					}
+				}
+
+				if (node.nodeType === 3 && /[\n\r\t]+/.test(node.nodeValue)) {
+					// Only remove if newlines are collapsed
+					if (!/^pre/.test($(node.parentNode).css('white-space'))) {
+						$(node).remove();
+					}
+				}
+
+				node = next;
+			}
+		}
+	}
+
 
 	/**
 	 * Map of all the commands for SCEditor
@@ -262,13 +301,19 @@ define(function (require) {
 		// END_COMMAND
 		// START_COMMAND: Bullet List
 		bulletlist: {
-			exec: 'insertunorderedlist',
+			exec: function () {
+				fixFirefoxListBug(this);
+				this.execCommand('insertunorderedlist');
+			},
 			tooltip: 'Bullet list'
 		},
 		// END_COMMAND
 		// START_COMMAND: Ordered List
 		orderedlist: {
-			exec: 'insertorderedlist',
+			exec: function () {
+				fixFirefoxListBug(this);
+				this.execCommand('insertorderedlist');
+			},
 			tooltip: 'Numbered list'
 		},
 		// END_COMMAND
