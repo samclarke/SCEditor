@@ -1351,11 +1351,7 @@
 			$dropdown = $('<div class="sceditor-dropdown ' + cssClass + '" />')
 				.css(dropDownCss)
 				.append(content)
-				.appendTo($('body'))
-				.on('click focusin', function (e) {
-					// stop clicks within the dropdown from being handled
-					e.stopPropagation();
-				});
+				.appendTo($('body'));
 
 			// If try to focus the first input immediately IE will
 			// place the cursor at the start of the editor instead
@@ -1372,6 +1368,11 @@
 		 * @private
 		 */
 		handleDocumentClick = function (e) {
+			// ignore if click happens inside a dropdown
+			if ($(e.target).closest('.sceditor-dropdown').length) {
+				return;
+			}
+			
 			// ignore right clicks
 			if (e.which !== 3 && $dropdown) {
 				autoUpdate();
