@@ -573,11 +573,12 @@ define(function (require) {
 				editor.createDropDown(caller, 'insertemail', content);
 
 				// Check it is an email address.
-				if ($anchor.attr('href') && 
-				   	$anchor.attr('href').substr(0, 7) === 'mailto:') {
+				if ($anchor.attr('href') &&
+					$anchor.attr('href').substr(0, 7) === 'mailto:') {
 					// Get details of highlighted and put in drop down.
 					if ($anchor.attr('href')) {
-						content.find('#email').val($anchor.attr('href').substring(7));
+						content.find('#email')
+							.val($anchor.attr('href').substring(7));
 					}
 					if ($anchor.text()) {
 						content.find('#des').val($anchor.text());
@@ -621,7 +622,7 @@ define(function (require) {
 						if (!editor.getRangeHelper().selectedHtml() || text) {
 							text = text || url;
 
-							// Replace existing Link, instead of stacking elements.
+							// Replace existing Link, instead of stacking.
 							if ($anchor.length) {
 								if (text) {
 									$anchor.attr('href', text);
@@ -653,8 +654,8 @@ define(function (require) {
 				editor.createDropDown(caller, 'insertlink', content);
 
 				// Check it is an email address.
-				if ($anchor.attr('href') && 
-				    $anchor.attr('href').substr(0, 7) !== 'mailto:') {
+				if ($anchor.attr('href') &&
+					$anchor.attr('href').substr(0, 7) !== 'mailto:') {
 				// Get details of highlighted and put in drop down.
 					if ($anchor.attr('href')) {
 						content.find('#link').val($anchor.attr('href'));
@@ -826,7 +827,7 @@ define(function (require) {
 							// Replace existing Link, instead of stacking.
 							if ($anchor.length) {
 								$anchor.attr('src',
-									     'https://www.youtube.com/embed/' + val + '?wmode=opaque');
+									'https://www.youtube.com/embed/' + val + '?wmode=opaque');
 							} else {
 								handleIdFunc(val);
 							}
