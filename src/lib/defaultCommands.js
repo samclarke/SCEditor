@@ -474,6 +474,11 @@ define(function (require) {
 						height: editor._('Height (optional):'),
 						insert: editor._('Insert')
 					}, true);
+				
+				// Get highlighted image if any.
+				var	$current = $(editor.currentNode()),
+					$anchor  = $current.is('img') ? $current :
+					$current.children('img').first();
 
 				content.find('.button').click(function (e) {
 					var	val    = content.find('#image').val(),
@@ -500,6 +505,17 @@ define(function (require) {
 				});
 
 				editor.createDropDown(caller, 'insertimage', content);
+				
+				// If an image is highlighted insert details in dropdown.
+				if ($anchor.attr("width")) {
+					content.find('#width').val($anchor.attr("width"));
+				}
+				if ($anchor.attr("height")) {
+					content.find('#height').val($anchor.attr("height"));
+				}
+				if($anchor.attr("src")) {
+					content.find('#image').val($anchor.attr("src"));
+				}
 			},
 			tooltip: 'Insert an image'
 		},
@@ -514,6 +530,11 @@ define(function (require) {
 						desc: editor._('Description (optional):'),
 						insert: editor._('Insert')
 					}, true);
+				
+				// Get highlighted email if any.
+				var	$current = $(editor.currentNode()),
+					$anchor  = $current.is('a') ? $current :
+					$current.parents('a').first();
 
 				content.find('.button').click(function (e) {
 					var val         = content.find('#email').val(),
@@ -526,12 +547,20 @@ define(function (require) {
 						if (!editor.getRangeHelper().selectedHtml() ||
 							description) {
 							description = description || val;
-
-							editor.wysiwygEditorInsertHtml(
-								'<a href="' + 'mailto:' + val + '">' +
-									description +
-								'</a>'
-							);
+							
+							// Replace existing Link, instead of stacking elements.
+							if ($anchor.length) {
+								if (description) {
+									$anchor.attr("href", description);
+								}
+								$anchor.attr("href", val);
+							} else {
+								editor.wysiwygEditorInsertHtml(
+									'<a href="' + 'mailto:' + val + '">' +
+										description +
+									'</a>'
+								);
+							}
 						} else {
 							editor.execCommand('createlink', 'mailto:' + val);
 						}
@@ -542,6 +571,17 @@ define(function (require) {
 				});
 
 				editor.createDropDown(caller, 'insertemail', content);
+				
+				// Check it is an email address.
+				if($anchor.attr("href") && $anchor.attr("href").substr(0, 7) == 'mailto:') {
+					// Get details of highlighted and put in drop down.
+					if ($anchor.attr("href")) {
+						content.find('#email').val($anchor.attr("href").substring(7));
+					}
+					if ($anchor.text()) {
+						content.find('#des').val($anchor.text());
+					}
+				}
 			},
 			tooltip: 'Insert an email'
 		},
@@ -557,6 +597,12 @@ define(function (require) {
 					desc: editor._('Description (optional):'),
 					ins: editor._('Insert')
 				}, true);
+				
+				// Get highlighted link if any.
+				var	$current = $(editor.currentNode()),
+					$anchor  = $current.is('a') ? $current :
+					$current.parents('a').first();
+				
 				var $link = content.find('#link');
 				var $description = content.find('#des');
 
@@ -573,10 +619,18 @@ define(function (require) {
 						// IE doesn't.
 						if (!editor.getRangeHelper().selectedHtml() || text) {
 							text = text || url;
-
-							editor.wysiwygEditorInsertHtml(
-								'<a href="' + url + '">' + text + '</a>'
-							);
+							
+							// Replace existing Link, instead of stacking elements.
+							if ($anchor.length) {
+								if (text) {
+									$anchor.attr('href', text);
+								}
+								$anchor.attr('href', url);
+							} else {
+								editor.wysiwygEditorInsertHtml(
+									'<a href="' + url + '">' + text + '</a>'
+								);
+							}
 						} else {
 							editor.execCommand('createlink', url);
 						}
@@ -596,6 +650,17 @@ define(function (require) {
 				});
 
 				editor.createDropDown(caller, 'insertlink', content);
+				
+				// Check it is an email address.
+				if($anchor.attr('href') && $anchor.attr('href').substr(0, 7) != 'mailto:') {
+				// Get details of highlighted and put in drop down.
+					if ($anchor.attr('href')) {
+						content.find('#link').val($anchor.attr('href'));
+					}
+					if ($anchor.text()) {
+						content.find('#des').val($anchor.text());
+					}
+				}
 			},
 			tooltip: 'Insert a link'
 		},
@@ -735,6 +800,11 @@ define(function (require) {
 						label: editor._('Video URL:'),
 						insert: editor._('Insert')
 					}, true);
+				
+				// Get highlighted link if any.
+				var	$current = $(editor.currentNode()),
+					$anchor  = $current.is('iframe') ? $current :
+					$current.children('iframe').first();
 
 				content.find('.button').click(function (e) {
 					var val = content
@@ -751,7 +821,12 @@ define(function (require) {
 						}
 
 						if (/^[a-zA-Z0-9_\-]{11}$/.test(val)) {
-							handleIdFunc(val);
+							// Replace existing Link, instead of stacking elements.
+							if ($anchor.length) {
+								$anchor.attr('src', 'https://www.youtube.com/embed/' + val + '?wmode=opaque');
+							} else {
+								handleIdFunc(val);
+							}
 						} else {
 							/*global alert:false*/
 							alert('Invalid YouTube video');
@@ -763,6 +838,11 @@ define(function (require) {
 				});
 
 				editor.createDropDown(caller, 'insertlink', content);
+				
+				// Get details of highlighted and put in drop down.
+				if ($anchor.attr('src')) {
+					content.find('#link').val($anchor.attr('src'));
+				}
 			},
 			exec: function (caller) {
 				var editor = this;
