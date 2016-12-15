@@ -1996,7 +1996,7 @@
 		 */
 		base.setWysiwygEditorValue = function (value) {
 			if (!value) {
-				value = '<div>' + (IE_VER ? '' : '<br />') + '</div>';
+				value = '<p>' + (IE_VER ? '' : '<br />') + '</p>';
 			}
 
 			$wysiwygBody[0].innerHTML = value;
