@@ -480,7 +480,7 @@
 
 			// iframe overflow fix for iOS, also fixes an IE issue with the
 			// editor not getting focus when clicking inside
-			if (browser.ios || IE_VER) {
+			if (browser.ios || browser.edge || IE_VER) {
 				$wysiwygBody.height('100%');
 
 				if (!IE_VER) {
