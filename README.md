@@ -3,7 +3,7 @@
 [![Build Status](http://img.shields.io/travis/samclarke/SCEditor/master.svg?style=flat-square)](https://travis-ci.org/samclarke/SCEditor)
 [![Dependency Status](http://img.shields.io/gemnasium/samclarke/SCEditor.svg?style=flat-square)](https://gemnasium.com/samclarke/SCEditor)
 [![SemVer](http://img.shields.io/:semver-✓-brightgreen.svg?style=flat-square)](http://semver.org)
-[![License](http://img.shields.io/npm/l/sceditor.svg?style=flat-square)](https://github.com/samclarke/SCEditor/blob/master/MIT.txt)
+[![License](http://img.shields.io/npm/l/sceditor.svg?style=flat-square)](https://github.com/samclarke/SCEditor/blob/master/LICENSE.md)
 
 A lightweight WYSIWYG BBCode and XHTML editor.
 
@@ -23,7 +23,7 @@ Then to change all textareas to WYSIWYG editors, simply do:
 
 ```js
 $(function() {
-	$("textarea").sceditor({
+	$('textarea').sceditor({
 		plugins: 'xhtml',
 		style: 'minified/jquery.sceditor.default.min.css'
 	});
@@ -34,7 +34,7 @@ or for a BBCode WYSIWYG editor do:
 
 ```js
 $(function() {
-	$("textarea").sceditor({
+	$('textarea').sceditor({
 		plugins: 'bbcode',
 		style: 'minified/jquery.sceditor.default.min.css'
 	});
