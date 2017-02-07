@@ -231,6 +231,86 @@ define([
 		);
 	});
 
+	test('fixNesting() - Nested list', function (assert) {
+		var node = utils.htmlToDiv(
+			'<ul>' +
+				'<li>first</li>' +
+				'<ol><li>middle</li></ol>' +
+				'<li>second</li>' +
+			'</ul>'
+		);
+
+		dom.fixNesting(node);
+
+		assert.nodesEqual(
+			node,
+			utils.htmlToDiv(
+				'<ul>' +
+					'<li>first' +
+						'<ol><li>middle</li></ol>' +
+					'</li>' +
+					'<li>second</li>' +
+				'</ul>'
+			)
+		);
+	});
+
+	test('fixNesting() - Nested list, no previous item', function (assert) {
+		var node = utils.htmlToDiv(
+			'<ul>' +
+				'<ol><li>middle</li></ol>' +
+				'<li>first</li>' +
+			'</ul>'
+		);
+
+		dom.fixNesting(node);
+
+		assert.nodesEqual(
+			node,
+			utils.htmlToDiv(
+				'<ul>' +
+					'<li>' +
+						'<ol><li>middle</li></ol>' +
+					'</li>' +
+					'<li>first</li>' +
+				'</ul>'
+			)
+		);
+	});
+
+	test('fixNesting() - Deeply nested list', function (assert) {
+		var node = utils.htmlToDiv(
+			'<ul>' +
+				'<li>one</li>' +
+				'<ul>' +
+					'<li>two</li>' +
+					'<ul>' +
+						'<li>three</li>' +
+					'</ul>' +
+				'</ul>' +
+			'</ul>'
+		);
+
+		dom.fixNesting(node);
+
+		assert.nodesEqual(
+			node,
+			utils.htmlToDiv(
+				'<ul>' +
+					'<li>one' +
+						'<ul>' +
+							'<li>two' +
+								'<ul>' +
+									'<li>three</li>' +
+								'</ul>' +
+							'</li>' +
+						'</ul>' +
+					'</li>' +
+				'</ul>'
+			)
+		);
+	});
+
 	test('removeWhiteSpace() - Preserve line breaks', function (assert) {
 		var node = utils.htmlToDiv(
 			'<div style="white-space: pre-line">    ' +

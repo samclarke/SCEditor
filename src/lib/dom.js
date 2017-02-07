@@ -193,6 +193,9 @@ define(function (require) {
 		/**
 		 * Fixes block level elements inside in inline elements.
 		 *
+		 * Also fixes invalid list nesting by placing nested lists
+		 * inside the previous li tag or wrapping them in an li tag.
+		 *
 		 * @param {HTMLElement} node
 		 */
 		fixNesting: function (node) {
@@ -205,9 +208,12 @@ define(function (require) {
 			};
 
 			dom.traverse(node, function (node) {
+				var list = 'ul,ol',
+					isBlock = !dom.isInline(node, true),
+					$node = $(node);
+
 				// Any blocklevel element inside an inline element needs fixing.
-				if (node.nodeType === 1 && !dom.isInline(node, true) &&
-					dom.isInline(node.parentNode, true)) {
+				if (isBlock && dom.isInline(node.parentNode, true)) {
 					var	parent  = getLastInlineParent(node),
 						rParent = parent.parentNode,
 						before  = dom.extractContents(parent, node),
@@ -219,6 +225,17 @@ define(function (require) {
 
 					rParent.insertBefore(before, parent);
 					rParent.insertBefore(middle, parent);
+				}
+
+				// Fix invalid nested lists which should be wrapped in an li tag
+				if (isBlock && $node.is(list) && $node.parent().is(list)) {
+					var $li = $node.prev('li');
+
+					if ($li.length) {
+						$li.append($node);
+					} else {
+						$node.wrap('<li />');
+					}
 				}
 			});
 		},
