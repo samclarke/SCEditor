@@ -222,6 +222,21 @@
 		var currentEmoticons = [];
 
 		/**
+		 * The min and max heights that autoExpand should stay within
+		 *
+		 * @type {Object}
+		 * @private
+		 */
+		var autoExpandBounds;
+
+		/**
+		 * Timeout for the autoExpand function to throttle calls
+		 *
+		 * @private
+		 */
+		var autoExpandThrottle;
+
+		/**
 		 * Cache of the current toolbar buttons
 		 *
 		 * @type {Object}
@@ -296,7 +311,8 @@
 			triggerValueChanged,
 			valueChangedBlur,
 			valueChangedKeyUp,
-			autoUpdate;
+			autoUpdate,
+			autoExpand;
 
 		/**
 		 * All the commands supported by the editor
@@ -373,9 +389,7 @@
 					autofocus();
 				}
 
-				if (options.autoExpand) {
-					base.expandToContent();
-				}
+				autoExpand();
 
 				pluginManager.call('ready');
 			};
@@ -516,7 +530,7 @@
 			base.rtl(!!options.rtl);
 
 			if (options.autoExpand) {
-				$wysiwygDoc.on('keyup', base.expandToContent);
+				$wysiwygDoc.on('input keyup', autoExpand);
 			}
 
 			if (options.resizeEnabled) {
@@ -1216,11 +1230,19 @@
 				$globalWin.scrollTop(maximizeScrollPosiotion);
 			}
 
+			autoExpand();
+
 			return base;
 		};
 
+		autoExpand = function () {
+			if (options.autoExpand && !autoExpandThrottle) {
+				setTimeout(base.expandToContent, 200);
+			}
+		};
+
 		/**
-		 * Expands the editors height to the height of it's content
+		 * Expands or shrinks the editors height to the height of it's content
 		 *
 		 * Unless ignoreMaxHeight is set to true it will not expand
 		 * higher than the maxHeight option.
@@ -1233,19 +1255,35 @@
 		 * @see #resizeToContent
 		 */
 		base.expandToContent = function (ignoreMaxHeight) {
-			var	currentHeight = $editorContainer.height(),
-				padding       = (currentHeight - $wysiwygEditor.height()),
-				height        = $wysiwygBody[0].scrollHeight ||
-					$wysiwygDoc[0].documentElement.scrollHeight,
-				maxHeight     = options.resizeMaxHeight ||
-					((options.height || $original.height()) * 2);
-
-			height += padding;
-
-			if ((ignoreMaxHeight === true || height <= maxHeight) &&
-				height > currentHeight) {
-				base.height(height);
+			if (base.maximize()) {
+				return;
 			}
+
+			autoExpandThrottle = false;
+
+			if (!autoExpandBounds) {
+				var height = options.resizeMinHeight || options.height ||
+					$original.height();
+
+				autoExpandBounds = {
+					min: height,
+					max: options.resizeMaxHeight || (height * 2)
+				};
+			}
+
+			var range = document.createRange();
+			range.selectNodeContents($wysiwygBody[0]);
+
+			var rect = range.getBoundingClientRect();
+			var current = $wysiwygDoc[0].documentElement.clientHeight;
+			var spaceNeeded = rect.bottom - rect.top;
+			var newHeight = base.height() + (spaceNeeded - current);
+
+			if (!ignoreMaxHeight && autoExpandBounds.max !== -1) {
+				newHeight = Math.min(newHeight, autoExpandBounds.max);
+			}
+
+			base.height(Math.ceil(Math.max(newHeight, autoExpandBounds.min)));
 		};
 
 		/**
@@ -2004,6 +2042,7 @@
 
 			appendNewLine();
 			triggerValueChanged();
+			autoExpand();
 		};
 
 		/**
