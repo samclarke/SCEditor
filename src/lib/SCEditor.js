@@ -530,6 +530,8 @@
 			base.rtl(!!options.rtl);
 
 			if (options.autoExpand) {
+				// Need to update when images (or anything else) loads
+				$wysiwygBody[0].addEventListener('load', autoExpand, true);
 				$wysiwygDoc.on('input keyup', autoExpand);
 			}
 
