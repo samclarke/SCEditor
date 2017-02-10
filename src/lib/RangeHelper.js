@@ -323,6 +323,72 @@ define(function (require) {
 			return '';
 		};
 
+
+		/**
+		 * Replace elements with provided selector inside user selection with
+		 * their children
+		 *
+		 * This method provides an easier way to have the same final aspect
+		 * for HTML as powerful as the browser's native execCommand() method
+		 * when removing HTML tag formatting.
+		 *
+		 * This method is mostly meant to be used with <b>inline</b> HTML
+		 * Elements. Having it working with block level elements is not
+		 * guaranteed.
+		 *
+		 *
+		 * @param {String} removeElementSelector Selector match what to delete
+		 * @return undefined
+		 * @function
+		 * @name splitAtSelection
+		 * @memberOf RangeHelper.prototype
+		 * @author brunoais
+		 */
+		base.splitAtSelection = function (removeElementSelector) {
+
+			var commonParent = base.getFirstBlockParent();
+
+			base.insertMarkers();
+
+			var startMarkerElement = base.getMarker(startMarker);
+			var endMarkerElement = base.getMarker(endMarker);
+			startMarkerElement.parentNode.normalize();
+
+			dom.splitElement(commonParent, startMarkerElement);
+			dom.splitElement(commonParent, endMarkerElement);
+
+			if (!removeElementSelector) {
+				base.removeMarkers();
+				return;
+			}
+
+			var parentOfRemoval = $(startMarkerElement).next()[0];
+
+			while (parentOfRemoval && parentOfRemoval.id !== endMarker) {
+
+				var removalElement = ($(parentOfRemoval).
+					is(removeElementSelector) && parentOfRemoval) || null;
+
+				var removalElements = $(removeElementSelector, parentOfRemoval);
+
+				// This has to be after querySelectorAll to allow specifying a
+				// selector for multiple HTML tags forming the removal
+				if (removalElement) {
+					$(removalElement).replaceWith(removalElement.childNodes);
+				}
+
+				for (var i = 0; i < removalElements.length; i++) {
+					$(removalElement[i]).
+						replaceWith(removalElements[i].childNodes);
+				}
+
+				parentOfRemoval = $(parentOfRemoval).next()[0];
+
+			}
+
+			base.removeMarkers();
+		};
+
 		/**
 		 * Gets the parent node of the selected contents in the range
 		 *

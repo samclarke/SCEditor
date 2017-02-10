@@ -179,6 +179,50 @@ define(function (require) {
 		},
 
 		/**
+		 * Splits the HTML tree until commonParent closing all tags and
+		 * reopening them after the split point.
+		 *
+		 * After calling this function, cutElement will be child of
+		 * commonParent, nextSibling and previousSibling of the element
+		 * which is the topmost parent of cutElement while still being
+		 * descendant of commonParent.
+		 *
+		 * Example (examples show result of the .outerHTML parameter applied
+		 * to "<strong>"):
+		 * If the commonParent is "<strong>" and cutElement is
+		 * "<!--break-->" in:
+		 * <strong>hi there, how <em>are <span>y<!--break-->ou</span>
+		 * doing</em> today</strong>
+		 * After executing:
+		 * <strong>hi there, how <em>are <span>y</span></em><!--break-->
+		 * <em><span>ou</span> doing</em> today?</strong>
+		 *
+		 *
+		 * @param {DOMElement} commonParent The common ancestor at clipping
+		 * @param {DOMNode} cutElement Where the closing and re-opening happens
+		 * @return undefined
+		 * @function
+		 * @name splitElement
+		 * @author http://stackoverflow.com/a/27498178/551625
+		 * @author brunoais
+		 */
+		splitElement: function (commonParent, cutElement) {
+			var grandparent;
+			for (var parent = cutElement.parentNode; commonParent !==
+					parent; parent = grandparent) {
+				var right = parent.cloneNode(false);
+
+				while (cutElement.nextSibling) {
+					right.appendChild(cutElement.nextSibling);
+				}
+
+				grandparent = parent.parentNode;
+				grandparent.insertBefore(right, parent.nextSibling);
+				grandparent.insertBefore(cutElement, right);
+			}
+		},
+
+		/**
 		 * <p>Copys the CSS from 1 node to another.</p>
 		 *
 		 * <p>Only copies CSS defined on the element e.g. style attr.</p>
