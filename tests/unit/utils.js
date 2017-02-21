@@ -1,68 +1,56 @@
-define(function () {
-	'use strict';
+export function htmlToDiv(html) {
+	var container = document.createElement('div');
 
-	var htmlToDiv = function (html) {
-		var container = document.createElement('div');
+	// IE < 9 strips whitespace from innerHTML.
+	// To fix it wrap the HTML in a <pre> tag so IE keeps the
+	// whitespce intact and then move the children out of the
+	// <pre> tag.
+	container.innerHTML = '<pre>' + html + '</pre>';
 
-		// IE < 9 strips whitespace from innerHTML.
-		// To fix it wrap the HTML in a <pre> tag so IE keeps the
-		// whitespce intact and then move the children out of the
-		// <pre> tag.
-		container.innerHTML = '<pre>' + html + '</pre>';
+	var pre = container.firstChild;
+	while (pre.firstChild) {
+		container.appendChild(pre.firstChild);
+	}
+	container.removeChild(pre);
 
-		var pre = container.firstChild;
-		while (pre.firstChild) {
-			container.appendChild(pre.firstChild);
-		}
-		container.removeChild(pre);
+	$('#qunit-fixture').append(container);
 
-		$('#qunit-fixture').append(container);
+	return container;
+};
 
-		return container;
-	};
+export function htmlToNode(html) {
+	var container  = htmlToDiv(html);
+	var childNodes = [];
 
-	var htmlToNode = function (html) {
-		var container  = htmlToDiv(html);
-		var childNodes = [];
+	for (var i = 0; i < container.childNodes.length; i++) {
+		childNodes.push(container.childNodes[i]);
+	}
 
-		for (var i = 0; i < container.childNodes.length; i++) {
-			childNodes.push(container.childNodes[i]);
-		}
+	return childNodes.length === 1 ? childNodes[0] : childNodes;
+};
 
-		return childNodes.length === 1 ? childNodes[0] : childNodes;
-	};
+export function htmlToFragment(html) {
+	var container = htmlToDiv(html);
+	var frag      = document.createDocumentFragment();
 
-	var htmlToFragment = function (html) {
-		var container = htmlToDiv(html);
-		var frag      = document.createDocumentFragment();
+	while (container.firstChild) {
+		frag.appendChild(container.firstChild);
+	}
 
-		while (container.firstChild) {
-			frag.appendChild(container.firstChild);
-		}
+	return frag;
+}
 
-		return frag;
-	};
+export function nodeToHtml(node) {
+	var container = document.createElement('div');
+	container.appendChild(node);
 
-	var nodeToHtml = function (node) {
-		var container = document.createElement('div');
-		container.appendChild(node);
+	return container.innerHTML;
+};
 
-		return container.innerHTML;
-	};
+export function stripWhiteSpace(str) {
+	if (!str) {
+		return str;
+	}
 
-	var stripWhiteSpace = function (str) {
-		if (!str) {
-			return str;
-		}
-
-		return str.replace(/[\r\n\s\t]/g, '');
-	};
-
-	return {
-		htmlToDiv: htmlToDiv,
-		htmlToNode: htmlToNode,
-		nodeToHtml: nodeToHtml,
-		htmlToFragment: htmlToFragment,
-		stripWhiteSpace: stripWhiteSpace
-	};
-});
+	return str.replace(/[\r\n\s\t]/g, '');
+}

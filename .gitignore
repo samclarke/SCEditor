@@ -6,4 +6,5 @@ sceditor.sublime-workspace
 /dist
 /minified
 /docs
+/coverage
 .DS_Store

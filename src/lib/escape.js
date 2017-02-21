@@ -1,112 +1,108 @@
-define(function (require, exports) {
-	'use strict';
+// Must start with a valid scheme
+// 		^
+// Schemes that are considered safe
+// 		(https?|s?ftp|mailto|spotify|skype|ssh|teamspeak|tel):|
+// Relative schemes (//:) are considered safe
+// 		(\\/\\/)|
+// Image data URI's are considered safe
+// 		data:image\\/(png|bmp|gif|p?jpe?g);
+var VALID_SCHEME_REGEX =
+	/^(https?|s?ftp|mailto|spotify|skype|ssh|teamspeak|tel):|(\/\/)|data:image\/(png|bmp|gif|p?jpe?g);/i;
 
-	// Must start with a valid scheme
-	// 		^
-	// Schemes that are considered safe
-	// 		(https?|s?ftp|mailto|spotify|skype|ssh|teamspeak|tel):|
-	// Relative schemes (//:) are considered safe
-	// 		(\\/\\/)|
-	// Image data URI's are considered safe
-	// 		data:image\\/(png|bmp|gif|p?jpe?g);
-	var VALID_SCHEME_REGEX =
-		/^(https?|s?ftp|mailto|spotify|skype|ssh|teamspeak|tel):|(\/\/)|data:image\/(png|bmp|gif|p?jpe?g);/i;
+/**
+ * Escapes a string so it's safe to use in regex
+ *
+ * @param {String} str
+ * @return {String}
+ * @name regex
+ */
+export function regex(str) {
+	return str.replace(/([\-.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
+};
 
-	/**
-	 * Escapes a string so it's safe to use in regex
-	 *
-	 * @param {String} str
-	 * @return {String}
-	 * @name regex
-	 */
-	exports.regex = function (str) {
-		return str.replace(/([\-.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
-	};
-
-	/**
-	 * Escapes all HTML entities in a string
-	 *
-	 * If noQuotes is set to false, all single and double
-	 * quotes will also be escaped
-	 *
-	 * @param {String} str
-	 * @param {Boolean} [noQuotes=false]
-	 * @return {String}
-	 * @name entities
-	 * @since 1.4.1
-	 */
-	exports.entities = function (str, noQuotes) {
-		if (!str) {
-			return str;
-		}
-
-		var replacements = {
-			'&': '&amp;',
-			'<': '&lt;',
-			'>': '&gt;',
-			'  ': '&nbsp; ',
-			'\r\n': '<br />',
-			'\r': '<br />',
-			'\n': '<br />'
-		};
-
-		if (noQuotes !== false) {
-			replacements['"']  = '&#34;';
-			replacements['\''] = '&#39;';
-			replacements['`']  = '&#96;';
-		}
-
-		str = str.replace(/ {2}|\r\n|[&<>\r\n'"`]/g, function (match) {
-			return replacements[match] || match;
-		});
-
+/**
+ * Escapes all HTML entities in a string
+ *
+ * If noQuotes is set to false, all single and double
+ * quotes will also be escaped
+ *
+ * @param {String} str
+ * @param {Boolean} [noQuotes=false]
+ * @return {String}
+ * @name entities
+ * @since 1.4.1
+ */
+export function entities(str, noQuotes) {
+	if (!str) {
 		return str;
+	}
+
+	var replacements = {
+		'&': '&amp;',
+		'<': '&lt;',
+		'>': '&gt;',
+		'  ': '&nbsp; ',
+		'\r\n': '<br />',
+		'\r': '<br />',
+		'\n': '<br />'
 	};
 
-	/**
-	 * Escape URI scheme.
-	 *
-	 * Appends the current URL to a url if it has a scheme that is not:
-	 *
-	 * http
-	 * https
-	 * sftp
-	 * ftp
-	 * mailto
-	 * spotify
-	 * skype
-	 * ssh
-	 * teamspeak
-	 * tel
-	 * //
-	 * data:image/(png|jpeg|jpg|pjpeg|bmp|gif);
-	 *
-	 * **IMPORTANT**: This does not escape any HTML in a url, for
-	 * that use the escape.entities() method.
-	 *
-	 * @param  {String} url
-	 * @return {String}
-	 * @name escapeUriScheme
-	 * @memberOf jQuery.sceditor
-	 * @since 1.4.5
-	 */
-	exports.uriScheme = function (url) {
-		var	path,
-			// If there is a : before a / then it has a scheme
-			hasScheme = /^[^\/]*:/i,
-			location = window.location;
+	if (noQuotes !== false) {
+		replacements['"']  = '&#34;';
+		replacements['\''] = '&#39;';
+		replacements['`']  = '&#96;';
+	}
 
-		// Has no scheme or a valid scheme
-		if ((!url || !hasScheme.test(url)) || VALID_SCHEME_REGEX.test(url)) {
-			return url;
-		}
+	str = str.replace(/ {2}|\r\n|[&<>\r\n'"`]/g, function (match) {
+		return replacements[match] || match;
+	});
 
-		path = location.pathname.split('/');
-		path.pop();
+	return str;
+};
 
-		return location.protocol + '//' +
-			location.host +
-			path.join('/') + '/' +
-			url;
-	};
-});
+/**
+ * Escape URI scheme.
+ *
+ * Appends the current URL to a url if it has a scheme that is not:
+ *
+ * http
+ * https
+ * sftp
+ * ftp
+ * mailto
+ * spotify
+ * skype
+ * ssh
+ * teamspeak
+ * tel
+ * //
+ * data:image/(png|jpeg|jpg|pjpeg|bmp|gif);
+ *
+ * **IMPORTANT**: This does not escape any HTML in a url, for
+ * that use the escape.entities() method.
+ *
+ * @param  {String} url
+ * @return {String}
+ * @name escapeUriScheme
+ * @memberOf jQuery.sceditor
+ * @since 1.4.5
+ */
+export function uriScheme(url) {
+	var	path,
+		// If there is a : before a / then it has a scheme
+		hasScheme = /^[^\/]*:/i,
+		location = window.location;
+
+	// Has no scheme or a valid scheme
+	if ((!url || !hasScheme.test(url)) || VALID_SCHEME_REGEX.test(url)) {
+		return url;
+	}
+
+	path = location.pathname.split('/');
+	path.pop();
+
+	return location.protocol + '//' +
+		location.host +
+		path.join('/') + '/' +
+		url;
+};

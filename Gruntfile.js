@@ -1,22 +1,30 @@
 /*global module:false, require:false, process:false*/
 module.exports = (grunt) => {
-	'use strict';
-
 	require('time-grunt')(grunt);
+	const istanbul = require('istanbul');
+
+	grunt.event.on('qunit.coverage', function (data) {
+		const Report = istanbul.Report;
+		const Collector = istanbul.Collector;
+		const collector = new Collector();
+
+		collector.add(data);
+
+		console.log('\n\n\nCoverage:');
+		Report.create('text').writeReport(collector, true);
+		Report.create('html', {
+			dir: './coverage/html'
+		}).writeReport(collector, true);
+	});
+
+	grunt.registerTask('dev-server', 'Dev server', function () {
+		const done = this.async();
+
+		require('./tests/dev-server').create(9001, true).then(done, done);
+	});
 
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
-
-		// Used for Sauce Labs. Creates a server for the
-		// unit tests to be served from.
-		connect: {
-			server: {
-				options: {
-					port: 9999,
-					hostname: '*'
-				}
-			}
-		},
 
 		// Runs the QUnit unit tests in multiple browsers automatically.
 		'saucelabs-qunit': {
@@ -24,13 +32,16 @@ module.exports = (grunt) => {
 				options: {
 					username: 'sceditor',
 					key: () => process.env.SCEDITOR_SAUCE_KEY,
-					urls: ['http://127.0.0.1:9999/tests/unit/index.html'],
-					tunnelTimeout: 5,
+					urls: [
+						'http://localhost:9001/tests/unit/index.html?hidepassed'
+					],
+					tunnelTimeout: 10,
+					tunnelArgs: ['--direct-domains', 'www.sceditor.com'],
 					build: process.env.TRAVIS_JOB_ID ||
 						('Local ' + (new Date()).toISOString()),
 					concurrency: 5,
 					browsers: grunt.file.readJSON('browsers.json'),
-					'max-duration': 120,
+					'max-duration': 60,
 					sauceConfig: {
 						'video-upload-on-pass': false
 					},
@@ -41,28 +52,23 @@ module.exports = (grunt) => {
 
 		// Runs the unit tests
 		qunit: {
-			all: ['tests/unit/index.html']
+			all: {
+				options: {
+					urls: ['http://localhost:9001/tests/unit/index.html']
+				}
+			}
 		},
 
 		// Style checking of JS code using ESLint
 		eslint: {
 			source: {
-				src: ['src/**/*.js'],
-				options: {
-					configFile: '.eslintrc.json'
-				}
+				src: ['src/**/*.js']
 			},
 			tests: {
-				src: ['tests/**/*.js', '!tests/libs/**/*.js'],
-				options: {
-					configFile: 'tests/.eslintrc.json'
-				}
+				src: ['tests/**/*.js', '!tests/libs/**/*.js']
 			},
 			translations: {
-				src: 'languages/**/*.js',
-				options: {
-					configFile: 'languages/.eslintrc.json'
-				}
+				src: 'languages/**/*.js'
 			}
 		},
 
@@ -164,27 +170,24 @@ module.exports = (grunt) => {
 				]
 			}
 		},
-		//TODO: Improve webpack compression
-		// Convert modules into a single JS file
-		webpack: {
-			build: {
-				entry: './src/jquery.sceditor.js',
-				output: {
-					path: './minified/',
-					filename: 'jquery.sceditor.min.js'
-				},
-				externals: {
+		rollup: {
+			options: {
+				format: 'iife',
+				external: ['jquery'],
+				globals: {
 					jquery: 'jQuery'
 				}
 			},
+			build: {
+				files: {
+					'./minified/jquery.sceditor.min.js': [
+						'./src/jquery.sceditor.js'
+					]
+				}
+			},
 			dist: {
-				entry: './src/jquery.sceditor.js',
-				output: {
-					path: './dist/development/',
-					filename: 'jquery.sceditor.js'
-				},
-				externals: {
-					jquery: 'jQuery'
+				files: {
+					'./dist/jquery.sceditor.js': './src/jquery.sceditor.js'
 				}
 			}
 		},
@@ -364,14 +367,13 @@ module.exports = (grunt) => {
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-compress');
 	grunt.loadNpmTasks('grunt-contrib-concat');
-	grunt.loadNpmTasks('grunt-contrib-connect');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-contrib-qunit');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-saucelabs');
-	grunt.loadNpmTasks('grunt-webpack');
+	grunt.loadNpmTasks('grunt-rollup');
 	grunt.loadNpmTasks('grunt-eslint');
 	grunt.loadNpmTasks('grunt-githooks');
 	grunt.loadNpmTasks('grunt-dev-update');
@@ -380,10 +382,10 @@ module.exports = (grunt) => {
 	grunt.registerTask('default', ['test']);
 
 	// Sauce Labs. Runs the QUnit tests in multiple browsers automatically.
-	grunt.registerTask('sauce', ['connect', 'saucelabs-qunit']);
+	grunt.registerTask('sauce', ['dev-server', 'saucelabs-qunit']);
 
 	// Lints the JS and runs the unit tests
-	grunt.registerTask('test', ['eslint', 'qunit']);
+	grunt.registerTask('test', ['eslint', 'dev-server', 'qunit']);
 
 	// Lints JS, runs unit tests and then runs unit tests via Sauce Labs.
 	grunt.registerTask('full-test', ['test', 'sauce']);
@@ -392,7 +394,7 @@ module.exports = (grunt) => {
 	grunt.registerTask('build', [
 		'clean:build',
 		'copy:build',
-		'webpack:build',
+		'rollup:build',
 		'uglify:build',
 		'less:build',
 		'postcss:build',
@@ -404,7 +406,7 @@ module.exports = (grunt) => {
 		'test',
 		'build',
 		'clean:dist',
-		'webpack:dist',
+		'rollup:dist',
 		'concat:dist',
 		'copy:dist',
 		'less:dist',
@@ -418,10 +420,10 @@ module.exports = (grunt) => {
 		'test',
 		'build',
 		'clean:dist',
-		'webpack:dist',
+		'rollup:dist',
 		'concat:dist',
 		'copy:dist',
-		'less:dist',
+		'less:dist'
 	]);
 
 	// Update dev dependencies

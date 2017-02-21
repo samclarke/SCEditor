@@ -1,30 +1,26 @@
-define([
-	'jquery.sceditor'
-], function () {
-	'use strict';
+import 'src/jquery.sceditor.js';
 
-	var textarea;
-	var $sceditor;
+var textarea;
+var $sceditor;
 
-	module('jquery.sceditor', {
-		setup: function () {
-			$.sceditor.defaultOptions.emoticonsRoot = '../../';
+QUnit.module('jquery.sceditor', {
+	beforeEach: function () {
+		$.sceditor.defaultOptions.emoticonsRoot = '../../';
 
-			var fixture = document.getElementById('qunit-fixture');
+		var fixture = document.getElementById('qunit-fixture');
 
-			textarea = document.createElement('textarea');
-			fixture.appendChild(textarea);
+		textarea = document.createElement('textarea');
+		fixture.appendChild(textarea);
 
-			$(textarea).sceditor();
-			$sceditor = $(textarea).data('sceditor');
-		},
-		teardown: function () {
-			$.sceditor.defaultOptions.emoticonsRoot = '';
-		}
-	});
+		$(textarea).sceditor();
+		$sceditor = $(textarea).data('sceditor');
+	},
+	afterEach: function () {
+		$.sceditor.defaultOptions.emoticonsRoot = '';
+	}
+});
 
 
-	test('sceditor(\'instance\')', function (assert) {
-		assert.ok($(textarea).sceditor('instance') === $sceditor);
-	});
+QUnit.test('sceditor(\'instance\')', function (assert) {
+	assert.ok($(textarea).sceditor('instance') === $sceditor);
 });

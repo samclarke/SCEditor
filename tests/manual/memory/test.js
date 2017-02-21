@@ -19,17 +19,7 @@ var testMemoryLeaks = function (pos) {
 	}
 };
 
-define('jquery', [], function () {
-	return jQuery;
-});
-
-require.config({
-	baseUrl: '../../../src'
-});
-
-require([
-	'jquery.sceditor'
-], function () {
+$(function () {
 	$('input[type="submit"]').click(function () {
 		testMemoryLeaks();
 

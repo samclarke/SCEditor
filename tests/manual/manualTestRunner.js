@@ -276,23 +276,8 @@
 	};
 
 	TestRunner.prototype.setup = function (init) {
-		var testObjectThis = this._testObjectThis;
-
-		define('jquery', [], function () {
-			return jQuery;
-		});
-
-		require.config({
-			baseUrl: '../../../src'
-		});
-
-		require([
-			'jquery.sceditor'
-		], function () {
-			init.call(testObjectThis);
-		});
+		init.call(this._testObjectThis);
 	};
-
 
 	window.runner = new TestRunner();
 }());

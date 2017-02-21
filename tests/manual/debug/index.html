@@ -5,24 +5,25 @@
 
 		<title>Debug Test - SCEditor</title>
 
-		<link rel="stylesheet/less" href="../../../src/themes/default.less"
-			type="text/css">
+		<link rel="stylesheet/less" href="../../../src/themes/default.less">
 		<script>
 			window.less = {
 				env: 'development',
 				relativeUrls: true
 			};
 		</script>
-		<!-- This is needed for LessJS to work in IE < 9 -->
-		<script src="../../libs/es5-shim.js"></script>
 		<script src="../../libs/less-1.7.0.min.js"></script>
 
 		<script src="../../libs/jquery-1.11.1.js"></script>
-		<script src="../../libs/require-2.1.11.js"></script>
+		<script src="/webpack-server/main.js"></script>
+		<script src="../../../src/plugins/bbcode.js"></script>
+		<script src="../../../src/plugins/xhtml.js"></script>
+		<script src="../../../src/plugins/undo.js"></script>
+		<script src="../../../src/plugins/plaintext.js"></script>
 
-		<link rel="stylesheet" type="text/css"
+		<link rel="stylesheet"
 			href="http://fonts.googleapis.com/css?family=Open+Sans:400,500,700">
-		<link rel="stylesheet" type="text/css" href="../style.css">
+		<link rel="stylesheet" href="../style.css">
 
 		<script src="../patchConsole.js"></script>
 		<script src="./test.js"></script>

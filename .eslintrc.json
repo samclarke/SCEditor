@@ -1,7 +1,10 @@
 {
+  "parserOptions": {
+    "ecmaVersion": 5,
+    "sourceType": "module"
+  },
   "env": {
     "browser": true,
-    "amd": true,
     "jquery": true
   },
   "rules": {

@@ -34,36 +34,7 @@
 		}
 	};
 
-
-	define('jquery', [], function () {
-		return jQuery;
-	});
-
-	require.config({
-		baseUrl: '../../../src',
-		paths: {
-			'domReady': '../tests/libs/domReady-2.0.1'
-		},
-		shim: {
-			'plugins/bbcode': ['jquery.sceditor'],
-			'plugins/xhtml': ['jquery.sceditor'],
-			'plugins/format': ['jquery.sceditor'],
-			'plugins/undo': ['jquery.sceditor'],
-			'plugins/autoyoutube': ['jquery.sceditor'],
-			'plugins/plaintext': ['jquery.sceditor']
-		}
-	});
-
-	require([
-		'jquery.sceditor',
-		'plugins/bbcode',
-		'plugins/xhtml',
-		'plugins/format',
-		'plugins/undo',
-		'plugins/autoyoutube',
-		'plugins/plaintext',
-		'domReady!'
-	], function () {
+	$(function () {
 		patchConsole();
 		createEditor();
 

@@ -1,31 +1,27 @@
-define(function () {
-	'use strict';
+var isNear = function (actual, expected, maxDiff) {
+	return (actual >= expected - maxDiff || actual <= expected + maxDiff);
+};
 
-	var isClose = function (actual, expected, maxDiff) {
-		return (actual >= expected - maxDiff || actual <= expected + maxDiff);
-	};
+QUnit.assert.close = function (actual, expected, maxDiff, message) {
+	message = message || 'Expected ' + actual +
+		' to be within ' + expected + '+-' + maxDiff;
 
-	QUnit.assert.close = function (actual, expected, maxDiff, message) {
-		message = message || 'Expected ' + actual +
-			' to be within ' + expected + '+-' + maxDiff;
+	this.pushResult({
+		result: isNear(actual, expected, maxDiff),
+		actual: actual,
+		expected: expected + ' +-' + maxDiff,
+		message: message
+	});
+};
 
-		QUnit.push(
-			isClose(actual, expected, maxDiff),
-			actual,
-			expected + ' +-' + maxDiff,
-			message
-		);
-	};
+QUnit.assert.notClose = function (actual, expected, maxDiff, message) {
+	message = message || 'Expected ' + actual +
+		' to not be within ' + expected + '+-' + maxDiff;
 
-	QUnit.assert.notClose = function (actual, expected, maxDiff, message) {
-		message = message || 'Expected ' + actual +
-			' to not be within ' + expected + '+-' + maxDiff;
-
-		QUnit.push(
-			!isClose(actual, expected, maxDiff),
-			actual,
-			expected + ' +-' + maxDiff,
-			message
-		);
-	};
-});
+	this.pushResult({
+		result: !isNear(actual, expected, maxDiff),
+		actual: actual,
+		expected: expected + ' +-' + maxDiff,
+		message: message
+	});
+};
