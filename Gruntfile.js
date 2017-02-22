@@ -187,7 +187,9 @@ module.exports = (grunt) => {
 			},
 			dist: {
 				files: {
-					'./dist/jquery.sceditor.js': './src/jquery.sceditor.js'
+					'./dist/development/jquery.sceditor.js': [
+						'./src/jquery.sceditor.js'
+					]
 				}
 			}
 		},
