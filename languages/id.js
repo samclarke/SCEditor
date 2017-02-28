@@ -21,7 +21,7 @@
 		'Font Color': 'Warna Fon',
 		'Remove Formatting': 'Hapus Format',
 		'Cut': 'Potong',
-		'Your browser does not allow the cut command. Please use the keyboard shortcut Ctrl/Cmd-X' : 'Browser Anda tidak memungkinkan perintah cut. Silakan gunakan shortcut keyboard Ctrl / Cmd-X ',
+		'Your browser does not allow the cut command. Please use the keyboard shortcut Ctrl/Cmd-X': 'Browser Anda tidak memungkinkan perintah cut. Silakan gunakan shortcut keyboard Ctrl / Cmd-X ',
 		'Copy': 'Salin',
 		'Your browser does not allow the copy command. Please use the keyboard shortcut Ctrl/Cmd-C': 'Browser Anda tidak memungkinkan perintah copy. Silakan gunakan shortcut keyboard Ctrl / Cmd-C ',
 		'Paste': 'Rekatkan',
