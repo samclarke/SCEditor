@@ -8,10 +8,11 @@
  *	http://www.opensource.org/licenses/mit-license.php
  *
  * @author Sam Clarke
- * @requires jQuery
  */
-(function ($, document) {
+(function (document, sceditor) {
 	'use strict';
+
+	var dom = sceditor.dom;
 
 	/*
 		(^|\s)					Start of line or space
@@ -26,7 +27,7 @@
 		(?:\&[\&_\?0-9a-z\#]+)?			Any extra URL params
 		(\s|$)							End of line or space
 	*/
-	var ytIdRegex = /(^|\s)(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/watch\?v=)([^"&?\/ ]{11})(?:\&[\&_\?0-9a-z\#]+)?(\s|$)/i;
+	var ytUrlRegex = /(^|\s)(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/watch\?v=)([^"&?\/ ]{11})(?:\&[\&_\?0-9a-z\#]+)?(\s|$)/i;
 
 	function youtubeEmbedCode(id) {
 		return '<iframe width="560" height="315" frameborder="0" ' +
@@ -40,21 +41,25 @@
 		while (node) {
 			// 3 is TextNodes
 			if (node.nodeType === 3) {
-				var nodeValue = node.nodeValue;
-				var m = nodeValue.match(ytIdRegex);
+				var text   = node.nodeValue;
+				var parent = node.parentNode;
+				var match  = text.match(ytUrlRegex);
 
-				if (m) {
-					node.nodeValue = nodeValue.substr(0, m.index) + m[1];
+				if (match) {
+					parent.insertBefore(document.createTextNode(
+						text.substr(0, match.index) + match[1]
+					), node);
 
-					$(node)
-						.after(document.createTextNode(
-							m[3] + nodeValue.substr(m.index + m[0].length)
-						))
-						.after(youtubeEmbedCode(m[2]));
+					parent.insertBefore(
+						dom.parseHTML(youtubeEmbedCode(match[2])), node
+					);
+
+					node.nodeValue = match[3] +
+						text.substr(match.index + match[0].length);
 				}
 			} else {
 				// TODO: Make this tag configurable.
-				if (!$(node).is('code')) {
+				if (!dom.is(node, 'code')) {
 					convertYoutubeLinks(node);
 				}
 			}
@@ -63,29 +68,27 @@
 		}
 	};
 
-	$.sceditor.plugins.autoyoutube = function () {
+	sceditor.plugins.autoyoutube = function () {
 		this.signalPasteRaw = function (data) {
 			// TODO: Make this tag configurable.
 			// Skip code tags
-			if ($(this.currentNode()).closest('code').length) {
+			if (dom.closest(this.currentNode(), 'code')) {
 				return;
 			}
 
-			if (!data.html && data.text) {
-				data.html = $.sceditor.escapeEntities(data.text || '');
-			}
+			if (data.html || data.text) {
+				var html = document.createElement('div');
 
-			if (data.html) {
-				var $html = $('<div />')
-					.html(data.html)
-					.appendTo(document.body);
+				if (data.html) {
+					html.innerHTML = data.html;
+				} else {
+					html.textContent = data.text;
+				}
 
-				convertYoutubeLinks($html[0]);
+				convertYoutubeLinks(html);
 
-				data.html = $html[0].innerHTML;
-
-				$html.remove();
+				data.html = html.innerHTML;
 			}
 		};
 	};
-})(jQuery, document);
+})(document, sceditor);

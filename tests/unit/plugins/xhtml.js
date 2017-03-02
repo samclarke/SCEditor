@@ -1,13 +1,14 @@
-import SCEditor from 'src/lib/SCEditor.js';
+import PluginManager from 'src/lib/PluginManager.js';
+import defaultOptions from 'src/lib/defaultOptions.js';
 import * as utils from 'tests/unit/utils.js';
 import 'src/plugins/xhtml.js';
 
 var moduleSetup = function () {
 	this.mockEditor = {
-		opts: $.extend({}, SCEditor.defaultOptions)
+		opts: $.extend({}, defaultOptions)
 	};
 
-	this.plugin = new SCEditor.plugins.xhtml();
+	this.plugin = new PluginManager.plugins.xhtml();
 	this.plugin.init.call(this.mockEditor);
 
 	this.filterHtml = function (html) {

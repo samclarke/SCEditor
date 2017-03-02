@@ -76,7 +76,7 @@ runner.test({
 		e.preventDefault();
 
 		setTimeout(function () {
-			done(that.editor.getBody().text() === '');
+			done(that.editor.getBody().textContent === '');
 		}, 100);
 	};
 
@@ -184,7 +184,7 @@ runner.test({
 	}
 }, function (done) {
 	var editor     = this.editor;
-	var body       = editor.getBody().get(0);
+	var body       = editor.getBody();
 	var firstNode  = body.firstChild;
 	var lastNode   = body.lastChild;
 	var foundFirst = false;

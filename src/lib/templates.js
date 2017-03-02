@@ -1,4 +1,5 @@
-import $ from 'jquery';
+import * as dom from './dom';
+import * as escape from './escape';
 
 
 /**
@@ -91,27 +92,28 @@ var _templates = {
 };
 
 /**
- * <p>Replaces any params in a template with the passed params.</p>
+ * Replaces any params in a template with the passed params.
  *
- * <p>If createHtml is passed it will use jQuery to create the HTML. The
- * same as doing: $(editor.tmpl("html", {params...}));</p>
+ * If createHtml is passed it will return a DocumentFragment
+ * conaining the parsed template.
  *
  * @param {string} name
- * @param {Object} params
- * @param {Boolean} createHtml
+ * @param {Object} [params]
+ * @param {boolean} [createHtml]
+ * @returns {string|DocumentFragment}
  * @private
  */
 export default function (name, params, createHtml) {
 	var template = _templates[name];
 
-	$.each(params, function (name, val) {
+	Object.keys(params).forEach(function (name) {
 		template = template.replace(
-			new RegExp('\\{' + name + '\\}', 'g'), val
+			new RegExp(escape.regex('{' + name + '}'), 'g'), params[name]
 		);
 	});
 
 	if (createHtml) {
-		template = $(template);
+		template = dom.parseHTML(template);
 	}
 
 	return template;

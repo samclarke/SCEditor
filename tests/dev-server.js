@@ -10,6 +10,10 @@ exports.create = function (port, coverage) {
 		const webpackOptions = {
 			entry: {
 				main: [
+					'./src/sceditor.js',
+					'webpack-dev-server/client?http://localhost:9000'
+				],
+				'main-jquery': [
 					'./src/jquery.sceditor.js',
 					'webpack-dev-server/client?http://localhost:9000'
 				],
@@ -51,7 +55,7 @@ exports.create = function (port, coverage) {
 		};
 
 		if (!coverage) {
-			webpackOptions.module = {};
+			// webpackOptions.module = {};
 		}
 
 		const compiler = webpack(webpackOptions);
@@ -63,7 +67,7 @@ exports.create = function (port, coverage) {
 		new WebpackDevServer(compiler, {
 			contentBase: path.join(__dirname, '..'),
 			compress: true,
-			publicPath: '/webpack-server/'
+			publicPath: '/webpack-build/'
 		}).listen(port, 'localhost', function (err) {
 			if (err) {
 				reject(err);

@@ -8,10 +8,11 @@
  *	http://www.opensource.org/licenses/mit-license.php
  *
  * @author Sam Clarke
- * @requires jQuery
  */
-(function ($) {
+(function (sceditor) {
 	'use strict';
+
+	var extend = sceditor.utils.extend;
 
 	/**
 	 * Options:
@@ -22,7 +23,7 @@
 	 * pastetext.enabled - If the plain text button should be enabled at start
 	 *                     up. Only applies if addButton is enabled.
 	 */
-	$.sceditor.plugins.plaintext = function () {
+	sceditor.plugins.plaintext = function () {
 		var plainTextEnabled = true;
 
 		this.init = function () {
@@ -32,7 +33,7 @@
 			if (opts && opts.plaintext && opts.plaintext.addButton) {
 				plainTextEnabled = opts.plaintext.enabled;
 
-				commands.pastetext = $.extend(commands.pastetext || {}, {
+				commands.pastetext = extend(commands.pastetext || {}, {
 					state: function () {
 						return plainTextEnabled ? 1 : 0;
 					},
@@ -46,11 +47,13 @@
 		this.signalPasteRaw = function (data) {
 			if (plainTextEnabled) {
 				if (data.html && !data.text) {
-					data.text = $('<div />').html(data.html)[0].innerText;
+					var div = document.createElement('div');
+					div.innerHTML = data.html;
+					data.text = div.innerText;
 				}
 
 				data.html = null;
 			}
 		};
 	};
-})(jQuery);
+}(sceditor));

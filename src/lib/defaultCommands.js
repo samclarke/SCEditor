@@ -1,4 +1,5 @@
-import $ from 'jquery';
+import * as dom from './dom.js';
+import * as utils from './utils.js';
 import { ie as IE_VER } from './browser.js';
 import _tmpl from './templates.js';
 
@@ -12,7 +13,7 @@ var IE_BR_FIX = IE_VER && IE_VER < 11;
  * See issue #359
  */
 function fixFirefoxListBug(editor) {
-	// Only apply to firefox as will break other browsers.
+	// Only apply to Firefox as will break other browsers.
 	if ('mozHidden' in document) {
 		var node = editor.getBody()[0];
 		var next;
@@ -35,8 +36,8 @@ function fixFirefoxListBug(editor) {
 
 			if (node.nodeType === 3 && /[\n\r\t]+/.test(node.nodeValue)) {
 				// Only remove if newlines are collapsed
-				if (!/^pre/.test($(node.parentNode).css('white-space'))) {
-					$(node).remove();
+				if (!/^pre/.test(dom.css(node.parentNode, 'whiteSpace'))) {
+					dom.remove(node);
 				}
 			}
 
@@ -121,36 +122,28 @@ var defaultCommnds = {
 	// START_COMMAND: Font
 	font: {
 		_dropDown: function (editor, caller, callback) {
-			var	fontIdx = 0,
-				fonts   = editor.opts.fonts.split(','),
-				content = $('<div />'),
-				/** @private */
-				clickFunc = function () {
-					callback($(this).data('font'));
-					editor.closeDropDown(true);
-					return false;
-				};
+			var	content = dom.createElement('div');
 
-			for (; fontIdx < fonts.length; fontIdx++) {
-				content.append(
-					_tmpl('fontOpt', {
-						font: fonts[fontIdx]
-					}, true).click(clickFunc)
-				);
-			}
+			dom.on(content, 'click', 'a', function (e) {
+				callback(dom.data(this, 'font'));
+				editor.closeDropDown(true);
+				e.preventDefault();
+			});
+
+			editor.opts.fonts.split(',').forEach(function (font) {
+				dom.appendChild(content, _tmpl('fontOpt', {
+					font: font
+				}, true));
+			});
 
 			editor.createDropDown(caller, 'font-picker', content);
 		},
 		exec: function (caller) {
 			var editor = this;
 
-			defaultCommnds.font._dropDown(
-				editor,
-				caller,
-				function (fontName) {
-					editor.execCommand('fontname', fontName);
-				}
-			);
+			defaultCommnds.font._dropDown(editor, caller, function (fontName) {
+				editor.execCommand('fontname', fontName);
+			});
 		},
 		tooltip: 'Font Name'
 	},
@@ -158,18 +151,18 @@ var defaultCommnds = {
 	// START_COMMAND: Size
 	size: {
 		_dropDown: function (editor, caller, callback) {
-			var	content   = $('<div />'),
-				/** @private */
-				clickFunc = function (e) {
-					callback($(this).data('size'));
-					editor.closeDropDown(true);
-					e.preventDefault();
-				};
+			var	content = dom.createElement('div');
+
+			dom.on(content, 'click', 'a', function (e) {
+				callback(dom.data(this, 'size'));
+				editor.closeDropDown(true);
+				e.preventDefault();
+			});
 
 			for (var i = 1; i <= 7; i++) {
-				content.append(_tmpl('sizeOpt', {
+				dom.appendChild(content, _tmpl('sizeOpt', {
 					size: i
-				}, true).click(clickFunc));
+				}, true));
 			}
 
 			editor.createDropDown(caller, 'fontsize-picker', content);
@@ -177,13 +170,9 @@ var defaultCommnds = {
 		exec: function (caller) {
 			var editor = this;
 
-			defaultCommnds.size._dropDown(
-				editor,
-				caller,
-				function (fontSize) {
-					editor.execCommand('fontsize', fontSize);
-				}
-			);
+			defaultCommnds.size._dropDown(editor, caller, function (fontSize) {
+				editor.execCommand('fontsize', fontSize);
+			});
 		},
 		tooltip: 'Font Size'
 	},
@@ -191,7 +180,7 @@ var defaultCommnds = {
 	// START_COMMAND: Colour
 	color: {
 		_dropDown: function (editor, caller, callback) {
-			var	content = $('<div />'),
+			var	content = dom.createElement('div'),
 				html    = '',
 				cmd     = defaultCommnds.color;
 
@@ -212,26 +201,22 @@ var defaultCommnds = {
 				cmd._htmlCache = html;
 			}
 
-			content.html(cmd._htmlCache)
-				.find('a')
-				.click(function (e) {
-					callback($(this).attr('data-color'));
-					editor.closeDropDown(true);
-					e.preventDefault();
-				});
+			dom.appendChild(content, dom.parseHTML(cmd._htmlCache));
+
+			dom.on(content, 'click', 'a', function (e) {
+				callback(dom.data(this, 'color'));
+				editor.closeDropDown(true);
+				e.preventDefault();
+			});
 
 			editor.createDropDown(caller, 'color-picker', content);
 		},
 		exec: function (caller) {
 			var editor = this;
 
-			defaultCommnds.color._dropDown(
-				editor,
-				caller,
-				function (color) {
-					editor.execCommand('forecolor', color);
-				}
-			);
+			defaultCommnds.color._dropDown(editor, caller, function (color) {
+				editor.execCommand('forecolor', color);
+			});
 		},
 		tooltip: 'Font Color'
 	},
@@ -270,18 +255,19 @@ var defaultCommnds = {
 	// START_COMMAND: Paste Text
 	pastetext: {
 		exec: function (caller) {
-			var	val, content,
+			var	val,
+				content = dom.createElement('div'),
 				editor  = this;
 
-			content = _tmpl('pastetext', {
+			dom.appendChild(content, _tmpl('pastetext', {
 				label: editor._(
 					'Paste your text inside the following box:'
 				),
 				insert: editor._('Insert')
-			}, true);
+			}, true));
 
-			content.find('.button').click(function (e) {
-				val = content.find('#txt').val();
+			dom.on(content, 'click', '.button', function (e) {
+				val = dom.find(content, '#txt')[0].value;
 
 				if (val) {
 					editor.wysiwygEditorInsertText(val);
@@ -318,43 +304,33 @@ var defaultCommnds = {
 	indent: {
 		state: function (parents, firstBlock) {
 			// Only works with lists, for now
-			// This is a nested list, so it will always work
 			var	range, startParent, endParent,
-				$firstBlock = $(firstBlock),
-				parentLists = $firstBlock.parents('ul,ol,menu'),
-				parentList  = parentLists.first();
+				parentLists = dom.parents(firstBlock, 'ul,ol,menu');
 
 			// in case it's a list with only a single <li>
-			if (parentLists.length > 1 ||
-				parentList.children().length > 1) {
+			if (parentLists.length > 1 && parentLists[0].children.length > 1) {
 				return 0;
 			}
 
-			if ($firstBlock.is('ul,ol,menu')) {
+			if (dom.is(firstBlock, 'ul,ol,menu')) {
 				// if the whole list is selected, then this must be
 				// invalidated because the browser will place a
 				// <blockquote> there
 				range = this.getRangeHelper().selectedRange();
 
-				if (window.Range && range instanceof Range) {
-					startParent = range.startContainer.parentNode;
-					endParent   = range.endContainer.parentNode;
+				startParent = range.startContainer.parentNode;
+				endParent   = range.endContainer.parentNode;
 
 // TODO: could use nodeType for this?
 // Maybe just check the firstBlock contains both the start and end containers
-					// Select the tag, not the textNode
-					// (that's why the parentNode)
-					if (startParent !==
-						startParent.parentNode.firstElementChild ||
-						// work around a bug in FF
-						($(endParent).is('li') && endParent !==
-							endParent.parentNode.lastElementChild)) {
-						return 0;
-					}
-				// it's IE... As it is impossible to know well when to
-				// accept, better safe than sorry
-				} else {
-					return $firstBlock.is('li,ul,ol,menu') ? 0 : -1;
+				// Select the tag, not the textNode
+				// (that's why the parentNode)
+				if (startParent !==
+					startParent.parentNode.firstElementChild ||
+					// work around a bug in FF
+					(dom.is(endParent, 'li') && endParent !==
+						endParent.parentNode.lastElementChild)) {
+					return 0;
 				}
 			}
 
@@ -362,7 +338,7 @@ var defaultCommnds = {
 		},
 		exec: function () {
 			var editor = this,
-				$elm   = $(editor.getRangeHelper().getFirstBlockParent());
+				block = editor.getRangeHelper().getFirstBlockParent();
 
 			editor.focus();
 
@@ -370,7 +346,7 @@ var defaultCommnds = {
 			// of complications and issues around how to indent text
 			// As default, let's just stay with indenting the lists,
 			// at least, for now.
-			if ($elm.parents('ul,ol,menu')) {
+			if (dom.parents(block, 'ul,ol,menu')) {
 				editor.execCommand('indent');
 			}
 		},
@@ -380,15 +356,13 @@ var defaultCommnds = {
 	// START_COMMAND: Outdent
 	outdent: {
 		state: function (parents, firstBlock) {
-			return $(firstBlock).is('ul,ol,menu') ||
-				$(firstBlock).parents('ul,ol,menu').length > 0 ? 0 : -1;
+			return dom.closest(firstBlock, 'ul,ol,menu') > 0 ? 0 : -1;
 		},
 		exec: function () {
-			var	editor = this,
-				$elm   = $(editor.getRangeHelper().getFirstBlockParent());
+			var	block = this.getRangeHelper().getFirstBlockParent();
 
-			if ($elm.parents('ul,ol,menu')) {
-				editor.execCommand('outdent');
+			if (dom.parents(block, 'ul,ol,menu')) {
+				this.execCommand('outdent');
 			}
 		},
 		tooltip: 'Remove one indent'
@@ -400,39 +374,34 @@ var defaultCommnds = {
 		forceNewLineAfter: ['table'],
 		exec: function (caller) {
 			var	editor  = this,
-				content = _tmpl('table', {
-					rows: editor._('Rows:'),
-					cols: editor._('Cols:'),
-					insert: editor._('Insert')
-				}, true);
+				content = dom.createElement('div');
 
-			content.find('.button').click(function (e) {
-				var	row, col,
-					rows = content.find('#rows').val() - 0,
-					cols = content.find('#cols').val() - 0,
+			dom.appendChild(content, _tmpl('table', {
+				rows: editor._('Rows:'),
+				cols: editor._('Cols:'),
+				insert: editor._('Insert')
+			}, true));
+
+			dom.on(content, 'click', '.button', function (e) {
+				var	rows = Number(dom.find(content, '#rows')[0].value),
+					cols = Number(dom.find(content, '#cols')[0].value),
 					html = '<table>';
 
-				if (rows < 1 || cols < 1) {
-					return;
+				if (rows > 0 && cols > 0) {
+					html += Array(rows + 1).join(
+						'<tr>' +
+							Array(cols + 1).join(
+								'<td>' + (IE_BR_FIX ? '' : '<br />') + '</td>'
+							) +
+						'</tr>'
+					);
+
+					html += '</table>';
+
+					editor.wysiwygEditorInsertHtml(html);
+					editor.closeDropDown(true);
+					e.preventDefault();
 				}
-
-				for (row = 0; row < rows; row++) {
-					html += '<tr>';
-
-					for (col = 0; col < cols; col++) {
-						html += '<td>' +
-								(IE_BR_FIX ? '' : '<br />') +
-							'</td>';
-					}
-
-					html += '</tr>';
-				}
-
-				html += '</table>';
-
-				editor.wysiwygEditorInsertHtml(html);
-				editor.closeDropDown(true);
-				e.preventDefault();
 			});
 
 			editor.createDropDown(caller, 'inserttable', content);
@@ -465,17 +434,19 @@ var defaultCommnds = {
 	image: {
 		exec: function (caller) {
 			var	editor  = this,
-				content = _tmpl('image', {
-					url: editor._('URL:'),
-					width: editor._('Width (optional):'),
-					height: editor._('Height (optional):'),
-					insert: editor._('Insert')
-				}, true);
+				content = dom.createElement('div');
 
-			content.find('.button').click(function (e) {
-				var	val    = content.find('#image').val(),
-					width  = content.find('#width').val(),
-					height = content.find('#height').val(),
+			dom.appendChild(content, _tmpl('image', {
+				url: editor._('URL:'),
+				width: editor._('Width (optional):'),
+				height: editor._('Height (optional):'),
+				insert: editor._('Insert')
+			}, true));
+
+			dom.on(content, 'click', '.button', function (e) {
+				var	val    = dom.find(content, '#image')[0].value,
+					width  = dom.find(content, '#width')[0].value,
+					height = dom.find(content, '#height')[0].value,
 					attrs  = '';
 
 				if (width) {
@@ -506,15 +477,17 @@ var defaultCommnds = {
 	email: {
 		exec: function (caller) {
 			var	editor  = this,
-				content = _tmpl('email', {
-					label: editor._('E-mail:'),
-					desc: editor._('Description (optional):'),
-					insert: editor._('Insert')
-				}, true);
+				content = dom.createElement('div');
 
-			content.find('.button').click(function (e) {
-				var val         = content.find('#email').val(),
-					description = content.find('#des').val();
+			dom.appendChild(content, _tmpl('email', {
+				label: editor._('E-mail:'),
+				desc: editor._('Description (optional):'),
+				insert: editor._('Insert')
+			}, true));
+
+			dom.on(content, 'click', '.button', function (e) {
+				var val         = dom.find(content, '#email')[0].value,
+					description = dom.find(content, '#des')[0].value;
 
 				if (val) {
 					// needed for IE to reset the last range
@@ -547,19 +520,21 @@ var defaultCommnds = {
 	// START_COMMAND: Link
 	link: {
 		exec: function (caller) {
-			var url, text;
+			var url, text, linkInput;
 			var editor  = this;
-			var content = _tmpl('link', {
+			var content = dom.createElement('div');
+
+			dom.appendChild(content, _tmpl('link', {
 				url: editor._('URL:'),
 				desc: editor._('Description (optional):'),
 				ins: editor._('Insert')
-			}, true);
-			var $link = content.find('#link');
-			var $description = content.find('#des');
+			}, true));
+
+			linkInput = dom.find(content, '#link')[0];
 
 			function insertUrl(e) {
-				url  = $link.val();
-				text = $description.val();
+				url  = linkInput.value;
+				text = dom.find(content, '#des')[0].value;
 
 				if (url) {
 					// needed for IE to restore the last range
@@ -583,14 +558,13 @@ var defaultCommnds = {
 				e.preventDefault();
 			}
 
-			content.find('.button').click(insertUrl);
-
-			$link.add($description).keypress(function (e) {
+			dom.on(content, 'click', '.button', insertUrl);
+			dom.on(content, 'keypress', function (e) {
 				// 13 = enter key
-				if (e.which === 13 && $link.val()) {
+				if (e.which === 13 && linkInput.value) {
 					insertUrl(e);
 				}
-			});
+			}, dom.EVENT_CAPTURE);
 
 			editor.createDropDown(caller, 'insertlink', content);
 		},
@@ -601,17 +575,17 @@ var defaultCommnds = {
 	// START_COMMAND: Unlink
 	unlink: {
 		state: function () {
-			var $current = $(this.currentNode());
-			return $current.is('a') ||
-				$current.parents('a').length > 0 ? 0 : -1;
+			return dom.closest(this.currentNode(), 'a') ? 0 : -1;
 		},
 		exec: function () {
-			var	$current = $(this.currentNode()),
-				$anchor  = $current.is('a') ? $current :
-					$current.parents('a').first();
+			var anchor = dom.closest(this.currentNode(), 'a');
 
-			if ($anchor.length) {
-				$anchor.replaceWith($anchor.contents());
+			if (anchor) {
+				while (anchor.firstChild) {
+					dom.insertBefore(anchor.firstChild, anchor);
+				}
+
+				dom.remove(anchor);
 			}
 		},
 		tooltip: 'Unlink'
@@ -649,73 +623,69 @@ var defaultCommnds = {
 			var editor = this;
 
 			var createContent = function (includeMore) {
-				var	$moreLink,
+				var	moreLink,
 					emoticonsCompat = editor.opts.emoticonsCompat,
 					rangeHelper     = editor.getRangeHelper(),
 					startSpace      = emoticonsCompat &&
-						rangeHelper.getOuterText(true, 1) !== ' ' ?
-						' ' : '',
+						rangeHelper.getOuterText(true, 1) !== ' ' ? ' ' : '',
 					endSpace        = emoticonsCompat &&
-						rangeHelper.getOuterText(false, 1) !== ' ' ?
-						' ' : '',
-					$content        = $('<div />'),
-					$line           = $('<div />').appendTo($content),
+						rangeHelper.getOuterText(false, 1) !== ' ' ? ' ' : '',
+					content         = dom.createElement('div'),
+					line            = dom.createElement('div'),
 					perLine         = 0,
-					emoticons       = $.extend(
+					emoticons       = utils.extend(
 						{},
 						editor.opts.emoticons.dropdown,
 						includeMore ? editor.opts.emoticons.more : {}
 					);
 
-				$.each(emoticons, function () {
-					perLine++;
+				dom.appendChild(content, line);
+
+				perLine = Math.sqrt(Object.keys(emoticons).length);
+
+				dom.on(content, 'click', 'img', function (e) {
+					editor.insert(startSpace + dom.attr(this, 'alt') + endSpace,
+						null, false).closeDropDown(true);
+
+					e.preventDefault();
 				});
-				perLine = Math.sqrt(perLine);
 
-				$.each(emoticons, function (code, emoticon) {
-					$line.append(
-						$('<img />').attr({
-							src: emoticon.url || emoticon,
-							alt: code,
-							title: emoticon.tooltip || code
-						}).click(function () {
-							editor.insert(startSpace + $(this).attr('alt') +
-								endSpace, null, false).closeDropDown(true);
+				utils.each(emoticons, function (code, emoticon) {
+					dom.appendChild(line, dom.createElement('img', {
+						src: emoticon.url || emoticon,
+						alt: code,
+						title: emoticon.tooltip || code
+					}));
 
-							return false;
-						})
-					);
-
-					if ($line.children().length >= perLine) {
-						$line = $('<div />').appendTo($content);
+					if (line.children.length >= perLine) {
+						line = dom.createElement('div');
+						dom.appendChild(content, line);
 					}
 				});
 
 				if (!includeMore && editor.opts.emoticons.more) {
-					$moreLink = $(
-						'<a class="sceditor-more">' +
-							editor._('More') + '</a>'
-					).click(function () {
-						editor.createDropDown(
-							caller,
-							'more-emoticons',
-							createContent(true)
-						);
-
-						return false;
+					moreLink = dom.createElement('a', {
+						className: 'sceditor-more'
 					});
 
-					$content.append($moreLink);
+					dom.appendChild(moreLink,
+						document.createTextNode(editor._('More')));
+
+					dom.on(moreLink, 'click', function (e) {
+						editor.createDropDown(
+							caller, 'more-emoticons', createContent(true)
+						);
+
+						e.preventDefault();
+					});
+
+					dom.appendChild(content, moreLink);
 				}
 
-				return $content;
+				return content;
 			};
 
-			editor.createDropDown(
-				caller,
-				'emoticons',
-				createContent(false)
-			);
+			editor.createDropDown(caller, 'emoticons', createContent(false));
 		},
 		txtExec: function (caller) {
 			defaultCommnds.emoticon.exec.call(this, caller);
@@ -727,21 +697,19 @@ var defaultCommnds = {
 	// START_COMMAND: YouTube
 	youtube: {
 		_dropDown: function (editor, caller, handleIdFunc) {
-			var	matches,
-				content = _tmpl('youtubeMenu', {
-					label: editor._('Video URL:'),
-					insert: editor._('Insert')
-				}, true);
+			var	matches, val,
+				content = dom.createElement('div');
 
-			content.find('.button').click(function (e) {
-				var val = content
-					.find('#link')
-					.val();
+			dom.appendChild(content, _tmpl('youtubeMenu', {
+				label: editor._('Video URL:'),
+				insert: editor._('Insert')
+			}, true));
+
+			dom.on(content, 'click', '.button', function (e) {
+				val = dom.find(content, '#link')[0].value;
 
 				if (val) {
-					matches = val.match(
-						/(?:v=|v\/|embed\/|youtu.be\/)(.{11})/
-					);
+					matches = val.match(/(?:v=|v\/|embed\/|youtu.be\/)(.{11})/);
 
 					if (matches) {
 						val = matches[1];
@@ -764,15 +732,9 @@ var defaultCommnds = {
 		exec: function (caller) {
 			var editor = this;
 
-			defaultCommnds.youtube._dropDown(
-				editor,
-				caller,
-				function (id) {
-					editor.wysiwygEditorInsertHtml(_tmpl('youtube', {
-						id: id
-					}));
-				}
-			);
+			defaultCommnds.youtube._dropDown(editor, caller, function (id) {
+				editor.wysiwygEditorInsertHtml(_tmpl('youtube', { id: id }));
+			});
 		},
 		tooltip: 'Insert a YouTube video'
 	},
@@ -853,27 +815,23 @@ var defaultCommnds = {
 		},
 		exec: function () {
 			var	editor = this,
-				elm    = editor.getRangeHelper().getFirstBlockParent(),
-				$elm   = $(elm);
+				rangeHelper = editor.getRangeHelper(),
+				node = rangeHelper.getFirstBlockParent();
 
 			editor.focus();
 
-			if (!elm || $elm.is('body')) {
+			if (!node || dom.is(node, 'body')) {
 				editor.execCommand('formatBlock', 'p');
 
-				elm  = editor.getRangeHelper().getFirstBlockParent();
-				$elm = $(elm);
+				node  = rangeHelper.getFirstBlockParent();
 
-				if (!elm || $elm.is('body')) {
+				if (!node || dom.is(node, 'body')) {
 					return;
 				}
 			}
 
-			if ($elm.css('direction') === 'ltr') {
-				$elm.css('direction', '');
-			} else {
-				$elm.css('direction', 'ltr');
-			}
+			var toggleValue = dom.css(node, 'direction') === 'ltr' ? '' : 'ltr';
+			dom.css(node, 'direction', toggleValue);
 		},
 		tooltip: 'Left-to-Right'
 	},
@@ -886,27 +844,23 @@ var defaultCommnds = {
 		},
 		exec: function () {
 			var	editor = this,
-				elm    = editor.getRangeHelper().getFirstBlockParent(),
-				$elm   = $(elm);
+				rangeHelper = editor.getRangeHelper(),
+				node = rangeHelper.getFirstBlockParent();
 
 			editor.focus();
 
-			if (!elm || $elm.is('body')) {
+			if (!node || dom.is(node, 'body')) {
 				editor.execCommand('formatBlock', 'p');
 
-				elm  = editor.getRangeHelper().getFirstBlockParent();
-				$elm = $(elm);
+				node = rangeHelper.getFirstBlockParent();
 
-				if (!elm || $elm.is('body')) {
+				if (!node || dom.is(node, 'body')) {
 					return;
 				}
 			}
 
-			if ($elm.css('direction') === 'rtl') {
-				$elm.css('direction', '');
-			} else {
-				$elm.css('direction', 'rtl');
-			}
+			var toggleValue = dom.css(node, 'direction') === 'rtl' ? '' : 'rtl';
+			dom.css(node, 'direction', toggleValue);
 		},
 		tooltip: 'Right-to-Left'
 	},

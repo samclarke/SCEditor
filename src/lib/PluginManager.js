@@ -26,8 +26,8 @@ export default function PluginManager(thisObj) {
 	/**
 	 * Changes a signals name from "name" into "signalName".
 	 *
-	 * @param  {String} signal
-	 * @return {String}
+	 * @param  {string} signal
+	 * @return {string}
 	 * @private
 	 */
 	var formatSignalName = function (signal) {
@@ -40,8 +40,8 @@ export default function PluginManager(thisObj) {
 	 * @see call()
 	 * @see callOnlyFirst()
 	 * @param  {Array}   args
-	 * @param  {Boolean} returnAtFirst
-	 * @return {Mixed}
+	 * @param  {boolean} returnAtFirst
+	 * @return {*}
 	 * @private
 	 */
 	var callHandlers = function (args, returnAtFirst) {
@@ -64,9 +64,8 @@ export default function PluginManager(thisObj) {
 	/**
 	 * Calls all handlers for the passed signal
 	 *
-	 * @param  {String}    signal
-	 * @param  {...String} args
-	 * @return {Void}
+	 * @param  {string}    signal
+	 * @param  {...string} args
 	 * @function
 	 * @name call
 	 * @memberOf PluginManager.prototype
@@ -78,9 +77,9 @@ export default function PluginManager(thisObj) {
 	/**
 	 * Calls the first handler for a signal, and returns the
 	 *
-	 * @param  {String}    signal
-	 * @param  {...String} args
-	 * @return {Mixed} The result of calling the handler
+	 * @param  {string}    signal
+	 * @param  {...string} args
+	 * @return {*} The result of calling the handler
 	 * @function
 	 * @name callOnlyFirst
 	 * @memberOf PluginManager.prototype
@@ -92,8 +91,8 @@ export default function PluginManager(thisObj) {
 	/**
 	 * Checks if a signal has a handler
 	 *
-	 * @param  {String} signal
-	 * @return {Boolean}
+	 * @param  {string} signal
+	 * @return {boolean}
 	 * @function
 	 * @name hasHandler
 	 * @memberOf PluginManager.prototype
@@ -114,8 +113,8 @@ export default function PluginManager(thisObj) {
 	/**
 	 * Checks if the plugin exists in plugins
 	 *
-	 * @param  {String} plugin
-	 * @return {Boolean}
+	 * @param  {string} plugin
+	 * @return {boolean}
 	 * @function
 	 * @name exists
 	 * @memberOf PluginManager.prototype
@@ -134,8 +133,8 @@ export default function PluginManager(thisObj) {
 	/**
 	 * Checks if the passed plugin is currently registered.
 	 *
-	 * @param  {String} plugin
-	 * @return {Boolean}
+	 * @param  {string} plugin
+	 * @return {boolean}
 	 * @function
 	 * @name isRegistered
 	 * @memberOf PluginManager.prototype
@@ -157,8 +156,8 @@ export default function PluginManager(thisObj) {
 	/**
 	 * Registers a plugin to receive signals
 	 *
-	 * @param  {String} plugin
-	 * @return {Boolean}
+	 * @param  {string} plugin
+	 * @return {boolean}
 	 * @function
 	 * @name register
 	 * @memberOf PluginManager.prototype
@@ -181,8 +180,8 @@ export default function PluginManager(thisObj) {
 	/**
 	 * Deregisters a plugin.
 	 *
-	 * @param  {String} plugin
-	 * @return {Boolean}
+	 * @param  {string} plugin
+	 * @return {boolean}
 	 * @function
 	 * @name deregister
 	 * @memberOf PluginManager.prototype

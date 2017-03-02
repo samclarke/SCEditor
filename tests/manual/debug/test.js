@@ -3,7 +3,8 @@
 
 	var evalConsoleInput = function () {
 		try {
-			var code = $('#console-input textarea').val();
+			var codeInput = document.querySelector('#console-input textarea');
+			var code = codeInput.value;
 
 			console.info('> ' + code);
 
@@ -15,8 +16,8 @@
 	};
 
 	var createEditor = function () {
-		var options;
-		var optionsStr = $('#debug-options textarea').val();
+		var coptionsInput = document.querySelector('#debug-options textarea');
+		var optionsStr = coptionsInput.value;
 
 		if (window.instance) {
 			window.instance.destroy();
@@ -24,21 +25,21 @@
 
 		try {
 			// eslint-disable-next-line no-new-func
-			options = (new Function('return ' + optionsStr))();
+			var options = (new Function('return ' + optionsStr))();
+			var textarea = document.getElementById('testarea');
 
-			$('#testarea').sceditor(options);
-
-			window.instance = $('#testarea').sceditor('instance');
+			sceditor.create(textarea, options);
+			window.instance = sceditor.instance(textarea);
 		} catch (ex) {
 			console.error(ex);
 		}
 	};
 
-	$(function () {
-		patchConsole();
-		createEditor();
+	patchConsole();
+	createEditor();
 
-		$('#console-input textarea').keypress(function (e) {
+	document.querySelector('#console-input textarea')
+		.addEventListener('keypress', function (e) {
 			if (e.which === 13) {
 				evalConsoleInput();
 
@@ -46,16 +47,17 @@
 			}
 		});
 
-		$('#console-input input').click(function () {
+	document.querySelector('#console-input input')
+		.addEventListener('click', function () {
 			evalConsoleInput();
 
 			return false;
 		});
 
-		$('#debug-options input').click(function () {
+	document.querySelector('#debug-options input')
+		.addEventListener('click', function () {
 			createEditor();
 
 			return false;
 		});
-	});
 }());

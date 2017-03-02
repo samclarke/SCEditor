@@ -27,6 +27,11 @@ QUnit.test('entities()', function (assert) {
 		escape.entities('& < > " \'    `'),
 		'&amp; &lt; &gt; &#34; &#39;&nbsp; &nbsp; &#96;'
 	);
+
+	assert.equal(
+		escape.entities('& < > " \'    `', false),
+		'&amp; &lt; &gt; " \'&nbsp; &nbsp; `'
+	);
 });
 
 QUnit.test('entities() - XSS', function (assert) {

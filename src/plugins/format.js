@@ -9,12 +9,11 @@
  *
  * @fileoverview SCEditor Paragraph Formatting Plugin
  * @author Sam Clarke
- * @requires jQuery
  */
-(function ($) {
+(function (sceditor) {
 	'use strict';
 
-	$.sceditor.plugins.format = function () {
+	sceditor.plugins.format = function () {
 		var base = this;
 
 		/**
@@ -57,7 +56,7 @@
 				}
 
 				if (pOpts.excludeTags) {
-					$.each(pOpts.excludeTags, function (idx, val) {
+					pOpts.excludeTags.forEach(function (val) {
 						delete tags[val];
 					});
 				}
@@ -71,7 +70,7 @@
 				};
 			}
 
-			if (opts.toolbar === $.sceditor.defaultOptions.toolbar) {
+			if (opts.toolbar === sceditor.defaultOptions.toolbar) {
 				opts.toolbar = opts.toolbar.replace(',color,',
 					',color,format,');
 			}
@@ -101,13 +100,13 @@
 		 */
 		formatCmd = function (caller) {
 			var	editor   = this,
-				$content = $('<div />');
+				content = document.createElement('div');
 
-			$.each(tags, function (tag, val) {
-				$(
-					'<a class="sceditor-option" href="#">' +
-						(val.name || val) + '</a>'
-				).click(function () {
+			sceditor.utils.each(tags, function (tag, val) {
+				var link = document.createElement('a');
+				link.className = 'sceditor-option';
+				link.textContent = val.name || val;
+				link.addEventListener('click', function (e) {
 					editor.closeDropDown(true);
 
 					if (val.exec) {
@@ -116,12 +115,13 @@
 						insertTag(editor, tag);
 					}
 
-					return false;
-				})
-				.appendTo($content);
+					e.preventDefault();
+				});
+
+				content.appendChild(link);
 			});
 
-			editor.createDropDown(caller, 'format', $content);
+			editor.createDropDown(caller, 'format', content);
 		};
 	};
-})(jQuery);
+})(sceditor);

@@ -2,93 +2,70 @@
  * SCEditor XHTML Plugin
  * http://www.sceditor.com/
  *
- * Copyright (C) 2011-2013, Sam Clarke (samclarke.com)
+ * Copyright (C) 2017, Sam Clarke (samclarke.com)
  *
  * SCEditor is licensed under the MIT license:
  *	http://www.opensource.org/licenses/mit-license.php
  *
  * @author Sam Clarke
- * @requires jQuery
  */
 /*global prompt: true*/
-(function ($) {
+(function (sceditor) {
 	'use strict';
 
-	var SCEditor        = $.sceditor;
-	var sceditorPlugins = SCEditor.plugins;
-	var dom             = SCEditor.dom;
+	var sceditorPlugins = sceditor.plugins;
+	var dom             = sceditor.dom;
+	var utils           = sceditor.utils;
+
+	var css = dom.css;
+	var attr = dom.attr;
+	var removeAttr = dom.removeAttr;
+	var is = dom.is;
+	var extend = utils.extend;
+	var each = utils.each;
+	var isEmptyObject = utils.isEmptyObject;
 
 	var defaultCommandsOverrides = {
 		bold: {
-			txtExec: [
-				'<strong>',
-				'</strong>'
-			]
+			txtExec: ['<strong>', '</strong>']
 		},
 		italic: {
-			txtExec: [
-				'<em>',
-				'</em>'
-			]
+			txtExec: ['<em>', '</em>']
 		},
 		underline: {
-			txtExec: [
-				'<span style="text-decoration: underline;">',
-				'</span>'
-			]
+			txtExec: ['<span style="text-decoration:underline;">', '</span>']
 		},
 		strike: {
-			txtExec: [
-				'<span style="text-decoration: line-through;">',
-				'</span>'
-			]
+			txtExec: ['<span style="text-decoration:line-through;">', '</span>']
 		},
 		subscript: {
-			txtExec: [
-				'<sub>',
-				'</sub>'
-			]
+			txtExec: ['<sub>', '</sub>']
 		},
 		superscript: {
-			txtExec: [
-				'<sup>',
-				'</sup>'
-			]
+			txtExec: ['<sup>', '</sup>']
 		},
 		left: {
-			txtExec: [
-				'<div style="text-align: left;">',
-				'</div>'
-			]
+			txtExec: ['<div style="text-align:left;">', '</div>']
 		},
 		center: {
-			txtExec: [
-				'<div style="text-align: center;">',
-				'</div>'
-			]
+			txtExec: ['<div style="text-align:center;">', '</div>']
 		},
 		right: {
-			txtExec: [
-				'<div style="text-align: right;">',
-				'</div>'
-			]
+			txtExec: ['<div style="text-align:right;">', '</div>']
 		},
 		justify: {
-			txtExec: [
-				'<div style="text-align: justify;">',
-				'</div>'
-			]
+			txtExec: ['<div style="text-align:justify;">', '</div>']
 		},
 		font: {
 			txtExec: function (caller) {
 				var editor = this;
 
-				SCEditor.command.get('font')._dropDown(
+				sceditor.command.get('font')._dropDown(
 					editor,
 					caller,
-					function (fontName) {
-						editor.insertText('<span style="font-family: ' +
-							fontName + ';">', '</span>');
+					function (font) {
+						editor.insertText('<span style="font-family:' +
+							font + ';">', '</span>');
 					}
 				);
 			}
@@ -97,12 +74,12 @@
 			txtExec: function (caller) {
 				var editor = this;
 
-				SCEditor.command.get('size')._dropDown(
+				sceditor.command.get('size')._dropDown(
 					editor,
 					caller,
-					function (fontSize) {
-						editor.insertText('<span style="font-size: ' +
-							fontSize + ';">', '</span>');
+					function (size) {
+						editor.insertText('<span style="font-size:' +
+							size + ';">', '</span>');
 					}
 				);
 			}
@@ -111,44 +88,30 @@
 			txtExec: function (caller) {
 				var editor = this;
 
-				SCEditor.command.get('color')._dropDown(
+				sceditor.command.get('color')._dropDown(
 					editor,
 					caller,
 					function (color) {
-						editor.insertText('<span style="color: ' +
+						editor.insertText('<span style="color:' +
 							color + ';">', '</span>');
 					}
 				);
 			}
 		},
 		bulletlist: {
-			txtExec: [
-				'<ul><li>',
-				'</li></ul>'
-			]
+			txtExec: ['<ul><li>', '</li></ul>']
 		},
 		orderedlist: {
-			txtExec: [
-				'<ol><li>',
-				'</li></ol>'
-			]
+			txtExec: ['<ol><li>', '</li></ol>']
 		},
 		table: {
-			txtExec: [
-				'<table><tr><td>',
-				'</td></tr></table>'
-			]
+			txtExec: ['<table><tr><td>', '</td></tr></table>']
 		},
 		horizontalrule: {
-			txtExec: [
-				'<hr />'
-			]
+			txtExec: ['<hr />']
 		},
 		code: {
-			txtExec: [
-				'<code>',
-				'</code>'
-			]
+			txtExec: ['<code>', '</code>']
 		},
 		image: {
 			txtExec: function (caller, selected) {
@@ -197,16 +160,13 @@
 			}
 		},
 		quote: {
-			txtExec: [
-				'<blockquote>',
-				'</blockquote>'
-			]
+			txtExec: ['<blockquote>', '</blockquote>']
 		},
 		youtube: {
 			txtExec: function (caller) {
 				var editor = this;
 
-				SCEditor.command.get('youtube')._dropDown(
+				sceditor.command.get('youtube')._dropDown(
 					editor,
 					caller,
 					function (id) {
@@ -221,16 +181,10 @@
 			}
 		},
 		rtl: {
-			txtExec: [
-				'<div stlye="direction: rtl;">',
-				'</div>'
-			]
+			txtExec: ['<div stlye="direction:rtl;">', '</div>']
 		},
 		ltr: {
-			txtExec: [
-				'<div stlye="direction: ltr;">',
-				'</div>'
-			]
+			txtExec: ['<div stlye="direction:ltr;">', '</div>']
 		}
 	};
 
@@ -241,7 +195,7 @@
 	 * @name jQuery.sceditor.XHTMLSerializer
 	 * @since v1.4.1
 	 */
-	SCEditor.XHTMLSerializer = function () {
+	sceditor.XHTMLSerializer = function () {
 		var base = this;
 
 		var opts = {
@@ -258,7 +212,7 @@
 
 		/**
 		 * Current indention level
-		 * @type {Number}
+		 * @type {number}
 		 * @private
 		 */
 		var currentIndent = 0;
@@ -280,8 +234,8 @@
 		/**
 		 * Escapes XHTML entities
 		 *
-		 * @param  {String} str
-		 * @return {String}
+		 * @param  {string} str
+		 * @return {string}
 		 * @private
 		 */
 		escapeEntites = function (str) {
@@ -313,10 +267,10 @@
 		 * Serializes a node to XHTML
 		 *
 		 * @param  {Node} node            Node to serialize
-		 * @param  {Boolean} onlyChildren If to only serialize the nodes
+		 * @param  {boolean} onlyChildren If to only serialize the nodes
 		 *                                children and not the node
 		 *                                itself
-		 * @return {String}               The serialized node
+		 * @return {string}               The serialized node
 		 * @name serialize
 		 * @memberOf jQuery.sceditor.XHTMLSerializer.prototype
 		 * @since v1.4.1
@@ -342,7 +296,7 @@
 		 * Serializes a node to the outputStringBuilder
 		 *
 		 * @param  {Node} node
-		 * @return {Void}
+		 * @return {void}
 		 * @private
 		 */
 		serializeNode = function (node, parentIsPre) {
@@ -415,11 +369,11 @@
 				firstChild  = node.firstChild,
 				// pre || pre-wrap with any vendor prefix
 				isPre       = parentIsPre ||
-					/pre(?:\-wrap)?$/i.test($(node).css('whiteSpace')),
+					/pre(?:\-wrap)?$/i.test(css(node, 'whiteSpace')),
 				selfClosing = !node.firstChild && !dom.canHaveChildren(node) &&
 					!isIframe;
 
-			if ($(node).hasClass('sceditor-ignore')) {
+			if (is(node, '.sceditor-ignore')) {
 				return;
 			}
 
@@ -498,8 +452,8 @@
 		 * Adds a string to the outputStringBuilder.
 		 *
 		 * The string will be indented unless indent is set to boolean false.
-		 * @param  {String} str
-		 * @param  {Boolean} indent
+		 * @param  {string} str
+		 * @param  {boolean} indent
 		 * @return {void}
 		 * @private
 		 */
@@ -583,11 +537,11 @@
 		 * @return {void}
 		 */
 		base.init = function () {
-			if (!$.isEmptyObject(sceditorPlugins.xhtml.converters || {})) {
-				$.each(
+			if (!isEmptyObject(sceditorPlugins.xhtml.converters || {})) {
+				each(
 					sceditorPlugins.xhtml.converters,
 					function (idx, converter) {
-						$.each(converter.tags, function (tagname) {
+						each(converter.tags, function (tagname) {
 							if (!tagConvertersCache[tagname]) {
 								tagConvertersCache[tagname] = [];
 							}
@@ -598,15 +552,15 @@
 				);
 			}
 
-			this.commands = $.extend(true,
+			this.commands = extend(true,
 				{}, defaultCommandsOverrides, this.commands);
 		};
 
 		/**
 		 * Converts the WYSIWYG content to XHTML
-		 * @param  {String} html
-		 * @param  {Node} domBody
-		 * @return {String}
+		 * @param  {string} html
+		 * @param  {HTMLElement} domBody
+		 * @return {string}
 		 * @memberOf jQuery.sceditor.plugins.xhtml.prototype
 		 */
 		base.signalToSource = function (html, domBody) {
@@ -617,7 +571,7 @@
 			removeAttribs(domBody);
 			wrapInlines(domBody);
 
-			return (new SCEditor.XHTMLSerializer()).serialize(domBody, true);
+			return (new sceditor.XHTMLSerializer()).serialize(domBody, true);
 		};
 
 		/**
@@ -625,8 +579,8 @@
 		 *
 		 * This doesn't currently do anything as XHTML
 		 * is valid WYSIWYG content.
-		 * @param  {String} text
-		 * @return {String}
+		 * @param  {string} text
+		 * @return {string}
 		 * @memberOf jQuery.sceditor.plugins.xhtml.prototype
 		 */
 		base.signalToWysiwyg = function (text) {
@@ -642,37 +596,32 @@
 		/**
 		 * Runs all converters for the specified tagName
 		 * against the DOM node.
-		 * @param  {String} tagName
-		 * @param  {jQuery} $node
+		 * @param  {string} tagName
 		 * @return {Node} node
 		 * @private
 		 */
-		convertNode = function (tagName, $node, node) {
+		convertNode = function (tagName, node) {
 			if (!tagConvertersCache[tagName]) {
 				return;
 			}
 
-			$.each(tagConvertersCache[tagName], function (idx, converter) {
+			tagConvertersCache[tagName].forEach(function (converter) {
 				if (converter.tags[tagName]) {
-					$.each(converter.tags[tagName], function (attr, values) {
+					each(converter.tags[tagName], function (attr, values) {
 						if (!node.getAttributeNode) {
 							return;
 						}
 
 						attr = node.getAttributeNode(attr);
 
-						if (!attr) {
+						if (!attr || values && values.indexOf(attr.value) < 0) {
 							return;
 						}
 
-						if (values && $.inArray(attr.value, values) < 0) {
-							return;
-						}
-
-						converter.conv.call(base, node, $node);
+						converter.conv.call(base, node);
 					});
 				} else if (converter.conv) {
-					converter.conv.call(base, node, $node);
+					converter.conv.call(base, node);
 				}
 			});
 		};
@@ -680,16 +629,15 @@
 		/**
 		 * Converts any tags/attributes to their XHTML equivalents
 		 * @param  {Node} node
-		 * @return {Void}
+		 * @return {void}
 		 * @private
 		 */
 		convertTags = function (node) {
 			dom.traverse(node, function (node) {
-				var	$node   = $(node),
-					tagName = node.nodeName.toLowerCase();
+				var	tagName = node.nodeName.toLowerCase();
 
-				convertNode('*', $node, node);
-				convertNode(tagName, $node, node);
+				convertNode('*', node);
+				convertNode(tagName, node);
 			}, true);
 		};
 
@@ -697,7 +645,7 @@
 		 * Tests if a node is empty and can be removed.
 		 *
 		 * @param  {Node} node
-		 * @return {Boolean}
+		 * @return {boolean}
 		 * @private
 		 */
 		isEmpty = function (node, excludeBr) {
@@ -710,7 +658,7 @@
 				return true;
 			}
 
-			if ($(node).hasClass('sceditor-ignore')) {
+			if (is(node, '.sceditor-ignore')) {
 				return true;
 			}
 
@@ -739,7 +687,7 @@
 		 * are black listed.
 		 *
 		 * @param  {Node} rootNode
-		 * @return {Void}
+		 * @return {void}
 		 * @private
 		 */
 		removeTags = function (rootNode) {
@@ -774,9 +722,9 @@
 					remove = true;
 				// 3 is text node which do not get filtered
 				} else if (allowedtags && allowedtags.length) {
-					remove = ($.inArray(tagName, allowedtags) < 0);
+					remove = (allowedtags.indexOf(tagName) < 0);
 				} else if (disallowedTags && disallowedTags.length) {
-					remove = ($.inArray(tagName, disallowedTags) > -1);
+					remove = (disallowedTags.indexOf(tagName) > -1);
 				}
 
 				if (remove) {
@@ -817,16 +765,16 @@
 			var ret = {};
 
 			if (filtersA) {
-				$.extend(ret, filtersA);
+				extend(ret, filtersA);
 			}
 
 			if (!filtersB) {
 				return ret;
 			}
 
-			$.each(filtersB, function (attrName, values) {
-				if ($.isArray(values)) {
-					ret[attrName] = $.merge(ret[attrName] || [], values);
+			each(filtersB, function (attrName, values) {
+				if (Array.isArray(values)) {
+					ret[attrName] = (ret[attrName] || []).concat(values);
 				} else if (!ret[attrName]) {
 					ret[attrName] = null;
 				}
@@ -843,32 +791,28 @@
 		 * @private
 		 */
 		wrapInlines = function (root) {
-			var adjacentInlines = [];
-			var wrapAdjacents = function () {
-				if (adjacentInlines.length) {
-					$('<p>', root.ownerDocument)
-						.insertBefore(adjacentInlines[0])
-						.append(adjacentInlines);
-
-					adjacentInlines = [];
-				}
-			};
-
 			// Strip empty text nodes so they don't get wrapped.
 			dom.removeWhiteSpace(root);
 
+			var wrapper;
 			var node = root.firstChild;
+			var next;
 			while (node) {
-				if (dom.isInline(node) && !$(node).is('.sceditor-ignore')) {
-					adjacentInlines.push(node);
+				next = node.nextSibling;
+
+				if (dom.isInline(node) && !is(node, '.sceditor-ignore')) {
+					if (!wrapper) {
+						wrapper = root.ownerDocument.createElement('p');
+						node.parentNode.insertBefore(wrapper, node);
+					}
+
+					wrapper.appendChild(node);
 				} else {
-					wrapAdjacents();
+					wrapper = null;
 				}
 
-				node = node.nextSibling;
+				node = next;
 			}
-
-			wrapAdjacents();
 		};
 
 		/**
@@ -876,17 +820,17 @@
 		 * if no attributes are white listed it will remove
 		 * any attributes that are black listed.
 		 * @param  {Node} node
-		 * @return {Void}
+		 * @return {void}
 		 * @private
 		 */
 		removeAttribs = function (node) {
 			var	tagName, attr, attrName, attrsLength, validValues, remove,
 				allowedAttribs    = sceditorPlugins.xhtml.allowedAttribs,
 				isAllowed         = allowedAttribs &&
-					!$.isEmptyObject(allowedAttribs),
+					!isEmptyObject(allowedAttribs),
 				disallowedAttribs = sceditorPlugins.xhtml.disallowedAttribs,
 				isDisallowed      = disallowedAttribs &&
-					!$.isEmptyObject(disallowedAttribs);
+					!isEmptyObject(disallowedAttribs);
 
 			attrsCache = {};
 
@@ -921,12 +865,12 @@
 
 						if (isAllowed) {
 							remove = validValues !== null &&
-								(!$.isArray(validValues) ||
-									$.inArray(attr.value, validValues) < 0);
+								(!Array.isArray(validValues) ||
+									validValues.indexOf(attr.value) < 0);
 						} else if (isDisallowed) {
 							remove = validValues === null ||
-								($.isArray(validValues) &&
-									$.inArray(attr.value, validValues) > -1);
+								(Array.isArray(validValues) &&
+									validValues.indexOf(attr.value) > -1);
 						}
 
 						if (remove) {
@@ -952,8 +896,9 @@
 					width: null
 				}
 			},
-			conv: function (node, $node) {
-				$node.css('width', $node.attr('width')).removeAttr('width');
+			conv: function (node) {
+				css(node, 'width', attr(node, 'width'));
+				removeAttr(node, 'width');
 			}
 		},
 		{
@@ -962,8 +907,9 @@
 					height: null
 				}
 			},
-			conv: function (node, $node) {
-				$node.css('height', $node.attr('height')).removeAttr('height');
+			conv: function (node) {
+				css(node, 'height', attr(node, 'height'));
+				removeAttr(node, 'height');
 			}
 		},
 		{
@@ -972,8 +918,8 @@
 					value: null
 				}
 			},
-			conv: function (node, $node) {
-				$node.removeAttr('value');
+			conv: function (node) {
+				removeAttr(node, 'value');
 			}
 		},
 		{
@@ -982,8 +928,9 @@
 					text: null
 				}
 			},
-			conv: function (node, $node) {
-				$node.css('color', $node.attr('text')).removeAttr('text');
+			conv: function (node) {
+				css(node, 'color', attr(node, 'text'));
+				removeAttr(node, 'text');
 			}
 		},
 		{
@@ -992,8 +939,9 @@
 					color: null
 				}
 			},
-			conv: function (node, $node) {
-				$node.css('color', $node.attr('color')).removeAttr('color');
+			conv: function (node) {
+				css(node, 'color', attr(node, 'color'));
+				removeAttr(node, 'color');
 			}
 		},
 		{
@@ -1002,8 +950,9 @@
 					face: null
 				}
 			},
-			conv: function (node, $node) {
-				$node.css('fontFamily', $node.attr('face')).removeAttr('face');
+			conv: function (node) {
+				css(node, 'fontFamily', attr(node, 'face'));
+				removeAttr(node, 'face');
 			}
 		},
 		{
@@ -1012,8 +961,9 @@
 					align: null
 				}
 			},
-			conv: function (node, $node) {
-				$node.css('textAlign', $node.attr('align')).removeAttr('align');
+			conv: function (node) {
+				css(node, 'textAlign', attr(node, 'align'));
+				removeAttr(node, 'align');
 			}
 		},
 		{
@@ -1022,10 +972,9 @@
 					border: null
 				}
 			},
-			conv: function (node, $node) {
-				$node
-					.css('borderWidth',$node.attr('border'))
-					.removeAttr('border');
+			conv: function (node) {
+				css(node, 'borderWidth', attr(node, 'border'));
+				removeAttr(node, 'border');
 			}
 		},
 		{
@@ -1049,12 +998,12 @@
 					name: null
 				}
 			},
-			conv: function (node, $node) {
-				if (!$node.attr('id')) {
-					$node.attr('id', $node.attr('name'));
+			conv: function (node) {
+				if (!attr(node, 'id')) {
+					attr(node, 'id', attr(node, 'name'));
 				}
 
-				$node.removeAttr('name');
+				removeAttr(node, 'name');
 			}
 		},
 		{
@@ -1063,11 +1012,10 @@
 					vspace: null
 				}
 			},
-			conv: function (node, $node) {
-				$node
-					.css('marginTop', $node.attr('vspace') - 0)
-					.css('marginBottom', $node.attr('vspace') - 0)
-					.removeAttr('vspace');
+			conv: function (node) {
+				css(node, 'marginTop', attr(node, 'vspace') - 0);
+				css(node, 'marginBottom', attr(node, 'vspace') - 0);
+				removeAttr(node, 'vspace');
 			}
 		},
 		{
@@ -1076,11 +1024,10 @@
 					hspace: null
 				}
 			},
-			conv: function (node, $node) {
-				$node
-					.css('marginLeft', $node.attr('hspace') - 0)
-					.css('marginRight', $node.attr('hspace') - 0)
-					.removeAttr('hspace');
+			conv: function (node) {
+				css(node, 'marginLeft', attr(node, 'hspace') - 0);
+				css(node, 'marginRight', attr(node, 'hspace') - 0);
+				removeAttr(node, 'hspace');
 			}
 		},
 		{
@@ -1089,8 +1036,9 @@
 					noshade: null
 				}
 			},
-			conv: function (node, $node) {
-				$node.css('borderStyle', 'solid').removeAttr('noshade');
+			conv: function (node) {
+				css(node, 'borderStyle', 'solid');
+				removeAttr(node, 'noshade');
 			}
 		},
 		{
@@ -1099,8 +1047,9 @@
 					nowrap: null
 				}
 			},
-			conv: function (node, $node) {
-				$node.css('white-space', 'nowrap').removeAttr('nowrap');
+			conv: function (node) {
+				css(node, 'whiteSpace', 'nowrap');
+				removeAttr(node, 'nowrap');
 			}
 		},
 		{
@@ -1108,7 +1057,7 @@
 				big: null
 			},
 			conv: function (node) {
-				$(this.convertTagTo(node, 'span')).css('fontSize', 'larger');
+				css(this.convertTagTo(node, 'span'), 'fontSize', 'larger');
 			}
 		},
 		{
@@ -1116,7 +1065,7 @@
 				small: null
 			},
 			conv: function (node) {
-				$(this.convertTagTo(node, 'span')).css('fontSize', 'smaller');
+				css(this.convertTagTo(node, 'span'), 'fontSize', 'smaller');
 			}
 		},
 		{
@@ -1124,7 +1073,7 @@
 				b: null
 			},
 			conv: function (node) {
-				$(this.convertTagTo(node, 'strong'));
+				this.convertTagTo(node, 'strong');
 			}
 		},
 		{
@@ -1132,8 +1081,8 @@
 				u: null
 			},
 			conv: function (node) {
-				$(this.convertTagTo(node, 'span'))
-					.css('textDecoration', 'underline');
+				css(this.convertTagTo(node, 'span'), 'textDecoration',
+					'underline');
 			}
 		},
 		{
@@ -1142,8 +1091,8 @@
 				strike: null
 			},
 			conv: function (node) {
-				$(this.convertTagTo(node, 'span'))
-					.css('textDecoration', 'line-through');
+				css(this.convertTagTo(node, 'span'), 'textDecoration',
+					'line-through');
 			}
 		},
 		{
@@ -1159,8 +1108,7 @@
 				center: null
 			},
 			conv: function (node) {
-				$(this.convertTagTo(node, 'div'))
-					.css('textAlign', 'center');
+				css(this.convertTagTo(node, 'div'), 'textAlign', 'center');
 			}
 		},
 		{
@@ -1169,17 +1117,9 @@
 					size: null
 				}
 			},
-			conv: function (node, $node) {
-				var	size     = $node.css('fontSize'),
-					fontSize = size;
-
-				// IE < 8 sets a font tag with no size to +0 so
-				// should just skip it.
-				if (fontSize !== '+0') {
-					$node.css('fontSize', fontSize);
-				}
-
-				$node.removeAttr('size');
+			conv: function (node) {
+				css(node, 'fontSize', css(node, 'fontSize'));
+				removeAttr(node, 'size');
 			}
 		},
 		{
@@ -1198,8 +1138,8 @@
 					type: ['_moz']
 				}
 			},
-			conv: function (node, $node) {
-				$node.removeAttr('type');
+			conv: function (node) {
+				removeAttr(node, 'type');
 			}
 		},
 		{
@@ -1208,8 +1148,8 @@
 					'_moz_dirty': null
 				}
 			},
-			conv: function (node, $node) {
-				$node.removeAttr('_moz_dirty');
+			conv: function (node) {
+				removeAttr(node, '_moz_dirty');
 			}
 		},
 		{
@@ -1218,8 +1158,8 @@
 					'_moz_editor_bogus_node': null
 				}
 			},
-			conv: function (node, $node) {
-				$node.remove();
+			conv: function (node) {
+				node.parentNode.removeChild(node);
 			}
 		}
 	];
@@ -1266,4 +1206,4 @@
 	 * @since v1.4.1
 	 */
 	sceditorPlugins.xhtml.disallowedTags = [];
-}(jQuery));
+}(sceditor));

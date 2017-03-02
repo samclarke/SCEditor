@@ -1,4 +1,5 @@
 import SCEditor from 'src/lib/SCEditor.js';
+import PluginManager from 'src/lib/PluginManager.js';
 import defaultCommands from 'src/lib/defaultCommands.js';
 import defaultOptions from 'src/lib/defaultOptions.js';
 import * as browser from 'src/lib/browser.js';
@@ -53,7 +54,7 @@ QUnit.module('lib/SCEditor', {
 		SCEditor.commands       = defaultCommands;
 		SCEditor.defaultOptions = defaultOptions;
 
-		SCEditor.plugins.test = testPlugin;
+		PluginManager.plugins.test = testPlugin;
 
 		defaultOptions.style = '../../src/jquery.sceditor.default.css';
 		defaultOptions.emoticonsRoot    = '../../';
@@ -66,7 +67,7 @@ QUnit.module('lib/SCEditor', {
 		defaultOptions.emoticonsRoot    = '';
 		defaultOptions.emoticonsEnabled = true;
 
-		delete SCEditor.plugins.test;
+		delete PluginManager.plugins.test;
 
 		if (sceditor) {
 			sceditor.destroy();
@@ -84,12 +85,6 @@ QUnit.module('lib/SCEditor', {
 	}
 });
 
-
-QUnit.test('data(\'sceditor\')', function (assert) {
-	assert.ok($textarea.data('sceditor') === sceditor);
-});
-
-
 QUnit.test('autofocus', function (assert) {
 	if (IS_PHANTOMJS) {
 		return assert.expect(0);
@@ -100,8 +95,8 @@ QUnit.test('autofocus', function (assert) {
 		autofocusEnd: false
 	});
 
-	var iframe = sceditor.getContentAreaContainer().get(0);
-	var body   = sceditor.getBody().get(0);
+	var iframe = sceditor.getContentAreaContainer();
+	var body   = sceditor.getBody();
 	var sel    = rangy.getIframeSelection(iframe);
 
 	assert.ok(sel.rangeCount, 'At elast 1 range exists');
@@ -123,8 +118,8 @@ QUnit.test('autofocusEnd', function (assert) {
 		autofocusEnd: true
 	});
 
-	var iframe = sceditor.getContentAreaContainer().get(0);
-	var body   = sceditor.getBody().get(0);
+	var iframe = sceditor.getContentAreaContainer();
+	var body   = sceditor.getBody();
 	var sel    = rangy.getIframeSelection(iframe);
 
 	assert.ok(sel.rangeCount, 'At elast 1 range exists');
@@ -149,7 +144,7 @@ QUnit.test('autofocusEnd', function (assert) {
 
 
 QUnit.test('readOnly()', function (assert) {
-	var body = sceditor.getBody().get(0);
+	var body = sceditor.getBody();
 
 	assert.strictEqual(sceditor.readOnly(), false);
 	assert.strictEqual(body.contentEditable, 'true');
@@ -165,7 +160,7 @@ QUnit.test('readOnly()', function (assert) {
 
 
 QUnit.test('rtl()', function (assert) {
-	var body = sceditor.getBody().get(0);
+	var body = sceditor.getBody();
 
 	assert.strictEqual(sceditor.rtl(), false);
 
@@ -235,8 +230,8 @@ QUnit.test('wysiwygEditorInsertHtml()', function (assert) {
 		return assert.expect(0);
 	}
 
-	var iframe = sceditor.getContentAreaContainer().get(0);
-	var body   = sceditor.getBody().get(0);
+	var iframe = sceditor.getContentAreaContainer();
+	var body   = sceditor.getBody();
 	var range  = rangy.createRange(body.ownerDocument);
 	var sel    = rangy.getIframeSelection(iframe);
 
@@ -261,8 +256,8 @@ QUnit.test('wysiwygEditorInsertHtml() - Start and end', function (assert) {
 		return assert.expect(0);
 	}
 
-	var iframe = sceditor.getContentAreaContainer().get(0);
-	var body   = sceditor.getBody().get(0);
+	var iframe = sceditor.getContentAreaContainer();
+	var body   = sceditor.getBody();
 	var range  = rangy.createRange(body.ownerDocument);
 	var sel    = rangy.getIframeSelection(iframe);
 
@@ -288,8 +283,8 @@ QUnit.test('wysiwygEditorInsertText() - Start and end', function (assert) {
 		return assert.expect(0);
 	}
 
-	var iframe = sceditor.getContentAreaContainer().get(0);
-	var body   = sceditor.getBody().get(0);
+	var iframe = sceditor.getContentAreaContainer();
+	var body   = sceditor.getBody();
 	var range  = rangy.createRange(body.ownerDocument);
 	var sel    = rangy.getIframeSelection(iframe);
 
@@ -314,8 +309,8 @@ QUnit.test('wysiwygEditorInsertText() - Start and end', function (assert) {
 		return assert.expect(0);
 	}
 
-	var iframe = sceditor.getContentAreaContainer().get(0);
-	var body   = sceditor.getBody().get(0);
+	var iframe = sceditor.getContentAreaContainer();
+	var body   = sceditor.getBody();
 	var range  = rangy.createRange(body.ownerDocument);
 	var sel    = rangy.getIframeSelection(iframe);
 
@@ -442,8 +437,8 @@ QUnit.test('getSourceEditorValue() - Uses plugins', function (assert) {
 
 
 QUnit.test('updateOriginal()', function (assert) {
-	var textarea = $('textarea').first().get(0);
-	var body = sceditor.getBody().get(0);
+	var textarea = $('textarea').get(1);
+	var body = sceditor.getBody();
 
 	body.innerHTML = '<div>text 1234...</div>';
 
@@ -455,7 +450,7 @@ QUnit.test('updateOriginal()', function (assert) {
 
 
 QUnit.test('emoticons()', function (assert) {
-	var $body = sceditor.getBody();
+	var $body = $(sceditor.getBody());
 
 	sceditor.emoticons(true);
 	sceditor.val('<p>Testing :) :( 123...</p>');
@@ -477,7 +472,7 @@ QUnit.test('emoticons() - Longest first', function (assert) {
 		}
 	});
 
-	var $body = sceditor.getBody();
+	var $body = $(sceditor.getBody());
 
 	sceditor.emoticons(true);
 	sceditor.val('<p>Testing :( >:( </p>');

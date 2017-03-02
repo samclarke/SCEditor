@@ -1,7 +1,442 @@
 import * as dom from 'src/lib/dom.js';
 import * as utils from 'tests/unit/utils.js';
 
+var IS_PHANTOMJS = navigator.userAgent.indexOf('PhantomJS') > -1;
+
 QUnit.module('lib/dom');
+
+QUnit.test('createElement() - Simple', function (assert) {
+	var node = dom.createElement('div');
+	assert.ok(node, 'Is defined');
+	assert.equal(node.tagName.toLowerCase(), 'div', 'TagName');
+});
+
+QUnit.test('createElement() - Attributes', function (assert) {
+	var node = dom.createElement('div', {
+		contentEditable: true,
+		'data-test': 'value'
+	});
+
+	assert.ok(node, 'Is defined');
+	assert.ok(node.contentEditable, 'Is contentEditable');
+	assert.ok(node.hasAttribute('data-test'), 'Has attribute');
+	assert.equal(node.getAttribute('data-test'), 'value', 'Attribute value');
+});
+
+QUnit.test('createElement() - Style', function (assert) {
+	var node = dom.createElement('div', {
+		style: 'font-size: 100px; font-weight: bold'
+	});
+
+	assert.ok(node, 'Is defined');
+	assert.equal(node.style.fontSize, '100px', 'Font size');
+	assert.equal(node.style.fontWeight, 'bold', 'Font weight');
+});
+
+QUnit.test('parents()', function (assert) {
+	var div = document.createElement('div');
+	var p = document.createElement('p');
+	var a = document.createElement('a');
+
+	div.appendChild(p);
+	p.appendChild(a);
+
+	assert.deepEqual(dom.parents(a), [p, div], 'No selector');
+	assert.deepEqual(dom.parents(a, 'p'), [p], 'Simple selector');
+	assert.deepEqual(dom.parents(a, 'p,div,em'), [p, div], 'Complex selector');
+});
+
+QUnit.test('parent()', function (assert) {
+	var div = document.createElement('div');
+	var p = document.createElement('p');
+
+	div.appendChild(p);
+
+	assert.notOk(dom.parent(p, 'p'), 'Paragraph');
+	assert.strictEqual(dom.parent(p, 'div'), div, 'Div');
+});
+
+QUnit.test('closest()', function (assert) {
+	var div = document.createElement('div');
+	var p = document.createElement('p');
+
+	div.appendChild(p);
+
+	assert.strictEqual(dom.closest(p, 'p'), p, 'Paragraph');
+	assert.strictEqual(dom.closest(p, 'div'), div, 'Div');
+	assert.notOk(dom.closest(p, 'input'), 'No match');
+});
+
+QUnit.test('appendChild()', function (assert) {
+	var div = document.createElement('div');
+	var p = document.createElement('p');
+
+	div.appendChild(p);
+
+	dom.remove(p);
+
+	assert.notOk(p.parentNode);
+	assert.notOk(div.firstChild);
+});
+
+QUnit.test('appendChild()', function (assert) {
+	var div = document.createElement('div');
+	var p = document.createElement('p');
+
+	dom.appendChild(div, p);
+
+	assert.strictEqual(div.firstChild, p);
+});
+
+QUnit.test('find()', function (assert) {
+	var div = document.createElement('div');
+	var p = document.createElement('p');
+	var a = document.createElement('a');
+	var text = document.createTextNode('');
+
+	div.appendChild(p);
+	div.appendChild(a);
+	div.appendChild(text);
+
+	var paragraphs = dom.find(div, 'p');
+	assert.equal(paragraphs.length, 1, 'Select paragraphs');
+
+	var paragraphs = dom.find(div, '*');
+	assert.equal(paragraphs.length, 2, 'Select all');
+});
+
+QUnit.test('on()', function (assert) {
+	var div = document.createElement('div');
+	var called = false;
+
+	dom.on(div, 'test', function () {
+		called = true;
+	});
+
+	dom.trigger(div, 'test');
+	assert.ok(called);
+});
+
+QUnit.test('on() - Selector', function (assert) {
+	// PhantomJS sets the wrong event.target for dispatch event
+	if (IS_PHANTOMJS) {
+		assert.expect(0);
+		return;
+	}
+
+	var div = document.createElement('div');
+	var p = document.createElement('p');
+	var called = false;
+
+	div.appendChild(p);
+
+	dom.on(div, 'test', 'p', function () {
+		called = true;
+	});
+
+	dom.trigger(div, 'test');
+	assert.notOk(called, 'Not matching selector');
+
+	dom.trigger(p, 'test');
+	assert.ok(called, 'Matching selector');
+});
+
+QUnit.test('off()', function (assert) {
+	var div = document.createElement('div');
+	var called = false;
+	var fn = function () {
+		called = true;
+	};
+
+	dom.on(div, 'test', fn);
+	dom.off(div, 'test', fn);
+
+	dom.trigger(div, 'test');
+	assert.notOk(called);
+});
+
+QUnit.test('off() - Selector', function (assert) {
+	var div = document.createElement('div');
+	var p = document.createElement('p');
+	var called = false;
+	var fn = function () {
+		called = true;
+	};
+
+	div.appendChild(p);
+
+	dom.on(div, 'test', 'p', fn);
+	dom.off(div, 'test', 'p', fn);
+
+	dom.trigger(div, 'test');
+	assert.notOk(called, 'Not matching selector');
+
+	dom.trigger(p, 'test');
+	assert.notOk(called, 'Matching selector');
+});
+
+QUnit.test('attr()', function (assert) {
+	var div = document.createElement('div');
+
+	dom.attr(div, 'test', 'value');
+	assert.ok(div.hasAttribute('test'), 'Add attribute');
+
+	assert.equal(dom.attr(div, 'test'), 'value', 'Get attribute');
+
+	dom.attr(div, 'test', 'new-value');
+	assert.equal(div.getAttribute('test'), 'new-value', 'Add attribute');
+
+	dom.attr(div, 'test', null);
+	assert.notOk(div.hasAttribute('test'), 'Remove attribute');
+});
+
+QUnit.test('removeAttr()', function (assert) {
+	var div = document.createElement('div');
+
+	div.setAttribute('test', 'test');
+
+	assert.ok(div.hasAttribute('test'));
+	dom.removeAttr(div, 'test');
+	assert.notOk(div.hasAttribute('test'));
+});
+
+QUnit.test('show()', function (assert) {
+	var div = document.createElement('div');
+
+	dom.hide(div);
+	assert.equal(div.style.display, 'none', 'Should hide node');
+});
+
+QUnit.test('show()', function (assert) {
+	var div = document.createElement('div');
+
+	div.style.display = 'none';
+
+	dom.show(div);
+	assert.equal(div.style.display, '', 'Should show node');
+});
+
+QUnit.test('toggle()', function (assert) {
+	var div = document.createElement('div');
+	var fixture = document.getElementById('qunit-fixture');
+
+	fixture.appendChild(div);
+
+	dom.toggle(div);
+	assert.equal(div.style.display, 'none', 'Should hide node');
+
+	dom.toggle(div);
+	assert.equal(div.style.display, '', 'Should show node');
+});
+
+QUnit.test('css()', function (assert) {
+	var div = document.createElement('div');
+	var fixture = document.getElementById('qunit-fixture');
+
+	fixture.appendChild(div);
+
+	dom.css(div, 'width', 100);
+	assert.equal(div.style.width, '100px', 'Convert numbers into pixels');
+
+	dom.css(div, { width: 32 });
+	assert.equal(div.style.width, '32px', 'Set object');
+
+	dom.css(div, 'width', '110px');
+	assert.equal(div.style.width, '110px', 'Set pixels');
+
+	dom.css(div, 'width', '10em');
+	assert.equal(div.style.width, '10em', 'Set em');
+
+	dom.css(div, 'width', '50%');
+	assert.equal(div.style.width, '50%', 'Set percent');
+
+	assert.close(
+		parseInt(dom.css(div, 'width')),
+		fixture.clientWidth / 2,
+		1,
+		'Get computed value'
+	);
+});
+
+QUnit.test('data()', function (assert) {
+	var text = document.createTextNode('');
+	var div = document.createElement('div');
+	div.setAttribute('data-test', 'test');
+	div.setAttribute('data-another-test', 'test');
+	div.setAttribute('ignored', 'test');
+
+	assert.deepEqual(dom.data(div), {
+		'another-test': 'test',
+		'test': 'test'
+	});
+	assert.equal(dom.data(div, 'test'), 'test');
+	assert.equal(dom.data(div, 'another-test'), 'test');
+
+	dom.data(div, 'test', 'new-value');
+	assert.equal(dom.data(div, 'test'), 'new-value');
+
+	dom.data(div, 'test', 1);
+	assert.strictEqual(dom.data(div, 'test'), '1');
+
+	dom.data(text, 'test', 'test');
+	assert.strictEqual(dom.data(text, 'test'), undefined);
+});
+
+QUnit.test('is()', function (assert) {
+	var div = document.createElement('div');
+	div.className = 'test';
+
+	assert.ok(dom.is(div, 'div'));
+	assert.ok(dom.is(div, '.test'));
+	assert.notOk(dom.is());
+	assert.notOk(dom.is(null));
+	assert.notOk(dom.is(div, 'p'));
+	assert.notOk(dom.is(div, '.testing'));
+});
+
+QUnit.test('contains()', function (assert) {
+	var parent = document.createElement('div');
+	var child = document.createElement('div');
+
+	parent.appendChild(child);
+
+	assert.ok(dom.contains(parent, child));
+	assert.notOk(dom.contains(parent, parent));
+	assert.notOk(dom.contains(child, parent));
+});
+
+QUnit.test('insertBefore()', function (assert) {
+	var parent = document.createElement('div');
+	var first = document.createElement('div');
+	var last = document.createElement('div');
+
+	parent.appendChild(first);
+	parent.appendChild(last);
+
+	assert.strictEqual(dom.previousElementSibling(last), first);
+	assert.strictEqual(dom.previousElementSibling(last, 'div'), first);
+	assert.strictEqual(dom.previousElementSibling(last, 'p'), null);
+	assert.strictEqual(dom.previousElementSibling(first), null);
+});
+
+QUnit.test('insertBefore()', function (assert) {
+	var parent = document.createElement('div');
+	var ref = document.createElement('div');
+	var first = document.createElement('div');
+
+	parent.appendChild(ref);
+
+	dom.insertBefore(first, ref);
+
+	assert.strictEqual(parent.firstChild, first);
+});
+
+QUnit.test('hasClass()', function (assert) {
+	var div = document.createElement('div');
+
+	div.className = 'test';
+
+	assert.equal(dom.hasClass(div, 'another-test'), false);
+	assert.equal(dom.hasClass(div, 'test'), true);
+});
+
+QUnit.test('removeClass()', function (assert) {
+	var div = document.createElement('div');
+
+	div.className = 'test another-test';
+
+	dom.removeClass(div, 'another-test');
+	assert.equal(div.className.trim(), 'test');
+
+	dom.removeClass(div, 'test');
+	assert.equal(div.className.trim(), '');
+});
+
+QUnit.test('addClass()', function (assert) {
+	var div = document.createElement('div');
+
+	dom.addClass(div, 'test');
+	assert.equal(div.className.trim(), 'test');
+
+	dom.addClass(div, 'another-test');
+	assert.equal(div.className.trim(), 'test another-test');
+});
+
+QUnit.test('toggleClass()', function (assert) {
+	var div = document.createElement('div');
+
+	dom.toggleClass(div, 'test');
+	assert.equal(div.className.trim(), 'test', 'Add class');
+
+	dom.toggleClass(div, 'test');
+	assert.equal(div.className, '', 'Remove class');
+
+	dom.toggleClass(div, 'test', true);
+	dom.toggleClass(div, 'test', true);
+	assert.equal(div.className.trim(), 'test', 'Add class via state');
+
+	dom.toggleClass(div, 'test', false);
+	dom.toggleClass(div, 'test', false);
+	assert.equal(div.className, '', 'Remove class via state');
+});
+
+QUnit.test('width()', function (assert) {
+	var div = document.createElement('div');
+	var fixture = document.getElementById('qunit-fixture');
+
+	fixture.appendChild(div);
+
+	dom.width(div, 100);
+	assert.equal(div.style.width, '100px', 'Number width');
+
+	dom.width(div, '10em');
+	assert.equal(div.style.width, '10em', 'Em width');
+
+	dom.width(div, '100px');
+	assert.equal(dom.width(div), 100, 'Get width');
+});
+
+QUnit.test('height()', function (assert) {
+	var div = document.createElement('div');
+	var fixture = document.getElementById('qunit-fixture');
+
+	fixture.appendChild(div);
+
+	dom.height(div, 100);
+	assert.equal(div.style.height, '100px', 'Number height');
+
+	dom.height(div, '10em');
+	assert.equal(div.style.height, '10em', 'Em height');
+
+	dom.height(div, '100px');
+	assert.equal(dom.height(div), 100, 'Get height');
+});
+
+QUnit.test('trigger()', function (assert) {
+	var div = document.createElement('div');
+	var detail = {};
+
+	div.addEventListener('custom-event', function (e) {
+		assert.strictEqual(e.detail, detail);
+	});
+
+	dom.trigger(div, 'custom-event', detail);
+});
+
+QUnit.test('isVisible()', function (assert) {
+	var div = document.createElement('div');
+	var fixture = document.getElementById('qunit-fixture');
+
+	fixture.appendChild(div);
+	dom.hide(div);
+	assert.equal(dom.isVisible(div), false, 'Should be false when hidden');
+
+	dom.show(div);
+	assert.equal(dom.isVisible(div), true, 'Should be true when visible');
+
+	fixture.removeChild(div);
+	assert.equal(dom.isVisible(div), false, 'Deattached should be false');
+});
 
 QUnit.test('traverse()', function (assert) {
 	var result = '';
@@ -67,10 +502,10 @@ QUnit.test('parseHTML()', function (assert) {
 		'<span>span<div style="font-weight: bold;">div</div>span</span>'
 	);
 
-	assert.ok($.isArray(result));
-	assert.equal(result.length, 1);
+	assert.equal(result.nodeType, dom.DOCUMENT_FRAGMENT_NODE);
+	assert.equal(result.childNodes.length, 1);
 	assert.nodesEqual(
-		result[0],
+		result.firstChild,
 		utils.htmlToNode(
 			'<span>span<div style="font-weight: bold;">div</div>span</span>'
 		)
@@ -82,8 +517,8 @@ QUnit.test('parseHTML() - Parse multiple', function (assert) {
 		'<span>one</span><span>two</span><span>three</span>'
 	);
 
-	assert.ok($.isArray(result));
-	assert.equal(result.length, 3);
+	assert.equal(result.nodeType, dom.DOCUMENT_FRAGMENT_NODE);
+	assert.equal(result.childNodes.length, 3);
 });
 
 
@@ -311,7 +746,7 @@ QUnit.test('removeWhiteSpace() - Preserve line breaks', function (assert) {
 	var node = utils.htmlToDiv(
 		'<div style="white-space: pre-line">    ' +
 			'<span>  \n\ncontent\n\n  </span>\n\n  ' +
-		'</div>'
+		'</div><div></div>'
 	);
 
 	dom.removeWhiteSpace(node);
@@ -320,8 +755,8 @@ QUnit.test('removeWhiteSpace() - Preserve line breaks', function (assert) {
 		node,
 		utils.htmlToDiv(
 			'<div style="white-space: pre-line">' +
-				'<span>\n\ncontent\n\n </span>\n\n ' +
-			'</div>'
+				'<span>\n\ncontent\n\n </span>\n\n' +
+			'</div><div></div>'
 		)
 	);
 });

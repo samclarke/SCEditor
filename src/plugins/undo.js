@@ -1,7 +1,7 @@
-(function ($) {
+(function (sceditor) {
 	'use strict';
 
-	$.sceditor.plugins.undo = function () {
+	sceditor.plugins.undo = function () {
 		var base = this;
 		var editor;
 		var charChangedCount = 0;
@@ -184,4 +184,4 @@
 			previousValue = rawValue;
 		};
 	};
-}(jQuery));
+}(sceditor));

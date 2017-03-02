@@ -1,4 +1,5 @@
-import SCEditor from 'src/lib/SCEditor.js';
+import PluginManager from 'src/lib/PluginManager.js';
+import defaultOptions from 'src/lib/defaultOptions.js';
 import * as utils from 'tests/unit/utils.js';
 import * as browser from 'src/lib/browser.js';
 import 'src/plugins/bbcode.js';
@@ -12,16 +13,14 @@ var IE_BR_STR = IE_BR_FIX ? '' : '<br />';
 QUnit.module('plugins/bbcode', {
 	beforeEach: function () {
 		this.mockEditor = {
-			opts: $.extend({}, SCEditor.defaultOptions)
+			opts: $.extend({}, defaultOptions)
 		};
 
-		this.plugin = new SCEditor.plugins.bbcode();
+		this.plugin = new PluginManager.plugins.bbcode();
 		this.plugin.init.call(this.mockEditor);
 
 		this.htmlToBBCode = function (html) {
-			var $html = $(utils.htmlToDiv(html));
-
-			return this.plugin.signalToSource('', $html);
+			return this.plugin.signalToSource('', utils.htmlToDiv(html));
 		};
 	}
 });
@@ -32,12 +31,6 @@ QUnit.test('To BBCode method', function (assert) {
 		this.mockEditor.toBBCode(utils.htmlToDiv('<b>test</b>')),
 		'[b]test[/b]',
 		'DOM test'
-	);
-
-	assert.equal(
-		this.mockEditor.toBBCode($(utils.htmlToDiv('<b>test</b>'))),
-		'[b]test[/b]',
-		'jQuery DOM test'
 	);
 
 	assert.equal(
@@ -66,10 +59,10 @@ QUnit.test('From BBCode method as fragment', function (assert) {
 
 QUnit.test('BBcode to HTML trim', function (assert) {
 	this.mockEditor = {
-		opts: $.extend({}, $.sceditor.defaultOptions, { bbcodeTrim: true })
+		opts: $.extend({}, defaultOptions, { bbcodeTrim: true })
 	};
 
-	this.plugin = new SCEditor.plugins.bbcode();
+	this.plugin = new PluginManager.plugins.bbcode();
 	this.plugin.init.call(this.mockEditor);
 
 
@@ -93,16 +86,14 @@ QUnit.test('BBcode to HTML trim', function (assert) {
 
 QUnit.test('HTML to BBCode trim', function (assert) {
 	this.mockEditor = {
-		opts: $.extend({}, $.sceditor.defaultOptions, { bbcodeTrim: true })
+		opts: $.extend({}, defaultOptions, { bbcodeTrim: true })
 	};
 
-	this.plugin = new SCEditor.plugins.bbcode();
+	this.plugin = new PluginManager.plugins.bbcode();
 	this.plugin.init.call(this.mockEditor);
 
 	this.htmlToBBCode = function (html) {
-		var $html = $(utils.htmlToDiv(html));
-
-		return this.plugin.signalToSource('', $html);
+		return this.plugin.signalToSource('', utils.htmlToDiv(html));
 	};
 
 
@@ -125,16 +116,14 @@ QUnit.test('HTML to BBCode trim', function (assert) {
 QUnit.module('plugins/bbcode - HTML to BBCode', {
 	beforeEach: function () {
 		this.mockEditor = {
-			opts: $.extend({}, SCEditor.defaultOptions)
+			opts: $.extend({}, defaultOptions)
 		};
 
-		this.plugin = new SCEditor.plugins.bbcode();
+		this.plugin = new PluginManager.plugins.bbcode();
 		this.plugin.init.call(this.mockEditor);
 
 		this.htmlToBBCode = function (html) {
-			var $html = $(utils.htmlToDiv(html));
-
-			return this.plugin.signalToSource('', $html);
+			return this.plugin.signalToSource('', utils.htmlToDiv(html));
 		};
 	}
 });
@@ -688,7 +677,7 @@ QUnit.test('Image dimensions when loaded', function (assert) {
 		}
 
 		assert.equal(
-			plugin.signalToSource('', $(div)),
+			plugin.signalToSource('', div),
 			'[img=200x200]http://www.sceditor.com/emoticons/smile.png[/img]'
 		);
 

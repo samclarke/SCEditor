@@ -2,7 +2,7 @@
  * SCEditor
  * http://www.sceditor.com/
  *
- * Copyright (C) 2014, Sam Clarke (samclarke.com)
+ * Copyright (C) 2017, Sam Clarke (samclarke.com)
  *
  * SCEditor is licensed under the MIT license:
  *	http://www.opensource.org/licenses/mit-license.php
@@ -13,54 +13,11 @@
  */
 
 import $ from 'jquery';
-import SCEditor from './lib/SCEditor.js';
-import PluginManager from './lib/PluginManager.js';
-import * as escape from './lib/escape.js';
-import * as browser from './lib/browser.js';
-import * as dom from './lib/dom.js';
-import RangeHelper from './lib/RangeHelper.js';
-import defaultCommands from './lib/defaultCommands.js';
-import defaultOptions from './lib/defaultOptions.js';
+import './sceditor.js';
 
 
 // For backwards compatibility
-$.sceditor = SCEditor;
-
-SCEditor.commands       = defaultCommands;
-SCEditor.defaultOptions = defaultOptions;
-SCEditor.RangeHelper    = RangeHelper;
-// Legacy support, don't expose new methods
-SCEditor.dom            = {
-	traverse: dom.traverse,
-	rTraverse: dom.rTraverse,
-	parseHTML: dom.parseHTML,
-	hasStyling: dom.hasStyling,
-	convertElement: dom.convertElement,
-	blockLevelList: dom.blockLevelList,
-	canHaveChildren: dom.canHaveChildren,
-	isInline: dom.isInline,
-	copyCSS: dom.copyCSS,
-	fixNesting: dom.fixNesting,
-	findCommonAncestor: dom.findCommonAncestor,
-	getSibling: dom.getSibling,
-	removeWhiteSpace: dom.removeWhiteSpace,
-	extractContents: dom.extractContents,
-	getOffset: dom.getOffset,
-	getStyle: dom.getStyle,
-	hasStyle: dom.hasStyle
-};
-
-SCEditor.ie                 = browser.ie;
-SCEditor.ios                = browser.ios;
-SCEditor.isWysiwygSupported = browser.isWysiwygSupported;
-
-SCEditor.regexEscape     = escape.regex;
-SCEditor.escapeEntities  = escape.entities;
-SCEditor.escapeUriScheme = escape.uriScheme;
-
-SCEditor.PluginManager = PluginManager;
-SCEditor.plugins       = PluginManager.plugins;
-
+$.sceditor = window.sceditor;
 
 /**
  * Creates an instance of sceditor on all textareas
@@ -80,29 +37,16 @@ SCEditor.plugins       = PluginManager.plugins;
  * one textarea is matched it will return an array of
  * instances each textarea.
  *
- * @param  {Object|String} options Should either be an Object of options or
- *                                 the strings "state" or "instance"
- * @return {this|Array|jQuery.sceditor|Bool}
+ * @param  {Object|string} [options] Should either be an Object of options or
+ *                                   the strings "state" or "instance"
+ * @return {this|Array<SCEditor>|Array<boolean>|SCEditor|boolean}
  */
 $.fn.sceditor = function (options) {
-	var	$this, instance,
-		ret = [];
-
-	options = options || {};
-
-	if (!options.runWithoutWysiwygSupport && !browser.isWysiwygSupported) {
-		return;
-	}
+	var	instance;
+	var ret = [];
 
 	this.each(function () {
-		$this = this.jquery ? this : $(this);
-		instance = $this.data('sceditor');
-
-		// Don't allow the editor to be initialised
-		// on it's own source editor
-		if ($this.parents('.sceditor-container').length > 0) {
-			return;
-		}
+		instance = this._sceditor;
 
 		// Add state of instance to ret if that is what options is set to
 		if (options === 'state') {
@@ -110,8 +54,7 @@ $.fn.sceditor = function (options) {
 		} else if (options === 'instance') {
 			ret.push(instance);
 		} else if (!instance) {
-			/*eslint no-new: off*/
-			(new SCEditor(this, options));
+			$.sceditor.create(this, options);
 		}
 	});
 
@@ -120,5 +63,5 @@ $.fn.sceditor = function (options) {
 		return this;
 	}
 
-	return ret.length === 1 ? ret[0] : $(ret);
+	return ret.length === 1 ? ret[0] : ret;
 };

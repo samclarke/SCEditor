@@ -7,6 +7,9 @@
     "browser": true,
     "jquery": true
   },
+  "globals": {
+      "sceditor": false
+  },
   "rules": {
     "no-bitwise": "error",
     "camelcase": "error",

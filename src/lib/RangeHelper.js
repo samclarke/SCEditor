@@ -1,5 +1,3 @@
-import $ from 'jquery';
-
 import * as dom from './dom.js';
 import * as escape from './escape.js';
 import { ie as IE_VER } from './browser.js';
@@ -15,9 +13,9 @@ var IE_BR_FIX = IE_VER && IE_VER < 11;
  * at the specified offset.
  *
  * @param  {Node}  node
- * @param  {Number}  offset
- * @param  {Boolean} isLeft
- * @param  {Number}  length
+ * @param  {number}  offset
+ * @param  {boolean} isLeft
+ * @param  {number}  length
  * @return {Object}
  * @private
  */
@@ -72,6 +70,12 @@ var outerText = function (range, isLeft, length) {
 	};
 };
 
+/**
+ * Range helper
+ *
+ * @class RangeHelper
+ * @name RangeHelper
+ */
 export default function RangeHelper(win, d) {
 	var	_createMarker, _prepareInput,
 		doc          = d || win.contentDocument || win.document,
@@ -80,15 +84,15 @@ export default function RangeHelper(win, d) {
 		base         = this;
 
 	/**
-	 * <p>Inserts HTML into the current range replacing any selected
-	 * text.</p>
+	 * Inserts HTML into the current range replacing any selected
+	 * text.
 	 *
-	 * <p>If endHTML is specified the selected contents will be put between
+	 * If endHTML is specified the selected contents will be put between
 	 * html and endHTML. If there is nothing selected html and endHTML are
-	 * just concatenate together.</p>
+	 * just concatenate together.
 	 *
 	 * @param {string} html
-	 * @param {string} endHTML
+	 * @param {string} [endHTML]
 	 * @return False on fail
 	 * @function
 	 * @name insertHTML
@@ -106,12 +110,12 @@ export default function RangeHelper(win, d) {
 			html += base.selectedHtml() + endHTML;
 		}
 
-		div           = doc.createElement('p');
+		div           = dom.createElement('p', {}, doc);
 		node          = doc.createDocumentFragment();
 		div.innerHTML = html;
 
 		while (div.firstChild) {
-			node.appendChild(div.firstChild);
+			dom.appendChild(node, div.firstChild);
 		}
 
 		base.insertNode(node);
@@ -123,33 +127,31 @@ export default function RangeHelper(win, d) {
 	 * markers to the last child.
 	 *
 	 * @param  {Node|string} node
-	 * @param  {Node|string} endNode
-	 * @param  {boolean} returnHtml
+	 * @param  {Node|string} [endNode]
+	 * @param  {boolean} [returnHtml]
 	 * @return {Node|string}
 	 * @private
 	 */
 	_prepareInput = function (node, endNode, returnHtml) {
-		var lastChild, $lastChild,
-			div  = doc.createElement('div'),
-			$div = $(div);
+		var lastChild,
+			frag = doc.createDocumentFragment();
 
 		if (typeof node === 'string') {
 			if (endNode) {
 				node += base.selectedHtml() + endNode;
 			}
 
-			$div.html(node);
+			frag = dom.parseHTML(node);
 		} else {
-			$div.append(node);
+			dom.appendChild(frag, node);
 
 			if (endNode) {
-				$div
-					.append(base.selectedRange().extractContents())
-					.append(endNode);
+				dom.appendChild(frag, base.selectedRange().extractContents());
+				dom.appendChild(frag, endNode);
 			}
 		}
 
-		if (!(lastChild = div.lastChild)) {
+		if (!(lastChild = frag.lastChild)) {
 			return;
 		}
 
@@ -158,40 +160,44 @@ export default function RangeHelper(win, d) {
 		}
 
 		if (dom.canHaveChildren(lastChild)) {
-			$lastChild = $(lastChild);
-
 			// IE <= 8 and Webkit won't allow the cursor to be placed
 			// inside an empty tag, so add a zero width space to it.
 			if (!lastChild.lastChild) {
-				$lastChild.append('\u200B');
+				dom.appendChild(lastChild, document.createTextNode('\u200B'));
 			}
+		} else {
+			lastChild = frag;
 		}
 
 		base.removeMarkers();
 
 		// Append marks to last child so when restored cursor will be in
 		// the right place
-		($lastChild || $div)
-			.append(_createMarker(startMarker))
-			.append(_createMarker(endMarker));
+		dom.appendChild(lastChild, _createMarker(startMarker));
+		dom.appendChild(lastChild, _createMarker(endMarker));
 
 		if (returnHtml) {
-			return $div.html();
+			var div = dom.createElement('div');
+			dom.appendChild(div, frag);
+
+			return div.innerHTML;
 		}
 
-		return $(doc.createDocumentFragment()).append($div.contents())[0];
+		return frag;
 	};
 
 	/**
-	 * <p>The same as insertHTML except with DOM nodes instead</p>
+	 * The same as insertHTML except with DOM nodes instead
 	 *
-	 * <p><strong>Warning:</strong> the nodes must belong to the
+	 * <strong>Warning:</strong> the nodes must belong to the
 	 * document they are being inserted into. Some browsers
-	 * will throw exceptions if they don't.</p>
+	 * will throw exceptions if they don't.
+	 *
+	 * Returns boollean false on fail
 	 *
 	 * @param {Node} node
 	 * @param {Node} endNode
-	 * @return False on fail
+	 * @return {false|undefined}
 	 * @function
 	 * @name insertNode
 	 * @memberOf RangeHelper.prototype
@@ -211,9 +217,8 @@ export default function RangeHelper(win, d) {
 		// into <br /> will cause it not to be displayed so must
 		// insert before the <br /> in FF.
 		// 3 = TextNode
-		if (parent && parent.nodeType !== 3 &&
-			!dom.canHaveChildren(parent)) {
-			parent.parentNode.insertBefore(input, parent);
+		if (parent && parent.nodeType !== 3 && !dom.canHaveChildren(parent)) {
+			dom.insertBefore(input, parent);
 		} else {
 			range.insertNode(input);
 		}
@@ -227,7 +232,7 @@ export default function RangeHelper(win, d) {
 	 * <p>IE <= 8 will return a TextRange, all other browsers
 	 * will return a Range object.</p>
 	 *
-	 * @return {Range|TextRange}
+	 * @return {Range}
 	 * @function
 	 * @name cloneSelected
 	 * @memberOf RangeHelper.prototype
@@ -246,7 +251,7 @@ export default function RangeHelper(win, d) {
 	 * <p>IE <= 8 will return a TextRange, all other browsers
 	 * will return a Range object.</p>
 	 *
-	 * @return {Range|TextRange}
+	 * @return {Range}
 	 * @function
 	 * @name selectedRange
 	 * @memberOf RangeHelper.prototype
@@ -310,8 +315,8 @@ export default function RangeHelper(win, d) {
 			range = base.selectedRange();
 
 		if (range) {
-			div = doc.createElement('p');
-			div.appendChild(range.cloneContents());
+			div = dom.createElement('p', {}, doc);
+			dom.appendChild(div, range.cloneContents());
 
 			return div.innerHTML;
 		}
@@ -331,9 +336,7 @@ export default function RangeHelper(win, d) {
 		var range = base.selectedRange();
 
 		if (range) {
-			return range.parentElement ?
-				range.parentElement() :
-				range.commonAncestorContainer;
+			return range.commonAncestorContainer;
 		}
 	};
 
@@ -350,25 +353,25 @@ export default function RangeHelper(win, d) {
 	 * Gets the first block level parent of the selected
 	 * contents of the range.
 	 *
-	 * @param {Node} n The element to get the first block level parent from
+	 * @param {Node} [n] The element to get the first block level parent from
 	 * @return {HTMLElement}
 	 * @function
 	 * @name getFirstBlockParent^2
 	 * @since 1.4.1
 	 * @memberOf RangeHelper.prototype
 	 */
-	base.getFirstBlockParent = function (n) {
-		var func = function (node) {
-			if (!dom.isInline(node, true)) {
-				return node;
+	base.getFirstBlockParent = function (node) {
+		var func = function (elm) {
+			if (!dom.isInline(elm, true)) {
+				return elm;
 			}
 
-			node = node ? node.parentNode : null;
+			elm = elm ? elm.parentNode : null;
 
-			return node ? func(node) : node;
+			return elm ? func(elm) : elm;
 		};
 
-		return func(n || base.parentNode());
+		return func(node || base.parentNode());
 	};
 
 	/**
@@ -400,18 +403,19 @@ export default function RangeHelper(win, d) {
 	 * Creates a marker node
 	 *
 	 * @param {string} id
-	 * @return {Node}
+	 * @return {HTMLSpanElement}
 	 * @private
 	 */
 	_createMarker = function (id) {
 		base.removeMarker(id);
 
-		var marker              = doc.createElement('span');
-		marker.id               = id;
-		marker.style.lineHeight = '0';
-		marker.style.display    = 'none';
-		marker.className        = 'sceditor-selection sceditor-ignore';
-		marker.innerHTML        = ' ';
+		var marker  = dom.createElement('span', {
+			id: id,
+			className: 'sceditor-selection sceditor-ignore',
+			style: 'display:none;line-height:0'
+		}, doc);
+
+		marker.innerHTML = ' ';
 
 		return marker;
 	};
@@ -427,13 +431,16 @@ export default function RangeHelper(win, d) {
 	 */
 	base.insertMarkers = function () {
 		var	currentRange = base.selectedRange();
+		var startNode = _createMarker(startMarker);
 
-		base.insertNodeAt(true, _createMarker(startMarker));
+		base.removeMarkers();
+		base.insertNodeAt(true, startNode);
 
 		// Fixes issue with end marker sometimes being placed before
 		// the start marker when the range is collapsed.
 		if (currentRange && currentRange.collapsed) {
-			$(base.getMarker(startMarker)).after(_createMarker(endMarker));
+			startNode.parentNode.insertBefore(
+				_createMarker(endMarker), startNode.nextSibling);
 		} else {
 			base.insertNodeAt(false, _createMarker(endMarker));
 		}
@@ -464,7 +471,7 @@ export default function RangeHelper(win, d) {
 		var marker = base.getMarker(id);
 
 		if (marker) {
-			marker.parentNode.removeChild(marker);
+			dom.remove(marker);
 		}
 	};
 
@@ -494,7 +501,7 @@ export default function RangeHelper(win, d) {
 	/**
 	 * Select the specified range
 	 *
-	 * @param {Range|TextRange} range
+	 * @param {Range} range
 	 * @function
 	 * @name selectRange
 	 * @memberOf RangeHelper.prototype
@@ -511,11 +518,11 @@ export default function RangeHelper(win, d) {
 			!dom.isInline(container, true)) {
 
 			lastChild = container.lastChild;
-			while (lastChild && $(lastChild).is('.sceditor-ignore')) {
+			while (lastChild && dom.is(lastChild, '.sceditor-ignore')) {
 				lastChild = lastChild.previousSibling;
 			}
 
-			if ($(lastChild).is('br')) {
+			if (dom.is(lastChild, 'br')) {
 				var rng = doc.createRange();
 				rng.setEndAfter(lastChild);
 				rng.collapse(false);
@@ -567,8 +574,8 @@ export default function RangeHelper(win, d) {
 	/**
 	 * Selects the text left and right of the current selection
 	 *
-	 * @param {int} left
-	 * @param {int} right
+	 * @param {number} left
+	 * @param {number} right
 	 * @since 1.4.3
 	 * @function
 	 * @name selectOuterText
@@ -598,6 +605,7 @@ export default function RangeHelper(win, d) {
 	 *
 	 * @param {boolean} before
 	 * @param {number} length
+	 * @return {string}
 	 * @since 1.4.3
 	 * @function
 	 * @name selectOuterText
@@ -726,6 +734,9 @@ export default function RangeHelper(win, d) {
 	 * @param  {Range} rngA
 	 * @param  {Range} [rngB]
 	 * @return {boolean}
+	 * @function
+	 * @name compare
+	 * @memberOf RangeHelper.prototype
 	 */
 	base.compare = function (rngA, rngB) {
 		if (!rngB) {
@@ -744,6 +755,9 @@ export default function RangeHelper(win, d) {
 	 * Removes any current selection
 	 *
 	 * @since 1.4.6
+	 * @function
+	 * @name clear
+	 * @memberOf RangeHelper.prototype
 	 */
 	base.clear = function () {
 		var sel = win.getSelection();

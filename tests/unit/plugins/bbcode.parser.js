@@ -1,4 +1,3 @@
-import SCEditor from 'src/lib/SCEditor.js';
 import * as utils from 'tests/unit/utils.js';
 import * as browser from 'src/lib/browser.js';
 import 'src/plugins/bbcode.js';
@@ -11,7 +10,7 @@ var IE_BR_STR = IE_BR_FIX ? '' : '<br />';
 
 QUnit.module('plugins/bbcode#Parser', {
 	beforeEach: function () {
-		this.parser = new SCEditor.BBCodeParser({});
+		this.parser = new sceditor.BBCodeParser({});
 	}
 });
 
@@ -44,7 +43,7 @@ QUnit.test('Fix invalid nesting', function (assert) {
 
 QUnit.test('Rename BBCode', function (assert) {
 	$.sceditor.plugins.bbcode.bbcode.rename('b', 'testbold');
-	this.parser = new SCEditor.BBCodeParser({});
+	this.parser = new sceditor.BBCodeParser({});
 
 	assert.ok(
 		!!$.sceditor.plugins.bbcode.bbcode.get('testbold'),
@@ -503,7 +502,7 @@ QUnit.test('Attributes QuoteType custom', function (assert) {
 
 QUnit.module('plugins/bbcode#Parser - To HTML', {
 	beforeEach: function () {
-		this.parser = new SCEditor.BBCodeParser({});
+		this.parser = new sceditor.BBCodeParser({});
 	}
 });
 
@@ -804,7 +803,7 @@ QUnit.test('YouTube', function (assert) {
 
 QUnit.module('plugins/bbcode#Parser - XSS', {
 	beforeEach: function () {
-		this.parser = new SCEditor.BBCodeParser({});
+		this.parser = new sceditor.BBCodeParser({});
 	}
 });
 

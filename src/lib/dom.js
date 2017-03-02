@@ -1,6 +1,606 @@
-import $ from 'jquery';
+import * as utils from './utils.js';
+import { ie as IE_VER } from './browser.js';
 
-var _propertyNameCache = {};
+/**
+ * Cache of camelCase CSS property names
+ * @type {Object<string, string>}
+ */
+var cssPropertyNameCache = {};
+
+/**
+ * Node type constant for element nodes
+ *
+ * @type {number}
+ */
+export var ELEMENT_NODE = 1;
+
+/**
+ * Node type constant for text nodes
+ *
+ * @type {number}
+ */
+export var TEXT_NODE = 3;
+
+/**
+ * Node type constant for comment nodes
+ *
+ * @type {number}
+ */
+export var COMMENT_NODE = 8;
+
+/**
+ * Node type document nodes
+ *
+ * @type {number}
+ */
+export var DOCUMENT_NODE = 9;
+
+/**
+ * Node type constant for document fragments
+ *
+ * @type {number}
+ */
+export var DOCUMENT_FRAGMENT_NODE = 11;
+
+function toFloat(value) {
+	value = parseFloat(value);
+
+	return isFinite(value) ? value : 0;
+}
+
+/**
+ * Creates an element with the specified attributes
+ *
+ * Will create it in the current document unless context
+ * is specified.
+ *
+ * @param {!string} tag
+ * @param {!Object<string, string>} attributes
+ * @param {!Document} [context]
+ * @returns {!HTMLElement}
+ */
+export function createElement(tag, attributes, context) {
+	var node = (context || document).createElement(tag);
+
+	utils.each(attributes || {}, function (key, value) {
+		if (key === 'style') {
+			node.style.cssText = value;
+		} else if (key in node) {
+			node[key] = value;
+		} else {
+			node.setAttribute(key, value);
+		}
+	});
+
+	return node;
+}
+
+/**
+ * Returns an array of parents that matches the selector
+ *
+ * @param {!HTMLElement} node
+ * @param {!string} [selector]
+ * @returns {Array<HTMLElement>}
+ */
+export function parents(node, selector) {
+	var parents = [];
+	var parent = node || {};
+
+	while ((parent = parent.parentNode) && !/(9|11)/.test(parent.nodeType)) {
+		if (!selector || is(parent, selector)) {
+			parents.push(parent);
+		}
+	}
+
+	return parents;
+}
+
+/**
+ * Gets the first parent node that matches the selector
+ *
+ * @param {!HTMLElement} node
+ * @param {!string} [selector]
+ * @returns {HTMLElement|undefined}
+ */
+export function parent(node, selector) {
+	var parent = node || {};
+
+	while ((parent = parent.parentNode) && !/(9|11)/.test(parent.nodeType)) {
+		if (!selector || is(parent, selector)) {
+			return parent;
+		}
+	}
+}
+
+/**
+ * Checks the passed node and all parents and
+ * returns the first matching node if any.
+ *
+ * @param {!HTMLElement} node
+ * @param {!string} selector
+ * @returns {HTMLElement|undefined}
+ */
+export function closest(node, selector) {
+	return is(node, selector) ? node : parent(node, selector);
+}
+
+/**
+ * Removes the node from the DOM
+ *
+ * @param {!HTMLElement} node
+ */
+export function remove(node) {
+	node.parentNode.removeChild(node);
+}
+
+/**
+ * Appends child to parent node
+ *
+ * @param {!HTMLElement} node
+ * @param {!HTMLElement} child
+ */
+export function appendChild(node, child) {
+	node.appendChild(child);
+}
+
+/**
+ * Finds any child nodes that match teh selector
+ *
+ * @param {!HTMLElement} node
+ * @param {!string} selector
+ * @returns {NodeList}
+ */
+export function find(node, selector) {
+	return node.querySelectorAll(selector);
+}
+
+/**
+ * For on() and off() if to add/remove the event
+ * to the capture phase
+ *
+ * @type {boolean}
+ */
+export var EVENT_CAPTURE = true;
+
+/**
+ * For on() and off() if to add/remove the event
+ * to the buibble phase
+ *
+ * @type {boolean}
+ */
+export var EVENT_BUBBLE = false;
+
+/**
+ * Adds an event listener for the specified events.
+ *
+ * Events should be a space seperated list of events.
+ *
+ * If selector is specified the handler will only be
+ * called when the event target matches the seector.
+ *
+ * @param {!Node} node
+ * @param {string} events
+ * @param {string} [selector]
+ * @param {function(Object)} fn
+ * @param {boolean} [capture=false]
+ * @see off()
+ */
+// eslint-disable-next-line max-params
+export function on(node, events, selector, fn, capture) {
+	events.split(' ').forEach(function (event) {
+		var handler;
+
+		if (utils.isString(selector)) {
+			handler = fn['_sce-event-' + event + selector] || function (e) {
+				var target = e.target;
+				while (target && target !== node) {
+					if (is(target, selector)) {
+						fn.call(target, e);
+						return;
+					}
+
+					target = target.parentNode;
+				}
+			};
+
+			fn['_sce-event-' + event + selector] = handler;
+		} else {
+			handler = selector;
+			capture = fn;
+		}
+
+		node.addEventListener(event, handler, capture || false);
+	});
+}
+
+/**
+ * Removes an event listener for the specified events.
+ *
+ * @param {!Node} node
+ * @param {string} events
+ * @param {string} [selector]
+ * @param {function(Object)} fn
+ * @param {boolean} [capture=false]
+ * @see on()
+ */
+// eslint-disable-next-line max-params
+export function off(node, events, selector, fn, capture) {
+	events.split(' ').forEach(function (event) {
+		var handler;
+
+		if (utils.isString(selector)) {
+			handler = fn['_sce-event-' + event + selector];
+		} else {
+			handler = selector;
+			capture = fn;
+		}
+
+		node.removeEventListener(event, handler, capture || false);
+	});
+}
+
+/**
+ * If only attr param is specified it will get
+ * the value of the attr param.
+ *
+ * If value is specified but null the attribute
+ * will be removed otherwise the attr value will
+ * be set to the passed value.
+ *
+ * @param {!HTMLElement} node
+ * @param {!string} attr
+ * @param {?string} [value]
+ */
+export function attr(node, attr, value) {
+	if (arguments.length < 3) {
+		return node.getAttribute(attr);
+	}
+
+	// eslint-disable-next-line eqeqeq, no-eq-null
+	if (value == null) {
+		removeAttr(node, attr);
+	} else {
+		node.setAttribute(attr, value);
+	}
+}
+
+/**
+ * Removes the specified attribute
+ *
+ * @param {!HTMLElement} node
+ * @param {!string} attr
+ */
+export function removeAttr(node, attr) {
+	node.removeAttribute(attr);
+}
+
+/**
+ * Sets the passed elements display to none
+ *
+ * @param {!HTMLElement} node
+ */
+export function hide(node) {
+	css(node, 'display', 'none');
+}
+
+/**
+ * Sets the passed elements display to default
+ *
+ * @param {!HTMLElement} node
+ */
+export function show(node) {
+	css(node, 'display', '');
+}
+
+/**
+ * Toggles an elements visibility
+ *
+ * @param {!HTMLElement} node
+ */
+export function toggle(node) {
+	if (isVisible(node)) {
+		hide(node);
+	} else {
+		show(node);
+	}
+}
+
+/**
+ * Gets a computed CSS values or sets an inline CSS value
+ *
+ * Rules should be in camelCase format and not
+ * hyphenated like CSS properties.
+ *
+ * @param {!HTMLElement} node
+ * @param {!Object|string} rule
+ * @param {string|number} [value]
+ * @return {string|number|undefined}
+ */
+export function css(node, rule, value) {
+	if (arguments.length < 3) {
+		if (utils.isString(rule)) {
+			return getComputedStyle(node)[rule];
+		}
+
+		utils.each(rule, function (key, value) {
+			css(node, key, value);
+		});
+	} else {
+		// isNaN returns false for null, false and emmpty strings
+		// so need to check it's truthy or 0
+		var isNumeric = (value || value === 0) && !isNaN(value);
+		node.style[rule] = isNumeric ? value + 'px' : value;
+	}
+}
+
+
+/**
+ * Gets or sets thee data attributes on a node
+ *
+ * Unlike the jQuery version this only stores data
+ * in the DOM attributes which means only strings
+ * can be stored.
+ *
+ * @param {Node} node
+ * @param {string} [key]
+ * @param {string} [value]
+ * @return {Object|undefined}
+ */
+export function data(node, key, value) {
+	var argsLength = arguments.length;
+	var data = {};
+
+	if (node.nodeType === ELEMENT_NODE) {
+		if (argsLength === 1) {
+			utils.each(node.attributes, function (_, attr) {
+				if (/^data\-/i.test(attr.name)) {
+					data[attr.name.substr(5)] = attr.value;
+				}
+			});
+
+			return data;
+		}
+
+		if (argsLength === 2) {
+			return attr(node, 'data-' + key);
+		}
+
+		attr(node, 'data-' + key, String(value));
+	}
+}
+
+/**
+ * Checks if node matches the given selector.
+ *
+ * @param {?HTMLElement} node
+ * @param {string} selector
+ * @returns {boolean}
+ */
+export function is(node, selector) {
+	var result = false;
+
+	if (node && node.nodeType === ELEMENT_NODE) {
+		var doc = node.ownerDocument;
+		var parent, nextSibling, isAppended;
+
+		// IE 9 fails on disconnected nodes so must
+		// add them to the body to test them
+		if (IE_VER < 10 && !node.document) {
+			isAppended = true;
+			parent = node.parentNode;
+			nextSibling = node.nextSibling;
+
+			appendChild(doc.body, node);
+		}
+
+		result = (node.matches || node.msMatchesSelector ||
+			node.webkitMatchesSelector).call(node, selector);
+
+		// Put node back where it came from after IE 9 fix
+		if (isAppended) {
+			remove(node);
+
+			if (parent) {
+				parent.insertBefore(node, nextSibling);
+			}
+		}
+	}
+
+	return result;
+}
+
+
+/**
+ * Returns true if node contains child otherwise false.
+ *
+ * This differs from the DOM contains() method in that
+ * if node and child are equal this will return false.
+ *
+ * @param {!Node} node
+ * @param {HTMLElement} child
+ * @returns {boolean}
+ */
+export function contains(node, child) {
+	return node !== child && node.contains && node.contains(child);
+}
+
+/**
+ * @param {Node} node
+ * @param {string} [selector]
+ * @returns {?HTMLElement}
+ */
+export function previousElementSibling(node, selector) {
+	var prev = node.previousElementSibling;
+
+	if (selector && prev) {
+		return is(prev, selector) ? prev : null;
+	}
+
+	return prev;
+}
+
+/**
+ * @param {!Node} node
+ * @param {!Node} refNode
+ * @returns {Node}
+ */
+export function insertBefore(node, refNode) {
+	return refNode.parentNode.insertBefore(node, refNode);
+}
+
+/**
+ * @param {?HTMLElement} node
+ * @returns {!Array.<string>}
+ */
+function classes(node) {
+	return node.className.trim().split(/\s+/);
+}
+
+/**
+ * @param {?HTMLElement} node
+ * @param {string} className
+ * @returns {boolean}
+ */
+export function hasClass(node, className) {
+	return is(node, '.' + className);
+}
+
+/**
+ * @param {!HTMLElement} node
+ * @param {string} className
+ */
+export function addClass(node, className) {
+	var classList = classes(node);
+
+	if (classList.indexOf(className) < 0) {
+		classList.push(className);
+	}
+
+	node.className = classList.join(' ');
+}
+
+/**
+ * @param {!HTMLElement} node
+ * @param {string} className
+ */
+export function removeClass(node, className) {
+	var classList = classes(node);
+
+	utils.arrayRemove(classList, className);
+
+	node.className = classList.join(' ');
+}
+
+/**
+ * Toggles a class on node.
+ *
+ * If state is specified and is truthy it will add
+ * the class.
+ *
+ * If state is specified and is falsey it will remove
+ * the class.
+ *
+ * @param {HTMLElement} node
+ * @param {string} className
+ * @param {boolean} [state]
+ */
+export function toggleClass(node, className, state) {
+	state = utils.isUndefined(state) ? !hasClass(node, className) : state;
+
+	if (state) {
+		addClass(node, className);
+	} else {
+		removeClass(node, className);
+	}
+}
+
+/**
+ * Gets or sets the width of the passed node.
+ *
+ * @param {HTMLElement} node
+ * @param {number|string} [value]
+ * @returns {number|undefined}
+ */
+export function width(node, value) {
+	if (utils.isUndefined(value)) {
+		var cs = getComputedStyle(node);
+		var padding = toFloat(cs.paddingLeft) + toFloat(cs.paddingRight);
+		var border = toFloat(cs.borderLeftWidth) + toFloat(cs.borderRightWidth);
+
+		return node.offsetWidth - padding - border;
+	}
+
+	css(node, 'width', value);
+}
+
+/**
+ * Gets or sets the height of the passed node.
+ *
+ * @param {HTMLElement} node
+ * @param {number|string} [value]
+ * @returns {number|undefined}
+ */
+export function height(node, value) {
+	if (utils.isUndefined(value)) {
+		var cs = getComputedStyle(node);
+		var padding = toFloat(cs.paddingTop) + toFloat(cs.paddingButtom);
+		var border = toFloat(cs.borderTopWidth) + toFloat(cs.borderBottomWidth);
+
+		return node.offsetHeight - padding - border;
+	}
+
+	css(node, 'height', value);
+}
+
+/**
+ * Triggers a custom event with the specified name and
+ * sets the detail property to the data object passed.
+ *
+ * @param {HTMLElement} node
+ * @param {string} eventName
+ * @param {Object} [data]
+ */
+export function trigger(node, eventName, data) {
+	var event;
+
+	if (utils.isFunction(window.CustomEvent)) {
+		event = new CustomEvent(eventName, {
+			bubbles: true,
+			cancelable: true,
+			detail: data
+		});
+	} else {
+		event = node.ownerDocument.createEvent('CustomEvent');
+		event.initCustomEvent(eventName, true, true, data);
+	}
+
+	node.dispatchEvent(event);
+}
+
+/**
+ * Returns if a node is visible.
+ *
+ * @param {HTMLElement}
+ * @returns {boolean}
+ */
+export function isVisible(node) {
+	return !!node.getClientRects().length;
+}
+
+/**
+ * Convert CSS property names into camel case
+ *
+ * @param {string} string
+ * @returns {string}
+ */
+function camelCase(string) {
+	return string
+		.replace(/^-ms-/, 'ms-')
+		.replace(/-(\w)/g, function (match, char) {
+			return char.toUpperCase();
+		});
+}
+
 
 /**
  * Loop all child nodes of the passed node
@@ -9,36 +609,31 @@ var _propertyNameCache = {};
  * If the function returns false the loop will be exited.
  *
  * @param  {HTMLElement} node
- * @param  {Function} func       Callback which is called with every
- *                               child node as the first argument.
- * @param  {bool} innermostFirst If the innermost node should be passed
- *                               to the function before it's parents.
- * @param  {bool} siblingsOnly   If to only traverse the nodes siblings
- * @param  {bool} reverse        If to traverse the nodes in reverse
+ * @param  {function} func           Callback which is called with every
+ *                                   child node as the first argument.
+ * @param  {boolean} innermostFirst  If the innermost node should be passed
+ *                                   to the function before it's parents.
+ * @param  {boolean} siblingsOnly    If to only traverse the nodes siblings
+ * @param  {boolean} [reverse=false] If to traverse the nodes in reverse
  */
 // eslint-disable-next-line max-params
 export function traverse(node, func, innermostFirst, siblingsOnly, reverse) {
-	if (node) {
-		node = reverse ? node.lastChild : node.firstChild;
+	node = reverse ? node.lastChild : node.firstChild;
 
-		while (node) {
-			var next = reverse ?
-				node.previousSibling :
-				node.nextSibling;
+	while (node) {
+		var next = reverse ? node.previousSibling : node.nextSibling;
 
-			if (
-				(!innermostFirst && func(node) === false) ||
-				(!siblingsOnly && traverse(
-					node, func, innermostFirst, siblingsOnly, reverse
-				) === false) ||
-				(innermostFirst && func(node) === false)
-			) {
-				return false;
-			}
-
-			// move to next child
-			node = next;
+		if (
+			(!innermostFirst && func(node) === false) ||
+			(!siblingsOnly && traverse(
+				node, func, innermostFirst, siblingsOnly, reverse
+			) === false) ||
+			(innermostFirst && func(node) === false)
+		) {
+			return false;
 		}
+
+		node = next;
 	}
 }
 
@@ -51,20 +646,24 @@ export function rTraverse(node, func, innermostFirst, siblingsOnly) {
 }
 
 /**
- * Parses HTML
+ * Parses HTML into a document fragment
  *
- * @param {String} html
+ * @param {string} html
  * @param {Document} context
  * @since 1.4.4
- * @return {Array}
+ * @return {DocumentFragment}
  */
 export function parseHTML(html, context) {
-	var	ret = [],
-		tmp = (context || document).createElement('div');
+	context = context || document;
+
+	var	ret = context.createDocumentFragment();
+	var tmp = createElement('div', {}, context);
 
 	tmp.innerHTML = html;
 
-	$.merge(ret, tmp.childNodes);
+	while (tmp.firstChild) {
+		appendChild(ret, tmp.firstChild);
+	}
 
 	return ret;
 }
@@ -76,14 +675,12 @@ export function parseHTML(html, context) {
  * if it has a class, style attribute or data.
  *
  * @param  {HTMLElement} elm
- * @return {Boolean}
+ * @return {boolean}
  * @since 1.4.4
  */
-export function hasStyling(elm) {
-	var $elm = $(elm);
-
-	return elm && (!$elm.is('p,div') || elm.className ||
-		$elm.attr('style') || !$.isEmptyObject($elm.data()));
+export function hasStyling(node) {
+	return node && (!is(node, 'p,div') || node.className ||
+		attr(node, 'style') || !utils.isEmptyObject(data(node)));
 }
 
 /**
@@ -92,29 +689,29 @@ export function hasStyling(elm) {
  * For example it can convert the element <b> to <strong>
  *
  * @param  {HTMLElement} oldElm
- * @param  {String}      toTagName
+ * @param  {string}      toTagName
  * @return {HTMLElement}
  * @since 1.4.4
  */
 export function convertElement(oldElm, toTagName) {
-	var	child, attr,
+	var	child, attribute,
 		oldAttrs = oldElm.attributes,
 		attrsIdx = oldAttrs.length,
-		newElm   = oldElm.ownerDocument.createElement(toTagName);
+		newElm   = createElement(toTagName, {}, oldElm.ownerDocument);
 
 	while (attrsIdx--) {
-		attr = oldAttrs[attrsIdx];
+		attribute = oldAttrs[attrsIdx];
 
 		// Some browsers parse invalid attributes names like
 		// 'size"2' which throw an exception when set, just
 		// ignore these.
 		try {
-			newElm.setAttribute(attr.name, attr.value);
+			attr(newElm, attribute.name, attribute.value);
 		} catch (ex) {}
 	}
 
 	while ((child = oldElm.firstChild)) {
-		newElm.appendChild(child);
+		appendChild(newElm, child);
 	}
 
 	oldElm.parentNode.replaceChild(newElm, oldElm);
@@ -124,6 +721,7 @@ export function convertElement(oldElm, toTagName) {
 
 /**
  * List of block level elements separated by bars (|)
+ *
  * @type {string}
  */
 export var blockLevelList = '|body|hr|p|div|h1|h2|h3|h4|h5|h6|address|pre|' +
@@ -133,7 +731,7 @@ export var blockLevelList = '|body|hr|p|div|h1|h2|h3|h4|h5|h6|address|pre|' +
  * List of elements that do not allow children separated by bars (|)
  *
  * @param {Node} node
- * @return {bool}
+ * @return {boolean}
  * @since  1.4.5
  */
 export function canHaveChildren(node) {
@@ -155,14 +753,16 @@ export function canHaveChildren(node) {
 /**
  * Checks if an element is inline
  *
- * @return {bool}
+ * @param {HTMLElement} elm
+ * @param {boolean} [includeCodeAsBlock=false]
+ * @return {boolean}
  */
 export function isInline(elm, includeCodeAsBlock) {
 	var tagName,
-		nodeType = (elm || {}).nodeType || 3;
+		nodeType = (elm || {}).nodeType || TEXT_NODE;
 
-	if (nodeType !== 1) {
-		return nodeType === 3;
+	if (nodeType !== ELEMENT_NODE) {
+		return nodeType === TEXT_NODE;
 	}
 
 	tagName = elm.tagName.toLowerCase();
@@ -175,9 +775,9 @@ export function isInline(elm, includeCodeAsBlock) {
 }
 
 /**
- * <p>Copys the CSS from 1 node to another.</p>
+ * Copy the CSS from 1 node to another.
  *
- * <p>Only copies CSS defined on the element e.g. style attr.</p>
+ * Only copies CSS defined on the element e.g. style attr.
  *
  * @param {HTMLElement} from
  * @param {HTMLElement} to
@@ -205,13 +805,11 @@ export function fixNesting(node) {
 
 	traverse(node, function (node) {
 		var list = 'ul,ol',
-			isBlock = !isInline(node, true),
-			$node = $(node);
+			isBlock = !isInline(node, true);
 
 		// Any blocklevel element inside an inline element needs fixing.
 		if (isBlock && isInline(node.parentNode, true)) {
 			var	parent  = getLastInlineParent(node),
-				rParent = parent.parentNode,
 				before  = extractContents(parent, node),
 				middle  = node;
 
@@ -219,19 +817,20 @@ export function fixNesting(node) {
 			// it still has the same styling
 			copyCSS(parent, middle);
 
-			rParent.insertBefore(before, parent);
-			rParent.insertBefore(middle, parent);
+			insertBefore(before, parent);
+			insertBefore(middle, parent);
 		}
 
 		// Fix invalid nested lists which should be wrapped in an li tag
-		if (isBlock && $node.is(list) && $node.parent().is(list)) {
-			var $li = $node.prev('li');
+		if (isBlock && is(node, list) && is(node.parentNode, list)) {
+			var li = previousElementSibling(node, 'li');
 
-			if ($li.length) {
-				$li.append($node);
-			} else {
-				$node.wrap('<li />');
+			if (!li) {
+				li = createElement('li');
+				insertBefore(li, node);
 			}
+
+			appendChild(li, node);
 		}
 	});
 }
@@ -239,17 +838,23 @@ export function fixNesting(node) {
 /**
  * Finds the common parent of two nodes
  *
- * @param {HTMLElement} node1
- * @param {HTMLElement} node2
- * @return {HTMLElement}
+ * @param {!HTMLElement} node1
+ * @param {!HTMLElement} node2
+ * @return {?HTMLElement}
  */
 export function findCommonAncestor(node1, node2) {
-	// Not as fast as making two arrays of parents and comparing
-	// but is a lot smaller and as it's currently only used with
-	// fixing invalid nesting it doesn't need to be very fast
-	return $(node1).parents().has($(node2)).first();
+	while ((node1 = node1.parentNode)) {
+		if (contains(node1, node2)) {
+			return node1;
+		}
+	}
 }
 
+/**
+ * @param {?Node}
+ * @param {boolean} [previous=false]
+ * @returns {?Node}
+ */
 export function getSibling(node, previous) {
 	if (!node) {
 		return null;
@@ -260,51 +865,40 @@ export function getSibling(node, previous) {
 }
 
 /**
- * Removes unused whitespace from the root and all it's children
- *
- * @name removeWhiteSpace^1
- * @param {HTMLElement} root
- */
-/**
  * Removes unused whitespace from the root and all it's children.
  *
  * If preserveNewLines is true, new line characters will not be removed
  *
- * @name removeWhiteSpace^2
- * @param {HTMLElement} root
- * @param {boolean}     preserveNewLines
+ * @param {!HTMLElement} root
+ * @param {boolean}     [preserveNewLines]
  * @since 1.4.3
  */
 export function removeWhiteSpace(root, preserveNewLines) {
 	var	nodeValue, nodeType, next, previous, previousSibling,
 		cssWhiteSpace, nextNode, trimStart,
-		node              = root.firstChild;
+		node = root.firstChild;
 
 	while (node) {
 		nextNode  = node.nextSibling;
 		nodeValue = node.nodeValue;
 		nodeType  = node.nodeType;
 
-		// 1 = element
-		if (nodeType === 1 && node.firstChild) {
-			cssWhiteSpace = $(node).css('whiteSpace');
+		if (nodeType === ELEMENT_NODE && node.firstChild) {
+			cssWhiteSpace = css(node, 'whiteSpace');
 
-			// Skip all pre & pre-wrap with any vendor prefix
+			// Skip pre & pre-wrap with any vendor prefix
 			if (!/pre(\-wrap)?$/i.test(cssWhiteSpace)) {
-				removeWhiteSpace(
-					node,
-					/line$/i.test(cssWhiteSpace)
-				);
+				// Preserve newlines if is pre-line
+				removeWhiteSpace(node, /line$/i.test(cssWhiteSpace));
 			}
 		}
 
-		// 3 = textnode
-		if (nodeType === 3 && nodeValue) {
+		if (nodeType === TEXT_NODE && nodeValue) {
 			next            = getSibling(node);
 			previous        = getSibling(node, true);
 			trimStart       = false;
 
-			while ($(previous).hasClass('sceditor-ignore')) {
+			while (hasClass(previous, 'sceditor-ignore')) {
 				previous = getSibling(previous, true);
 			}
 			// If previous sibling isn't inline or is a textnode that
@@ -316,7 +910,7 @@ export function removeWhiteSpace(root, preserveNewLines) {
 					previousSibling = previousSibling.lastChild;
 				}
 
-				trimStart = previousSibling.nodeType === 3 ?
+				trimStart = previousSibling.nodeType === TEXT_NODE ?
 					/[\t\n\r ]$/.test(previousSibling.nodeValue) :
 					!isInline(previousSibling);
 			}
@@ -339,10 +933,9 @@ export function removeWhiteSpace(root, preserveNewLines) {
 					''
 				);
 			}
-
 			// Remove empty text nodes
 			if (!nodeValue.length) {
-				root.removeChild(node);
+				remove(node);
 			} else {
 				node.nodeValue = nodeValue.replace(
 					preserveNewLines ? /[\t ]+/g : /[\t\n\r ]+/g,
@@ -364,7 +957,7 @@ export function removeWhiteSpace(root, preserveNewLines) {
  */
 export function extractContents(startNode, endNode) {
 	var	extract,
-		commonAncestor = findCommonAncestor(startNode, endNode).get(0),
+		commonAncestor = findCommonAncestor(startNode, endNode),
 		startReached   = false,
 		endReached     = false;
 
@@ -387,16 +980,16 @@ export function extractContents(startNode, endNode) {
 			// if the start has been reached and this elm contains
 			// the end node then clone it
 			// if this node contains the start node then add it
-			if ($.contains(node, startNode) ||
-				(startReached && $.contains(node, endNode))) {
+			if (contains(node, startNode) ||
+				(startReached && contains(node, endNode))) {
 				clone = node.cloneNode(false);
 
-				clone.appendChild(extract(node));
-				docFrag.appendChild(clone);
+				appendChild(clone, extract(node));
+				appendChild(docFrag, clone);
 
 			// otherwise move it if its parent isn't already part of it
-			} else if (startReached && !$.contains(docFrag, node)) {
-				docFrag.appendChild(node);
+			} else if (startReached && !contains(docFrag, node)) {
+				appendChild(docFrag, node);
 			}
 		}, false);
 
@@ -409,22 +1002,22 @@ export function extractContents(startNode, endNode) {
 /**
  * Gets the offset position of an element
  *
- * @param  {HTMLElement} obj
+ * @param  {HTMLElement} node
  * @return {Object} An object with left and top properties
  */
-export function getOffset(obj) {
-	var	pLeft = 0,
-		pTop = 0;
+export function getOffset(node) {
+	var	left = 0,
+		top = 0;
 
-	while (obj) {
-		pLeft += obj.offsetLeft;
-		pTop  += obj.offsetTop;
-		obj   = obj.offsetParent;
+	while (node) {
+		left += node.offsetLeft;
+		top  += node.offsetTop;
+		node   = node.offsetParent;
 	}
 
 	return {
-		left: pLeft,
-		top: pTop
+		left: left,
+		top: top
 	};
 }
 
@@ -432,36 +1025,30 @@ export function getOffset(obj) {
  * Gets the value of a CSS property from the elements style attribute
  *
  * @param  {HTMLElement} elm
- * @param  {String} property
- * @return {String}
+ * @param  {string} property
+ * @return {string}
  */
 export function getStyle(elm, property) {
-	var	$elm, direction, styleValue,
+	var	direction, styleValue,
 		elmStyle = elm.style;
 
-	if (!elmStyle) {
-		return '';
+	if (!cssPropertyNameCache[property]) {
+		cssPropertyNameCache[property] = camelCase(property);
 	}
 
-	if (!_propertyNameCache[property]) {
-		_propertyNameCache[property] = $.camelCase(property);
-	}
-
-	property   = _propertyNameCache[property];
+	property   = cssPropertyNameCache[property];
 	styleValue = elmStyle[property];
 
 	// Add an exception for text-align
 	if ('textAlign' === property) {
-		$elm       = $(elm);
 		direction  = elmStyle.direction;
-		styleValue = styleValue || $elm.css(property);
+		styleValue = styleValue || css(elm, property);
 
-		if ($elm.parent().css(property) === styleValue ||
-			$elm.css('display') !== 'block' ||
-			$elm.is('hr') || $elm.is('th')) {
+		if (css(elm.parentNode, property) === styleValue ||
+			css(elm, 'display') !== 'block' || is(elm, 'hr,th')) {
 			return '';
 		}
-// check all works with changes and merge with prev?
+
 		// IE changes text-align to the same as the current direction
 		// so skip unless its not the same
 		if ((/right/i.test(styleValue) && direction === 'rtl') ||
@@ -480,9 +1067,9 @@ export function getStyle(elm, property) {
  * matches one of the values
  *
  * @param  {HTMLElement} elm
- * @param  {String} property
- * @param  {String|Array} values
- * @return {Boolean}
+ * @param  {string} property
+ * @param  {string|array} [values]
+ * @return {boolean}
  */
 export function hasStyle(elm, property, values) {
 	var styleValue = getStyle(elm, property);
@@ -492,5 +1079,5 @@ export function hasStyle(elm, property, values) {
 	}
 
 	return !values || styleValue === values ||
-		($.isArray(values) && $.inArray(styleValue, values) > -1);
+		(Array.isArray(values) && values.indexOf(styleValue) > -1);
 }

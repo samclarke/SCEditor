@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import { attr } from './dom';
 
 /**
  * Default options for SCEditor
@@ -10,7 +10,7 @@ export default {
 	 * Toolbar buttons order and groups. Should be comma separated and
 	 * have a bar | to separate groups
 	 *
-	 * @type {String}
+	 * @type {string}
 	 */
 	toolbar: 'bold,italic,underline,strike,subscript,superscript|' +
 		'left,center,right,justify|font,size,color,removeformat|' +
@@ -21,7 +21,7 @@ export default {
 	/**
 	 * Comma separated list of commands to excludes from the toolbar
 	 *
-	 * @type {String}
+	 * @type {string}
 	 */
 	toolbarExclude: null,
 
@@ -29,14 +29,14 @@ export default {
 	 * Stylesheet to include in the WYSIWYG editor. This is what will style
 	 * the WYSIWYG elements
 	 *
-	 * @type {String}
+	 * @type {string}
 	 */
 	style: 'jquery.sceditor.default.css',
 
 	/**
 	 * Comma separated list of fonts for the font selector
 	 *
-	 * @type {String}
+	 * @type {string}
 	 */
 	fonts: 'Arial,Arial Black,Comic Sans MS,Courier New,Georgia,Impact,' +
 		'Sans-serif,Serif,Times New Roman,Trebuchet MS,Verdana',
@@ -60,13 +60,13 @@ export default {
 
 	/**
 	 * The locale to use.
-	 * @type {String}
+	 * @type {string}
 	 */
-	locale: $('html').attr('lang') || 'en',
+	locale: attr(document.documentElement, 'lang') || 'en',
 
 	/**
 	 * The Charset to use
-	 * @type {String}
+	 * @type {string}
 	 */
 	charset: 'utf-8',
 
@@ -82,7 +82,7 @@ export default {
 	 * emoticons surrounded by whitespace. They will still be replaced
 	 * correctly when loaded just not AYT.
 	 *
-	 * @type {Boolean}
+	 * @type {boolean}
 	 */
 	emoticonsCompat: false,
 
@@ -90,7 +90,7 @@ export default {
 	 * If to enable emoticons. Can be changes at runtime using the
 	 * emoticons() method.
 	 *
-	 * @type {Boolean}
+	 * @type {boolean}
 	 * @since 1.4.2
 	 */
 	emoticonsEnabled: true,
@@ -98,7 +98,7 @@ export default {
 	/**
 	 * Emoticon root URL
 	 *
-	 * @type {String}
+	 * @type {string}
 	 */
 	emoticonsRoot: '',
 	emoticons: {
@@ -146,7 +146,7 @@ export default {
 	/**
 	 * Width of the editor. Set to null for automatic with
 	 *
-	 * @type {int}
+	 * @type {?number}
 	 */
 	width: null,
 
@@ -154,14 +154,14 @@ export default {
 	 * Height of the editor including toolbar. Set to null for automatic
 	 * height
 	 *
-	 * @type {int}
+	 * @type {?number}
 	 */
 	height: null,
 
 	/**
 	 * If to allow the editor to be resized
 	 *
-	 * @type {Boolean}
+	 * @type {boolean}
 	 */
 	resizeEnabled: true,
 
@@ -169,40 +169,40 @@ export default {
 	 * Min resize to width, set to null for half textarea width or -1 for
 	 * unlimited
 	 *
-	 * @type {int}
+	 * @type {?number}
 	 */
 	resizeMinWidth: null,
 	/**
 	 * Min resize to height, set to null for half textarea height or -1 for
 	 * unlimited
 	 *
-	 * @type {int}
+	 * @type {?number}
 	 */
 	resizeMinHeight: null,
 	/**
 	 * Max resize to height, set to null for double textarea height or -1
 	 * for unlimited
 	 *
-	 * @type {int}
+	 * @type {?number}
 	 */
 	resizeMaxHeight: null,
 	/**
 	 * Max resize to width, set to null for double textarea width or -1 for
 	 * unlimited
 	 *
-	 * @type {int}
+	 * @type {?number}
 	 */
 	resizeMaxWidth: null,
 	/**
 	 * If resizing by height is enabled
 	 *
-	 * @type {Boolean}
+	 * @type {boolean}
 	 */
 	resizeHeight: true,
 	/**
 	 * If resizing by width is enabled
 	 *
-	 * @type {Boolean}
+	 * @type {boolean}
 	 */
 	resizeWidth: true,
 
@@ -212,7 +212,7 @@ export default {
 	 * The words year, month and day will be replaced with the users current
 	 * year, month and day.
 	 *
-	 * @type {String}
+	 * @type {string}
 	 */
 	dateFormat: 'year-month-day',
 
@@ -227,21 +227,21 @@ export default {
 	 * If to enable paste filtering. This is currently experimental, please
 	 * report any issues.
 	 *
-	 * @type {Boolean}
+	 * @type {boolean}
 	 */
 	enablePasteFiltering: false,
 
 	/**
 	 * If to completely disable pasting into the editor
 	 *
-	 * @type {Boolean}
+	 * @type {boolean}
 	 */
 	disablePasting: false,
 
 	/**
 	 * If the editor is read only.
 	 *
-	 * @type {Boolean}
+	 * @type {boolean}
 	 */
 	readOnly: false,
 
@@ -250,42 +250,42 @@ export default {
 	 *
 	 * If set to null the direction will be automatically detected.
 	 *
-	 * @type {Boolean}
+	 * @type {boolean}
 	 */
 	rtl: false,
 
 	/**
 	 * If to auto focus the editor on page load
 	 *
-	 * @type {Boolean}
+	 * @type {boolean}
 	 */
 	autofocus: false,
 
 	/**
 	 * If to auto focus the editor to the end of the content
 	 *
-	 * @type {Boolean}
+	 * @type {boolean}
 	 */
 	autofocusEnd: true,
 
 	/**
 	 * If to auto expand the editor to fix the content
 	 *
-	 * @type {Boolean}
+	 * @type {boolean}
 	 */
 	autoExpand: false,
 
 	/**
 	 * If to auto update original textbox on blur
 	 *
-	 * @type {Boolean}
+	 * @type {boolean}
 	 */
 	autoUpdate: false,
 
 	/**
 	 * If to enable the browsers built in spell checker
 	 *
-	 * @type {Boolean}
+	 * @type {boolean}
 	 */
 	spellcheck: true,
 
@@ -293,7 +293,7 @@ export default {
 	 * If to run the source editor when there is no WYSIWYG support. Only
 	 * really applies to mobile OS's.
 	 *
-	 * @type {Boolean}
+	 * @type {boolean}
 	 */
 	runWithoutWysiwygSupport: false,
 
@@ -301,28 +301,28 @@ export default {
 	 * If to load the editor in source mode and still allow switching
 	 * between WYSIWYG and source mode
 	 *
-	 * @type {Boolean}
+	 * @type {boolean}
 	 */
 	startInSourceMode: false,
 
 	/**
 	 * Optional ID to give the editor.
 	 *
-	 * @type {String}
+	 * @type {string}
 	 */
 	id: null,
 
 	/**
 	 * Comma separated list of plugins
 	 *
-	 * @type {String}
+	 * @type {string}
 	 */
 	plugins: '',
 
 	/**
 	 * z-index to set the editor container to. Needed for jQuery UI dialog.
 	 *
-	 * @type {Int}
+	 * @type {?number}
 	 */
 	zIndex: null,
 
@@ -330,7 +330,7 @@ export default {
 	 * If to trim the BBCode. Removes any spaces at the start and end of the
 	 * BBCode string.
 	 *
-	 * @type {Boolean}
+	 * @type {boolean}
 	 */
 	bbcodeTrim: false,
 
@@ -338,7 +338,7 @@ export default {
 	 * If to disable removing block level elements by pressing backspace at
 	 * the start of them
 	 *
-	 * @type {Boolean}
+	 * @type {boolean}
 	 */
 	disableBlockRemove: false,
 
