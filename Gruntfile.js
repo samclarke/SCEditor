@@ -297,24 +297,14 @@ module.exports = (grunt) => {
 						require('autoprefixer')({
 							browsers: [
 								'last 4 versions',
-								'ie 6',
-								'ie 7',
-								'ie 8',
 								'ie 9'
 							]
+						}),
+						require('postcss-clean')({
+							compatibility: 'ie9'
 						})
 					]
 				},
-				expand: true,
-				flatten: true,
-				src: 'minified/themes/*.css',
-				dest: 'minified/themes/'
-			}
-		},
-
-		// Compress the WYSIWYG CSS
-		cssmin: {
-			build: {
 				files: [
 					{
 						'minified/jquery.sceditor.default.min.css': [
@@ -370,7 +360,6 @@ module.exports = (grunt) => {
 	grunt.loadNpmTasks('grunt-contrib-compress');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-copy');
-	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-contrib-qunit');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -399,8 +388,7 @@ module.exports = (grunt) => {
 		'rollup:build',
 		'uglify:build',
 		'less:build',
-		'postcss:build',
-		'cssmin:build'
+		'postcss:build'
 	]);
 
 	// Creates the simplified distributable ZIP
