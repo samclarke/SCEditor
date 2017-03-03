@@ -74,7 +74,7 @@ module.exports = (grunt) => {
 
 		// Removes all the old files from the distributable directory
 		clean: {
-			build: ['minified/'],
+			build: ['minified/', 'coverage/'],
 			dist: ['dist/']
 		},
 
