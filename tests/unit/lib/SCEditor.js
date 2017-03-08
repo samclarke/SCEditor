@@ -230,6 +230,7 @@ QUnit.test('wysiwygEditorInsertHtml()', function (assert) {
 		return assert.expect(0);
 	}
 
+	sceditor.focus();
 	var iframe = sceditor.getContentAreaContainer();
 	var body   = sceditor.getBody();
 	var range  = rangy.createRange(body.ownerDocument);
@@ -256,6 +257,7 @@ QUnit.test('wysiwygEditorInsertHtml() - Start and end', function (assert) {
 		return assert.expect(0);
 	}
 
+	sceditor.focus();
 	var iframe = sceditor.getContentAreaContainer();
 	var body   = sceditor.getBody();
 	var range  = rangy.createRange(body.ownerDocument);
@@ -283,6 +285,7 @@ QUnit.test('wysiwygEditorInsertText() - Start and end', function (assert) {
 		return assert.expect(0);
 	}
 
+	sceditor.focus();
 	var iframe = sceditor.getContentAreaContainer();
 	var body   = sceditor.getBody();
 	var range  = rangy.createRange(body.ownerDocument);
