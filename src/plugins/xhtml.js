@@ -649,10 +649,12 @@
 		 * @private
 		 */
 		isEmpty = function (node, excludeBr) {
-			var	childNodes     = node.childNodes,
+			var	rect,
+				childNodes     = node.childNodes,
 				tagName        = node.nodeName.toLowerCase(),
 				nodeValue      = node.nodeValue,
-				childrenLength = childNodes.length;
+				childrenLength = childNodes.length,
+				allowedEmpty   = sceditorPlugins.xhtml.allowedEmptyTags || [];
 
 			if (excludeBr && tagName === 'br') {
 				return true;
@@ -662,7 +664,9 @@
 				return true;
 			}
 
-			if (!dom.canHaveChildren(node)) {
+			if (allowedEmpty.indexOf(tagName) > -1 || tagName === 'td' ||
+				!dom.canHaveChildren(node)) {
+
 				return false;
 			}
 
@@ -676,6 +680,13 @@
 					excludeBr && !node.previousSibling && !node.nextSibling)) {
 					return false;
 				}
+			}
+
+			// Treat tags with a width and height from CSS as not empty
+			if (node.getBoundingClientRect &&
+				(node.className || node.hasAttributes('style'))) {
+				rect = node.getBoundingClientRect();
+				return !rect.width || !rect.height;
 			}
 
 			return true;
@@ -1206,4 +1217,13 @@
 	 * @since v1.4.1
 	 */
 	sceditorPlugins.xhtml.disallowedTags = [];
+
+	/**
+	 * Array containing tags which should not be removed when empty.
+	 *
+	 * @type {Array}
+	 * @name jQuery.sceditor.plugins.xhtml.allowedEmptyTags
+	 * @since v2.0.0
+	 */
+	sceditorPlugins.xhtml.allowedEmptyTags = [];
 }(sceditor));

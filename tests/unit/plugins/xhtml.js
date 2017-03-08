@@ -101,6 +101,32 @@ QUnit.test('Remove empty tags', function (assert) {
 	);
 });
 
+QUnit.test('Should not remove empty tags in allowedEmptyTags', function (assert) {
+	$.sceditor.plugins.xhtml.allowedEmptyTags = ['div', 'i'];
+
+	assert.htmlEqual(
+		this.filterStripWhiteSpace('<div></div>'),
+		'<div></div>',
+		'Single div tag'
+	);
+
+	assert.htmlEqual(
+		this.filterStripWhiteSpace('<p><i></i></p>'),
+		'<p><i></i></p>',
+		'P containing allowed empty tag'
+	);
+
+	$.sceditor.plugins.xhtml.allowedEmptyTags = [];
+});
+
+QUnit.test('Should not empty tags with a size', function (assert) {
+	assert.htmlEqual(
+		this.filterStripWhiteSpace('<p><i style="display:inline-block;width:1px;height:1px;"></i></p>'),
+		'<p><istyle="display:inline-block;width:1px;height:1px;"></i></p>',
+		'Empty tag with size'
+	);
+});
+
 
 QUnit.test('Should not remove non-empty tags', function (assert) {
 	assert.htmlEqual(
@@ -148,9 +174,21 @@ QUnit.test('Should not remove non-empty tags', function (assert) {
 	);
 
 	assert.htmlEqual(
+		this.filterHtml('<p>test</p><p><br /></p><p>test</p>'),
+		'<p>\n\ttest\n</p>\n<p>\n\t<br />\n</p>\n<p>\n\ttest\n</p>',
+		'Single span with space and br'
+	);
+
+	assert.htmlEqual(
 		this.filterHtml('<div>&nbsp; <br />		</div>'),
 		'<div>\n\t&nbsp; <br /> \n</div>',
 		'Single div with spaces and br'
+	);
+
+	assert.htmlEqual(
+		this.filterStripWhiteSpace('<table><tbody><tr><td></td><td>test</td></tr></tbody></table>'),
+		'<table><tr><td></td><td>test</td></tr></table>',
+		'Empty table cells'
 	);
 });
 
