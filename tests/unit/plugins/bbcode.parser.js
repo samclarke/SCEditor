@@ -88,6 +88,64 @@ QUnit.test('Tag closed by another tag', function (assert) {
 });
 
 
+
+QUnit.test('BBCode closed outside block', function (assert) {
+	assert.equal(
+		this.parser.toBBCode('[b]test[code]test[/b][/code]test[/b]'),
+		'[b]test[/b][code]test[/b][/code]\n[b]test[/b]',
+		'Code with closing tag inside'
+	);
+
+	assert.equal(
+		this.parser.toBBCode('[b]test[quote]test[/b][/quote]\ntest[/b]'),
+		'[b]test[/b][quote][b]test[/b][/quote]\ntest[/b]',
+		'Quote with closing tag inside'
+	);
+
+	assert.equal(
+		this.parser.toBBCode('[code][b]something[/code]\n[b]something[/b]'),
+		'[code][b]something[/code]\n[b]something[/b]',
+		'Code with tag closed outside'
+	);
+
+	assert.equal(
+		this.parser.toBBCode('[quote][b]something[/quote]\n[b]something[/b]'),
+		'[quote][b]something[/b][/quote]\n[b][b]something[/b][/b]',
+		'Quote with tag closed outside'
+	);
+});
+
+QUnit.test('BBCode closed outside block - No children fix', function (assert) {
+	this.parser = new sceditor.BBCodeParser({
+		fixInvalidChildren: false
+	});
+
+	assert.equal(
+		this.parser.toBBCode('[b]test[code]test[/b][/code]test[/b]'),
+		'[b]test[/b][code][b]test[/b][/code]\ntest[/b]',
+		'Code with closing tag inside'
+	);
+
+	assert.equal(
+		this.parser.toBBCode('[b]test[quote]test[/b][/quote]\ntest[/b]'),
+		'[b]test[/b][quote][b]test[/b][/quote]\ntest[/b]',
+		'Quote with closing tag inside'
+	);
+
+	assert.equal(
+		this.parser.toBBCode('[code][b]something[/code]\n[b]something[/b]'),
+		'[code][b]something[/b][/code]\n[b][b]something[/b][/b]',
+		'Code with tag closed outside'
+	);
+
+	assert.equal(
+		this.parser.toBBCode('[quote][b]something[/quote]\n[b]something[/b]'),
+		'[quote][b]something[/b][/quote]\n[b][b]something[/b][/b]',
+		'Quote with tag closed outside'
+	);
+});
+
+
 QUnit.test('Closing parent tag from child', function (assert) {
 	assert.equal(
 		this.parser.toBBCode('[b][color]test[/b][/color]'),
