@@ -2954,6 +2954,7 @@ export default function SCEditor(el, options) {
 			cachePos       = 0,
 			emoticonsCache = base.emoticonsCache,
 			curChar        = String.fromCharCode(e.which);
+
 // TODO: Make configurable
 		if (dom.closest(currentBlockNode, 'code')) {
 			return;
@@ -2999,9 +3000,11 @@ export default function SCEditor(el, options) {
 		if (replacedEmoticon && options.emoticonsCompat) {
 			currentEmoticons = dom.find(wysiwygBody, EMOTICONS_SELECTOR);
 			replacedEmoticon = /^\s$/.test(curChar);
-		}
 
-		if (replacedEmoticon) {
+			if (!/^\s$/.test(curChar)) {
+				e.preventDefault();
+			}
+		} else if (replacedEmoticon) {
 			e.preventDefault();
 		}
 	};
@@ -3021,7 +3024,7 @@ export default function SCEditor(el, options) {
 			rangeStart   = false,
 			noneWsRegex  = /[^\s\xA0\u2002\u2003\u2009\u00a0]+/;
 
-		utils.each(currentEmoticons, function (emoticon) {
+		utils.each(currentEmoticons, function (_, emoticon) {
 			// Ignore emoticons that have been removed from DOM
 			if (!emoticon || !emoticon.parentNode) {
 				return;
