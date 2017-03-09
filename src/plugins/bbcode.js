@@ -257,10 +257,10 @@
 		});
 	};
 
-	var TOKEN_TYPE_OPEN = 'open';
-	var TOKEN_TYPE_CONTENT = 'content';
-	var TOKEN_TYPE_NEWLINE = 'newline';
-	var TOKEN_TYPE_CLOSE = 'close';
+	var TOKEN_OPEN = 'open';
+	var TOKEN_CONTENT = 'content';
+	var TOKEN_NEWLINE = 'newline';
+	var TOKEN_CLOSE = 'close';
 
 
 	/**
@@ -298,11 +298,9 @@
 		/**
 		 * Clones this token
 		 *
-		 * @param  {boolean} includeChildren If to include the children in
-		 *                                the clone. Defaults to false.
 		 * @return {TokenizeToken}
 		 */
-		clone: function (includeChildren) {
+		clone: function () {
 			var base = this;
 
 			return new TokenizeToken(
@@ -310,44 +308,33 @@
 				base.name,
 				base.val,
 				base.attrs,
-				includeChildren ? base.children : [],
+				[],
 				base.closing ? base.closing.clone() : null
 			);
 		},
 		/**
 		 * Splits this token at the specified child
 		 *
-		 * @param  {TokenizeToken|Int} splitAt The child to split at or the
-		 *                                     index of the child
+		 * @param  {TokenizeToken} splitAt The child to split at
 		 * @return {TokenizeToken} The right half of the split token or
 		 *                         null if failed
 		 */
 		splitAt: function (splitAt) {
 			var	clone;
-			var base          = this;
-			var splitAtLength = 0;
-			var childrenLen   = base.children.length;
+			var base         = this;
+			var offsetLength = 0;
+			var offset       = base.children.indexOf(splitAt);
 
-			if (typeof splitAt !== 'number') {
-				splitAt = base.children.indexOf(splitAt);
-			}
-
-			if (splitAt < 0 || splitAt > childrenLen) {
+			if (offset < 0) {
 				return null;
 			}
 
 			// Work out how many items are on the right side of the split
 			// to pass to splice()
-			while (childrenLen--) {
-				if (childrenLen >= splitAt) {
-					splitAtLength++;
-				} else {
-					childrenLen = 0;
-				}
-			}
-
+			offsetLength   = base.children.length - offset;
 			clone          = base.clone();
-			clone.children = base.children.splice(splitAt, splitAtLength);
+			clone.children = base.children.splice(offset, offsetLength);
+
 			return clone;
 		}
 	};
@@ -410,19 +397,19 @@
 				// Close must come before open as they are
 				// the same except close has a / at the start.
 				{
-					type: TOKEN_TYPE_CLOSE,
+					type: TOKEN_CLOSE,
 					regex: /^\[\/[^\[\]]+\]/
 				},
 				{
-					type: TOKEN_TYPE_OPEN,
+					type: TOKEN_OPEN,
 					regex: /^\[[^\[\]]+\]/
 				},
 				{
-					type: TOKEN_TYPE_NEWLINE,
+					type: TOKEN_NEWLINE,
 					regex: /^(\r\n|\r|\n)/
 				},
 				{
-					type: TOKEN_TYPE_CONTENT,
+					type: TOKEN_CONTENT,
 					regex: /^([^\[\r\n]+|\[)/
 				}
 			];
@@ -454,7 +441,7 @@
 				// If there is anything left in the string which doesn't match
 				// any of the tokens then just assume it's content and add it.
 				if (str.length) {
-					toks.push(tokenizeTag(TOKEN_TYPE_CONTENT, str));
+					toks.push(tokenizeTag(TOKEN_CONTENT, str));
 				}
 
 				str = '';
@@ -478,7 +465,7 @@
 
 			// Extract the name and attributes from opening tags and
 			// just the name from closing tags.
-			if (type === TOKEN_TYPE_OPEN && (matches = val.match(openRegex))) {
+			if (type === TOKEN_OPEN && (matches = val.match(openRegex))) {
 				name = lower(matches[1]);
 
 				if (matches[2] && (matches[2] = matches[2].trim())) {
@@ -486,21 +473,21 @@
 				}
 			}
 
-			if (type === TOKEN_TYPE_CLOSE &&
+			if (type === TOKEN_CLOSE &&
 				(matches = val.match(closeRegex))) {
 				name = lower(matches[1]);
 			}
 
-			if (type === TOKEN_TYPE_NEWLINE) {
+			if (type === TOKEN_NEWLINE) {
 				name = '#newline';
 			}
 
 			// Treat all tokens without a name and
 			// all unknown BBCodes as content
-			if (!name ||
-				((type === TOKEN_TYPE_OPEN || type === TOKEN_TYPE_CLOSE) &&
-					!sceditorPlugins.bbcode.bbcodes[name])) {
-				type = TOKEN_TYPE_CONTENT;
+			if (!name || ((type === TOKEN_OPEN || type === TOKEN_CLOSE) &&
+				!base.bbcodes[name])) {
+
+				type = TOKEN_CONTENT;
 				name = '#';
 			}
 
@@ -697,15 +684,15 @@
 				if (!isChildAllowed(currentTag(), token)) {
 
 					// exclude closing tags of current tag
-					if (token.type !== TOKEN_TYPE_CLOSE || !currentTag() ||
+					if (token.type !== TOKEN_CLOSE || !currentTag() ||
 							token.name !== currentTag().name) {
 						token.name = '#';
-						token.type = TOKEN_TYPE_CONTENT;
+						token.type = TOKEN_CONTENT;
 					}
 				}
 
 				switch (token.type) {
-					case TOKEN_TYPE_OPEN:
+					case TOKEN_OPEN:
 						// Check it this closes a parent,
 						// e.g. for lists [*]one [*]two
 						if (closesCurrentTag(token.name)) {
@@ -722,26 +709,25 @@
 						// it's children until one of those tags is reached.
 						if (bbcode && !bbcode.isSelfClosing &&
 							(bbcode.closedBy ||
-								hasTag(token.name, TOKEN_TYPE_CLOSE, toks))) {
+								hasTag(token.name, TOKEN_CLOSE, toks))) {
 							openTags.push(token);
 						} else if (!bbcode || !bbcode.isSelfClosing) {
-							token.type = TOKEN_TYPE_CONTENT;
+							token.type = TOKEN_CONTENT;
 						}
 						break;
 
-					case TOKEN_TYPE_CLOSE:
+					case TOKEN_CLOSE:
 						// check if this closes the current tag,
 						// e.g. [/list] would close an open [*]
-						if (currentTag() &&
-							token.name !== currentTag().name &&
+						if (currentTag() && token.name !== currentTag().name &&
 							closesCurrentTag('/' + token.name)) {
+
 							openTags.pop();
 						}
 
 						// If this is closing the currently open tag just pop
 						// the close tag off the open tags array
-						if (currentTag() &&
-							token.name === currentTag().name) {
+						if (currentTag() && token.name === currentTag().name) {
 							currentTag().closing = token;
 							openTags.pop();
 
@@ -750,8 +736,7 @@
 						// current one until reaching the parent that is being
 						// closed. Close the parent and then add the clones back
 						// in.
-						} else if (hasTag(token.name, TOKEN_TYPE_OPEN,
-							openTags)) {
+						} else if (hasTag(token.name, TOKEN_OPEN, openTags)) {
 
 							// Remove the tag from the open tags
 							while ((curTok = openTags.pop())) {
@@ -775,7 +760,7 @@
 							}
 
 							// Place block linebreak before cloned tags
-							if (next && next.type === TOKEN_TYPE_NEWLINE) {
+							if (next && next.type === TOKEN_NEWLINE) {
 								bbcode = base.bbcodes[token.name];
 								if (bbcode && bbcode.isInline === false) {
 									addTag(next);
@@ -797,26 +782,25 @@
 
 						// This tag is closing nothing so treat it as content
 						} else {
-							token.type = TOKEN_TYPE_CONTENT;
+							token.type = TOKEN_CONTENT;
 							addTag(token);
 						}
 						break;
 
-					case TOKEN_TYPE_NEWLINE:
+					case TOKEN_NEWLINE:
 						// handle things like
 						//     [*]list\nitem\n[*]list1
 						// where it should come out as
 						//     [*]list\nitem[/*]\n[*]list1[/*]
 						// instead of
 						//     [*]list\nitem\n[/*][*]list1[/*]
-						if (currentTag() && next &&
-							closesCurrentTag(
-								(next.type === TOKEN_TYPE_CLOSE ? '/' : '') +
-								next.name
-							)) {
+						if (currentTag() && next && closesCurrentTag(
+							(next.type === TOKEN_CLOSE ? '/' : '') +
+							next.name
+						)) {
 							// skip if the next tag is the closing tag for
 							// the option tag, i.e. [/*]
-							if (!(next.type === TOKEN_TYPE_CLOSE &&
+							if (!(next.type === TOKEN_CLOSE &&
 								next.name === currentTag().name)) {
 								bbcode = base.bbcodes[currentTag().name];
 
@@ -884,7 +868,7 @@
 					continue;
 				}
 
-				if (token.type === TOKEN_TYPE_NEWLINE) {
+				if (token.type === TOKEN_NEWLINE) {
 					left   = i > 0 ? children[i - 1] : null;
 					right  = i < childrenLength - 1 ? children[i + 1] : null;
 					remove = false;
@@ -924,7 +908,7 @@
 						}
 					}
 
-					if (left && left.type === TOKEN_TYPE_OPEN) {
+					if (left && left.type === TOKEN_OPEN) {
 						if ((bbcode = base.bbcodes[left.name])) {
 							if (!onlyRemoveBreakAfter) {
 								if (bbcode.isInline === false &&
@@ -943,7 +927,7 @@
 					}
 
 					if (!onlyRemoveBreakAfter && !removedBreakBefore &&
-						right && right.type === TOKEN_TYPE_OPEN) {
+						right && right.type === TOKEN_OPEN) {
 
 						if ((bbcode = base.bbcodes[right.name])) {
 							if (bbcode.isInline === false &&
@@ -974,7 +958,7 @@
 					// only 1 \n should be removed but without this they both
 					// would be.
 					removedBreakBefore = false;
-				} else if (token.type === TOKEN_TYPE_OPEN) {
+				} else if (token.type === TOKEN_OPEN) {
 					normaliseNewLines(token.children, token,
 						onlyRemoveBreakAfter);
 				}
@@ -1014,7 +998,7 @@
 			// This must check the length each time as it can change when
 			// tokens are moved to fix the nesting.
 			for (i = 0; i < children.length; i++) {
-				if (!(token = children[i]) || token.type !== TOKEN_TYPE_OPEN) {
+				if (!(token = children[i]) || token.type !== TOKEN_OPEN) {
 					continue;
 				}
 
@@ -1086,11 +1070,11 @@
 				while (j--) {
 					var type = children[j].type;
 
-					if (type === TOKEN_TYPE_OPEN || type === TOKEN_TYPE_CLOSE) {
+					if (type === TOKEN_OPEN || type === TOKEN_CLOSE) {
 						return false;
 					}
 
-					if (type === TOKEN_TYPE_CONTENT &&
+					if (type === TOKEN_CONTENT &&
 						/\S|\u00A0/.test(children[j].val)) {
 						return false;
 					}
@@ -1103,7 +1087,7 @@
 			while (i--) {
 				// So skip anything that isn't a tag since only tags can be
 				// empty, content can't
-				if (!(token = tokens[i]) || token.type !== TOKEN_TYPE_OPEN) {
+				if (!(token = tokens[i]) || token.type !== TOKEN_OPEN) {
 					continue;
 				}
 
@@ -1152,12 +1136,11 @@
 					continue;
 				}
 
-				if (token.type === TOKEN_TYPE_OPEN) {
-					lastChild      =
-						token.children[token.children.length - 1] || {};
-					bbcode         = base.bbcodes[token.name];
+				if (token.type === TOKEN_OPEN) {
+					lastChild = token.children[token.children.length - 1] || {};
+					bbcode = base.bbcodes[token.name];
 					needsBlockWrap = isRoot && isInline(bbcode);
-					content        = convertToHTML(token.children, false);
+					content = convertToHTML(token.children, false);
 
 					if (bbcode && bbcode.html) {
 						// Only add a line break to the end if this is
@@ -1192,7 +1175,7 @@
 						html = token.val + content +
 							(token.closing ? token.closing.val : '');
 					}
-				} else if (token.type === TOKEN_TYPE_NEWLINE) {
+				} else if (token.type === TOKEN_NEWLINE) {
 					if (!isRoot) {
 						ret.push('<br />');
 						continue;
@@ -1307,7 +1290,7 @@
 				quoteType = (bbcode ? bbcode.quoteType : null) ||
 					base.opts.quoteType || BBCodeParser.QuoteType.auto;
 
-				if (!bbcode && token.type === TOKEN_TYPE_OPEN) {
+				if (!bbcode && token.type === TOKEN_OPEN) {
 					ret.push(token.val);
 
 					if (token.children) {
@@ -1317,7 +1300,7 @@
 					if (token.closing) {
 						ret.push(token.closing.val);
 					}
-				} else if (token.type === TOKEN_TYPE_OPEN) {
+				} else if (token.type === TOKEN_OPEN) {
 					if (breakBefore) {
 						ret.push('\n');
 					}
