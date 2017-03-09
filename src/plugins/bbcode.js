@@ -280,9 +280,7 @@
 	 * @memberOf BBCodeParser.prototype
 	 */
 	// eslint-disable-next-line max-params
-	var TokenizeToken = function (
-		type, name, val, attrs, children, closing
-	) {
+	var TokenizeToken = function (type, name, val, attrs, children, closing) {
 		var base      = this;
 
 		base.type     = type;
@@ -317,23 +315,20 @@
 		 *
 		 * @param  {TokenizeToken} splitAt The child to split at
 		 * @return {TokenizeToken} The right half of the split token or
-		 *                         null if failed
+		 *                         empty clone if invalid splitAt lcoation
 		 */
 		splitAt: function (splitAt) {
-			var	clone;
+			var offsetLength;
 			var base         = this;
-			var offsetLength = 0;
+			var	clone        = base.clone();
 			var offset       = base.children.indexOf(splitAt);
 
-			if (offset < 0) {
-				return null;
+			if (offset > -1) {
+				// Work out how many items are on the right side of the split
+				// to pass to splice()
+				offsetLength   = base.children.length - offset;
+				clone.children = base.children.splice(offset, offsetLength);
 			}
-
-			// Work out how many items are on the right side of the split
-			// to pass to splice()
-			offsetLength   = base.children.length - offset;
-			clone          = base.clone();
-			clone.children = base.children.splice(offset, offsetLength);
 
 			return clone;
 		}
