@@ -186,6 +186,20 @@ QUnit.test('Should remove whitespace in non-code tags', function (assert) {
 	assert.equal(result, 'lots \nof junk j');
 });
 
+QUnit.test('Should remove empty text nodes', function (assert) {
+	var quote = document.createElement('blockquote');
+	quote.appendChild(document.createTextNode('test'));
+
+	var root = document.createElement('div');
+	root.appendChild(document.createTextNode(''));
+	root.appendChild(quote);
+	root.appendChild(document.createTextNode('test'));
+
+	var result = this.plugin.signalToSource('', root);
+
+	assert.equal(result, '[quote]test[/quote]\ntest');
+});
+
 
 QUnit.test('New line handling', function (assert) {
 	assert.equal(

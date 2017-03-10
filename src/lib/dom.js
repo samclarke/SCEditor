@@ -893,7 +893,7 @@ export function removeWhiteSpace(root, preserveNewLines) {
 			}
 		}
 
-		if (nodeType === TEXT_NODE && nodeValue) {
+		if (nodeType === TEXT_NODE) {
 			next            = getSibling(node);
 			previous        = getSibling(node, true);
 			trimStart       = false;
@@ -933,6 +933,7 @@ export function removeWhiteSpace(root, preserveNewLines) {
 					''
 				);
 			}
+
 			// Remove empty text nodes
 			if (!nodeValue.length) {
 				remove(node);
