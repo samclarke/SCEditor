@@ -321,6 +321,14 @@ QUnit.test('Attributes QuoteType.auto', function (assert) {
 
 	assert.equal(
 		this.parser.toBBCode(
+			'[quote=te=st test=ex=tra]hi[/quote]'
+		),
+		'[quote="te=st" test="ex=tra"]hi[/quote]\n',
+		'Default attribute with equal'
+	);
+
+	assert.equal(
+		this.parser.toBBCode(
 			'[quote ' +
 				'quoted=\'words word=word\\\' link=lala=lalala\' ' +
 				'author=anything that does not have an equals after it ' +
@@ -386,6 +394,14 @@ QUnit.test('Attributes QuoteType.never', function (assert) {
 		),
 		'[quote author=This is all the author date=12345679]hi[/quote]\n',
 		'Attribute with spaces'
+	);
+
+	assert.equal(
+		this.parser.toBBCode(
+			'[quote=te=st test=ex=tra]hi[/quote]'
+		),
+		'[quote=te=st test=ex=tra]hi[/quote]\n',
+		'Default attribute with equal'
 	);
 
 	assert.equal(
@@ -460,6 +476,14 @@ QUnit.test('Attributes QuoteType.always', function (assert) {
 
 	assert.equal(
 		this.parser.toBBCode(
+			'[quote=te=st test=ex=tra]hi[/quote]'
+		),
+		'[quote="te=st" test="ex=tra"]hi[/quote]\n',
+		'Default attribute with equal'
+	);
+
+	assert.equal(
+		this.parser.toBBCode(
 			'[quote ' +
 				'quoted=\'words word=word\\\' link=lala=lalala\' ' +
 				'author=anything that does not have an equals after it ' +
@@ -530,6 +554,14 @@ QUnit.test('Attributes QuoteType custom', function (assert) {
 		'[quote author=\'This is all the author\' ' +
 			'date=\'12345679\']hi[/quote]\n',
 		'Attribute with spaces'
+	);
+
+	assert.equal(
+		this.parser.toBBCode(
+			'[quote=te=st test=ex=tra]hi[/quote]'
+		),
+		'[quote=\'te=st\' test=\'ex=tra\']hi[/quote]\n',
+		'Default attribute with equal'
 	);
 
 	assert.equal(
