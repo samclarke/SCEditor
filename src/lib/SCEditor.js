@@ -91,7 +91,7 @@ export default function SCEditor(el, options) {
 	 * @type {Document}
 	 * @private
 	 */
-	var wysiwygDoc;
+	var wysiwygDocument;
 
 	/**
 	 * The editors textarea for viewing source
@@ -301,7 +301,6 @@ export default function SCEditor(el, options) {
 		initCommands,
 		initResize,
 		initEmoticons,
-		getWysiwygDoc,
 		handlePasteEvt,
 		handlePasteData,
 		handleKeyDown,
@@ -482,9 +481,9 @@ export default function SCEditor(el, options) {
 			options.height || dom.height(original)
 		);
 
-		wysiwygDoc = getWysiwygDoc();
-		wysiwygDoc.open();
-		wysiwygDoc.write(_tmpl('html', {
+		wysiwygDocument = wysiwygEditor.contentDocument;
+		wysiwygDocument.open();
+		wysiwygDocument.write(_tmpl('html', {
 			// Add IE version class to the HTML element so can apply
 			// conditional styling without CSS hacks
 			attrs: IE_VER ? ' class="ie ie' + IE_VER + '"' : '',
@@ -492,9 +491,9 @@ export default function SCEditor(el, options) {
 			charset: options.charset,
 			style: options.style
 		}));
-		wysiwygDoc.close();
+		wysiwygDocument.close();
 
-		wysiwygBody = wysiwygDoc.body;
+		wysiwygBody = wysiwygDocument.body;
 
 		base.readOnly(!!options.readOnly);
 
@@ -539,7 +538,7 @@ export default function SCEditor(el, options) {
 		if (options.autoExpand) {
 			// Need to update when images (or anything else) loads
 			dom.on(wysiwygBody, 'load', autoExpand, dom.EVENT_CAPTURE);
-			dom.on(wysiwygDoc, 'input keyup', autoExpand);
+			dom.on(wysiwygDocument, 'input keyup', autoExpand);
 		}
 
 		if (options.resizeEnabled) {
@@ -590,12 +589,12 @@ export default function SCEditor(el, options) {
 		dom.on(sourceEditor, 'keydown', handleKeyDown);
 		dom.on(sourceEditor, EVENTS_TO_FORWARD, handleEvent);
 
-		dom.on(wysiwygDoc, 'mousedown', handleMouseDown);
-		dom.on(wysiwygDoc, 'blur', valueChangedBlur);
-		dom.on(wysiwygDoc, CHECK_SELECTION_EVENTS, checkSelectionChanged);
-		dom.on(wysiwygDoc, 'beforedeactivate keyup mouseup', saveRange);
-		dom.on(wysiwygDoc, 'keyup', appendNewLine);
-		dom.on(wysiwygDoc, 'focus', function () {
+		dom.on(wysiwygDocument, 'mousedown', handleMouseDown);
+		dom.on(wysiwygDocument, 'blur', valueChangedBlur);
+		dom.on(wysiwygDocument, CHECK_SELECTION_EVENTS, checkSelectionChanged);
+		dom.on(wysiwygDocument, 'beforedeactivate keyup mouseup', saveRange);
+		dom.on(wysiwygDocument, 'keyup', appendNewLine);
+		dom.on(wysiwygDocument, 'focus', function () {
 			lastRange = null;
 		});
 
@@ -883,7 +882,7 @@ export default function SCEditor(el, options) {
 
 		if (focusEnd) {
 			if (!(node = wysiwygBody.lastChild)) {
-				node = dom.createElement('p', {}, wysiwygDoc);
+				node = dom.createElement('p', {}, wysiwygDocument);
 				dom.appendChild(wysiwygBody, node);
 			}
 
@@ -899,7 +898,7 @@ export default function SCEditor(el, options) {
 			}
 		}
 
-		range = wysiwygDoc.createRange();
+		range = wysiwygDocument.createRange();
 
 		if (!dom.canHaveChildren(node)) {
 			range.setStartBefore(node);
@@ -1262,7 +1261,7 @@ export default function SCEditor(el, options) {
 		range.selectNodeContents(wysiwygBody);
 
 		var rect = range.getBoundingClientRect();
-		var current = wysiwygDoc.documentElement.clientHeight;
+		var current = wysiwygDocument.documentElement.clientHeight;
 		var spaceNeeded = rect.bottom - rect.top;
 		var newHeight = base.height() + (spaceNeeded - current);
 
@@ -1482,7 +1481,7 @@ export default function SCEditor(el, options) {
 	 * @private
 	 */
 	handlePasteData = function (data) {
-		var pastearea = dom.createElement('div', {}, wysiwygDoc);
+		var pastearea = dom.createElement('div', {}, wysiwygDocument);
 
 		pluginManager.call('pasteRaw', data);
 
@@ -1538,23 +1537,6 @@ export default function SCEditor(el, options) {
 		if (focus === true) {
 			base.focus();
 		}
-	};
-
-	/**
-	 * Gets the WYSIWYG editors document
-	 * @private
-	 */
-	getWysiwygDoc = function () {
-		if (wysiwygEditor.contentDocument) {
-			return wysiwygEditor.contentDocument;
-		}
-
-		if (wysiwygEditor.contentWindow &&
-			wysiwygEditor.contentWindow.document) {
-			return wysiwygEditor.contentWindow.document;
-		}
-
-		return wysiwygEditor.document;
 	};
 
 
@@ -1906,7 +1888,7 @@ export default function SCEditor(el, options) {
 		var	html;
 		// Create a tmp node to store contents so it can be modified
 		// without affecting anything else.
-		var tmp = dom.createElement('div', {}, wysiwygDoc);
+		var tmp = dom.createElement('div', {}, wysiwygDocument);
 		var childNodes = wysiwygBody.childNodes;
 
 		for (var i = 0; i < childNodes.length; i++) {
@@ -2301,7 +2283,7 @@ export default function SCEditor(el, options) {
 		}
 
 		try {
-			executed = wysiwygDoc.execCommand(command, false, param);
+			executed = wysiwygDocument.execCommand(command, false, param);
 		} catch (ex) { }
 
 		// show error if execution failed and an error message exists
@@ -2408,7 +2390,7 @@ export default function SCEditor(el, options) {
 	updateActiveButtons = function () {
 		var firstBlock, parent;
 		var activeClass = 'active';
-		var doc         = wysiwygDoc;
+		var doc         = wysiwygDocument;
 		var isSource    = base.sourceMode();
 
 		if (base.readOnly()) {
@@ -2480,7 +2462,7 @@ export default function SCEditor(el, options) {
 			if (!dom.is(closestTag, LIST_TAGS)) {
 				lastRange = null;
 
-				br = dom.createElement('br', {}, wysiwygDoc);
+				br = dom.createElement('br', {}, wysiwygDocument);
 				rangeHelper.insertNode(br);
 
 				// Last <br> of a block will be collapsed unless it is
@@ -2541,7 +2523,7 @@ export default function SCEditor(el, options) {
 				// this is the last text or br node, if its in a code or
 				// quote tag then add a newline to the end of the editor
 				if (requiresNewLine) {
-					paragraph = dom.createElement('p', {}, wysiwygDoc);
+					paragraph = dom.createElement('p', {}, wysiwygDocument);
 					paragraph.className = 'sceditor-nlf';
 					paragraph.innerHTML = !IE_BR_FIX ? '<br />' : '';
 					dom.appendChild(wysiwygBody, paragraph);
@@ -2699,9 +2681,7 @@ export default function SCEditor(el, options) {
 	 * @since 1.4.1
 	 * @see bind
 	 */
-	base.unbind = function (
-		events, handler, excludeWysiwyg, excludeSource
-	) {
+	base.unbind = function (events, handler, excludeWysiwyg, excludeSource) {
 		events = events.split(' ');
 
 		var i  = events.length;
@@ -2784,7 +2764,7 @@ export default function SCEditor(el, options) {
 			base.bind('focus', handler, excludeWysiwyg, excludeSource);
 		} else if (!base.inSourceMode()) {
 			// Already has focus so do nothing
-			if (dom.find(wysiwygDoc, ':focus').length) {
+			if (dom.find(wysiwygDocument, ':focus').length) {
 				return;
 			}
 
@@ -3129,7 +3109,7 @@ export default function SCEditor(el, options) {
 		} else {
 			utils.each(currentEmoticons, function (_, img) {
 				var text = dom.data(img, 'sceditor-emoticon');
-				var textNode = wysiwygDoc.createTextNode(text);
+				var textNode = wysiwygDocument.createTextNode(text);
 				img.parentNode.replaceChild(textNode, img);
 			});
 
@@ -3165,9 +3145,9 @@ export default function SCEditor(el, options) {
 		if (!inlineCss) {
 			inlineCss = dom.createElement('style', {
 				id: 'inline'
-			}, wysiwygDoc);
+			}, wysiwygDocument);
 
-			dom.appendChild(wysiwygDoc.head, inlineCss);
+			dom.appendChild(wysiwygDocument.head, inlineCss);
 		}
 
 		if (!utils.isString(css)) {
@@ -3479,7 +3459,7 @@ export default function SCEditor(el, options) {
 		// Don't need to save the range if sceditor-start-marker
 		// is present as the range is already saved
 		saveRange = saveRange !== false &&
-			!wysiwygDoc.getElementById('sceditor-start-marker');
+			!wysiwygDocument.getElementById('sceditor-start-marker');
 
 		// Clear any current timeout as it's now been triggered
 		if (valueChangedKeyUp.timer) {
