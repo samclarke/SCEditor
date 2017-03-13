@@ -1716,19 +1716,19 @@ export default function SCEditor(el, options) {
 	 * @memberOf SCEditor.prototype
 	 */
 	base.sourceEditorCaret = function (position) {
-		var ret = {};
-
 		sourceEditor.focus();
 
 		if (position) {
 			sourceEditor.selectionStart = position.start;
-			sourceEditor.selectionEnd   = position.end;
-		} else {
-			ret.start = sourceEditor.selectionStart;
-			ret.end   = sourceEditor.selectionEnd;
+			sourceEditor.selectionEnd = position.end;
+
+			return this;
 		}
 
-		return position ? this : ret;
+		return {
+			start: sourceEditor.selectionStart,
+			end: sourceEditor.selectionEnd
+		};
 	};
 
 	/**
