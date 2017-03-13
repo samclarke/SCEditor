@@ -7,6 +7,7 @@ import RangeHelper from './RangeHelper.js';
 import _tmpl from './templates.js';
 import * as escape from './escape.js';
 import * as browser from './browser.js';
+import * as emoticons from './emoticons.js';
 
 var globalWin  = window;
 var globalDoc  = document;
@@ -18,8 +19,6 @@ var IE_VER = browser.ie;
 var IE_BR_FIX = IE_VER && IE_VER < 11;
 
 var IMAGE_MIME_REGEX = /^image\/(p?jpe?g|gif|png|bmp)$/i;
-
-var EMOTICONS_SELECTOR = 'img[data-sceditor-emoticon]';
 
 /**
  * SCEditor - A lightweight WYSIWYG editor
@@ -225,16 +224,6 @@ export default function SCEditor(el, options) {
 	var shortcutHandlers = {};
 
 	/**
-	 * An array of all the current emoticons.
-	 *
-	 * Only used or populated when emoticonsCompat is enabled.
-	 *
-	 * @type {NodeList}
-	 * @private
-	 */
-	var currentEmoticons = [];
-
-	/**
 	 * The min and max heights that autoExpand should stay within
 	 *
 	 * @type {Object}
@@ -283,6 +272,15 @@ export default function SCEditor(el, options) {
 	 * @private
 	 */
 	var pasteContentFragment;
+
+	/**
+	 * All the emoticons from dropdown, more and hidden combined
+	 * and with the emoticons root set
+	 *
+	 * @type {!Object<string, string>}
+	 * @private
+	 */
+	var allEmoticons = {};
 
 	/**
 	 * Private functions
@@ -829,30 +827,29 @@ export default function SCEditor(el, options) {
 	 * @private
 	 */
 	initEmoticons = function () {
-		var	emoticons = options.emoticons,
-			root      = options.emoticonsRoot;
+		var	emoticons = options.emoticons;
+		var root      = options.emoticonsRoot || '';
 
-		if (!emoticons || !options.emoticonsEnabled) {
-			return;
+		if (emoticons) {
+			allEmoticons = utils.extend(
+				{}, emoticons.more, emoticons.dropdown, emoticons.hidden
+			);
 		}
 
-		utils.each(emoticons, function (idx, val) {
-			utils.each(val, function (key, url) {
+		utils.each(allEmoticons, function (key, url) {
+			allEmoticons[key] = _tmpl('emoticon', {
+				key: key,
 				// Prefix emoticon root to emoticon urls
-				if (root) {
-					url = {
-						url: root + (url.url || url),
-						tooltip: url.tooltip || key
-					};
-
-					emoticons[idx][key] = url;
-				}
-
-				// Preload the emoticon
-				preLoadCache.push(dom.createElement('img', {
-					src: url.url || url
-				}));
+				url: root + (url.url || url),
+				tooltip: url.tooltip || key
 			});
+
+			// Preload the emoticon
+			if (options.emoticonsEnabled) {
+				preLoadCache.push(dom.createElement('img', {
+					src: root + (url.url || url)
+				}));
+			}
 		});
 	};
 
@@ -1577,7 +1574,7 @@ export default function SCEditor(el, options) {
 		// without affecting the cursor position
 		rangeHelper.insertHTML(html, endHtml);
 		rangeHelper.saveRange();
-		replaceEmoticons(wysiwygBody);
+		replaceEmoticons();
 
 		// Scroll the editor after the end of the selection
 		marker   = dom.find(wysiwygBody, '#sceditor-end-marker')[0];
@@ -1976,7 +1973,7 @@ export default function SCEditor(el, options) {
 		}
 
 		wysiwygBody.innerHTML = value;
-		replaceEmoticons(wysiwygBody);
+		replaceEmoticons();
 
 		appendNewLine();
 		triggerValueChanged();
@@ -2015,101 +2012,10 @@ export default function SCEditor(el, options) {
 	 * with their emoticon images
 	 * @private
 	 */
-	replaceEmoticons = function (node) {
-// TODO: Make this tag configurable.
-		if (!options.emoticonsEnabled || dom.parent(node, 'code')) {
-			return;
-		}
-
-		var	doc           = node.ownerDocument,
-			whitespace    = '\\s|\xA0|\u2002|\u2003|\u2009|&nbsp;',
-			emoticonCodes = [],
-			emoticonRegex = {},
-			emoticons     = utils.extend(
-				{},
-				options.emoticons.more,
-				options.emoticons.dropdown,
-				options.emoticons.hidden
-			);
-// TODO: cache the emoticonCodes and emoticonCodes objects and share them with
-// the AYT conversion
-
-		utils.each(emoticons, function (key) {
-			if (options.emoticonsCompat) {
-				emoticonRegex[key] = new RegExp(
-					'(>|^|' + whitespace + ')' +
-					escape.regex(key) +
-					'($|<|' + whitespace + ')'
-				);
-			}
-
-			emoticonCodes.push(key);
-		});
-
-		// Sort keys shortest to longest (so can replace in reverse loop)
-		emoticonCodes.sort(function (a, b) {
-			return a.length - b.length;
-		});
-
-// TODO: tidy below
-		var convertEmoticons = function (node) {
-			node = node.firstChild;
-
-			while (node) {
-				var	parts, key, emoticon, parsedHtml,
-					emoticonIdx, nextSibling, matchPos,
-					nodeParent  = node.parentNode,
-					nodeValue   = node.nodeValue;
-
-				if (node.nodeType !== dom.TEXT_NODE) {
-// TODO: Make this tag configurable.
-					if (!dom.is(node, 'code')) {
-						convertEmoticons(node);
-					}
-				} else if (nodeValue) {
-					emoticonIdx = emoticonCodes.length;
-					while (emoticonIdx--) {
-						key      = emoticonCodes[emoticonIdx];
-						matchPos = options.emoticonsCompat ?
-							nodeValue.search(emoticonRegex[key]) :
-							nodeValue.indexOf(key);
-
-						if (matchPos > -1) {
-							nextSibling    = node.nextSibling;
-							emoticon       = emoticons[key];
-							parts          = nodeValue
-								.substr(matchPos).split(key);
-							nodeValue      = nodeValue
-								.substr(0, matchPos) + parts.shift();
-							node.nodeValue = nodeValue;
-
-							parsedHtml = dom.parseHTML(_tmpl('emoticon', {
-								key: key,
-								url: emoticon.url || emoticon,
-								tooltip: emoticon.tooltip || key
-							}), doc);
-
-							nodeParent.insertBefore(
-								parsedHtml,
-								nextSibling
-							);
-
-							nodeParent.insertBefore(
-								doc.createTextNode(parts.join(key)),
-								nextSibling
-							);
-						}
-					}
-				}
-
-				node = node.nextSibling;
-			}
-		};
-
-		convertEmoticons(node);
-
-		if (options.emoticonsCompat) {
-			currentEmoticons = dom.find(wysiwygBody, EMOTICONS_SELECTOR);
+	replaceEmoticons = function () {
+		if (options.emoticonsEnabled) {
+			emoticons
+				.replace(wysiwygBody, allEmoticons, options.emoticonsCompat);
 		}
 	};
 
@@ -2943,20 +2849,8 @@ export default function SCEditor(el, options) {
 		if (!emoticonsCache) {
 			emoticonsCache = [];
 
-			utils.each(utils.extend(
-				{},
-				options.emoticons.more,
-				options.emoticons.dropdown,
-				options.emoticons.hidden
-			), function (key, url) {
-				emoticonsCache[cachePos++] = [
-					key,
-					_tmpl('emoticon', {
-						key: key,
-						url: url.url || url,
-						tooltip: url.tooltip || key
-					})
-				];
+			utils.each(allEmoticons, function (key, html) {
+				emoticonsCache[cachePos++] = [key, html];
 			});
 
 			emoticonsCache.sort(function (a, b) {
@@ -2977,15 +2871,10 @@ export default function SCEditor(el, options) {
 			curChar
 		);
 
-		if (replacedEmoticon && options.emoticonsCompat) {
-			currentEmoticons = dom.find(wysiwygBody, EMOTICONS_SELECTOR);
-			replacedEmoticon = /^\s$/.test(curChar);
-
-			if (!/^\s$/.test(curChar)) {
+		if (replacedEmoticon) {
+			if (!options.emoticonsCompat || !/^\s$/.test(curChar)) {
 				e.preventDefault();
 			}
-		} else if (replacedEmoticon) {
-			e.preventDefault();
 		}
 	};
 
@@ -2994,78 +2883,7 @@ export default function SCEditor(el, options) {
 	 * @private
 	 */
 	emoticonsCheckWhitespace = function () {
-		if (!currentEmoticons.length) {
-			return;
-		}
-
-		var	prev, next, parent, range, previousText, rangeStartContainer,
-			newEmoticons = [],
-			currentBlock = base.currentBlockNode(),
-			rangeStart   = false,
-			noneWsRegex  = /[^\s\xA0\u2002\u2003\u2009\u00a0]+/;
-
-		utils.each(currentEmoticons, function (_, emoticon) {
-			// Ignore emoticons that have been removed from DOM
-			if (!emoticon || !emoticon.parentNode) {
-				return;
-			}
-
-			if (!dom.contains(currentBlock, emoticon)) {
-				newEmoticons.push(emoticon);
-				return;
-			}
-
-			prev         = emoticon.previousSibling;
-			next         = emoticon.nextSibling;
-			previousText = prev.nodeValue;
-
-			// For IE's HTMLPhraseElement
-			if (previousText === null) {
-				previousText = prev.innerText || '';
-			}
-
-			if ((!prev || !noneWsRegex.test(prev.nodeValue.slice(-1))) &&
-				(!next || !noneWsRegex.test((next.nodeValue || '')[0]))) {
-				newEmoticons.push(emoticon);
-				return;
-			}
-
-			parent              = emoticon.parentNode;
-			range               = rangeHelper.cloneSelected();
-			rangeStartContainer = range.startContainer;
-			previousText        = previousText +
-				dom.data(emoticon, 'sceditor-emoticon');
-
-			// Store current caret position
-			if (rangeStartContainer === next) {
-				rangeStart = previousText.length + range.startOffset;
-			} else if (rangeStartContainer === currentBlock &&
-				currentBlock.childNodes[range.startOffset] === next) {
-				rangeStart = previousText.length;
-			} else if (rangeStartContainer === prev) {
-				rangeStart = range.startOffset;
-			}
-
-			if (!next || next.nodeType !== dom.TEXT_NODE) {
-				next = parent.insertBefore(
-					parent.ownerDocument.createTextNode(''), next
-				);
-			}
-
-			next.insertData(0, previousText);
-			dom.remove(prev);
-			dom.remove(emoticon);
-
-			// Need to update the range starting
-			// position if it has been modified
-			if (rangeStart !== false) {
-				range.setStart(next, rangeStart);
-				range.collapse(true);
-				rangeHelper.selectRange(range);
-			}
-		});
-
-		currentEmoticons = newEmoticons;
+		emoticons.checkWhitespace(currentBlockNode, rangeHelper);
 	};
 
 	/**
@@ -3093,27 +2911,27 @@ export default function SCEditor(el, options) {
 
 		options.emoticonsEnabled = enable;
 
-		currentEmoticons = dom.find(wysiwygBody, EMOTICONS_SELECTOR);
-
 		if (enable) {
 			dom.on(wysiwygBody, 'keypress', emoticonsKeyPress);
 
 			if (!base.sourceMode()) {
 				rangeHelper.saveRange();
 
-				replaceEmoticons(wysiwygBody);
+				replaceEmoticons();
 				triggerValueChanged(false);
 
 				rangeHelper.restoreRange();
 			}
 		} else {
-			utils.each(currentEmoticons, function (_, img) {
+			var emoticons =
+				dom.find(wysiwygBody, 'img[data-sceditor-emoticon]');
+
+			utils.each(emoticons, function (_, img) {
 				var text = dom.data(img, 'sceditor-emoticon');
 				var textNode = wysiwygDocument.createTextNode(text);
 				img.parentNode.replaceChild(textNode, img);
 			});
 
-			currentEmoticons = [];
 			dom.off(wysiwygBody, 'keypress', emoticonsKeyPress);
 
 			triggerValueChanged();
