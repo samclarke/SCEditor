@@ -371,7 +371,6 @@ var defaultCommnds = {
 
 	// START_COMMAND: Table
 	table: {
-		forceNewLineAfter: ['table'],
 		exec: function (caller) {
 			var	editor  = this,
 				content = dom.createElement('div');
@@ -419,7 +418,6 @@ var defaultCommnds = {
 
 	// START_COMMAND: Code
 	code: {
-		forceNewLineAfter: ['code'],
 		exec: function () {
 			this.wysiwygEditorInsertHtml(
 				'<code>',
@@ -595,7 +593,6 @@ var defaultCommnds = {
 
 	// START_COMMAND: Quote
 	quote: {
-		forceNewLineAfter: ['blockquote'],
 		exec: function (caller, html, author) {
 			var	before = '<blockquote>',
 				end    = '</blockquote>';

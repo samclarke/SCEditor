@@ -140,14 +140,6 @@ export default function SCEditor(el, options) {
 	var rangeHelper;
 
 	/**
-	 * Tags which require the new line fix
-	 *
-	 * @type {Array.<string>}
-	 * @private
-	 */
-	var newLineFixTags = [];
-
-	/**
 	 * An array of button state handlers
 	 *
 	 * @type {Array.<Object>}
@@ -288,7 +280,6 @@ export default function SCEditor(el, options) {
 		initToolBar,
 		initOptions,
 		initEvents,
-		initCommands,
 		initResize,
 		initEmoticons,
 		handlePasteEvt,
@@ -366,7 +357,6 @@ export default function SCEditor(el, options) {
 		initEmoticons();
 		initToolBar();
 		initEditor();
-		initCommands();
 		initOptions();
 		initEvents();
 
@@ -386,6 +376,7 @@ export default function SCEditor(el, options) {
 			}
 
 			autoExpand();
+			appendNewLine();
 // TODO: use editor doc and window?
 			pluginManager.call('ready');
 		};
@@ -678,21 +669,6 @@ export default function SCEditor(el, options) {
 
 		// Append the toolbar to the toolbarContainer option if given
 		dom.appendChild(options.toolbarContainer || editorContainer, toolbar);
-	};
-
-	/**
-	 * Creates an array of all the key press functions
-	 * like emoticons, ect.
-	 * @private
-	 */
-	initCommands = function () {
-		utils.each(base.commands, function (_, cmd) {
-			if (cmd.forceNewLineAfter && Array.isArray(cmd.forceNewLineAfter)) {
-				newLineFixTags = newLineFixTags.concat(cmd.forceNewLineAfter);
-			}
-		});
-
-		appendNewLine();
 	};
 
 	/**
