@@ -2395,31 +2395,28 @@ export default function SCEditor(el, options) {
 	 * @private
 	 */
 	appendNewLine = function () {
-		var name, requiresNewLine, paragraph;
-
+		// Check all nodes in reverse until either add a new line
+		// or reach a non-empty textnode or BR at which point can
+		// stop checking.
 		dom.rTraverse(wysiwygBody, function (node) {
-			name = node.nodeName.toLowerCase();
-// TODO: Replace requireNewLineFix with just a block level fix for any
-// block that has styling and any block that isn't a plain <p> or <div>
-			if (newLineFixTags.indexOf(name) > -1) {
-				requiresNewLine = true;
-			}
+			// Last block, add new line after if has styling
+			if (node.nodeType === dom.ELEMENT_NODE &&
+				!/inline/.test(dom.css(node, 'display'))) {
 
-// TODO: tidy this up
-			// find the last non-empty text node or line break.
-			if ((node.nodeType === 3 && !/^\s*$/.test(node.nodeValue)) ||
-				name === 'br' || (IE_BR_FIX && !node.firstChild &&
-				!dom.isInline(node, false))) {
-
-				// this is the last text or br node, if its in a code or
-				// quote tag then add a newline to the end of the editor
-				if (requiresNewLine) {
-					paragraph = dom.createElement('p', {}, wysiwygDocument);
+				// Add line break after if has styling
+				if (!dom.is(node, '.sceditor-nlf') && dom.hasStyling(node)) {
+					var paragraph = dom.createElement('p', {}, wysiwygDocument);
 					paragraph.className = 'sceditor-nlf';
 					paragraph.innerHTML = !IE_BR_FIX ? '<br />' : '';
 					dom.appendChild(wysiwygBody, paragraph);
+					return false;
 				}
+			}
 
+			// Last non-empty text node or line break.
+			// No need to add line-break after them
+			if ((node.nodeType === 3 && !/^\s*$/.test(node.nodeValue)) ||
+				dom.is(node, 'br')) {
 				return false;
 			}
 		});
