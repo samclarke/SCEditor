@@ -2336,13 +2336,6 @@ export default function SCEditor(el, options) {
 	 * @private
 	 */
 	handleKeyPress = function (e) {
-		var	closestTag, br, brParent, lastChild;
-
-// TODO: improve this so isn't set list, probably should just use
-// dom.hasStyling to all block parents and if one does insert a br
-		var DUPLICATED_TAGS = 'code,blockquote,pre';
-		var LIST_TAGS = 'li,ul,ol';
-
 		// FF bug: https://bugzilla.mozilla.org/show_bug.cgi?id=501496
 		if (e.defaultPrevented) {
 			return;
@@ -2352,36 +2345,36 @@ export default function SCEditor(el, options) {
 
 		// 13 = enter key
 		if (e.which === 13) {
-			closestTag = dom
-				.closest(currentBlockNode, DUPLICATED_TAGS + ',' + LIST_TAGS);
+			var LIST_TAGS = 'li,ul,ol';
 
 			// "Fix" (cludge) for blocklevel elements being duplicated in some
 			// browsers when enter is pressed instead of inserting a newline
-			if (!dom.is(closestTag, LIST_TAGS)) {
+			if (!dom.is(currentBlockNode, LIST_TAGS) &&
+				dom.hasStyling(currentBlockNode)) {
 				lastRange = null;
 
-				br = dom.createElement('br', {}, wysiwygDocument);
+				var br = dom.createElement('br', {}, wysiwygDocument);
 				rangeHelper.insertNode(br);
 
 				// Last <br> of a block will be collapsed unless it is
 				// IE < 11 so need to make sure the <br> that was inserted
 				// isn't the last node of a block.
 				if (!IE_BR_FIX) {
-					brParent  = br.parentNode;
-					lastChild = brParent.lastChild;
+					var parent  = br.parentNode;
+					var lastChild = parent.lastChild;
 
 					// Sometimes an empty next node is created after the <br>
 					if (lastChild && lastChild.nodeType === dom.TEXT_NODE &&
 						lastChild.nodeValue === '') {
 						dom.remove(lastChild);
-						lastChild = brParent.lastChild;
+						lastChild = parent.lastChild;
 					}
 
 					// If this is the last BR of a block and the previous
 					// sibling is inline then will need an extra BR. This
 					// is needed because the last BR of a block will be
 					// collapsed. Fixes issue #248
-					if (!dom.isInline(brParent, true) && lastChild === br &&
+					if (!dom.isInline(parent, true) && lastChild === br &&
 						dom.isInline(br.previousSibling)) {
 						rangeHelper.insertHTML('<br>');
 					}
