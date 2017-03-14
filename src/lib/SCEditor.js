@@ -247,14 +247,6 @@ export default function SCEditor(el, options) {
 	var toolbarButtons = {};
 
 	/**
-	 * If the current autoUpdate action is canceled.
-	 *
-	 * @type {boolean}
-	 * @private
-	 */
-	var autoUpdateCanceled;
-
-	/**
 	 * Last scroll position before maximizing so
 	 * it can be restored when finished.
 	 *
@@ -3359,11 +3351,7 @@ export default function SCEditor(el, options) {
 	};
 
 	autoUpdate = function () {
-		if (!autoUpdateCanceled) {
-			base.updateOriginal();
-		}
-
-		autoUpdateCanceled = false;
+		base.updateOriginal();
 	};
 
 	// run the initializer
