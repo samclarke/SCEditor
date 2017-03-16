@@ -1004,10 +1004,10 @@ QUnit.test('extractContents() - Start inside end', function (assert) {
 		'<div>' +
 			'<span>ignored</span>' +
 			'<div id="end">' +
-				'<span>test</span>' +
-				'<span>test</span>' +
-				'<span id="start">end</span>' +
 				'<span>ignored</span>' +
+				'<span>ignored</span>' +
+				'<span id="start">start</span>' +
+				'<span>test</span>' +
 			'</div>' +
 			'<span>ignored</span>' +
 		'</div>'
@@ -1017,7 +1017,19 @@ QUnit.test('extractContents() - Start inside end', function (assert) {
 
 	assert.htmlEqual(
 		utils.nodeToHtml(dom.extractContents(start, end)),
-		''
+		'<div id="end"><span id="start">start</span><span>test</span></div>'
+	);
+
+	assert.htmlEqual(
+		utils.nodeToHtml(node),
+		'<div>' +
+			'<span>ignored</span>' +
+			'<div id="end">' +
+				'<span>ignored</span>' +
+				'<span>ignored</span>' +
+			'</div>' +
+			'<span>ignored</span>' +
+		'</div>'
 	);
 });
 

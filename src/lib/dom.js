@@ -144,7 +144,7 @@ export function appendChild(node, child) {
 }
 
 /**
- * Finds any child nodes that match teh selector
+ * Finds any child nodes that match the selector
  *
  * @param {!HTMLElement} node
  * @param {!string} selector
@@ -688,35 +688,30 @@ export function hasStyling(node) {
  *
  * For example it can convert the element <b> to <strong>
  *
- * @param  {HTMLElement} oldElm
+ * @param  {HTMLElement} element
  * @param  {string}      toTagName
  * @return {HTMLElement}
  * @since 1.4.4
  */
-export function convertElement(oldElm, toTagName) {
-	var	child, attribute,
-		oldAttrs = oldElm.attributes,
-		attrsIdx = oldAttrs.length,
-		newElm   = createElement(toTagName, {}, oldElm.ownerDocument);
+export function convertElement(element, toTagName) {
+	var newElement = createElement(toTagName, {}, element.ownerDocument);
 
-	while (attrsIdx--) {
-		attribute = oldAttrs[attrsIdx];
-
+	utils.each(element.attributes, function (_, attribute) {
 		// Some browsers parse invalid attributes names like
 		// 'size"2' which throw an exception when set, just
 		// ignore these.
 		try {
-			attr(newElm, attribute.name, attribute.value);
+			attr(newElement, attribute.name, attribute.value);
 		} catch (ex) {}
+	});
+
+	while (element.firstChild) {
+		appendChild(newElement, element.firstChild);
 	}
 
-	while ((child = oldElm.firstChild)) {
-		appendChild(newElm, child);
-	}
+	element.parentNode.replaceChild(newElement, element);
 
-	oldElm.parentNode.replaceChild(newElm, oldElm);
-
-	return newElm;
+	return newElement;
 }
 
 /**
@@ -957,47 +952,12 @@ export function removeWhiteSpace(root, preserveNewLines) {
  * @return {DocumentFragment}
  */
 export function extractContents(startNode, endNode) {
-	var	extract,
-		commonAncestor = findCommonAncestor(startNode, endNode),
-		startReached   = false,
-		endReached     = false;
+	var range = startNode.ownerDocument.createRange();
 
-	extract = function (root) {
-		var clone,
-			docFrag = startNode.ownerDocument.createDocumentFragment();
+	range.setStartBefore(startNode);
+	range.setEndAfter(endNode);
 
-		traverse(root, function (node) {
-			// if end has been reached exit loop
-			if (endReached || node === endNode) {
-				endReached = true;
-
-				return false;
-			}
-
-			if (node === startNode) {
-				startReached = true;
-			}
-
-			// if the start has been reached and this elm contains
-			// the end node then clone it
-			// if this node contains the start node then add it
-			if (contains(node, startNode) ||
-				(startReached && contains(node, endNode))) {
-				clone = node.cloneNode(false);
-
-				appendChild(clone, extract(node));
-				appendChild(docFrag, clone);
-
-			// otherwise move it if its parent isn't already part of it
-			} else if (startReached && !contains(docFrag, node)) {
-				appendChild(docFrag, node);
-			}
-		}, false);
-
-		return docFrag;
-	};
-
-	return extract(commonAncestor);
+	return range.extractContents();
 }
 
 /**
@@ -1013,7 +973,7 @@ export function getOffset(node) {
 	while (node) {
 		left += node.offsetLeft;
 		top  += node.offsetTop;
-		node   = node.offsetParent;
+		node  = node.offsetParent;
 	}
 
 	return {
