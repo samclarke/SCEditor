@@ -21,6 +21,32 @@ var IE_BR_FIX = IE_VER && IE_VER < 11;
 var IMAGE_MIME_REGEX = /^image\/(p?jpe?g|gif|png|bmp)$/i;
 
 /**
+ * Wrap inlines that are in the root in paragraphs.
+ *
+ * @param {HTMLBodyElement} body
+ * @param {Document} doc
+ * @private
+ */
+function wrapInlines(body, doc) {
+	var wrapper;
+
+	dom.traverse(body, function (node) {
+		if (dom.isInline(node)) {
+			if (!wrapper) {
+				wrapper = dom.createElement('p', {}, doc);
+				dom.insertBefore(wrapper, node);
+			}
+
+			if (node.nodeType !== dom.TEXT_NODE || node.nodeValue !== '') {
+				dom.appendChild(wrapper, node);
+			}
+		} else {
+			wrapper = null;
+		}
+	}, false, true);
+};
+
+/**
  * SCEditor - A lightweight WYSIWYG editor
  *
  * @param {Element} el The textarea to be converted
@@ -535,7 +561,7 @@ export default function SCEditor(el, options) {
 	 * @private
 	 */
 	initEvents = function () {
-		var CHECK_SELECTION_EVENTS = IE_VER ?
+		var CHECK_SELECTION_EVENTS = 'onselectionchange' in wysiwygBody ?
 			'selectionchange' :
 			'keyup focus blur contextmenu mouseup touchend click';
 
@@ -2183,6 +2209,23 @@ export default function SCEditor(el, options) {
 			// before the timeout had finished
 			if (rangeHelper && !rangeHelper.compare(currentSelection)) {
 				currentSelection = rangeHelper.cloneSelected();
+
+				// If the selection is in an inline wrap it in a block.
+				// Fixes #331
+				if (currentSelection && currentSelection.collapsed) {
+					var parent = currentSelection.startContainer;
+
+					while (parent && parent.parentNode !== wysiwygBody) {
+						parent = parent.parentNode;
+					}
+
+					if (dom.isInline(parent, true)) {
+						rangeHelper.saveRange();
+						wrapInlines(wysiwygBody, wysiwygDocument);
+						rangeHelper.restoreRange();
+					}
+				}
+
 				dom.trigger(editorContainer, 'selectionchanged');
 			}
 
@@ -2195,9 +2238,8 @@ export default function SCEditor(el, options) {
 
 		isSelectionCheckPending = true;
 
-		// In IE, this is only called on the selectionchange event so no
-		// need to limit checking as it should always be valid to do.
-		if (IE_VER) {
+		// Don't need to limit checking if browser supports the Selection API
+		if ('onselectionchange' in wysiwygBody) {
 			check();
 		} else {
 			setTimeout(check, 100);
