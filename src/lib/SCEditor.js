@@ -31,7 +31,7 @@ function wrapInlines(body, doc) {
 	var wrapper;
 
 	dom.traverse(body, function (node) {
-		if (dom.isInline(node)) {
+		if (dom.isInline(node, true)) {
 			if (!wrapper) {
 				wrapper = dom.createElement('p', {}, doc);
 				dom.insertBefore(wrapper, node);
@@ -2214,6 +2214,12 @@ export default function SCEditor(el, options) {
 				// Fixes #331
 				if (currentSelection && currentSelection.collapsed) {
 					var parent = currentSelection.startContainer;
+					var offset = currentSelection.startOffset;
+
+					// Handle if selection is placed before/after an element
+					if (offset && parent.nodeType !== dom.TEXT_NODE) {
+						parent = parent.childNodes[offset];
+					}
 
 					while (parent && parent.parentNode !== wysiwygBody) {
 						parent = parent.parentNode;
