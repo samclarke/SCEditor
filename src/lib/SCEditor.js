@@ -143,6 +143,18 @@ export default function SCEditor(el, options) {
 	var lastRange;
 
 	/**
+	 * If the user is currently composing text via IME
+	 * @type {boolean}
+	 */
+	var isComposing;
+
+	/**
+	 * Timer for valueChanged key handler
+	 * @type {number}
+	 */
+	var valueChangedKeyUpTimer;
+
+	/**
 	 * The editors locale
 	 *
 	 * @private
@@ -315,6 +327,7 @@ export default function SCEditor(el, options) {
 		handleKeyPress,
 		handleFormReset,
 		handleMouseDown,
+		handleComposition,
 		handleEvent,
 		handleDocumentClick,
 		updateToolBar,
@@ -561,14 +574,12 @@ export default function SCEditor(el, options) {
 	 * @private
 	 */
 	initEvents = function () {
-		var CHECK_SELECTION_EVENTS = 'onselectionchange' in wysiwygBody ?
+		var form = original.form;
+		var compositionEvents = 'compositionstart compositionend';
+		var eventsToForawrd = 'keydown keyup keypress focus blur contextmenu';
+		var checkSelectionEvents = 'onselectionchange' in wysiwygBody ?
 			'selectionchange' :
 			'keyup focus blur contextmenu mouseup touchend click';
-
-		var EVENTS_TO_FORWARD = 'keydown keyup keypress ' +
-			'focus blur contextmenu';
-
-		var form = original.form;
 
 		dom.on(globalDoc, 'click', handleDocumentClick);
 
@@ -584,8 +595,9 @@ export default function SCEditor(el, options) {
 		dom.on(wysiwygBody, 'blur', valueChangedBlur);
 		dom.on(wysiwygBody, 'keyup', valueChangedKeyUp);
 		dom.on(wysiwygBody, 'paste', handlePasteEvt);
-		dom.on(wysiwygBody, CHECK_SELECTION_EVENTS, checkSelectionChanged);
-		dom.on(wysiwygBody, EVENTS_TO_FORWARD, handleEvent);
+		dom.on(wysiwygBody, compositionEvents, handleComposition);
+		dom.on(wysiwygBody, checkSelectionEvents, checkSelectionChanged);
+		dom.on(wysiwygBody, eventsToForawrd, handleEvent);
 
 		if (options.emoticonsCompat && globalWin.getSelection) {
 			dom.on(wysiwygBody, 'keyup', emoticonsCheckWhitespace);
@@ -594,11 +606,12 @@ export default function SCEditor(el, options) {
 		dom.on(sourceEditor, 'blur', valueChangedBlur);
 		dom.on(sourceEditor, 'keyup', valueChangedKeyUp);
 		dom.on(sourceEditor, 'keydown', handleKeyDown);
-		dom.on(sourceEditor, EVENTS_TO_FORWARD, handleEvent);
+		dom.on(sourceEditor, compositionEvents, handleComposition);
+		dom.on(sourceEditor, eventsToForawrd, handleEvent);
 
 		dom.on(wysiwygDocument, 'mousedown', handleMouseDown);
 		dom.on(wysiwygDocument, 'blur', valueChangedBlur);
-		dom.on(wysiwygDocument, CHECK_SELECTION_EVENTS, checkSelectionChanged);
+		dom.on(wysiwygDocument, checkSelectionEvents, checkSelectionChanged);
 		dom.on(wysiwygDocument, 'beforedeactivate keyup mouseup', saveRange);
 		dom.on(wysiwygDocument, 'keyup', appendNewLine);
 		dom.on(wysiwygDocument, 'focus', function () {
@@ -3280,15 +3293,19 @@ export default function SCEditor(el, options) {
 			sourceMode   = base.sourceMode(),
 			hasSelection = !sourceMode && rangeHelper.hasSelection();
 
+		// Composition end isn't guranteed to fire but must have
+		// ended when triggerValueChanged() is called so reset it
+		isComposing = false;
+
 		// Don't need to save the range if sceditor-start-marker
 		// is present as the range is already saved
-		saveRange = saveRange !== false &&
+		saveRange = saveRange !== false && hasSelection &&
 			!wysiwygDocument.getElementById('sceditor-start-marker');
 
 		// Clear any current timeout as it's now been triggered
-		if (valueChangedKeyUp.timer) {
-			clearTimeout(valueChangedKeyUp.timer);
-			valueChangedKeyUp.timer = false;
+		if (valueChangedKeyUpTimer) {
+			clearTimeout(valueChangedKeyUpTimer);
+			valueChangedKeyUpTimer = false;
 		}
 
 		if (hasSelection && saveRange) {
@@ -3298,8 +3315,8 @@ export default function SCEditor(el, options) {
 		currentHtml = sourceMode ? sourceEditor.value : wysiwygBody.innerHTML;
 
 		// Only trigger if something has actually changed.
-		if (currentHtml !== triggerValueChanged.lastHtmlValue) {
-			triggerValueChanged.lastHtmlValue = currentHtml;
+		if (currentHtml !== triggerValueChanged.lastVal) {
+			triggerValueChanged.lastVal = currentHtml;
 
 			dom.trigger(editorContainer, 'valuechanged', {
 				rawValue: sourceMode ? base.val() : currentHtml
@@ -3316,7 +3333,7 @@ export default function SCEditor(el, options) {
 	 * @private
 	 */
 	valueChangedBlur = function () {
-		if (valueChangedKeyUp.timer) {
+		if (valueChangedKeyUpTimer) {
 			triggerValueChanged();
 		}
 	};
@@ -3334,34 +3351,48 @@ export default function SCEditor(el, options) {
 
 		valueChangedKeyUp.lastChar = which;
 
+		if (isComposing) {
+			return;
+		}
+
 		// 13 = return & 32 = space
 		if (which === 13 || which === 32) {
 			if (!lastWasSpace) {
 				triggerValueChanged();
 			} else {
-				valueChangedKeyUp.triggerNextChar = true;
+				valueChangedKeyUp.triggerNext = true;
 			}
 		// 8 = backspace & 46 = del
 		} else if (which === 8 || which === 46) {
 			if (!lastWasDelete) {
 				triggerValueChanged();
 			} else {
-				valueChangedKeyUp.triggerNextChar = true;
+				valueChangedKeyUp.triggerNext = true;
 			}
-		} else if (valueChangedKeyUp.triggerNextChar) {
+		} else if (valueChangedKeyUp.triggerNext) {
 			triggerValueChanged();
-			valueChangedKeyUp.triggerNextChar = false;
+			valueChangedKeyUp.triggerNext = false;
 		}
 
 		// Clear the previous timeout and set a new one.
-		clearTimeout(valueChangedKeyUp.timer);
+		clearTimeout(valueChangedKeyUpTimer);
 
 		// Trigger the event 1.5s after the last keypress if space
 		// isn't pressed. This might need to be lowered, will need
 		// to look into what the slowest average Chars Per Min is.
-		valueChangedKeyUp.timer = setTimeout(function () {
-			triggerValueChanged();
+		valueChangedKeyUpTimer = setTimeout(function () {
+			if (!isComposing) {
+				triggerValueChanged();
+			}
 		}, 1500);
+	};
+
+	handleComposition = function (e) {
+		isComposing = /start/i.test(e.type);
+
+		if (!isComposing) {
+			triggerValueChanged();
+		}
 	};
 
 	autoUpdate = function () {
