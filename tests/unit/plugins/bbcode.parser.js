@@ -38,6 +38,14 @@ QUnit.test('Fix invalid nesting', function (assert) {
 			'[b][i][s]test[/s][/i][/b]',
 		'Deeply nested block in inline tags'
 	);
+
+	assert.equal(
+		utils.stripWhiteSpace(
+			this.parser.toBBCode(
+				'[size=3]test[code]test[/code]test[/size]')),
+		'[size=3]test[/size][code]test[/code][size=3]test[/size]',
+		'Preserve attributes'
+	);
 });
 
 

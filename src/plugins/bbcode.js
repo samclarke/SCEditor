@@ -305,7 +305,7 @@
 				base.type,
 				base.name,
 				base.val,
-				base.attrs,
+				extend({}, base.attrs),
 				[],
 				base.closing ? base.closing.clone() : null
 			);
