@@ -17,23 +17,21 @@ QUnit.module('plugins/bbcode#Parser', {
 
 QUnit.test('Fix invalid nesting', function (assert) {
 	assert.equal(
-		utils.stripWhiteSpace(
-			this.parser.toBBCode('[b]test[code]test[/code]test[/b]')),
+		utils.stripWhiteSpace(this.parser.toBBCode('[b]test[code]test[/code]test[/b]')),
 		'[b]test[/b][code]test[/code][b]test[/b]',
 		'Block level tag in an inline tag with content before and after'
 	);
 
 	assert.equal(
-		utils.stripWhiteSpace(
-			this.parser.toBBCode('[b]test[code]test[/code][/b]')),
+		utils.stripWhiteSpace(this.parser.toBBCode('[b]test[code]test[/code][/b]')),
 		'[b]test[/b][code]test[/code]',
 		'Block level tag in an inline tag with content before'
 	);
 
 	assert.equal(
 		utils.stripWhiteSpace(
-			this.parser.toBBCode(
-				'[b][i][s]test[code]test[/code]test[/s][/i][/b]')),
+			this.parser.toBBCode('[b][i][s]test[code]test[/code]test[/s][/i][/b]')
+		),
 		'[b][i][s]test[/s][/i][/b][code]test[/code]' +
 			'[b][i][s]test[/s][/i][/b]',
 		'Deeply nested block in inline tags'
@@ -41,10 +39,28 @@ QUnit.test('Fix invalid nesting', function (assert) {
 
 	assert.equal(
 		utils.stripWhiteSpace(
-			this.parser.toBBCode(
-				'[size=3]test[code]test[/code]test[/size]')),
+			this.parser.toBBCode('[size=3]test[code]test[/code]test[/size]')
+		),
 		'[size=3]test[/size][code]test[/code][size=3]test[/size]',
 		'Preserve attributes'
+	);
+
+	assert.equal(
+		this.parser.toBBCode(
+			'[ul]' +
+				'[color=#444444]' +
+					'[li]test[/li]\n' +
+					'[li]test[/li]\n' +
+					'[li]test[/li]\n' +
+				'[/color]' +
+			'[/ul]'
+		),
+		'[ul]\n' +
+			'[li][color=#444444]test[/color][/li]\n' +
+			'[li][color=#444444]test[/color][/li]\n' +
+			'[li][color=#444444]test[/color][/li]\n' +
+		'[/ul]\n',
+		'Move newlines'
 	);
 });
 

@@ -1026,6 +1026,18 @@
 							parentIndex + 1, 0, token, right
 						);
 
+						// If token is a block and is followed by a newline,
+						// then move the newline along with it to the new parent
+						var next = right.children[0];
+						if (next && next.type === TOKEN_NEWLINE) {
+							if (!isInline(token)) {
+								right.children.splice(0, 1);
+								parentParentChildren.splice(
+									parentIndex + 2, 0, next
+								);
+							}
+						}
+
 						// return to parents loop as the
 						// children have now increased
 						return;
