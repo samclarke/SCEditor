@@ -462,8 +462,6 @@ export default function SCEditor(el, options) {
 	 * @private
 	 */
 	initEditor = function () {
-		var tabIndex;
-
 		sourceEditor  = dom.createElement('textarea');
 		wysiwygEditor = dom.createElement('iframe', {
 			frameborder: 0,
@@ -527,7 +525,7 @@ export default function SCEditor(el, options) {
 			}
 		}
 
-		tabIndex = dom.attr(original, 'tabindex');
+		var tabIndex = dom.attr(original, 'tabindex');
 		dom.attr(sourceEditor, 'tabindex', tabIndex);
 		dom.attr(wysiwygEditor, 'tabindex', tabIndex);
 
@@ -577,7 +575,7 @@ export default function SCEditor(el, options) {
 		var form = original.form;
 		var compositionEvents = 'compositionstart compositionend';
 		var eventsToForawrd = 'keydown keyup keypress focus blur contextmenu';
-		var checkSelectionEvents = 'onselectionchange' in wysiwygBody ?
+		var checkSelectionEvents = 'onselectionchange' in wysiwygDocument ?
 			'selectionchange' :
 			'keyup focus blur contextmenu mouseup touchend click';
 
@@ -2258,7 +2256,7 @@ export default function SCEditor(el, options) {
 		isSelectionCheckPending = true;
 
 		// Don't need to limit checking if browser supports the Selection API
-		if ('onselectionchange' in wysiwygBody) {
+		if ('onselectionchange' in wysiwygDocument) {
 			check();
 		} else {
 			setTimeout(check, 100);
@@ -3299,7 +3297,7 @@ export default function SCEditor(el, options) {
 
 		// Don't need to save the range if sceditor-start-marker
 		// is present as the range is already saved
-		saveRange = saveRange !== false && hasSelection &&
+		saveRange = saveRange !== false &&
 			!wysiwygDocument.getElementById('sceditor-start-marker');
 
 		// Clear any current timeout as it's now been triggered
