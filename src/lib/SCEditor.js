@@ -534,6 +534,14 @@ export default function SCEditor(el, options) {
 		// load any textarea value into the editor
 		dom.hide(original);
 		base.val(original.value);
+
+		var placeholder = options.placeholder ||
+			dom.attr(original, 'placeholder');
+
+		if (placeholder) {
+			sourceEditor.placeholder = placeholder;
+			dom.attr(wysiwygBody, 'placeholder', placeholder);
+		}
 	};
 
 	/**
@@ -601,6 +609,16 @@ export default function SCEditor(el, options) {
 			dom.on(wysiwygBody, 'keyup', emoticonsCheckWhitespace);
 		}
 
+		dom.on(wysiwygBody, 'blur', function () {
+			if (!base.val()) {
+				dom.addClass(wysiwygBody, 'placeholder');
+			}
+		});
+
+		dom.on(wysiwygBody, 'focus', function () {
+			dom.removeClass(wysiwygBody, 'placeholder');
+		});
+
 		dom.on(sourceEditor, 'blur', valueChangedBlur);
 		dom.on(sourceEditor, 'keyup', valueChangedKeyUp);
 		dom.on(sourceEditor, 'keydown', handleKeyDown);
@@ -608,7 +626,6 @@ export default function SCEditor(el, options) {
 		dom.on(sourceEditor, eventsToForawrd, handleEvent);
 
 		dom.on(wysiwygDocument, 'mousedown', handleMouseDown);
-		dom.on(wysiwygDocument, 'blur', valueChangedBlur);
 		dom.on(wysiwygDocument, checkSelectionEvents, checkSelectionChanged);
 		dom.on(wysiwygDocument, 'beforedeactivate keyup mouseup', saveRange);
 		dom.on(wysiwygDocument, 'keyup', appendNewLine);
@@ -2236,7 +2253,7 @@ export default function SCEditor(el, options) {
 						parent = parent.parentNode;
 					}
 
-					if (dom.isInline(parent, true)) {
+					if (parent && dom.isInline(parent, true)) {
 						rangeHelper.saveRange();
 						wrapInlines(wysiwygBody, wysiwygDocument);
 						rangeHelper.restoreRange();
