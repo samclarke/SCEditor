@@ -55,7 +55,7 @@ exports.create = function (port, coverage) {
 		};
 
 		if (!coverage) {
-			// webpackOptions.module = {};
+			webpackOptions.module = {};
 		}
 
 		const compiler = webpack(webpackOptions);
