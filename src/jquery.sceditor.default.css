@@ -24,10 +24,8 @@ body {
 	word-wrap: break-word;
 }
 
-body.placeholder::after {
+body.placeholder::before {
     content: attr(placeholder);
-    position: absolute;
-    top: 0px;
     color: #555;
     font-style: italic;
 }
