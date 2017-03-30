@@ -15,8 +15,8 @@ For more information visit [sceditor.com](http://www.sceditor.com/)
 Include the JQuery and SCEditor JavaScript:
 
 ```html
-<link rel="stylesheet" href="minified/jquery.sceditor.min.css" type="text/css" media="all" />
-<script type="text/javascript" src="minified/jquery.sceditor.bbcode.min.js"></script>
+<link rel="stylesheet" href="minified/jquery.sceditor.min.css" media="all" />
+<script src="minified/jquery.sceditor.bbcode.min.js"></script>
 ```
 
 Then to change all textareas to WYSIWYG editors, simply do:
@@ -53,18 +53,28 @@ For a full list of options, see the [options documentation](http://www.sceditor.
 
 You will need [Grunt](http://gruntjs.com/) installed to run the build/tests. To install Grunt run:
 
-    npm install -g grunt-cli
+```bash
+npm install -g grunt-cli
+```
 
 Next, to install the SCEditor dev dependencies run:
 
-    npm install
+```bash
+npm install
+```
 
 That's it! You can now build and test SCEditor with the following commands:
 
-    grunt build # Minifies the JS and converts the LESS to CSS
-    grunt test # Runs the linter and unit tests
-    grunt release # Creates the distributable ZIP file
+```bash
+# Minify the JS and convert the LESS to CSS
+grunt build
 
+# Run the linter, unit tests and coverage
+grunt test
+
+# Creates the final distributable ZIP file
+grunt release
+```
 
 
 ## Contribute
