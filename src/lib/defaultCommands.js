@@ -430,9 +430,8 @@ var defaultCommnds = {
 
 	// START_COMMAND: Image
 	image: {
-		exec: function (caller) {
-			var	editor  = this,
-				content = dom.createElement('div');
+		_dropDown: function (editor, caller, selected, cb) {
+			var	content = dom.createElement('div');
 
 			dom.appendChild(content, _tmpl('image', {
 				url: editor._('URL:'),
@@ -441,23 +440,17 @@ var defaultCommnds = {
 				insert: editor._('Insert')
 			}, true));
 
+
+			var	urlInput = dom.find(content, '#image')[0];
+
+			urlInput.value = selected;
+
 			dom.on(content, 'click', '.button', function (e) {
-				var	val    = dom.find(content, '#image')[0].value,
-					width  = dom.find(content, '#width')[0].value,
-					height = dom.find(content, '#height')[0].value,
-					attrs  = '';
-
-				if (width) {
-					attrs += ' width="' + width + '"';
-				}
-
-				if (height) {
-					attrs += ' height="' + height + '"';
-				}
-
-				if (val) {
-					editor.wysiwygEditorInsertHtml(
-						'<img' + attrs + ' src="' + val + '" />'
+				if (urlInput.value) {
+					cb(
+						urlInput.value,
+						dom.find(content, '#width')[0].value,
+						dom.find(content, '#height')[0].value
 					);
 				}
 
@@ -467,15 +460,38 @@ var defaultCommnds = {
 
 			editor.createDropDown(caller, 'insertimage', content);
 		},
+		exec: function (caller) {
+			var	editor  = this;
+
+			defaultCommnds.image._dropDown(
+				editor,
+				caller,
+				'',
+				function (url, width, height) {
+					var attrs  = '';
+
+					if (width) {
+						attrs += ' width="' + width + '"';
+					}
+
+					if (height) {
+						attrs += ' height="' + height + '"';
+					}
+
+					editor.wysiwygEditorInsertHtml(
+						'<img' + attrs + ' src="' + url + '" />'
+					);
+				}
+			);
+		},
 		tooltip: 'Insert an image'
 	},
 	// END_COMMAND
 
 	// START_COMMAND: E-mail
 	email: {
-		exec: function (caller) {
-			var	editor  = this,
-				content = dom.createElement('div');
+		_dropDown: function (editor, caller, cb) {
+			var	content = dom.createElement('div');
 
 			dom.appendChild(content, _tmpl('email', {
 				label: editor._('E-mail:'),
@@ -484,25 +500,10 @@ var defaultCommnds = {
 			}, true));
 
 			dom.on(content, 'click', '.button', function (e) {
-				var val         = dom.find(content, '#email')[0].value,
-					description = dom.find(content, '#des')[0].value;
+				var email = dom.find(content, '#email')[0].value;
 
-				if (val) {
-					// needed for IE to reset the last range
-					editor.focus();
-
-					if (!editor.getRangeHelper().selectedHtml() ||
-						description) {
-						description = description || val;
-
-						editor.wysiwygEditorInsertHtml(
-							'<a href="' + 'mailto:' + val + '">' +
-								description +
-							'</a>'
-						);
-					} else {
-						editor.execCommand('createlink', 'mailto:' + val);
-					}
+				if (email) {
+					cb(email, dom.find(content, '#des')[0].value);
 				}
 
 				editor.closeDropDown(true);
@@ -511,15 +512,35 @@ var defaultCommnds = {
 
 			editor.createDropDown(caller, 'insertemail', content);
 		},
+		exec: function (caller) {
+			var	editor  = this;
+
+			defaultCommnds.email._dropDown(
+				editor,
+				caller,
+				function (email, text) {
+					// needed for IE to reset the last range
+					editor.focus();
+
+					if (!editor.getRangeHelper().selectedHtml() || text) {
+						editor.wysiwygEditorInsertHtml(
+							'<a href="' + 'mailto:' + email + '">' +
+								(text || email) +
+							'</a>'
+						);
+					} else {
+						editor.execCommand('createlink', 'mailto:' + email);
+					}
+				}
+			);
+		},
 		tooltip: 'Insert an email'
 	},
 	// END_COMMAND
 
 	// START_COMMAND: Link
 	link: {
-		exec: function (caller) {
-			var url, text, linkInput;
-			var editor  = this;
+		_dropDown: function (editor, caller, cb) {
 			var content = dom.createElement('div');
 
 			dom.appendChild(content, _tmpl('link', {
@@ -528,28 +549,11 @@ var defaultCommnds = {
 				ins: editor._('Insert')
 			}, true));
 
-			linkInput = dom.find(content, '#link')[0];
+			var linkInput = dom.find(content, '#link')[0];
 
 			function insertUrl(e) {
-				url  = linkInput.value;
-				text = dom.find(content, '#des')[0].value;
-
-				if (url) {
-					// needed for IE to restore the last range
-					editor.focus();
-
-					// If there is no selected text then must set the URL as
-					// the text. Most browsers do this automatically, sadly
-					// IE doesn't.
-					if (!editor.getRangeHelper().selectedHtml() || text) {
-						text = text || url;
-
-						editor.wysiwygEditorInsertHtml(
-							'<a href="' + url + '">' + text + '</a>'
-						);
-					} else {
-						editor.execCommand('createlink', url);
-					}
+				if (linkInput.value) {
+					cb(linkInput.value, dom.find(content, '#des')[0].value);
 				}
 
 				editor.closeDropDown(true);
@@ -565,6 +569,27 @@ var defaultCommnds = {
 			}, dom.EVENT_CAPTURE);
 
 			editor.createDropDown(caller, 'insertlink', content);
+		},
+		exec: function (caller) {
+			var editor = this;
+
+			defaultCommnds.link._dropDown(editor, caller, function (url, text) {
+				// needed for IE to restore the last range
+				editor.focus();
+
+				// If there is no selected text then must set the URL as
+				// the text. Most browsers do this automatically, sadly
+				// IE doesn't.
+				if (!editor.getRangeHelper().selectedHtml() || text) {
+					text = text || url;
+
+					editor.wysiwygEditorInsertHtml(
+						'<a href="' + url + '">' + text + '</a>'
+					);
+				} else {
+					editor.execCommand('createlink', url);
+				}
+			});
 		},
 		tooltip: 'Insert a link'
 	},

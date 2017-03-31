@@ -9,7 +9,6 @@
  *
  * @author Sam Clarke
  */
-/*global prompt: true*/
 (function (sceditor) {
 	'use strict';
 
@@ -24,6 +23,8 @@
 	var extend = utils.extend;
 	var each = utils.each;
 	var isEmptyObject = utils.isEmptyObject;
+
+	var getEditorCommand = sceditor.command.get;
 
 	var defaultCommandsOverrides = {
 		bold: {
@@ -60,7 +61,7 @@
 			txtExec: function (caller) {
 				var editor = this;
 
-				sceditor.command.get('font')._dropDown(
+				getEditorCommand('font')._dropDown(
 					editor,
 					caller,
 					function (font) {
@@ -74,7 +75,7 @@
 			txtExec: function (caller) {
 				var editor = this;
 
-				sceditor.command.get('size')._dropDown(
+				getEditorCommand('size')._dropDown(
 					editor,
 					caller,
 					function (size) {
@@ -88,7 +89,7 @@
 			txtExec: function (caller) {
 				var editor = this;
 
-				sceditor.command.get('color')._dropDown(
+				getEditorCommand('color')._dropDown(
 					editor,
 					caller,
 					function (color) {
@@ -115,48 +116,62 @@
 		},
 		image: {
 			txtExec: function (caller, selected) {
-				var url = prompt(this._('Enter the image URL:'), selected);
+				var	editor  = this;
 
-				if (url) {
-					this.insertText('<img src="' + url + '" />');
-				}
+				getEditorCommand('image')._dropDown(
+					editor,
+					caller,
+					selected,
+					function (url, width, height) {
+						var attrs  = '';
+
+						if (width) {
+							attrs += ' width="' + width + '"';
+						}
+
+						if (height) {
+							attrs += ' height="' + height + '"';
+						}
+
+						editor.insertText(
+							'<img' + attrs + ' src="' + url + '" />'
+						);
+					}
+				);
 			}
 		},
 		email: {
-			txtExec: function (caller, sel) {
-				var	email, text,
-					display = sel && sel.indexOf('@') > -1 ? null : sel;
+			txtExec: function (caller, selected) {
+				var	editor  = this;
 
-				email = prompt(
-					this._('Enter the e-mail address:'),
-					(display ? '' : sel)
+				getEditorCommand('email')._dropDown(
+					editor,
+					caller,
+					function (url, text) {
+						editor.insertText(
+							'<a href="mailto:' + url + '">' +
+								(text || selected || url) +
+							'</a>'
+						);
+					}
 				);
-
-				text = prompt(
-					this._('Enter the displayed text:'),
-					display || email
-				) || email;
-
-				if (email) {
-					this.insertText(
-						'<a href="mailto:' + email + '">' + text + '</a>'
-					);
-				}
 			}
 		},
 		link: {
-			txtExec: function (caller, sel) {
-				var display = sel && sel.indexOf('http://') > -1 ? null : sel,
-					url  = prompt(this._('Enter URL:'),
-						(display ? 'http://' : sel)),
-					text = prompt(this._('Enter the displayed text:'),
-						display || url) || url;
+			txtExec: function (caller, selected) {
+				var	editor  = this;
 
-				if (url) {
-					this.insertText(
-						'<a href="' + url + '">' + text + '</a>'
-					);
-				}
+				getEditorCommand('link')._dropDown(
+					editor,
+					caller,
+					function (url, text) {
+						editor.insertText(
+							'<a href="' + url + '">' +
+								(text || selected || url) +
+							'</a>'
+						);
+					}
+				);
 			}
 		},
 		quote: {
@@ -166,7 +181,7 @@
 			txtExec: function (caller) {
 				var editor = this;
 
-				sceditor.command.get('youtube')._dropDown(
+				getEditorCommand('youtube')._dropDown(
 					editor,
 					caller,
 					function (id) {

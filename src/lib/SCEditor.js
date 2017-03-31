@@ -1016,9 +1016,7 @@ export default function SCEditor(el, options) {
 		var mode = base.inSourceMode() ? '_sceTxtMode' : '_sceWysiwygMode';
 
 		utils.each(toolbarButtons, function (_, button) {
-			disable = disable || !button[mode];
-
-			dom.toggleClass(button, 'disabled', disable);
+			dom.toggleClass(button, 'disabled', disable || !button[mode]);
 		});
 	};
 
