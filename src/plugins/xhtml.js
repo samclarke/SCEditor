@@ -184,11 +184,12 @@
 				getEditorCommand('youtube')._dropDown(
 					editor,
 					caller,
-					function (id) {
+					function (id, time) {
 						editor.insertText(
 							'<iframe width="560" height="315" ' +
 							'src="https://www.youtube.com/embed/{id}?' +
-							'wmode=opaque" data-youtube-id="' + id + '" ' +
+							'wmode=opaque&start=' + time + '" ' +
+							'data-youtube-id="' + id + '" ' +
 							'frameborder="0" allowfullscreen></iframe>'
 						);
 					}

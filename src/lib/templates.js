@@ -86,9 +86,9 @@ var _templates = {
 			'</div>',
 
 	youtube:
-		'<iframe width="560" height="315" ' +
-		'src="https://www.youtube.com/embed/{id}?wmode=opaque" ' +
-		'data-youtube-id="{id}" frameborder="0" allowfullscreen></iframe>'
+		'<iframe width="560" height="315" frameborder="0" allowfullscreen' +
+		'src="https://www.youtube.com/embed/{id}?wmode=opaque&start={time}" ' +
+		'data-youtube-id="{id}"></iframe>'
 };
 
 /**

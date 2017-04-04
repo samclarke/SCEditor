@@ -718,9 +718,8 @@ var defaultCommnds = {
 
 	// START_COMMAND: YouTube
 	youtube: {
-		_dropDown: function (editor, caller, handleIdFunc) {
-			var	matches, val,
-				content = dom.createElement('div');
+		_dropDown: function (editor, caller, callback) {
+			var	content = dom.createElement('div');
 
 			dom.appendChild(content, _tmpl('youtubeMenu', {
 				label: editor._('Video URL:'),
@@ -728,21 +727,21 @@ var defaultCommnds = {
 			}, true));
 
 			dom.on(content, 'click', '.button', function (e) {
-				val = dom.find(content, '#link')[0].value;
+				var val = dom.find(content, '#link')[0].value;
+				var idMatch = val.match(/(?:v=|v\/|embed\/|youtu.be\/)(.{11})/);
+				var timeMatch = val.match(/[&|?](?:star)?t=((\d+[hms]?){1,3})/);
+				var time = 0;
 
-				if (val) {
-					matches = val.match(/(?:v=|v\/|embed\/|youtu.be\/)(.{11})/);
+				if (timeMatch) {
+					utils.each(timeMatch[1].split(/[hms]/), function (i, val) {
+						if (val !== '') {
+							time = (time * 60) + Number(val);
+						}
+					});
+				}
 
-					if (matches) {
-						val = matches[1];
-					}
-
-					if (/^[a-zA-Z0-9_\-]{11}$/.test(val)) {
-						handleIdFunc(val);
-					} else {
-						/*global alert:false*/
-						alert('Invalid YouTube video');
-					}
+				if (idMatch && /^[a-zA-Z0-9_\-]{11}$/.test(idMatch[1])) {
+					callback(idMatch[1], time);
 				}
 
 				editor.closeDropDown(true);
@@ -751,11 +750,14 @@ var defaultCommnds = {
 
 			editor.createDropDown(caller, 'insertlink', content);
 		},
-		exec: function (caller) {
+		exec: function (btn) {
 			var editor = this;
 
-			defaultCommnds.youtube._dropDown(editor, caller, function (id) {
-				editor.wysiwygEditorInsertHtml(_tmpl('youtube', { id: id }));
+			defaultCommnds.youtube._dropDown(editor, btn, function (id, time) {
+				editor.wysiwygEditorInsertHtml(_tmpl('youtube', {
+					id: id,
+					time: time
+				}));
 			});
 		},
 		tooltip: 'Insert a YouTube video'
