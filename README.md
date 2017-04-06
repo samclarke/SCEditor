@@ -15,7 +15,7 @@ For more information visit [sceditor.com](http://www.sceditor.com/)
 Include the JQuery and SCEditor JavaScript:
 
 ```html
-<link rel="stylesheet" href="minified/jquery.sceditor.min.css" media="all" />
+<link rel="stylesheet" href="minified/jquery.sceditor.min.css" />
 <script src="minified/jquery.sceditor.bbcode.min.js"></script>
 ```
 
@@ -75,6 +75,15 @@ grunt test
 # Creates the final distributable ZIP file
 grunt release
 ```
+
+You can also run the dev server to test changes without having to do a full
+build by running:
+
+```bash
+npm run dev
+```
+
+and then going to http://localhost:9000/tests/
 
 
 ## Contribute
