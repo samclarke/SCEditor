@@ -96,7 +96,7 @@ export function replace(root, emoticons, emoticonsCompat) {
 	var emoticonCodes = [];
 	var emoticonRegex = {};
 
-// TODO: Make this tag configurable.
+	// TODO: Make this tag configurable.
 	if (dom.parent(root, 'code')) {
 		return;
 	}
@@ -117,7 +117,7 @@ export function replace(root, emoticons, emoticonsCompat) {
 		node = node.firstChild;
 
 		while (node) {
-// TODO: Make this tag configurable.
+			// TODO: Make this tag configurable.
 			if (node.nodeType === dom.ELEMENT_NODE && !dom.is(node, 'code')) {
 				convert(node);
 			}

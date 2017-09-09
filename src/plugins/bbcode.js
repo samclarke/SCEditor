@@ -631,7 +631,7 @@
 			return true;
 		};
 
-// TODO: Tidy this parseTokens() function up a bit.
+		// TODO: Tidy this parseTokens() function up a bit.
 		/**
 		 * Parses an array of tokens created by tokenize()
 		 *
@@ -869,7 +869,7 @@
 			var	token, left, right, parentBBCode, bbcode,
 				removedBreakEnd, removedBreakBefore, remove;
 			var childrenLength = children.length;
-// TODO: this function really needs tidying up
+			// TODO: this function really needs tidying up
 			if (parent) {
 				parentBBCode = base.bbcodes[parent.name];
 			}
@@ -1289,7 +1289,7 @@
 				if (!(token = toks.shift())) {
 					continue;
 				}
-// TODO: tidy this
+				// TODO: tidy this
 				bbcode        = base.bbcodes[token.name];
 				isBlock       = !(!bbcode || bbcode.isInline !== false);
 				isSelfClosing = bbcode && bbcode.isSelfClosing;
@@ -1860,7 +1860,7 @@
 		base.elementToBbcode = function (element) {
 			var toBBCode = function (node, vChildren) {
 				var ret = '';
-// TODO: Move to BBCode class?
+				// TODO: Move to BBCode object?
 				dom.traverse(node, function (node) {
 					var	curTag       = '',
 						nodeType     = node.nodeType,
@@ -1906,8 +1906,9 @@
 							curTag = toBBCode(node, vChild);
 						}
 
-// TODO: isValidChild is no longer needed. Should use valid children bbcodes
-// instead by creating BBCode tokens like the parser.
+						// TODO: isValidChild is no longer needed. Should use
+						// valid children bbcodes instead by creating BBCode
+						// tokens like the parser.
 						if (isValidChild) {
 							// code tags should skip most styles
 							if (tag !== 'code') {

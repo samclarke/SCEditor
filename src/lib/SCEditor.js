@@ -416,7 +416,7 @@ export default function SCEditor(el, options) {
 
 			autoExpand();
 			appendNewLine();
-// TODO: use editor doc and window?
+			// TODO: use editor doc and window?
 			pluginManager.call('ready');
 		};
 		dom.on(globalWin, 'load', loaded);
@@ -493,7 +493,7 @@ export default function SCEditor(el, options) {
 		dom.appendChild(editorContainer, wysiwygEditor);
 		dom.appendChild(editorContainer, sourceEditor);
 
-// TODO: make this optional somehow
+		// TODO: make this optional somehow
 		base.dimensions(
 			options.width || dom.width(original),
 			options.height || dom.height(original)
@@ -1517,7 +1517,7 @@ export default function SCEditor(el, options) {
 
 		if (pluginManager.hasHandler('toSource')) {
 			dom.appendChild(wysiwygBody, pastearea);
-// TODO: replace this API at same time? for format as special
+			// TODO: replace this API at same time? for format as special
 			paste.val = pluginManager
 				.callOnlyFirst('toSource', paste.val, pastearea);
 
@@ -1582,8 +1582,8 @@ export default function SCEditor(el, options) {
 
 		base.focus();
 
-// TODO: This code tag should be configurable and
-// should maybe convert the HTML into text instead
+		// TODO: This code tag should be configurable and
+		// should maybe convert the HTML into text instead
 		// Don't apply to code elements
 		if (!overrideCodeBlocking && dom.closest(currentBlockNode, 'code')) {
 			return;
@@ -1871,7 +1871,7 @@ export default function SCEditor(el, options) {
 
 			start += html + end;
 		}
-// TODO: This filter should allow empty tags as it's inserting.
+		// TODO: This filter should allow empty tags as it's inserting.
 		if (filter !== false && pluginManager.hasHandler('toWysiwyg')) {
 			start = pluginManager.callOnlyFirst('toWysiwyg', start, true);
 		}
@@ -2202,7 +2202,7 @@ export default function SCEditor(el, options) {
 
 		base.focus();
 
-// TODO: make configurable
+		// TODO: make configurable
 		// don't apply any commands to code elements
 		if (dom.closest(rangeHelper.parentNode(), 'code')) {
 			return;
@@ -2873,7 +2873,7 @@ export default function SCEditor(el, options) {
 			emoticonsCache = base.emoticonsCache,
 			curChar        = String.fromCharCode(e.which);
 
-// TODO: Make configurable
+		// TODO: Make configurable
 		if (dom.closest(currentBlockNode, 'code')) {
 			return;
 		}

@@ -588,8 +588,10 @@ QUnit.test('getOuterText() - After with paragraph as start', function (assert) {
 
 	sel.setSingleRange(range);
 
-	assert.strictEqual(rangeHelper.getOuterText(false, 25),
-			'The quick brown fox jumps');
+	assert.strictEqual(
+		rangeHelper.getOuterText(false, 25),
+		'The quick brown fox jumps'
+	);
 });
 
 

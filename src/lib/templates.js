@@ -12,7 +12,6 @@ var _templates = {
 		'<!DOCTYPE html>' +
 		'<html{attrs}>' +
 			'<head>' +
-// TODO: move these styles into the CSS file
 				'<style>.ie * {min-height: auto !important} ' +
 					'.ie table td {height:15px} ' +
 					// Target Edge (fixes edge issues)

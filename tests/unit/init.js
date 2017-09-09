@@ -37,8 +37,6 @@
 		};
 	});
 
-// TODO: look into instabul proxy while at it
-
 	// Add moduleSetup and moduleTeardown properties to the
 	// modules settings and add support for a module fixture
 	// div#qunit-module-fixture

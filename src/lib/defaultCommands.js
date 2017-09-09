@@ -321,8 +321,10 @@ var defaultCommnds = {
 				startParent = range.startContainer.parentNode;
 				endParent   = range.endContainer.parentNode;
 
-// TODO: could use nodeType for this?
-// Maybe just check the firstBlock contains both the start and end containers
+				// TODO: could use nodeType for this?
+				// Maybe just check the firstBlock contains both the start
+				//and end containers
+
 				// Select the tag, not the textNode
 				// (that's why the parentNode)
 				if (startParent !==
