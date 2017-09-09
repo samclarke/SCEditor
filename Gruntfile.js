@@ -182,6 +182,9 @@ module.exports = (grunt) => {
 				files: {
 					'./minified/jquery.sceditor.min.js': [
 						'./src/jquery.sceditor.js'
+					],
+					'./minified/sceditor.min.js': [
+						'./src/sceditor.js'
 					]
 				}
 			},
@@ -189,6 +192,9 @@ module.exports = (grunt) => {
 				files: {
 					'./dist/development/jquery.sceditor.js': [
 						'./src/jquery.sceditor.js'
+					],
+					'./dist/development/sceditor.js': [
+						'./src/sceditor.js'
 					]
 				}
 			}
@@ -224,6 +230,10 @@ module.exports = (grunt) => {
 					'(C) 2017, Sam Clarke | sceditor.com/license */\n'
 				},
 				files: [
+					{
+						src: 'minified/sceditor.min.js',
+						dest: 'minified/sceditor.min.js'
+					},
 					{
 						src: 'minified/jquery.sceditor.min.js',
 						dest: 'minified/jquery.sceditor.min.js'
