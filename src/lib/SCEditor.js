@@ -50,11 +50,11 @@ function wrapInlines(body, doc) {
  * SCEditor - A lightweight WYSIWYG editor
  *
  * @param {Element} el The textarea to be converted
- * @return {Object} options
+ * @return {Object} userOptions
  * @class SCEditor
  * @name SCEditor
  */
-export default function SCEditor(el, options) {
+export default function SCEditor(el, userOptions) {
 	/**
 	 * Alias of this
 	 *
@@ -357,16 +357,19 @@ export default function SCEditor(el, options) {
 	 * @memberOf SCEditor.prototype
 	 */
 	base.commands = utils
-		.extend(true, {}, (options.commands || defaultCommands));
+		.extend(true, {}, (userOptions.commands || defaultCommands));
 
 	/**
 	 * Options for this editor instance
 	 * @name opts
 	 * @memberOf SCEditor.prototype
 	 */
-	base.opts = options = utils.extend(
-		true, {}, defaultOptions, options
+	var options = base.opts = utils.extend(
+		true, {}, defaultOptions, userOptions
 	);
+
+	// Don't deep extend emoticons (fixes #565)
+	base.opts.emoticons = userOptions.emoticons;
 
 	/**
 	 * Creates the editor iframe and textarea
