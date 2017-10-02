@@ -1,5 +1,4 @@
 import SCEditor from 'src/lib/SCEditor.js';
-import PluginManager from 'src/lib/PluginManager.js';
 import defaultCommands from 'src/lib/defaultCommands.js';
 import defaultOptions from 'src/lib/defaultOptions.js';
 import * as browser from 'src/lib/browser.js';
@@ -17,12 +16,12 @@ var $textarea;
 var sceditor;
 var $fixture = $('#qunit-module-fixture');
 
-var testPlugin = function () {
-	this.signalToWysiwyg = function () {
+var testFormat = function () {
+	this.toHtml = function () {
 		return '<b>test wysiwyg</b>';
 	};
 
-	this.signalToSource = function () {
+	this.toSource = function () {
 		return '<b>test source</b>';
 	};
 };
@@ -54,7 +53,7 @@ QUnit.module('lib/SCEditor', {
 		SCEditor.commands       = defaultCommands;
 		SCEditor.defaultOptions = defaultOptions;
 
-		PluginManager.plugins.test = testPlugin;
+		SCEditor.formats.test = testFormat;
 
 		defaultOptions.style = '../../src/jquery.sceditor.default.css';
 		defaultOptions.emoticonsRoot    = '../../';
@@ -67,7 +66,7 @@ QUnit.module('lib/SCEditor', {
 		defaultOptions.emoticonsRoot    = '';
 		defaultOptions.emoticonsEnabled = true;
 
-		delete PluginManager.plugins.test;
+		delete SCEditor.formats.test;
 
 		if (sceditor) {
 			sceditor.destroy();
@@ -386,7 +385,7 @@ QUnit.test('getWysiwygEditorValue() - Filter', function (assert) {
 
 
 	reloadEditor({
-		plugins: 'test'
+		format: 'test'
 	});
 
 	sceditor.getRangeHelper().clear();
@@ -420,9 +419,9 @@ QUnit.test('getSourceEditorValue()', function (assert) {
 	);
 });
 
-QUnit.test('getSourceEditorValue() - Uses plugins', function (assert) {
+QUnit.test('getSourceEditorValue() - Uses format', function (assert) {
 	reloadEditor({
-		plugins: 'test'
+		format: 'test'
 	});
 
 	sceditor.getRangeHelper().clear();

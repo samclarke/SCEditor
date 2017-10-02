@@ -66,6 +66,7 @@ window.sceditor = {
 		extend: utils.extend
 	},
 	plugins: PluginManager.plugins,
+	formats: SCEditor.formats,
 	create: function (textarea, options) {
 		options = options || {};
 

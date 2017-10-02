@@ -1,8 +1,7 @@
-import PluginManager from 'src/lib/PluginManager.js';
 import defaultOptions from 'src/lib/defaultOptions.js';
 import * as utils from 'tests/unit/utils.js';
 import * as browser from 'src/lib/browser.js';
-import 'src/plugins/bbcode.js';
+import 'src/formats/bbcode.js';
 
 // In IE < 11 a BR at the end of a block level element
 // causes a line break. In all other browsers it's collapsed.
@@ -16,23 +15,17 @@ QUnit.module('plugins/bbcode', {
 			opts: $.extend({}, defaultOptions)
 		};
 
-		this.plugin = new PluginManager.plugins.bbcode();
-		this.plugin.init.call(this.mockEditor);
+		this.format = new sceditor.formats.bbcode();
+		this.format.init.call(this.mockEditor);
 
 		this.htmlToBBCode = function (html) {
-			return this.plugin.signalToSource('', utils.htmlToDiv(html));
+			return this.format.toSource(html, document);
 		};
 	}
 });
 
 
 QUnit.test('To BBCode method', function (assert) {
-	assert.equal(
-		this.mockEditor.toBBCode(utils.htmlToDiv('<b>test</b>')),
-		'[b]test[/b]',
-		'DOM test'
-	);
-
 	assert.equal(
 		this.mockEditor.toBBCode('<b>test</b>'),
 		'[b]test[/b]',
@@ -62,12 +55,12 @@ QUnit.test('BBcode to HTML trim', function (assert) {
 		opts: $.extend({}, defaultOptions, { bbcodeTrim: true })
 	};
 
-	this.plugin = new PluginManager.plugins.bbcode();
-	this.plugin.init.call(this.mockEditor);
+	this.format = new sceditor.formats.bbcode();
+	this.format.init.call(this.mockEditor);
 
 
 	assert.htmlEqual(
-		this.plugin.signalToWysiwyg(
+		this.format.toHtml(
 			'\n\n[quote]test[/quote]\n\n'
 		),
 		'<blockquote>test' + IE_BR_STR + '</blockquote>',
@@ -75,7 +68,7 @@ QUnit.test('BBcode to HTML trim', function (assert) {
 	);
 
 	assert.htmlEqual(
-		this.plugin.signalToWysiwyg(
+		this.format.toHtml(
 			'\n\n[b]test[/b]\n\n'
 		),
 		'<div><strong>test</strong></div>\n',
@@ -89,11 +82,11 @@ QUnit.test('HTML to BBCode trim', function (assert) {
 		opts: $.extend({}, defaultOptions, { bbcodeTrim: true })
 	};
 
-	this.plugin = new PluginManager.plugins.bbcode();
-	this.plugin.init.call(this.mockEditor);
+	this.format = new sceditor.formats.bbcode();
+	this.format.init.call(this.mockEditor);
 
 	this.htmlToBBCode = function (html) {
-		return this.plugin.signalToSource('', utils.htmlToDiv(html));
+		return this.format.toSource(html, document);
 	};
 
 
@@ -119,11 +112,11 @@ QUnit.module('plugins/bbcode - HTML to BBCode', {
 			opts: $.extend({}, defaultOptions)
 		};
 
-		this.plugin = new PluginManager.plugins.bbcode();
-		this.plugin.init.call(this.mockEditor);
+		this.format = new sceditor.formats.bbcode();
+		this.format.init.call(this.mockEditor);
 
 		this.htmlToBBCode = function (html) {
-			return this.plugin.signalToSource('', utils.htmlToDiv(html));
+			return this.format.toSource(html, document);
 		};
 	}
 });
@@ -150,9 +143,9 @@ QUnit.test('Remove empty', function (assert) {
 
 	assert.equal(
 		this.htmlToBBCode(
-			'<b><span><span><span></span><span></span></span>   </span></b>'
+			'<b><span><span><span></span><span></span></span>   </span></b>a'
 		),
-		' ',
+		' a',
 		'Empty tag with only whitespace content'
 	);
 
@@ -184,20 +177,6 @@ QUnit.test('Should remove whitespace in non-code tags', function (assert) {
 	);
 
 	assert.equal(result, 'lots \nof junk j');
-});
-
-QUnit.test('Should remove empty text nodes', function (assert) {
-	var quote = document.createElement('blockquote');
-	quote.appendChild(document.createTextNode('test'));
-
-	var root = document.createElement('div');
-	root.appendChild(document.createTextNode(''));
-	root.appendChild(quote);
-	root.appendChild(document.createTextNode('test'));
-
-	var result = this.plugin.signalToSource('', root);
-
-	assert.equal(result, '[quote]test[/quote]\ntest');
 });
 
 
@@ -678,7 +657,7 @@ QUnit.test('Image', function (assert) {
 
 QUnit.test('Image dimensions when loaded', function (assert) {
 	var done = assert.async();
-	var plugin = this.plugin;
+	var plugin = this.format;
 	var div = utils.htmlToDiv(
 		'<img src="http://www.sceditor.com/emoticons/smile.png" ' +
 			'width="200" />'
@@ -691,7 +670,9 @@ QUnit.test('Image dimensions when loaded', function (assert) {
 		}
 
 		assert.equal(
-			plugin.signalToSource('', div),
+			plugin.toSource(
+				'<img src="http://www.sceditor.com/emoticons/smile.png" ' +
+				'width="200" />', document),
 			'[img=200x200]http://www.sceditor.com/emoticons/smile.png[/img]'
 		);
 

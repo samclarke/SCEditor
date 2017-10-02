@@ -55,7 +55,7 @@ function toFloat(value) {
  * is specified.
  *
  * @param {!string} tag
- * @param {!Object<string, string>} attributes
+ * @param {!Object<string, string>} [attributes]
  * @param {!Document} [context]
  * @returns {!HTMLElement}
  */
@@ -649,7 +649,7 @@ export function rTraverse(node, func, innermostFirst, siblingsOnly) {
  * Parses HTML into a document fragment
  *
  * @param {string} html
- * @param {Document} context
+ * @param {Document} [context]
  * @since 1.4.4
  * @return {DocumentFragment}
  */
@@ -804,9 +804,9 @@ export function fixNesting(node) {
 
 		// Any blocklevel element inside an inline element needs fixing.
 		if (isBlock && isInline(node.parentNode, true)) {
-			var	parent  = getLastInlineParent(node),
-				before  = extractContents(parent, node),
-				middle  = node;
+			var	parent = getLastInlineParent(node),
+				before = extractContents(parent, node),
+				middle = node;
 
 			// copy current styling so when moved out of the parent
 			// it still has the same styling
@@ -862,16 +862,21 @@ export function getSibling(node, previous) {
 /**
  * Removes unused whitespace from the root and all it's children.
  *
- * If preserveNewLines is true, new line characters will not be removed
- *
  * @param {!HTMLElement} root
- * @param {boolean}     [preserveNewLines]
  * @since 1.4.3
  */
-export function removeWhiteSpace(root, preserveNewLines) {
+export function removeWhiteSpace(root) {
 	var	nodeValue, nodeType, next, previous, previousSibling,
-		cssWhiteSpace, nextNode, trimStart,
+		nextNode, trimStart,
+		cssWhiteSpace = css(root, 'whiteSpace'),
+		// Preserve newlines if is pre-line
+		preserveNewLines = /line$/i.test(cssWhiteSpace),
 		node = root.firstChild;
+
+	// Skip pre & pre-wrap with any vendor prefix
+	if (/pre(\-wrap)?$/i.test(cssWhiteSpace)) {
+		return;
+	}
 
 	while (node) {
 		nextNode  = node.nextSibling;
@@ -879,19 +884,13 @@ export function removeWhiteSpace(root, preserveNewLines) {
 		nodeType  = node.nodeType;
 
 		if (nodeType === ELEMENT_NODE && node.firstChild) {
-			cssWhiteSpace = css(node, 'whiteSpace');
-
-			// Skip pre & pre-wrap with any vendor prefix
-			if (!/pre(\-wrap)?$/i.test(cssWhiteSpace)) {
-				// Preserve newlines if is pre-line
-				removeWhiteSpace(node, /line$/i.test(cssWhiteSpace));
-			}
+			removeWhiteSpace(node);
 		}
 
 		if (nodeType === TEXT_NODE) {
-			next            = getSibling(node);
-			previous        = getSibling(node, true);
-			trimStart       = false;
+			next      = getSibling(node);
+			previous  = getSibling(node, true);
+			trimStart = false;
 
 			while (hasClass(previous, 'sceditor-ignore')) {
 				previous = getSibling(previous, true);

@@ -102,6 +102,12 @@ module.exports = (grunt) => {
 					{
 						expand: true,
 						cwd: 'src/',
+						src: ['formats/**.js'],
+						dest: 'dist/development/'
+					},
+					{
+						expand: true,
+						cwd: 'src/',
 						src: 'jquery.sceditor.default.css',
 						dest: 'dist/development/'
 					},
@@ -209,7 +215,7 @@ module.exports = (grunt) => {
 				files: {
 					'dist/development/jquery.sceditor.bbcode.js': [
 						'dist/development/jquery.sceditor.js',
-						'src/plugins/bbcode.js'
+						'src/formats/bbcode.js'
 					],
 					'dist/development/jquery.sceditor.xhtml.js': [
 						'dist/development/jquery.sceditor.js',
@@ -241,7 +247,7 @@ module.exports = (grunt) => {
 					{
 						src: [
 							'minified/jquery.sceditor.min.js',
-							'src/plugins/bbcode.js'
+							'src/formats/bbcode.js'
 						],
 						dest: 'minified/jquery.sceditor.bbcode.min.js'
 					},
@@ -257,6 +263,13 @@ module.exports = (grunt) => {
 						filter: 'isFile',
 						cwd: 'src/',
 						src: ['plugins/**.js'],
+						dest: 'minified/'
+					},
+					{
+						expand: true,
+						filter: 'isFile',
+						cwd: 'src/',
+						src: ['formats/**.js'],
 						dest: 'minified/'
 					}
 				]

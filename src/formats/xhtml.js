@@ -12,14 +12,14 @@
 (function (sceditor) {
 	'use strict';
 
-	var sceditorPlugins = sceditor.plugins;
-	var dom             = sceditor.dom;
-	var utils           = sceditor.utils;
+	var dom = sceditor.dom;
+	var utils = sceditor.utils;
 
 	var css = dom.css;
 	var attr = dom.attr;
-	var removeAttr = dom.removeAttr;
 	var is = dom.is;
+	var removeAttr = dom.removeAttr;
+	var convertElement = dom.convertElement;
 	var extend = utils.extend;
 	var each = utils.each;
 	var isEmptyObject = utils.isEmptyObject;
@@ -233,19 +233,6 @@
 		 */
 		var currentIndent = 0;
 
-		/**
-		 * @private
-		 */
-		var	escapeEntites,
-			trim,
-			serializeNode,
-			handleDoc,
-			handleElement,
-			handleCdata,
-			handleComment,
-			handleText,
-			output,
-			canIndent;
 		// TODO: use escape.entities
 		/**
 		 * Escapes XHTML entities
@@ -254,15 +241,16 @@
 		 * @return {string}
 		 * @private
 		 */
-		escapeEntites = function (str) {
+		function escapeEntites(str) {
 			var entites = {
 				'&': '&amp;',
 				'<': '&lt;',
 				'>': '&gt;',
-				'"': '&quot;'
+				'"': '&quot;',
+				'\xa0': '&nbsp;'
 			};
 
-			return !str ? '' : str.replace(/[&<>"]/g, function (entity) {
+			return !str ? '' : str.replace(/[&<>"\xa0]/g, function (entity) {
 				return entites[entity] || entity;
 			});
 		};
@@ -272,7 +260,7 @@
 		 * @return {string}
 		 * @private
 		 */
-		trim = function (str) {
+		function trim(str) {
 			return str
 				// New lines will be shown as spaces so just convert to spaces.
 				.replace(/[\r\n]/, ' ')
@@ -315,7 +303,7 @@
 		 * @return {void}
 		 * @private
 		 */
-		serializeNode = function (node, parentIsPre) {
+		function serializeNode(node, parentIsPre) {
 			switch (node.nodeType) {
 				case 1: // element
 					var tagName = node.nodeName.toLowerCase();
@@ -362,7 +350,7 @@
 		 * @return {void}
 		 * @private
 		 */
-		handleDoc = function (node) {
+		function handleDoc(node) {
 			var	child = node.firstChild;
 
 			while (child) {
@@ -377,7 +365,7 @@
 		 * @return {void}
 		 * @private
 		 */
-		handleElement = function (node, parentIsPre) {
+		function handleElement(node, parentIsPre) {
 			var	child, attr, attrValue,
 				tagName     = node.nodeName.toLowerCase(),
 				isIframe    = tagName === 'iframe',
@@ -432,7 +420,7 @@
 		 * @return {void}
 		 * @private
 		 */
-		handleCdata =  function (node) {
+		function handleCdata(node) {
 			output('<![CDATA[' + escapeEntites(node.nodeValue) + ']]>');
 		};
 
@@ -442,7 +430,7 @@
 		 * @return {void}
 		 * @private
 		 */
-		handleComment = function (node) {
+		function handleComment(node) {
 			output('<!-- ' + escapeEntites(node.nodeValue) + ' -->');
 		};
 
@@ -452,7 +440,7 @@
 		 * @return {void}
 		 * @private
 		 */
-		handleText = function (node, parentIsPre) {
+		function handleText(node, parentIsPre) {
 			var text = node.nodeValue;
 
 			if (!parentIsPre) {
@@ -473,7 +461,7 @@
 		 * @return {void}
 		 * @private
 		 */
-		output = function (str, indent) {
+		function output(str, indent) {
 			var i = currentIndent;
 
 			if (indent !== false) {
@@ -496,7 +484,7 @@
 		 * @return {boolean}
 		 * @private
 		 */
-		canIndent = function (node) {
+		function canIndent(node) {
 			var prev = node.previousSibling;
 
 			if (node.nodeType !== 1 && prev) {
@@ -518,7 +506,7 @@
 	 * @name jQuery.sceditor.plugins.xhtml
 	 * @since v1.4.1
 	 */
-	sceditorPlugins.xhtml = function () {
+	function xhtmlFormat() {
 		var base = this;
 
 		/**
@@ -536,26 +524,13 @@
 		var attrsCache = {};
 
 		/**
-		 * Private methods
-		 * @private
-		 */
-		var	convertTags,
-			convertNode,
-			isEmpty,
-			removeTags,
-			mergeAttribsFilters,
-			removeAttribs,
-			wrapInlines;
-
-
-		/**
 		 * Init
 		 * @return {void}
 		 */
 		base.init = function () {
-			if (!isEmptyObject(sceditorPlugins.xhtml.converters || {})) {
+			if (!isEmptyObject(xhtmlFormat.converters || {})) {
 				each(
-					sceditorPlugins.xhtml.converters,
+					xhtmlFormat.converters,
 					function (idx, converter) {
 						each(converter.tags, function (tagname) {
 							if (!tagConvertersCache[tagname]) {
@@ -575,39 +550,32 @@
 		/**
 		 * Converts the WYSIWYG content to XHTML
 		 * @param  {string} html
-		 * @param  {HTMLElement} domBody
+		 * @param  {Document} context
+		 * @param  {HTMLElemnt} [parent]
 		 * @return {string}
 		 * @memberOf jQuery.sceditor.plugins.xhtml.prototype
 		 */
-		base.signalToSource = function (html, domBody) {
-			domBody = domBody.jquery ? domBody[0] : domBody;
+		base.toSource = function (html, context) {
+			var xhtml,
+				container = context.createElement('div');
+			container.innerHTML = html;
 
-			convertTags(domBody);
-			removeTags(domBody);
-			removeAttribs(domBody);
-			wrapInlines(domBody);
+			css(container, 'visibility', 'hidden');
+			context.body.appendChild(container);
 
-			return (new sceditor.XHTMLSerializer()).serialize(domBody, true);
+			convertTags(container);
+			removeTags(container);
+			removeAttribs(container);
+			wrapInlines(container);
+
+			xhtml = (new sceditor.XHTMLSerializer()).serialize(container, true);
+
+			context.body.removeChild(container);
+
+			return xhtml;
 		};
 
-		/**
-		 * Converts the XHTML to WYSIWYG content.
-		 *
-		 * This doesn't currently do anything as XHTML
-		 * is valid WYSIWYG content.
-		 * @param  {string} text
-		 * @return {string}
-		 * @memberOf jQuery.sceditor.plugins.xhtml.prototype
-		 */
-		base.signalToWysiwyg = function (text) {
-			return text;
-		};
-
-		/**
-		 * Deprecated, use dom.convertElement() instead.
-		 * @deprecated
-		 */
-		base.convertTagTo = dom.convertElement;
+		base.fragmentToSource = base.toSource;
 
 		/**
 		 * Runs all converters for the specified tagName
@@ -616,7 +584,7 @@
 		 * @return {Node} node
 		 * @private
 		 */
-		convertNode = function (tagName, node) {
+		function convertNode(tagName, node) {
 			if (!tagConvertersCache[tagName]) {
 				return;
 			}
@@ -648,7 +616,7 @@
 		 * @return {void}
 		 * @private
 		 */
-		convertTags = function (node) {
+		function convertTags(node) {
 			dom.traverse(node, function (node) {
 				var	tagName = node.nodeName.toLowerCase();
 
@@ -664,13 +632,13 @@
 		 * @return {boolean}
 		 * @private
 		 */
-		isEmpty = function (node, excludeBr) {
+		function isEmpty(node, excludeBr) {
 			var	rect,
 				childNodes     = node.childNodes,
 				tagName        = node.nodeName.toLowerCase(),
 				nodeValue      = node.nodeValue,
 				childrenLength = childNodes.length,
-				allowedEmpty   = sceditorPlugins.xhtml.allowedEmptyTags || [];
+				allowedEmpty   = xhtmlFormat.allowedEmptyTags || [];
 
 			if (excludeBr && tagName === 'br') {
 				return true;
@@ -717,7 +685,7 @@
 		 * @return {void}
 		 * @private
 		 */
-		removeTags = function (rootNode) {
+		function removeTags(rootNode) {
 			dom.traverse(rootNode, function (node) {
 				var	remove,
 					tagName         = node.nodeName.toLowerCase(),
@@ -731,8 +699,8 @@
 					empty           = tagName !== 'iframe' && isEmpty(node,
 						isTopLevel && noSiblings && tagName !== 'br'),
 					document        = node.ownerDocument,
-					allowedtags     = sceditorPlugins.xhtml.allowedTags,
-					disallowedTags  = sceditorPlugins.xhtml.disallowedTags;
+					allowedtags     = xhtmlFormat.allowedTags,
+					disallowedTags  = xhtmlFormat.disallowedTags;
 
 				// 3 = text node
 				if (nodeType === 3) {
@@ -788,7 +756,7 @@
 		 * @return {Object}
 		 * @private
 		 */
-		mergeAttribsFilters = function (filtersA, filtersB) {
+		function mergeAttribsFilters(filtersA, filtersB) {
 			var ret = {};
 
 			if (filtersA) {
@@ -817,7 +785,7 @@
 		 * @param {Node} root
 		 * @private
 		 */
-		wrapInlines = function (root) {
+		function wrapInlines(root) {
 			// Strip empty text nodes so they don't get wrapped.
 			dom.removeWhiteSpace(root);
 
@@ -850,12 +818,12 @@
 		 * @return {void}
 		 * @private
 		 */
-		removeAttribs = function (node) {
+		function removeAttribs(node) {
 			var	tagName, attr, attrName, attrsLength, validValues, remove,
-				allowedAttribs    = sceditorPlugins.xhtml.allowedAttribs,
+				allowedAttribs    = xhtmlFormat.allowedAttribs,
 				isAllowed         = allowedAttribs &&
 					!isEmptyObject(allowedAttribs),
-				disallowedAttribs = sceditorPlugins.xhtml.disallowedAttribs,
+				disallowedAttribs = xhtmlFormat.disallowedAttribs,
 				isDisallowed      = disallowedAttribs &&
 					!isEmptyObject(disallowedAttribs);
 
@@ -916,7 +884,7 @@
 	 * @name jQuery.sceditor.plugins.xhtml.converters
 	 * @since v1.4.1
 	 */
-	sceditorPlugins.xhtml.converters = [
+	xhtmlFormat.converters = [
 		{
 			tags: {
 				'*': {
@@ -1084,7 +1052,7 @@
 				big: null
 			},
 			conv: function (node) {
-				css(this.convertTagTo(node, 'span'), 'fontSize', 'larger');
+				css(convertElement(node, 'span'), 'fontSize', 'larger');
 			}
 		},
 		{
@@ -1092,7 +1060,7 @@
 				small: null
 			},
 			conv: function (node) {
-				css(this.convertTagTo(node, 'span'), 'fontSize', 'smaller');
+				css(convertElement(node, 'span'), 'fontSize', 'smaller');
 			}
 		},
 		{
@@ -1100,7 +1068,7 @@
 				b: null
 			},
 			conv: function (node) {
-				this.convertTagTo(node, 'strong');
+				convertElement(node, 'strong');
 			}
 		},
 		{
@@ -1108,7 +1076,7 @@
 				u: null
 			},
 			conv: function (node) {
-				css(this.convertTagTo(node, 'span'), 'textDecoration',
+				css(convertElement(node, 'span'), 'textDecoration',
 					'underline');
 			}
 		},
@@ -1118,7 +1086,7 @@
 				strike: null
 			},
 			conv: function (node) {
-				css(this.convertTagTo(node, 'span'), 'textDecoration',
+				css(convertElement(node, 'span'), 'textDecoration',
 					'line-through');
 			}
 		},
@@ -1127,7 +1095,7 @@
 				dir: null
 			},
 			conv: function (node) {
-				this.convertTagTo(node, 'ul');
+				convertElement(node, 'ul');
 			}
 		},
 		{
@@ -1135,7 +1103,7 @@
 				center: null
 			},
 			conv: function (node) {
-				css(this.convertTagTo(node, 'div'), 'textAlign', 'center');
+				css(convertElement(node, 'div'), 'textAlign', 'center');
 			}
 		},
 		{
@@ -1156,7 +1124,7 @@
 			conv: function (node) {
 				// All it's attributes will be converted
 				// by the attribute converters
-				this.convertTagTo(node, 'span');
+				convertElement(node, 'span');
 			}
 		},
 		{
@@ -1202,7 +1170,7 @@
 	 * @name jQuery.sceditor.plugins.xhtml.allowedAttribs
 	 * @since v1.4.1
 	 */
-	sceditorPlugins.xhtml.allowedAttribs = {};
+	xhtmlFormat.allowedAttribs = {};
 
 	/**
 	 * Attributes that are not allowed.
@@ -1212,7 +1180,7 @@
 	 * @name jQuery.sceditor.plugins.xhtml.disallowedAttribs
 	 * @since v1.4.1
 	 */
-	sceditorPlugins.xhtml.disallowedAttribs = {};
+	xhtmlFormat.disallowedAttribs = {};
 
 	/**
 	 * Array containing all the allowed tags.
@@ -1222,7 +1190,7 @@
 	 * @name jQuery.sceditor.plugins.xhtml.allowedTags
 	 * @since v1.4.1
 	 */
-	sceditorPlugins.xhtml.allowedTags = [];
+	xhtmlFormat.allowedTags = [];
 
 	/**
 	 * Array containing all the disallowed tags.
@@ -1232,7 +1200,7 @@
 	 * @name jQuery.sceditor.plugins.xhtml.disallowedTags
 	 * @since v1.4.1
 	 */
-	sceditorPlugins.xhtml.disallowedTags = [];
+	xhtmlFormat.disallowedTags = [];
 
 	/**
 	 * Array containing tags which should not be removed when empty.
@@ -1241,5 +1209,7 @@
 	 * @name jQuery.sceditor.plugins.xhtml.allowedEmptyTags
 	 * @since v2.0.0
 	 */
-	sceditorPlugins.xhtml.allowedEmptyTags = [];
+	xhtmlFormat.allowedEmptyTags = [];
+
+	sceditor.formats.xhtml = xhtmlFormat;
 }(sceditor));

@@ -1,6 +1,6 @@
 import * as utils from 'tests/unit/utils.js';
 import * as browser from 'src/lib/browser.js';
-import 'src/plugins/bbcode.js';
+import 'src/formats/bbcode.js';
 
 // In IE < 11 a BR at the end of a block level element
 // causes a line break. In all other browsers it's collapsed.
@@ -66,16 +66,16 @@ QUnit.test('Fix invalid nesting', function (assert) {
 
 
 QUnit.test('Rename BBCode', function (assert) {
-	$.sceditor.plugins.bbcode.bbcode.rename('b', 'testbold');
+	sceditor.formats.bbcode.rename('b', 'testbold');
 	this.parser = new sceditor.BBCodeParser({});
 
 	assert.ok(
-		!!$.sceditor.plugins.bbcode.bbcode.get('testbold'),
+		!!sceditor.formats.bbcode.get('testbold'),
 		'Can get renamed BBCode'
 	);
 
 	assert.ok(
-		!$.sceditor.plugins.bbcode.bbcode.get('b'),
+		!sceditor.formats.bbcode.get('b'),
 		'Cannot get BBCode by old name'
 	);
 
@@ -85,10 +85,10 @@ QUnit.test('Rename BBCode', function (assert) {
 		'Will convert renamed BBCode'
 	);
 
-	$.sceditor.plugins.bbcode.bbcode.rename('testbold', 'b');
+	sceditor.formats.bbcode.rename('testbold', 'b');
 
 	assert.ok(
-		!$.sceditor.plugins.bbcode.bbcode.get('testbold'),
+		!sceditor.formats.bbcode.get('testbold'),
 		'Should not be able to get old BBCode name'
 	);
 });
@@ -303,10 +303,12 @@ QUnit.test('New Line Handling', function (assert) {
 QUnit.test('Attributes QuoteType.auto', function (assert) {
 	// Remove the [quote] tag default quoteType so will use the default
 	// one specified by the parser
-	delete $.sceditor.plugins.bbcode.bbcodes.quote.quoteType;
+	sceditor.formats.bbcode.set('quote', {
+		quoteType: null
+	});
 
-	this.parser = new $.sceditor.BBCodeParser({
-		quoteType: $.sceditor.BBCodeParser.QuoteType.auto
+	this.parser = new sceditor.BBCodeParser({
+		quoteType: sceditor.BBCodeParser.QuoteType.auto
 	});
 
 	assert.equal(
@@ -372,15 +374,18 @@ QUnit.test('Attributes QuoteType.auto', function (assert) {
 	);
 
 	// Reset [quote]'s default quoteType
-	$.sceditor.plugins.bbcode.bbcodes.quote.quoteType =
-		$.sceditor.BBCodeParser.QuoteType.never;
+	sceditor.formats.bbcode.set('quote', {
+		quoteType: sceditor.BBCodeParser.QuoteType.never
+	});
 });
 
 
 QUnit.test('Attributes QuoteType.never', function (assert) {
 	// Remove the [quote] tag default quoteType so will use the default
 	// one specified by the parser
-	delete $.sceditor.plugins.bbcode.bbcodes.quote.quoteType;
+	sceditor.formats.bbcode.set('quote', {
+		quoteType: null
+	});
 
 	this.parser = new $.sceditor.BBCodeParser({
 		quoteType: $.sceditor.BBCodeParser.QuoteType.never
@@ -449,15 +454,18 @@ QUnit.test('Attributes QuoteType.never', function (assert) {
 	);
 
 	// Reset [quote]'s default quoteType
-	$.sceditor.plugins.bbcode.bbcodes.quote.quoteType =
-		$.sceditor.BBCodeParser.QuoteType.never;
+	sceditor.formats.bbcode.set('quote', {
+		quoteType: sceditor.BBCodeParser.QuoteType.never
+	});
 });
 
 
 QUnit.test('Attributes QuoteType.always', function (assert) {
 	// Remove the [quote] tag default quoteType so will use the default
 	// one specified by the parser
-	delete $.sceditor.plugins.bbcode.bbcodes.quote.quoteType;
+	sceditor.formats.bbcode.set('quote', {
+		quoteType: null
+	});
 
 	this.parser = new $.sceditor.BBCodeParser({
 		quoteType: $.sceditor.BBCodeParser.QuoteType.always
@@ -527,15 +535,18 @@ QUnit.test('Attributes QuoteType.always', function (assert) {
 	);
 
 	// Reset [quote]'s default quoteType
-	$.sceditor.plugins.bbcode.bbcodes.quote.quoteType =
-		$.sceditor.BBCodeParser.QuoteType.never;
+	sceditor.formats.bbcode.set('quote', {
+		quoteType: sceditor.BBCodeParser.QuoteType.never
+	});
 });
 
 
 QUnit.test('Attributes QuoteType custom', function (assert) {
 	// Remove the [quote] tag default quoteType so will use the default
 	// one specified by the parser
-	delete $.sceditor.plugins.bbcode.bbcodes.quote.quoteType;
+	sceditor.formats.bbcode.set('quote', {
+		quoteType: null
+	});
 
 	this.parser = new $.sceditor.BBCodeParser({
 		quoteType: function (str) {
@@ -609,8 +620,9 @@ QUnit.test('Attributes QuoteType custom', function (assert) {
 	);
 
 	// Reset [quote]'s default quoteType
-	$.sceditor.plugins.bbcode.bbcodes.quote.quoteType =
-		$.sceditor.BBCodeParser.QuoteType.never;
+	sceditor.formats.bbcode.set('quote', {
+		quoteType: sceditor.BBCodeParser.QuoteType.never
+	});
 });
 
 

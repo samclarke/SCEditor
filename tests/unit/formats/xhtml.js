@@ -1,20 +1,17 @@
-import PluginManager from 'src/lib/PluginManager.js';
 import defaultOptions from 'src/lib/defaultOptions.js';
 import * as utils from 'tests/unit/utils.js';
-import 'src/plugins/xhtml.js';
+import 'src/formats/xhtml.js';
 
 var moduleSetup = function () {
 	this.mockEditor = {
 		opts: $.extend({}, defaultOptions)
 	};
 
-	this.plugin = new PluginManager.plugins.xhtml();
+	this.plugin = new sceditor.formats.xhtml();
 	this.plugin.init.call(this.mockEditor);
 
 	this.filterHtml = function (html) {
-		var $html = $(utils.htmlToDiv(html));
-
-		return this.plugin.signalToSource('', $html);
+		return this.plugin.toSource(html, document);
 	};
 
 	this.filterStripWhiteSpace = function (html) {
@@ -102,7 +99,7 @@ QUnit.test('Remove empty tags', function (assert) {
 });
 
 QUnit.test('Should not remove empty tags in allowedEmptyTags', function (assert) {
-	$.sceditor.plugins.xhtml.allowedEmptyTags = ['div', 'i'];
+	sceditor.formats.xhtml.allowedEmptyTags = ['div', 'i'];
 
 	assert.htmlEqual(
 		this.filterStripWhiteSpace('<div></div>'),
@@ -116,7 +113,7 @@ QUnit.test('Should not remove empty tags in allowedEmptyTags', function (assert)
 		'P containing allowed empty tag'
 	);
 
-	$.sceditor.plugins.xhtml.allowedEmptyTags = [];
+	sceditor.formats.xhtml.allowedEmptyTags = [];
 });
 
 QUnit.test('Should not empty tags with a size', function (assert) {
@@ -181,7 +178,7 @@ QUnit.test('Should not remove non-empty tags', function (assert) {
 
 	assert.htmlEqual(
 		this.filterHtml('<div>&nbsp; <br />		</div>'),
-		'<div>\n\t&nbsp; <br /> \n</div>',
+		'<div>\n\t&nbsp; <br />\n</div>',
 		'Single div with spaces and br'
 	);
 
@@ -215,7 +212,7 @@ QUnit.test('Should wrap adjacent inline nodes of root in paragraphs', function (
 
 
 QUnit.test('Allowed tags', function (assert) {
-	$.sceditor.plugins.xhtml.allowedTags = ['strong', 'a'];
+	sceditor.formats.xhtml.allowedTags = ['strong', 'a'];
 
 	assert.htmlEqual(
 		this.filterHtml(
@@ -258,7 +255,7 @@ QUnit.test('Allowed tags', function (assert) {
 	);
 
 	// Reset for next test
-	$.sceditor.plugins.xhtml.allowedTags = [];
+	sceditor.formats.xhtml.allowedTags = [];
 });
 
 
@@ -272,7 +269,7 @@ QUnit.test('Should not convert the I tag', function (assert) {
 
 
 QUnit.test('Disallowed tags', function (assert) {
-	$.sceditor.plugins.xhtml.disallowedTags = ['div'];
+	sceditor.formats.xhtml.disallowedTags = ['div'];
 
 	assert.htmlEqual(
 		this.filterHtml(
@@ -321,16 +318,16 @@ QUnit.test('Disallowed tags', function (assert) {
 	);
 
 	// Reset for next test
-	$.sceditor.plugins.xhtml.disallowedTags = [];
+	sceditor.formats.xhtml.disallowedTags = [];
 });
 
 
 QUnit.test('Allowed attributes', function (assert) {
-	$.sceditor.plugins.xhtml.allowedAttribs['*'] = {
+	sceditor.formats.xhtml.allowedAttribs['*'] = {
 		'data-allowed': null,
 		'data-only-a': ['a']
 	};
-	$.sceditor.plugins.xhtml.allowedAttribs.a = {
+	sceditor.formats.xhtml.allowedAttribs.a = {
 		'href': null
 	};
 
@@ -373,16 +370,16 @@ QUnit.test('Allowed attributes', function (assert) {
 	);
 
 	// Reset for next test
-	$.sceditor.plugins.xhtml.allowedAttribs = {};
+	sceditor.formats.xhtml.allowedAttribs = {};
 });
 
 
 QUnit.test('Disallowed attributes', function (assert) {
-	$.sceditor.plugins.xhtml.disallowedAttribs['*'] = {
+	sceditor.formats.xhtml.disallowedAttribs['*'] = {
 		'data-test': null,
 		'data-only-a': ['aaaaaa']
 	};
-	$.sceditor.plugins.xhtml.disallowedAttribs.div = {
+	sceditor.formats.xhtml.disallowedAttribs.div = {
 		'href': null
 	};
 
@@ -425,7 +422,7 @@ QUnit.test('Disallowed attributes', function (assert) {
 	);
 
 	// Reset for next test
-	$.sceditor.plugins.xhtml.disallowedAttribs = {};
+	sceditor.formats.xhtml.disallowedAttribs = {};
 });
 
 
@@ -558,10 +555,10 @@ QUnit.test('Ignored elements', function (assert) {
 
 
 QUnit.test('Merge attributes', function (assert) {
-	$.sceditor.plugins.xhtml.allowedAttribs['*'] = {
+	sceditor.formats.xhtml.allowedAttribs['*'] = {
 		'data-only-ab': ['a']
 	};
-	$.sceditor.plugins.xhtml.allowedAttribs.div = {
+	sceditor.formats.xhtml.allowedAttribs.div = {
 		'data-only-ab': ['b']
 	};
 
@@ -584,7 +581,7 @@ QUnit.test('Merge attributes', function (assert) {
 	);
 
 	// Reset for next test
-	$.sceditor.plugins.xhtml.allowedAttribs = {};
+	sceditor.formats.xhtml.allowedAttribs = {};
 });
 
 

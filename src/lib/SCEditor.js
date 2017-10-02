@@ -63,12 +63,17 @@ export default function SCEditor(el, options) {
 	var base = this;
 
 	/**
+	 * Editor format like BBCode or HTML
+	 */
+	var format;
+
+	/**
 	 * The textarea element being replaced
 	 *
 	 * @type {HTMLTextAreaElement}
 	 * @private
 	 */
-	var original  = el.get ? el.get(0) : el;
+	var original = el.get ? el.get(0) : el;
 
 	/**
 	 * The div which contains the editor and toolbar
@@ -391,6 +396,12 @@ export default function SCEditor(el, options) {
 		isRequired = original.required;
 		original.required = false;
 
+		var FormatCtor = SCEditor.formats[options.format];
+		format = FormatCtor ? new FormatCtor() : {};
+		if ('init' in format) {
+			format.init.call(base);
+		}
+
 		// create the editor
 		initPlugins();
 		initEmoticons();
@@ -418,6 +429,9 @@ export default function SCEditor(el, options) {
 			appendNewLine();
 			// TODO: use editor doc and window?
 			pluginManager.call('ready');
+			if ('onReady' in format) {
+				format.onReady.call(base);
+			}
 		};
 		dom.on(globalWin, 'load', loaded);
 		if (globalDoc.readyState === 'complete') {
@@ -1515,20 +1529,16 @@ export default function SCEditor(el, options) {
 			val: pastearea.innerHTML
 		};
 
-		if (pluginManager.hasHandler('toSource')) {
-			dom.appendChild(wysiwygBody, pastearea);
-			// TODO: replace this API at same time? for format as special
-			paste.val = pluginManager
-				.callOnlyFirst('toSource', paste.val, pastearea);
-
-			dom.remove(pastearea);
+		if ('fragmentToSource' in format) {
+			paste.val = format
+				.fragmentToSource(paste.val, wysiwygDocument, currentNode);
 		}
 
 		pluginManager.call('paste', paste);
 
-		if (pluginManager.hasHandler('toWysiwyg')) {
-			paste.val = pluginManager
-				.callOnlyFirst('toWysiwyg', paste.val, true);
+		if ('fragmentToHtml' in format) {
+			paste.val = format
+				.fragmentToHtml(paste.val, currentNode);
 		}
 
 		pluginManager.call('pasteHtml', paste);
@@ -1786,9 +1796,8 @@ export default function SCEditor(el, options) {
 		}
 
 		if (!base.inSourceMode()) {
-			if (filter !== false &&
-				pluginManager.hasHandler('toWysiwyg')) {
-				val = pluginManager.callOnlyFirst('toWysiwyg', val);
+			if (filter !== false && 'toHtml' in format) {
+				val = format.toHtml(val);
 			}
 
 			base.setWysiwygEditorValue(val);
@@ -1857,23 +1866,17 @@ export default function SCEditor(el, options) {
 		// Add the selection between start and end
 		if (end) {
 			var	html = rangeHelper.selectedHtml();
-			var div  = dom.createElement('div');
 
-			dom.appendChild(wysiwygBody, div);
-			dom.hide(div);
-			div.innerHTML = html;
-
-			if (filter !== false && pluginManager.hasHandler('toSource')) {
-				html = pluginManager.callOnlyFirst('toSource', html, div);
+			if (filter !== false && 'fragmentToSource' in format) {
+				html = format
+					.fragmentToSource(html, wysiwygDocument, currentNode);
 			}
-
-			dom.remove(div);
 
 			start += html + end;
 		}
 		// TODO: This filter should allow empty tags as it's inserting.
-		if (filter !== false && pluginManager.hasHandler('toWysiwyg')) {
-			start = pluginManager.callOnlyFirst('toWysiwyg', start, true);
+		if (filter !== false && 'fragmentToHtml' in format) {
+			start = format.fragmentToHtml(start, currentNode);
 		}
 
 		// Convert any escaped HTML back into HTML if mixed is allowed
@@ -1914,15 +1917,14 @@ export default function SCEditor(el, options) {
 
 		dom.appendChild(wysiwygBody, tmp);
 		dom.fixNesting(tmp);
+		dom.remove(tmp);
 
 		html = tmp.innerHTML;
 
 		// filter the HTML and DOM through any plugins
-		if (filter !== false && pluginManager.hasHandler('toSource')) {
-			html = pluginManager.callOnlyFirst('toSource', html, tmp);
+		if (filter !== false && 'toSource' in format) {
+			html = format.toSource(html, wysiwygDocument);
 		}
-
-		dom.remove(tmp);
 
 		return html;
 	};
@@ -1971,8 +1973,8 @@ export default function SCEditor(el, options) {
 	base.getSourceEditorValue = function (filter) {
 		var val = sourceEditor.value;
 
-		if (filter !== false && pluginManager.hasHandler('toWysiwyg')) {
-			val = pluginManager.callOnlyFirst('toWysiwyg', val);
+		if (filter !== false && 'toHtml' in format) {
+			val = format.toHtml(val);
 		}
 
 		return val;
@@ -3424,6 +3426,8 @@ export default function SCEditor(el, options) {
  * @memberOf sceditor
  */
 SCEditor.locale = {};
+
+SCEditor.formats = {};
 
 
 /**
