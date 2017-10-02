@@ -369,7 +369,7 @@ export default function SCEditor(el, userOptions) {
 	);
 
 	// Don't deep extend emoticons (fixes #565)
-	base.opts.emoticons = userOptions.emoticons;
+	base.opts.emoticons = userOptions.emoticons || defaultOptions.emoticons;
 
 	/**
 	 * Creates the editor iframe and textarea
