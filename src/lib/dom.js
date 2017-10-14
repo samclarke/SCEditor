@@ -164,7 +164,7 @@ export var EVENT_CAPTURE = true;
 
 /**
  * For on() and off() if to add/remove the event
- * to the buibble phase
+ * to the bubble phase
  *
  * @type {boolean}
  */
@@ -173,10 +173,10 @@ export var EVENT_BUBBLE = false;
 /**
  * Adds an event listener for the specified events.
  *
- * Events should be a space seperated list of events.
+ * Events should be a space separated list of events.
  *
  * If selector is specified the handler will only be
- * called when the event target matches the seector.
+ * called when the event target matches the selector.
  *
  * @param {!Node} node
  * @param {string} events
@@ -543,7 +543,7 @@ export function width(node, value) {
 export function height(node, value) {
 	if (utils.isUndefined(value)) {
 		var cs = getComputedStyle(node);
-		var padding = toFloat(cs.paddingTop) + toFloat(cs.paddingButtom);
+		var padding = toFloat(cs.paddingTop) + toFloat(cs.paddingBottom);
 		var border = toFloat(cs.borderTopWidth) + toFloat(cs.borderBottomWidth);
 
 		return node.offsetHeight - padding - border;
@@ -814,6 +814,21 @@ export function fixNesting(node) {
 
 			insertBefore(before, parent);
 			insertBefore(middle, parent);
+		}
+
+		// Fix list items inside list items (caused by pasting in Edge)
+		if (is(node, 'li') && is(node.parentNode, 'li')) {
+			var parentNode = node.parentNode;
+			var clone = parentNode.cloneNode(false);
+			clone.appendChild(extractContents(parentNode.firstChild, node));
+
+			insertBefore(clone, parentNode);
+			insertBefore(node, parentNode);
+
+			// make this fix paste and also merge lists?
+			console.log('li');
+
+			// remove empty clone or parent
 		}
 
 		// Fix invalid nested lists which should be wrapped in an li tag

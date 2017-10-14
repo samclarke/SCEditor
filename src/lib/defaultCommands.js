@@ -53,7 +53,7 @@ function fixFirefoxListBug(editor) {
  * @name commands
  * @memberOf jQuery.sceditor
  */
-var defaultCommnds = {
+var defaultCmds = {
 	// START_COMMAND: Bold
 	bold: {
 		exec: 'bold',
@@ -141,7 +141,7 @@ var defaultCommnds = {
 		exec: function (caller) {
 			var editor = this;
 
-			defaultCommnds.font._dropDown(editor, caller, function (fontName) {
+			defaultCmds.font._dropDown(editor, caller, function (fontName) {
 				editor.execCommand('fontname', fontName);
 			});
 		},
@@ -170,7 +170,7 @@ var defaultCommnds = {
 		exec: function (caller) {
 			var editor = this;
 
-			defaultCommnds.size._dropDown(editor, caller, function (fontSize) {
+			defaultCmds.size._dropDown(editor, caller, function (fontSize) {
 				editor.execCommand('fontsize', fontSize);
 			});
 		},
@@ -182,7 +182,7 @@ var defaultCommnds = {
 		_dropDown: function (editor, caller, callback) {
 			var	content = dom.createElement('div'),
 				html    = '',
-				cmd     = defaultCommnds.color;
+				cmd     = defaultCmds.color;
 
 			if (!cmd._htmlCache) {
 				editor.opts.colors.split('|').forEach(function (column) {
@@ -214,7 +214,7 @@ var defaultCommnds = {
 		exec: function (caller) {
 			var editor = this;
 
-			defaultCommnds.color._dropDown(editor, caller, function (color) {
+			defaultCmds.color._dropDown(editor, caller, function (color) {
 				editor.execCommand('forecolor', color);
 			});
 		},
@@ -465,7 +465,7 @@ var defaultCommnds = {
 		exec: function (caller) {
 			var	editor  = this;
 
-			defaultCommnds.image._dropDown(
+			defaultCmds.image._dropDown(
 				editor,
 				caller,
 				'',
@@ -517,7 +517,7 @@ var defaultCommnds = {
 		exec: function (caller) {
 			var	editor  = this;
 
-			defaultCommnds.email._dropDown(
+			defaultCmds.email._dropDown(
 				editor,
 				caller,
 				function (email, text) {
@@ -575,7 +575,7 @@ var defaultCommnds = {
 		exec: function (caller) {
 			var editor = this;
 
-			defaultCommnds.link._dropDown(editor, caller, function (url, text) {
+			defaultCmds.link._dropDown(editor, caller, function (url, text) {
 				// needed for IE to restore the last range
 				editor.focus();
 
@@ -712,7 +712,7 @@ var defaultCommnds = {
 			editor.createDropDown(caller, 'emoticons', createContent(false));
 		},
 		txtExec: function (caller) {
-			defaultCommnds.emoticon.exec.call(this, caller);
+			defaultCmds.emoticon.exec.call(this, caller);
 		},
 		tooltip: 'Insert an emoticon'
 	},
@@ -755,7 +755,7 @@ var defaultCommnds = {
 		exec: function (btn) {
 			var editor = this;
 
-			defaultCommnds.youtube._dropDown(editor, btn, function (id, time) {
+			defaultCmds.youtube._dropDown(editor, btn, function (id, time) {
 				editor.wysiwygEditorInsertHtml(_tmpl('youtube', {
 					id: id,
 					time: time
@@ -792,10 +792,10 @@ var defaultCommnds = {
 				.replace(/day/i, day);
 		},
 		exec: function () {
-			this.insertText(defaultCommnds.date._date(this));
+			this.insertText(defaultCmds.date._date(this));
 		},
 		txtExec: function () {
-			this.insertText(defaultCommnds.date._date(this));
+			this.insertText(defaultCmds.date._date(this));
 		},
 		tooltip: 'Insert current date'
 	},
@@ -824,10 +824,10 @@ var defaultCommnds = {
 			return hours + ':' + mins + ':' + secs;
 		},
 		exec: function () {
-			this.insertText(defaultCommnds.time._time());
+			this.insertText(defaultCmds.time._time());
 		},
 		txtExec: function () {
-			this.insertText(defaultCommnds.time._time());
+			this.insertText(defaultCmds.time._time());
 		},
 		tooltip: 'Insert current time'
 	},
@@ -938,4 +938,4 @@ var defaultCommnds = {
 	ignore: {}
 };
 
-export default defaultCommnds;
+export default defaultCmds;

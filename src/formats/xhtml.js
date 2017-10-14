@@ -241,8 +241,8 @@
 		 * @return {string}
 		 * @private
 		 */
-		function escapeEntites(str) {
-			var entites = {
+		function escapeEntities(str) {
+			var entities = {
 				'&': '&amp;',
 				'<': '&lt;',
 				'>': '&gt;',
@@ -251,7 +251,7 @@
 			};
 
 			return !str ? '' : str.replace(/[&<>"\xa0]/g, function (entity) {
-				return entites[entity] || entity;
+				return entities[entity] || entity;
 			});
 		};
 
@@ -388,7 +388,7 @@
 				attrValue = attr.value;
 
 				output(' ' + attr.name.toLowerCase() + '="' +
-					escapeEntites(attrValue) + '"', false);
+					escapeEntities(attrValue) + '"', false);
 			}
 			output(selfClosing ? ' />' : '>', false);
 
@@ -421,7 +421,7 @@
 		 * @private
 		 */
 		function handleCdata(node) {
-			output('<![CDATA[' + escapeEntites(node.nodeValue) + ']]>');
+			output('<![CDATA[' + escapeEntities(node.nodeValue) + ']]>');
 		};
 
 		/**
@@ -431,7 +431,7 @@
 		 * @private
 		 */
 		function handleComment(node) {
-			output('<!-- ' + escapeEntites(node.nodeValue) + ' -->');
+			output('<!-- ' + escapeEntities(node.nodeValue) + ' -->');
 		};
 
 		/**
@@ -448,7 +448,7 @@
 			}
 
 			if (text) {
-				output(escapeEntites(text), !parentIsPre && canIndent(node));
+				output(escapeEntities(text), !parentIsPre && canIndent(node));
 			}
 		};
 
@@ -510,7 +510,7 @@
 		var base = this;
 
 		/**
-		 * Tag converstions cache
+		 * Tag converters cache
 		 * @type {Object}
 		 * @private
 		 */
@@ -551,7 +551,7 @@
 		 * Converts the WYSIWYG content to XHTML
 		 * @param  {string} html
 		 * @param  {Document} context
-		 * @param  {HTMLElemnt} [parent]
+		 * @param  {HTMLElement} [parent]
 		 * @return {string}
 		 * @memberOf jQuery.sceditor.plugins.xhtml.prototype
 		 */
@@ -699,7 +699,7 @@
 					empty           = tagName !== 'iframe' && isEmpty(node,
 						isTopLevel && noSiblings && tagName !== 'br'),
 					document        = node.ownerDocument,
-					allowedtags     = xhtmlFormat.allowedTags,
+					allowedTags     = xhtmlFormat.allowedTags,
 					disallowedTags  = xhtmlFormat.disallowedTags;
 
 				// 3 = text node
@@ -716,8 +716,8 @@
 				if (empty) {
 					remove = true;
 				// 3 is text node which do not get filtered
-				} else if (allowedtags && allowedtags.length) {
-					remove = (allowedtags.indexOf(tagName) < 0);
+				} else if (allowedTags && allowedTags.length) {
+					remove = (allowedTags.indexOf(tagName) < 0);
 				} else if (disallowedTags && disallowedTags.length) {
 					remove = (disallowedTags.indexOf(tagName) > -1);
 				}

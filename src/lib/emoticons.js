@@ -47,7 +47,7 @@ export function checkWhitespace(node, rangeHelper) {
 			rangeStart = previousText.length + range.startOffset;
 		}
 
-		// If the cursor is set vefore the next node, set it to
+		// If the cursor is set before the next node, set it to
 		// the end of the new text node
 		if (rangeStartContainer === node &&
 			node.childNodes[range.startOffset] === next) {

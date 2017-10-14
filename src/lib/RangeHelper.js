@@ -193,7 +193,7 @@ export default function RangeHelper(win, d) {
 	 * document they are being inserted into. Some browsers
 	 * will throw exceptions if they don't.
 	 *
-	 * Returns boollean false on fail
+	 * Returns boolean false on fail
 	 *
 	 * @param {Node} node
 	 * @param {Node} endNode

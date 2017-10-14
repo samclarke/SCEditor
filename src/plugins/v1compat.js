@@ -3,7 +3,7 @@
  *
  * Patches commands and BBCodes set with
  * command.set and bbcode.set to wrap DOM
- * node argumetns in jQuery objects.
+ * node arguments in jQuery objects.
  *
  * Should only be used to ease migrating.
  */

@@ -288,7 +288,7 @@ export default function SCEditor(el, userOptions) {
 	 * @type {number}
 	 * @private
 	 */
-	var maximizeScrollPosiotion;
+	var maximizeScrollPosition;
 
 	/**
 	 * Stores the contents while a paste is taking place.
@@ -599,7 +599,7 @@ export default function SCEditor(el, userOptions) {
 	initEvents = function () {
 		var form = original.form;
 		var compositionEvents = 'compositionstart compositionend';
-		var eventsToForawrd = 'keydown keyup keypress focus blur contextmenu';
+		var eventsToForward = 'keydown keyup keypress focus blur contextmenu';
 		var checkSelectionEvents = 'onselectionchange' in wysiwygDocument ?
 			'selectionchange' :
 			'keyup focus blur contextmenu mouseup touchend click';
@@ -620,7 +620,7 @@ export default function SCEditor(el, userOptions) {
 		dom.on(wysiwygBody, 'paste', handlePasteEvt);
 		dom.on(wysiwygBody, compositionEvents, handleComposition);
 		dom.on(wysiwygBody, checkSelectionEvents, checkSelectionChanged);
-		dom.on(wysiwygBody, eventsToForawrd, handleEvent);
+		dom.on(wysiwygBody, eventsToForward, handleEvent);
 
 		if (options.emoticonsCompat && globalWin.getSelection) {
 			dom.on(wysiwygBody, 'keyup', emoticonsCheckWhitespace);
@@ -640,7 +640,7 @@ export default function SCEditor(el, userOptions) {
 		dom.on(sourceEditor, 'keyup', valueChangedKeyUp);
 		dom.on(sourceEditor, 'keydown', handleKeyDown);
 		dom.on(sourceEditor, compositionEvents, handleComposition);
-		dom.on(sourceEditor, eventsToForawrd, handleEvent);
+		dom.on(sourceEditor, eventsToForward, handleEvent);
 
 		dom.on(wysiwygDocument, 'mousedown', handleMouseDown);
 		dom.on(wysiwygDocument, checkSelectionEvents, checkSelectionChanged);
@@ -1237,7 +1237,7 @@ export default function SCEditor(el, userOptions) {
 		maximize = !!maximize;
 
 		if (maximize) {
-			maximizeScrollPosiotion = globalWin.pageYOffset;
+			maximizeScrollPosition = globalWin.pageYOffset;
 		}
 
 		dom.toggleClass(globalDoc.documentElement, maximizeSize, maximize);
@@ -1247,7 +1247,7 @@ export default function SCEditor(el, userOptions) {
 		base.height(maximize ? '100%' : options.height, false);
 
 		if (!maximize) {
-			globalWin.scrollTo(0, maximizeScrollPosiotion);
+			globalWin.scrollTo(0, maximizeScrollPosition);
 		}
 
 		autoExpand();
@@ -3311,7 +3311,7 @@ export default function SCEditor(el, userOptions) {
 			sourceMode   = base.sourceMode(),
 			hasSelection = !sourceMode && rangeHelper.hasSelection();
 
-		// Composition end isn't guranteed to fire but must have
+		// Composition end isn't guaranteed to fire but must have
 		// ended when triggerValueChanged() is called so reset it
 		isComposing = false;
 

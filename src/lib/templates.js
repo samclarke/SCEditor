@@ -94,7 +94,7 @@ var _templates = {
  * Replaces any params in a template with the passed params.
  *
  * If createHtml is passed it will return a DocumentFragment
- * conaining the parsed template.
+ * containing the parsed template.
  *
  * @param {string} name
  * @param {Object} [params]
