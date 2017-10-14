@@ -219,7 +219,7 @@ module.exports = (grunt) => {
 					],
 					'dist/development/jquery.sceditor.xhtml.js': [
 						'dist/development/jquery.sceditor.js',
-						'src/plugins/xhtml.js'
+						'src/formats/xhtml.js'
 					]
 				}
 			}
@@ -254,7 +254,7 @@ module.exports = (grunt) => {
 					{
 						src: [
 							'minified/jquery.sceditor.min.js',
-							'src/plugins/xhtml.js'
+							'src/formats/xhtml.js'
 						],
 						dest: 'minified/jquery.sceditor.xhtml.min.js'
 					},
