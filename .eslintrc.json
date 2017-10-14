@@ -51,7 +51,7 @@
     "no-multi-str": "error",
     "no-proto": "error",
     "no-script-url": "error",
-  "no-shadow": "off",
+    "no-shadow": "off",
     "dot-notation": "error",
     "no-new-func": "error",
     "no-new-wrappers": "error",
