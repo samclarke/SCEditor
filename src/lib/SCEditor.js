@@ -703,6 +703,11 @@ export default function SCEditor(el, userOptions) {
 					updateActiveButtons();
 					e.preventDefault();
 				});
+				// Prevent editor losing focus when button clicked
+				dom.on(button, 'mousedown', function (e) {
+					base.closeDropDown();
+					e.preventDefault();
+				});
 
 				if (command.tooltip) {
 					dom.attr(button, 'title',
