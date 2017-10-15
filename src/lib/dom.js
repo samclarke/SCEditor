@@ -816,21 +816,6 @@ export function fixNesting(node) {
 			insertBefore(middle, parent);
 		}
 
-		// Fix list items inside list items (caused by pasting in Edge)
-		if (is(node, 'li') && is(node.parentNode, 'li')) {
-			var parentNode = node.parentNode;
-			var clone = parentNode.cloneNode(false);
-			clone.appendChild(extractContents(parentNode.firstChild, node));
-
-			insertBefore(clone, parentNode);
-			insertBefore(node, parentNode);
-
-			// make this fix paste and also merge lists?
-			console.log('li');
-
-			// remove empty clone or parent
-		}
-
 		// Fix invalid nested lists which should be wrapped in an li tag
 		if (isBlock && is(node, list) && is(node.parentNode, list)) {
 			var li = previousElementSibling(node, 'li');
