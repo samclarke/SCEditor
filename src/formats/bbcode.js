@@ -2545,8 +2545,8 @@
 		/**
 		 * Converts BBCode into HTML
 		 *
-		 * @param {boolean} asFragment 
-		 * @param {string} source 
+		 * @param {boolean} asFragment
+		 * @param {string} source
 		 * @param {boolean} [legacyAsFragment] Used by fromBBCode() method
 		 */
 		function toHtml(asFragment, source, legacyAsFragment) {
