@@ -2,10 +2,10 @@
  * @author <Mirosław Dróżdż> <miroslaw.drozdz@vert.pl/www.vert.info.pl>
  * @license [MIT](http://www.opensource.org/licenses/mit-license.php)
  */
-(function ($) {
+(function () {
 	'use strict';
 
-	$.sceditor.locale['pl'] = {
+	sceditor.locale['pl'] = {
 		'Bold': 'Pogrubienie',
 		'Italic': 'Kursywa',
 		'Underline': 'Podkreślenie',
@@ -65,4 +65,4 @@
 
 		dateFormat: 'day-month-year'
 	};
-})(jQuery);
+})();

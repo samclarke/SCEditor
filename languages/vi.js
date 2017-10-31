@@ -2,10 +2,10 @@
  * @author Chien
  * @license [MIT](http://www.opensource.org/licenses/mit-license.php)
  */
-(function ($) {
+(function () {
 	'use strict';
 
-	$.sceditor.locale['vi'] = {
+	sceditor.locale['vi'] = {
 		'Bold': 'Đậm',
 		'Italic': 'Nghiêng',
 		'Underline': 'Gạch chân',
@@ -65,4 +65,4 @@
 
 		dateFormat: 'day/month/year'
 	};
-})(jQuery);
+})();

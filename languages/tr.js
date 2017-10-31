@@ -2,9 +2,9 @@
  * @author Mahmut Yaman - iletisim@/m-yaman.com
  * @license [MIT](http://www.opensource.org/licenses/mit-license.php)
  */
-(function ($) {
+(function () {
 	'use strict';
-	$.sceditor.locale['tr'] = {
+	sceditor.locale['tr'] = {
 		'Bold': 'Kalın',
 		'Italic': 'İtalik',
 		'Underline': 'Altı çizgili',
@@ -63,4 +63,4 @@
 		'Invalid YouTube video': 'Geçersiz YouTube videosu',
 		dateFormat: 'day-month-year'
 	};
-})(jQuery);
+})();

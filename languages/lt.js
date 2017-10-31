@@ -2,10 +2,10 @@
  * @author Team from www.klaustukai.lt
  * @license [MIT](http://www.opensource.org/licenses/mit-license.php)
  */
-(function ($) {
+(function () {
 	'use strict';
 
-	$.sceditor.locale['lt'] = {
+	sceditor.locale['lt'] = {
 		'Bold': 'Paryškintas',
 		'Italic': 'Pasvirasis',
 		'Underline': 'Pabraukti',
@@ -65,4 +65,4 @@
 
 		dateFormat: 'year-month-day'
 	};
-})(jQuery);
+})();

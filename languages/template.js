@@ -2,11 +2,11 @@
  * @author <Your Name> <Your e-mail/Website if you would like>
  * @license [MIT](http://www.opensource.org/licenses/mit-license.php)
  */
-(function ($) {
+(function () {
 	'use strict';
 
 	// Replace <code> with the language code, e.g. no, fr, en, ect.
-	$.sceditor.locale['<code>'] = {
+	sceditor.locale['<code>'] = {
 
 		// Original string is on the left, place the translation between
 		// the quotes on the right
@@ -67,8 +67,8 @@
 		'Insert a Quote': '',
 		'Invalid YouTube video': '',
 
-		// month format, replace - with the date format seperator and order in the
+		// month format, replace - with the date format separator and order in the
 		// order used
 		dateFormat: 'day-month-year'
 	};
-})(jQuery);
+})();

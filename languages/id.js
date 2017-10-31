@@ -2,10 +2,10 @@
  * @author Sandy Irawan (sndbkct@gmail.com)
  * @license [MIT](http://www.opensource.org/licenses/mit-license.php)
  */
-(function ($) {
+(function () {
 	'use strict';
 
-	$.sceditor.locale['id'] = {
+	sceditor.locale['id'] = {
 		'Bold': 'Tebal',
 		'Italic': 'Miring',
 		'Underline': 'Garis Bawah',
@@ -65,4 +65,4 @@
 
 		dateFormat: 'day-month-year'
 	};
-})(jQuery);
+})();

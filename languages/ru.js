@@ -1,7 +1,7 @@
-(function ($) {
+(function () {
 	'use strict';
 
-	$.sceditor.locale['ru'] = {
+	sceditor.locale['ru'] = {
 		'Bold': 'Жирный',
 		'Italic': 'Курсив',
 		'Underline': 'Подчёркнутый',
@@ -54,4 +54,4 @@
 		'Maximize': 'Развернуть',
 		dateFormat: 'day.month.year'
 	};
-})(jQuery);
+})();

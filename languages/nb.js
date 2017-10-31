@@ -2,10 +2,10 @@
  * @author Katrine
  * @license [MIT](http://www.opensource.org/licenses/mit-license.php)
  */
-(function ($) {
+(function () {
 	'use strict';
 
-	$.sceditor.locale['nb-NO'] = {
+	sceditor.locale['nb-NO'] = {
 		'Bold': 'Fet',
 		'Italic': 'Kursiv',
 		'Underline': 'Understrek',
@@ -66,5 +66,5 @@
 		dateFormat: 'day.month.year'
 	};
 
-	$.sceditor.locale['nb'] = $.sceditor.locale['nb-NO'];
-})(jQuery);
+	sceditor.locale['nb'] = sceditor.locale['nb-NO'];
+})();

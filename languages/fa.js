@@ -1,10 +1,10 @@
 // add locale:'fa', to your config options.
 // Translated By Ebad Ghafoory [info@ghafoory.com]
 // 2013/05/01
-(function ($) {
+(function () {
 	'use strict';
 
-	$.sceditor.locale['fa'] = {
+	sceditor.locale['fa'] = {
 		'Bold': 'تیره',
 		'Italic': 'مورب',
 		'Underline': 'زیرخط',
@@ -66,4 +66,4 @@
 
 		dateFormat: 'year.month.day'
 	};
-})(jQuery);
+})();

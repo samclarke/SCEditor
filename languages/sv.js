@@ -1,7 +1,7 @@
-(function ($) {
+(function () {
 	'use strict';
 
-	$.sceditor.locale['sv-SE'] = {
+	sceditor.locale['sv-SE'] = {
 		'Bold': 'Fet',
 		'Italic': 'Kursiv',
 		'Underline': 'Understruken',
@@ -54,5 +54,5 @@
 		dateFormat: 'year-month-day'
 	};
 
-	$.sceditor.locale['sv'] = $.sceditor.locale['sv-SE'];
-})(jQuery);
+	sceditor.locale['sv'] = sceditor.locale['sv-SE'];
+})();

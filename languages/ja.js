@@ -2,10 +2,10 @@
  * @author <Yoshihiro Misawa> <myoshi321go@gmail.com>
  * @license [MIT](http://www.opensource.org/licenses/mit-license.php)
  */
-(function ($) {
+(function () {
 	'use strict';
 
-	$.sceditor.locale['ja'] = {
+	sceditor.locale['ja'] = {
 		'Bold': '太字',
 		'Italic': '斜字',
 		'Underline': '下線',
@@ -68,4 +68,4 @@
 
 		dateFormat: 'year-month-day'
 	};
-})(jQuery);
+})();

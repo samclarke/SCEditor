@@ -2,10 +2,10 @@
  * @author <Maxpower> <maxpowerid@gmail.com/www.identi.li>
  * @license [MIT](http://www.opensource.org/licenses/mit-license.php)
  */
-(function ($) {
+(function () {
 	'use strict';
 
-	$.sceditor.locale['es'] = {
+	sceditor.locale['es'] = {
 		'Bold': 'Negrita',
 		'Italic': 'Cursiva',
 		'Underline': 'Subrayar',
@@ -65,4 +65,4 @@
 
 		dateFormat: 'day-month-year'
 	};
-})(jQuery);
+})();

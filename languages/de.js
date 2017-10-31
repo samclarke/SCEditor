@@ -1,7 +1,7 @@
-(function ($) {
+(function () {
 	'use strict';
 
-	$.sceditor.locale['de'] = {
+	sceditor.locale['de'] = {
 		'Bold': 'Fett',
 		'Italic': 'Kursiv',
 		'Underline': 'Unterstrichen',
@@ -56,4 +56,4 @@
 		'View source': 'Quelltext ansehen',
 		dateFormat: 'day.month.year'
 	};
-})(jQuery);
+})();

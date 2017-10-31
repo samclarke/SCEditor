@@ -1,7 +1,7 @@
-(function ($) {
+(function () {
 	'use strict';
 
-	$.sceditor.locale['nl'] = {
+	sceditor.locale['nl'] = {
 		'Bold': 'Vet',
 		'Italic': 'Schuingedrukt',
 		'Underline': 'Onderstreept',
@@ -54,4 +54,4 @@
 
 		dateFormat: 'day.month.year'
 	};
-})(jQuery);
+})();

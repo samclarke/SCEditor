@@ -1,10 +1,10 @@
 
 // add locale:'fr', to your config options.
 
-(function ($) {
+(function () {
 	'use strict';
 
-	$.sceditor.locale['fr-FR'] = {
+	sceditor.locale['fr-FR'] = {
 		'Bold': 'Gras',
 		'Italic': 'Italique',
 		'Underline': 'Souligné',
@@ -66,5 +66,5 @@
 
 		dateFormat: 'day/month/year'
 	};
-	$.sceditor.locale['fr'] = $.sceditor.locale['fr-FR'];
-})(jQuery);
+	sceditor.locale['fr'] = sceditor.locale['fr-FR'];
+})();

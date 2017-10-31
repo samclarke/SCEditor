@@ -2,10 +2,10 @@
  * @author Atramez_Zeton http://onyx-sy.net
  * @license [MIT](http://www.opensource.org/licenses/mit-license.php)
  */
-(function ($) {
+(function () {
 	'use strict';
 
-	$.sceditor.locale['ar'] = {
+	sceditor.locale['ar'] = {
 		'Bold': 'عريض',
 		'Italic': 'مائل',
 		'Underline': 'خط من الأسفل',
@@ -65,4 +65,4 @@
 
 		dateFormat: 'day-month-year'
 	};
-})(jQuery);
+})();

@@ -1,7 +1,7 @@
-(function ($) {
+(function () {
 	'use strict';
 
-	$.sceditor.locale['uk'] = {
+	sceditor.locale['uk'] = {
 		'Bold': 'Жирний',
 		'Italic': 'Курсив',
 		'Underline': 'Підкреслений',
@@ -54,4 +54,4 @@
 		'Maximize': 'Розгорнути редактор',
 		dateFormat: 'day.month.year'
 	};
-})(jQuery);
+})();

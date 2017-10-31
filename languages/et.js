@@ -1,7 +1,7 @@
-(function ($) {
+(function () {
 	'use strict';
 
-	$.sceditor.locale['et'] = {
+	sceditor.locale['et'] = {
 		'Bold': 'Rasvane',
 		'Italic': 'Kaldkiri',
 		'Underline': 'Allajoonitud',
@@ -54,4 +54,4 @@
 
 		dateFormat: 'day.month.year'
 	};
-})(jQuery);
+})();

@@ -1,10 +1,10 @@
 /**
  * @author Nikos Aggelis nikosaggelis@hotmail.gr
  */
-(function ($) {
+(function () {
 	'use strict';
 
-	$.sceditor.locale['el'] = {
+	sceditor.locale['el'] = {
 		'Bold': 'Έντονα',
 		'Italic': 'Πλάγια',
 		'Underline': 'Υπογραμμισμένα',
@@ -65,4 +65,4 @@
 
 		dateFormat: 'day-month-year'
 	};
-})(jQuery);
+})();

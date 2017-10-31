@@ -2,10 +2,10 @@
 * @author brunoais
 * @license [MIT](http://www.opensource.org/licenses/mit-license.php)
 */
-(function ($) {
+(function () {
 	'use strict';
 
-	$.sceditor.locale['pt-PT'] = {
+	sceditor.locale['pt-PT'] = {
 		'Bold': 'Negrito',
 		'Italic': 'Itálico',
 		'Underline': 'Sublinhado',
@@ -65,5 +65,5 @@
 	};
 
 	// Set as the default Portuguese locale
-	$.sceditor.locale['pt'] = $.sceditor.locale['pt-PT'];
-})(jQuery);
+	sceditor.locale['pt'] = sceditor.locale['pt-PT'];
+})();

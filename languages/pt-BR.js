@@ -2,10 +2,10 @@
 * @author martec
 * @license [MIT](http://www.opensource.org/licenses/mit-license.php)
 */
-(function ($) {
+(function () {
 	'use strict';
 
-	$.sceditor.locale['pt-BR'] = {
+	sceditor.locale['pt-BR'] = {
 		'Bold': 'Negrito',
 		'Italic': 'Itálico',
 		'Underline': 'Sublinhado',
@@ -64,4 +64,4 @@
 		'Invalid YouTube video': 'Vídeo do YouTube inválido',
 		dateFormat: 'day-month-year'
 	};
-})(jQuery);
+})();

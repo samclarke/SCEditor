@@ -2,10 +2,10 @@
  * @author <Your Name> <Your e-mail/Website if you would like>
  * @license [MIT](http://www.opensource.org/licenses/mit-license.php)
  */
-(function ($) {
+(function () {
 	'use strict';
 
-	$.sceditor.locale['tw'] = {
+	sceditor.locale['tw'] = {
 		'Bold': '粗體',
 		'Italic': '斜體',
 		'Underline': '底線',
@@ -65,4 +65,4 @@
 
 		dateFormat: 'year-month-day'
 	};
-})(jQuery);
+})();
