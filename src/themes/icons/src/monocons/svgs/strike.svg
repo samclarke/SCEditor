@@ -3,7 +3,7 @@
 
   <text x="50%" y="50%" text-anchor="middle" dy="0.5ex"
   	font-family="Segoe UI, Frutiger, Dejavu Sans, Helvetica Neue, Arial, sans-serif"
-	  font-size="15">S</text>
+	  font-size="15" font-weight='bold'>S</text>
 
   <line x1="1" y1="7.5" x2="15" y2="7.5" stroke-width="1" stroke="black" />
 </svg>

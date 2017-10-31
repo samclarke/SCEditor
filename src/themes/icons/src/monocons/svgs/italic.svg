@@ -2,5 +2,6 @@
      xmlns="http://www.w3.org/2000/svg" version="1.1">
 
   <text x="50%" y="50%" text-anchor="middle" dy="0.5ex"
-  	font-family="Segoe UI, Frutiger, Dejavu Sans, Helvetica Neue, Arial, sans-serif" font-size="15" font-style="italic">i</text>
+    font-family="Segoe UI, Frutiger, Dejavu Sans, Helvetica Neue, Arial, sans-serif"
+    font-weight="bold" font-size="15" font-style="italic">i</text>
 </svg>
