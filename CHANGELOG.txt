@@ -1,3 +1,74 @@
+Version 2.0.0:
+	Changed theme to use flexbox. Custom themes will need tweaking but otherwise
+		this is backwards compatible.
+	Updated pasting to normalize image pasting across browsers to paste images
+		as Data URIs.
+	Updated pasting to use clipboard API which stops the ugly flash caused by
+		clearing the editor when paste filtering was enabled. As IE & Edge lack
+		clipboard API support they still use the old behaviour.
+	Added paste hooks for plugins.
+	Fixed bug with tabs being stripped when switching between WYSIWYG and
+		source mode.
+		- Thanks to @spuds for reporting
+	Fixed bug where emoticons that are subsets of others may prevent the longer
+		key from being replaced when switching between WYSIWYG and source mode.
+		- Thanks to @margarett for reporting
+	Fixed issue with jQuery noConflict mode.
+		- Thanks to @Globulopolis for reporting
+	Changed from JSCS and JSHint to ESLint for linting
+	Dropped support for IE <= 8
+	Updated default color palette to be smaller and increased color picker size.
+	Added autoyoutube plugin that converts pasted Youtube links.
+		- Thanks to @cyphix333 for suggesting
+	Updated XHTML plugin to not remove tag with a size from style/class attribtue.
+		- Thanks to @timint
+	Fixed bug with XHTML plugin removing empty <td> tags.
+		- Thanks to @derplakatankleber for reporting
+	Added allowedEmptyTags to XHTML plugin.
+	Fixed bug with BBCode plugin where email shows a second prompt even when the
+		first is cancelled.
+		- Thanks to @OlafvdSpek for reporting.
+	Updated link dropdown to insert when enter is pressed.
+		- Thanks to @q2apro for reporting
+	Updated rangeHelper.replaceKeyword() to match start of lines when whitespace
+		is required. Enables AYT emoticon conversion to convert emoticons at the
+		start of lines.
+		- Thanks to @barbuslex for reporting.
+	Added plaintext plugin to remove formatting on paste.
+	Fixed bug with FF lists adding extra lines.
+		- Thanks to @OmarHawk for reporting
+	Fixed bug with nested lists creating invalid BBCode and HTML.
+		- Thanks to @naturalgeek for reporting
+	Fixed bug with auto expand when maximised.
+		- Thanks to @mjau-mjau for reporting.
+	Improved autoexpand to shrink when content reduces.
+		- Thanks to @Somnium7 for reporting.
+	Added Indonesian translation.
+		- Thanks to @sndbckt for translating.
+	Switched to using ES6 modules.
+	Fixed bug with cursor being placed in wrong position on first focus.
+		- Thanks to @q2apro for reporting.
+	Fixed BBCode parser bug with BBCodes opened or closed inside a tag which
+		doesn't allow them as children (e.g. anything in [code] tags).
+		- Thanks to @emanuele45 for reporting.
+	Fixed whitespace edge case causing extra lines to be added in BBCode.
+		- Thanks to @OmarHawk for reporting.
+	Fixed issue placing cursor after custom block nodes.
+		- Thanks to @cyphix333 for reporting.
+	Improved editor to make sure inlines are wrapped in <p> tags.
+		- Thanks to @q2apro for reporting.
+	Prevent valueChanged event during composition.
+		- Thanks to @martec for reporting.
+	Update URL place holders to https:// from http://
+		- Thanks to @MyBB-Andro for reporting.
+	Improved pasting and enabled paste filtering by default [can it be turned off?]
+	Converted BBCode and XHTML plugins into formats
+	Fixed issue with default emotions always being added.
+		- Thanks to @compojoom for reporting
+	Update famfamfam icons to have red text for super/subscript.
+		- Thanks to @q2apro for updating
+	Added support for SVG icon sets
+
 Version 1.5.2:
 	Fixed BBCode parser bug that can cause content to be lost under certain
 		types of invalid nesting.
