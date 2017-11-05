@@ -1056,7 +1056,7 @@ export default function SCEditor(el, userOptions) {
 		dom.removeClass(editorContainer, 'ltr');
 		dom.addClass(editorContainer, dir);
 
-		if (icons && icons.onRtlChange) {
+		if (icons && icons.rtl) {
 			icons.rtl(rtl);
 		}
 
