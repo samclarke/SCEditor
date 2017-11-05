@@ -61,6 +61,7 @@ window.sceditor = {
 		hasStyle: dom.hasStyle
 	},
 	locale: SCEditor.locale,
+	icons: SCEditor.icons,
 	utils: {
 		each: utils.each,
 		isEmptyObject: utils.isEmptyObject,

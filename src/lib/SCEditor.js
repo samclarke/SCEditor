@@ -310,6 +310,14 @@ export default function SCEditor(el, userOptions) {
 	var allEmoticons = {};
 
 	/**
+	 * Current icon set if any
+	 *
+	 * @type {?Object}
+	 * @private
+	 */
+	var icons;
+
+	/**
 	 * Private functions
 	 * @private
 	 */
@@ -486,9 +494,9 @@ export default function SCEditor(el, userOptions) {
 		});
 
 		/* This needs to be done right after they are created because,
-			* for any reason, the user may not want the value to be tinkered
-			* by any filters.
-			*/
+		 * for any reason, the user may not want the value to be tinkered
+		 * by any filters.
+		 */
 		if (options.startInSourceMode) {
 			dom.addClass(editorContainer, 'sourceMode');
 			dom.hide(wysiwygEditor);
@@ -671,6 +679,10 @@ export default function SCEditor(el, userOptions) {
 			unselectable: 'on'
 		});
 
+		if (options.icons in SCEditor.icons) {
+			icons = new SCEditor.icons[options.icons]();
+		}
+
 		utils.each(groups, function (_, menuItems) {
 			group = dom.createElement('div', {
 				className: 'sceditor-group'
@@ -691,6 +703,15 @@ export default function SCEditor(el, userOptions) {
 					dispName: base._(command.name ||
 							command.tooltip || commandName)
 				}, true).firstChild;
+
+				if (icons && icons.create) {
+					var icon = icons.create(commandName);
+					if (icon) {
+						dom.insertBefore(icons.create(commandName),
+							button.firstChild);
+						dom.addClass(button, 'has-icon');
+					}
+				}
 
 				button._sceTxtMode = !!command.txtExec;
 				button._sceWysiwygMode = !!command.exec;
@@ -837,6 +858,14 @@ export default function SCEditor(el, userOptions) {
 
 			e.preventDefault();
 		};
+
+		if (icons && icons.create) {
+			var icon = icons.create('grip');
+			if (icon) {
+				dom.appendChild(grip, icon);
+				dom.addClass(grip, 'has-icon');
+			}
+		}
 
 		dom.appendChild(editorContainer, grip);
 		dom.appendChild(editorContainer, cover);
@@ -1027,6 +1056,10 @@ export default function SCEditor(el, userOptions) {
 		dom.removeClass(editorContainer, 'ltr');
 		dom.addClass(editorContainer, dir);
 
+		if (icons && icons.onRtlChange) {
+			icons.rtl(rtl);
+		}
+
 		return base;
 	};
 
@@ -1153,20 +1186,6 @@ export default function SCEditor(el, userOptions) {
 
 		return base;
 	};
-
-	/**
-	 * Updates the CSS styles cache.
-	 *
-	 * This shouldn't be needed unless changing the editors theme.
-	 *
-	 * @since 1.4.1
-	 * @function
-	 * @memberOf SCEditor.prototype
-	 * @name updateStyleCache
-	 * @return {number}
-	 * @deprecated
-	 */
-	base.updateStyleCache = function () {};
 
 	/**
 	 * Gets the height of the editor in px
@@ -2388,6 +2407,10 @@ export default function SCEditor(el, userOptions) {
 			dom.toggleClass(btn, 'disabled', isDisabled || state < 0);
 			dom.toggleClass(btn, activeClass, state > 0);
 		}
+
+		if (icons && icons.update) {
+			icons.update(isSource, parent, firstBlock);
+		}
 	};
 
 	/**
@@ -3436,6 +3459,7 @@ export default function SCEditor(el, userOptions) {
 SCEditor.locale = {};
 
 SCEditor.formats = {};
+SCEditor.icons = {};
 
 
 /**

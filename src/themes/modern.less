@@ -25,7 +25,6 @@
 div.sceditor-toolbar {
 	background: #ccc;
 	background: linear-gradient(to bottom, #cccccc 0%,#b2b2b2 100%);
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cccccc', endColorstr='#b2b2b2',GradientType=0 );
 }
 .ie9 div.sceditor-toolbar {
 	filter: none;
@@ -75,4 +74,7 @@ div.sceditor-toolbar {
 			border: 1px solid #999;
 			.box-shadow(inset 0 0 4px rgba(0,0,0,0.5));
 		}
-			.sceditor-button div { margin: 0; }
+		.sceditor-button div,
+		.sceditor-button svg {
+			margin: 0;
+		}
