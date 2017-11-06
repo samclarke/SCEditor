@@ -108,8 +108,8 @@ module.exports = (grunt) => {
 					},
 					{
 						expand: true,
-						cwd: 'src/themes/icons/',
-						src: 'monocons/**',
+						cwd: 'src/themes/',
+						src: 'content/**',
 						dest: 'dist/development/themes/'
 					},
 					{
@@ -142,7 +142,8 @@ module.exports = (grunt) => {
 				]
 			},
 			build: {
-				//TODO: icons
+				options: {
+				},
 				files: [
 					{
 						expand: true,
@@ -152,9 +153,12 @@ module.exports = (grunt) => {
 					},
 					{
 						expand: true,
-						cwd: 'src/themes/icons/',
-						src: 'monocons/**',
-						dest: 'minified/themes/'
+						cwd: 'src/themes/',
+						src: 'content/**',
+						dest: 'minified/themes/',
+						rename: function (dest, src) {
+							return dest + src.replace('.css','.min.css');
+						}
 					},
 					{
 						expand: true,
@@ -306,22 +310,18 @@ module.exports = (grunt) => {
 							]
 						}),
 						require('postcss-clean')({
+							level: 2,
 							compatibility: 'ie9'
 						})
 					]
 				},
 				files: [
 					{
-						'minified/jquery.sceditor.default.min.css': [
-							'src/jquery.sceditor.default.css'
-						]
-					},
-					{
 						expand: true,
-						cwd: 'minified/themes',
-						src: ['*.min.css'],
-						dest: 'minified/themes',
-						ext: '.min.css'
+						filter: 'isFile',
+						cwd: 'minified/',
+						src: ['themes/**/*.css'],
+						dest: 'minified/'
 					}
 				]
 			}
