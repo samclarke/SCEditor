@@ -66,6 +66,7 @@
 		'Enter the YouTube video URL or ID:': '',
 		'Insert a Quote': '',
 		'Invalid YouTube video': '',
+		'Drop files here': '',
 
 		// month format, replace - with the date format separator and order in the
 		// order used

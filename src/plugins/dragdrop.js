@@ -175,11 +175,11 @@
 		}
 
 		base.signalReady = function () {
-			opts = this.opts.dragdrop || {};
-			handleFile = opts.handleFile;
 			editor = this;
+			opts = editor.opts.dragdrop || {};
+			handleFile = opts.handleFile;
 
-			container = this.getContentAreaContainer().parentNode;
+			container = editor.getContentAreaContainer().parentNode;
 
 			cover = container.appendChild(sceditor.dom.parseHTML(
 				'<div class="sceditor-dnd-cover" style="display: none">' +
@@ -192,8 +192,8 @@
 			container.addEventListener('dragend', hideCover);
 			container.addEventListener('drop', handleDrop);
 
-			this.getBody().addEventListener('dragover', handleDragOver);
-			this.getBody().addEventListener('drop', hideCover);
+			editor.getBody().addEventListener('dragover', handleDragOver);
+			editor.getBody().addEventListener('drop', hideCover);
 		};
 
 		base.signalPasteHtml = function (paste) {
