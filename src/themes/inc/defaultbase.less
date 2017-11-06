@@ -1,8 +1,8 @@
 /**
  * SCEditor
- * http://www.ssceditor.com/
+ * http://www.sceditor.com/
  *
- * Copyright (C) 2011-12, Sam Clarke (samclarke.com)
+ * Copyright (C) 2017, Sam Clarke (samclarke.com)
  *
  * SCEditor is licensed under the MIT license:
  *	http://www.opensource.org/licenses/mit-license.php
@@ -10,8 +10,7 @@
 
 @import "elements.less";
 
-.sceditor-container
-{
+.sceditor-container {
 	display: -ms-flexbox;
 	display: flex;
 	-ms-flex-direction: column;
@@ -25,6 +24,7 @@
 	line-height: 1;
 	font-weight: bold;
 	overflow: hidden;
+	height: 250px;
 
 	// Needed for IE <= 9 as doesn't support flexbox
 	behavior: url(iesize.htc);
@@ -46,23 +46,21 @@
 .sceditor-container,
 .sceditor-container div,
 div.sceditor-dropdown,
-div.sceditor-dropdown div
-{
+div.sceditor-dropdown div {
 	padding: 0;
 	margin: 0;
 	z-index: 3;
 }
 	.sceditor-container iframe,
-	.sceditor-container textarea
-	{
+	.sceditor-container textarea {
 		display: block;
 		-ms-flex: 1 1 0%;
 		flex: 1 1 0%;
-		line-height: 1;
+		line-height: 1.25;
 		border: 0;
 		outline: none;
 		font-family: Verdana, Arial, Helvetica, sans-serif;
-		font-size: 13px;
+		font-size: 14px;
 		color: #111;
 		padding: 0;
 		margin: 5px;
@@ -74,6 +72,10 @@ div.sceditor-dropdown div
 		width: ~"calc(100% - 10px) !important";
 		// Allow iframes to shrink
 		min-height: 1px;
+	}
+
+	.sceditor-container textarea {
+		margin: 7px 5px;
 	}
 
 	div.sceditor-dnd-cover {
@@ -97,8 +99,7 @@ div.sceditor-dropdown div
 	}
 
 
-	div.sceditor-resize-cover
-	{
+	div.sceditor-resize-cover {
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -109,8 +110,7 @@ div.sceditor-dropdown div
 		opacity: 0.3;
 	}
 
-	div.sceditor-grip
-	{
+	div.sceditor-grip {
 		overflow: hidden;
 		width: 10px;
 		height: 10px;
@@ -119,10 +119,14 @@ div.sceditor-dropdown div
 		bottom: 0;
 		right: 0;
 		z-index: 3;
+		line-height: 0;
 	}
 
-	.sceditor-maximize
-	{
+	div.sceditor-grip.has-icon {
+		background-image: none;
+	}
+
+	.sceditor-maximize {
 		position: fixed;
 		top: 0;
 		left: 0;
@@ -134,8 +138,7 @@ div.sceditor-dropdown div
 
 	// Used to hide scrollbars when maximized
 	html.sceditor-maximize,
-	body.sceditor-maximize
-	{
+	body.sceditor-maximize {
 		height: 100%;
 		width: 100%;
 		padding: 0;
@@ -143,14 +146,12 @@ div.sceditor-dropdown div
 		overflow: hidden;
 	}
 
-		.sceditor-maximize div.sceditor-grip
-		{
+		.sceditor-maximize div.sceditor-grip {
 			display: none;
 		}
 
 
-		.sceditor-maximize div.sceditor-toolbar
-		{
+		.sceditor-maximize div.sceditor-toolbar {
 			.rounded(0);
 		}
 
@@ -158,8 +159,7 @@ div.sceditor-dropdown div
 	/**
 	 * Dropdown styleing
 	 */
-	div.sceditor-dropdown
-	{
+	div.sceditor-dropdown {
 		position: absolute;
 		border: 1px solid #ccc;
 		background: #fff;
@@ -173,18 +173,15 @@ div.sceditor-dropdown div
 	}
 
 		div.sceditor-dropdown a,
-		div.sceditor-dropdown a:link
-		{
+		div.sceditor-dropdown a:link {
 			color: #333;
 		}
 
-		div.sceditor-dropdown form
-		{
+		div.sceditor-dropdown form {
 			margin: 0;
 		}
 
-		div.sceditor-dropdown label
-		{
+		div.sceditor-dropdown label {
 			display:block;
 			font-weight: bold;
 			color: #3c3c3c;
@@ -192,8 +189,7 @@ div.sceditor-dropdown div
 		}
 
 		div.sceditor-dropdown input,
-		div.sceditor-dropdown textarea
-		{
+		div.sceditor-dropdown textarea {
 			font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 			outline: 0;
 			padding: 4px;
@@ -204,21 +200,18 @@ div.sceditor-dropdown div
 			.rounded(1px);
 		}
 
-		div.sceditor-dropdown textarea
-		{
+		div.sceditor-dropdown textarea {
 			padding: 6px;
 		}
 
 		div.sceditor-dropdown input:focus,
-		div.sceditor-dropdown textarea:focus
-		{
+		div.sceditor-dropdown textarea:focus {
 			border-color: #aaa;
 			border-top-color: #666;
 			.box-shadow(inset 0 1px 5px rgba(0,0,0,0.1));
 		}
 
-		div.sceditor-dropdown .button
-		{
+		div.sceditor-dropdown .button {
 			font-weight: bold;
 			color: #444;
 			padding: 6px 12px;
@@ -229,16 +222,14 @@ div.sceditor-dropdown div
 			margin: .3em 0 0;
 		}
 
-		div.sceditor-dropdown .button:hover
-		{
+		div.sceditor-dropdown .button:hover {
 			background: #f3f3f3;
 			.box-shadow(0 1px 1px rgba(0,0,0,0.15));
 		}
 
 		div.sceditor-font-picker,
 		div.sceditor-fontsize-picker,
-		div.sceditor-format
-		{
+		div.sceditor-format {
 			padding: 6px 0;
 		}
 
@@ -247,27 +238,23 @@ div.sceditor-dropdown div
 		}
 
 		div.sceditor-emoticons,
-		div.sceditor-more-emoticons
-		{
+		div.sceditor-more-emoticons {
 			padding: 0;
 		}
 
-		.sceditor-pastetext textarea
-		{
+		.sceditor-pastetext textarea {
 			border: 1px solid #bbb;
 			width: 20em;
 		}
 
 		.sceditor-emoticons img,
-		.sceditor-more-emoticons img
-		{
+		.sceditor-more-emoticons img {
 			padding: 0;
 			cursor: pointer;
 			margin: 2px;
 		}
 
-		.sceditor-more
-		{
+		.sceditor-more {
 			border-top: 1px solid #bbb;
 			display: block;
 			text-align: center;
@@ -276,15 +263,13 @@ div.sceditor-dropdown div
 			padding: 6px 0;
 		}
 
-		.sceditor-dropdown a:hover
-		{
+		.sceditor-dropdown a:hover {
 			background: #eee;
 		}
 
 		.sceditor-fontsize-option,
 		.sceditor-font-option,
-		.sceditor-format a
-		{
+		.sceditor-format a {
 			display: block;
 			padding: 7px 10px;
 			cursor: pointer;
@@ -292,18 +277,15 @@ div.sceditor-dropdown div
 			color: #222;
 		}
 
-		.sceditor-fontsize-option
-		{
+		.sceditor-fontsize-option {
 			padding: 7px 13px;
 		}
 
-		.sceditor-color-column
-		{
+		.sceditor-color-column {
 			float: left;
 		}
 
-			.sceditor-color-option
-			{
+			.sceditor-color-option {
 				display: block;
 				border: 2px solid #fff;
 				height: 18px;
@@ -311,8 +293,7 @@ div.sceditor-dropdown div
 				overflow: hidden;
 			}
 
-			.sceditor-color-option:hover
-			{
+			.sceditor-color-option:hover {
 				border: 1px solid #aaa;
 			}
 
@@ -320,8 +301,7 @@ div.sceditor-dropdown div
 	/**
 	 * Toolbar styleing
 	 */
-	div.sceditor-toolbar
-	{
+	div.sceditor-toolbar {
 		flex-shrink: 0;
 		overflow: hidden;
 		padding: 3px 5px 2px;
@@ -335,8 +315,7 @@ div.sceditor-dropdown div
 		.rounded(3px 3px 0 0);
 	}
 
-		div.sceditor-group
-		{
+		div.sceditor-group {
 			display: inline-block;
 			background: #ddd;
 			margin: 1px 5px 1px 0;
@@ -347,8 +326,7 @@ div.sceditor-dropdown div
 
 		}
 
-		.sceditor-button
-		{
+		.sceditor-button {
 			float: left;
 			cursor: pointer;
 			padding: 3px 5px;
@@ -359,32 +337,41 @@ div.sceditor-dropdown div
 
 			.sceditor-button:hover,
 			.sceditor-button:active,
-			.sceditor-button.active
-			{
+			.sceditor-button.active {
 				background: #fff;
 				.box-shadow(~"inset 1px 1px 0 rgba(0,0,0,0.3), inset -1px 0 rgba(0,0,0,0.3), inset 0 -1px 0 rgba(0,0,0,0.2)");
 			}
 
-			.sceditor-button:active
-			{
+			.sceditor-button:active {
 				background: #fff;
 				.box-shadow(~"inset 1px 1px 0 rgba(0,0,0,0.3), inset -1px 0 rgba(0,0,0,0.3), inset 0 -1px 0 rgba(0,0,0,0.2), inset 0 0 8px rgba(0,0,0,0.3)");
 			}
 
-			.sceditor-button.disabled:hover
-			{
+			.sceditor-button.disabled:hover {
 				background: inherit;
 				cursor: default;
 				.box-shadow(none);
 			}
 
-			.sceditor-button, .sceditor-button div
-			{
+			.sceditor-button, .sceditor-button div {
 				display: block;
 			}
 
-			.sceditor-button div
-			{
+			.sceditor-button svg {
+				display: inline-block;
+				height: 16px;
+				width: 16px;
+				margin: 2px 0;
+				fill: #111;
+				pointer-events: none;
+			}
+
+			.sceditor-button.disabled svg {
+				fill: #888;
+			}
+
+			.sceditor-button div {
+				display: inline-block;
 				margin: 2px 0;
 				padding: 0;
 				overflow: hidden;
@@ -393,9 +380,11 @@ div.sceditor-dropdown div
 				color: transparent;
 			}
 
-			.sceditor-button.disabled div
-			{
-				filter: alpha(opacity=30);
+			.sceditor-button.has-icon div {
+				display: none;
+			}
+
+			.sceditor-button.disabled div {
 				opacity: 0.3;
 			}
 
@@ -406,43 +395,43 @@ div.sceditor-dropdown div
 			.text-icon .sceditor-button,
 			.text-icon .sceditor-button div,
 			.sceditor-button.text-icon,
-			.sceditor-button.text-icon div
-			{
+			.sceditor-button.text-icon div {
+				display: inline-block;
 				width: auto;
-				overflow: visible;
 				line-height: 16px;
 				font-size: 1em;
 				color: inherit;
 				text-indent: 0;
 			}
 
+			.text-icon .sceditor-button.has-icon div,
+			.sceditor-button.has-icon div,
 			.text .sceditor-button div,
-			.sceditor-button.text div
-			{
+			.sceditor-button.text div {
 				padding: 0 2px;
 				background: none;
 			}
 
+			.text .sceditor-button svg,
+			.sceditor-button.text svg {
+				display: none;
+			}
+
 			.text-icon .sceditor-button div,
-			.sceditor-button.text-icon div
-			{
+			.sceditor-button.text-icon div {
 				padding: 0 2px 0 20px;
 			}
 
-.rtl
-{
-	div.sceditor-toolbar
-	{
+.rtl {
+	div.sceditor-toolbar {
 		text-align: right;
 	}
 
-	.sceditor-button
-	{
+	.sceditor-button {
 		float: right;
 	}
 
-	div.sceditor-grip
-	{
+	div.sceditor-grip {
 		right: auto;
 		left: 0;
 	}
