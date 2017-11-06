@@ -2555,8 +2555,10 @@ export default function SCEditor(el, userOptions) {
 	 * @return void
 	 */
 	handleEvent = function (e) {
-		// Send event to all plugins
-		pluginManager.call(e.type + 'Event', e, base);
+		if (pluginManager) {
+			// Send event to all plugins
+			pluginManager.call(e.type + 'Event', e, base);
+		}
 
 		// convert the event into a custom event to send
 		var name = (e.target === sourceEditor ? 'scesrc' : 'scewys') + e.type;
