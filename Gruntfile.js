@@ -85,24 +85,13 @@ module.exports = (grunt) => {
 				files: [
 					{
 						expand: true,
-						src: ['minified/**'],
-						dest: 'dist/'
-					},
-					{
-						expand: true,
-						src: ['languages/**'],
+						src: ['minified/**', 'languages/**'],
 						dest: 'dist/'
 					},
 					{
 						expand: true,
 						cwd: 'src/',
-						src: ['plugins/**.js'],
-						dest: 'dist/development/'
-					},
-					{
-						expand: true,
-						cwd: 'src/',
-						src: ['formats/**.js'],
+						src: ['plugins/**.js', 'formats/**.js', 'icons/**.js'],
 						dest: 'dist/development/'
 					},
 					{
@@ -262,14 +251,7 @@ module.exports = (grunt) => {
 						expand: true,
 						filter: 'isFile',
 						cwd: 'src/',
-						src: ['plugins/**.js'],
-						dest: 'minified/'
-					},
-					{
-						expand: true,
-						filter: 'isFile',
-						cwd: 'src/',
-						src: ['formats/**.js'],
+						src: ['plugins/**.js', 'formats/**.js', 'icons/**.js'],
 						dest: 'minified/'
 					}
 				]
