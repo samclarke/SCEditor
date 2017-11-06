@@ -68,6 +68,7 @@ Version 2.0.0:
 	Update famfamfam icons to have red text for super/subscript.
 		- Thanks to @q2apro for updating
 	Added support for SVG icon sets
+	Moved jquery.sceditor.default.css to themes/content/default.css
 
 Version 1.5.2:
 	Fixed BBCode parser bug that can cause content to be lost under certain
