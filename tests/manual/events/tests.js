@@ -9,7 +9,7 @@ $(function () {
 			autofocusEnd: true,
 			enablePasteFiltering: true,
 			emoticonsRoot: '../../../',
-			style: '../../../src/jquery.sceditor.default.css'
+			style: '../../../src/themes/content/default.css'
 		});
 
 		this.editor = $('#testarea').sceditor('instance');
@@ -174,8 +174,8 @@ runner.test({
 	instructions: 'Follow the instructions inside the WYSIWYG editor.',
 	setup: function () {
 		this.editor.val(
-			'<p style="background: #ecf0f1">Click anywhere here.</p>' +
-			'<p style="background: #84C692">Then click here.</p>'
+			'<p id="a" style="background: #ecf0f1">Click anywhere here.</p>' +
+			'<p id="b" style="background: #84C692">Then click here.</p>'
 		);
 	},
 	teardown: function () {
@@ -185,8 +185,8 @@ runner.test({
 }, function (done) {
 	var editor     = this.editor;
 	var body       = editor.getBody();
-	var firstNode  = body.firstChild;
-	var lastNode   = body.lastChild;
+	var firstNode  = body.ownerDocument.getElementById('a');
+	var lastNode   = body.ownerDocument.getElementById('b');
 	var foundFirst = false;
 
 	this.handler = function () {

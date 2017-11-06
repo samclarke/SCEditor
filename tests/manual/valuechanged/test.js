@@ -12,7 +12,7 @@ $(function () {
 			autofocusEnd: true,
 			enablePasteFiltering: true,
 			emoticonsRoot: '../../../',
-			style: '../../../src/jquery.sceditor.default.css'
+			style: '../../../src/themes/content/default.css'
 		});
 
 

@@ -6,7 +6,7 @@ var testMemoryLeaks = function (pos) {
 		autofocusEnd: true,
 		enablePasteFiltering: true,
 		emoticonsRoot: '../../../',
-		style: '../../../src/jquery.sceditor.default.css'
+		style: '../../../src/themes/content/default.css'
 	});
 
 	$('#testarea').sceditor('instance').destroy();
