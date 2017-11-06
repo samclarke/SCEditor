@@ -1949,7 +1949,7 @@ export default function SCEditor(el, userOptions) {
 		html = tmp.innerHTML;
 
 		// filter the HTML and DOM through any plugins
-		if (filter !== false && 'toSource' in format) {
+		if (filter !== false && format.hasOwnProperty('toSource')) {
 			html = format.toSource(html, wysiwygDocument);
 		}
 
