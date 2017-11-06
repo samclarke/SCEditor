@@ -5,14 +5,11 @@
 
 		<title>SCEditor Demo</title>
 
-		<link rel="stylesheet" href="../minified/themes/default.min.css" type="text/css" media="all" />
-
-		<script
-		  src="https://code.jquery.com/jquery-3.1.0.min.js"
-		  integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
-		  crossorigin="anonymous"></script>
-
-		<script src="../minified/jquery.sceditor.bbcode.min.js"></script>
+		<link rel="stylesheet" href="../minified/themes/default.min.css" id="theme-style" />
+		  
+		<script src="../minified/sceditor.min.js"></script>
+		<script src="../minified/icons/monocons.js"></script>
+		<script src="../minified/formats/bbcode.js"></script>
 
 		<style>
 			html {
@@ -42,51 +39,11 @@
 				text-align: left;
 			}
 		</style>
-
-		<script>
-			// Source: http://www.backalleycoder.com/2011/03/20/link-tag-css-stylesheet-load-event/
-			var loadCSS = function(url, callback){
-				var link = document.createElement('link');
-				link.type = 'text/css';
-				link.rel = 'stylesheet';
-				link.href = url;
-				link.id = 'theme-style';
-
-				document.getElementsByTagName('head')[0].appendChild(link);
-
-				var img = document.createElement('img');
-				img.onerror = function(){
-					if(callback) callback(link);
-				}
-				img.src = url;
-			}
-
-			$(document).ready(function() {
-				var initEditor = function() {
-					$("textarea").sceditor({
-						plugins: 'bbcode',
-						style: "../minified/jquery.sceditor.default.min.css"
-					});
-				};
-
-				$("#theme").change(function() {
-					var theme = "../minified/themes/" + $(this).val() + ".min.css";
-
-					$("textarea").sceditor("instance").destroy();
-					$("link:first").remove();
-					$("#theme-style").remove();
-
-					loadCSS(theme, initEditor);
-				});
-
-				initEditor();
-			});
-		</script>
 	</head>
 	<body>
 		<form action="" method="post">
 			<div>
-				<textarea name="bbcode_field" style="height:300px;width:600px;">[center][size=3][b]BBCode SCEditor[/b][/size][/center]
+				<textarea id="example" style="height:300px;width:600px;">[center][size=3][b]BBCode SCEditor[/b][/size][/center]
 
 Give it a try! :)
 
@@ -104,6 +61,7 @@ If you are using IE9+ or any non-IE browser just type [b]:[/b]) and it should be
 				<label for="theme">Theme:</label>
 				<select id="theme">
 					<option value="default">Default</option>
+					<option value="defaultdark">Default dark</option>
 					<option value="modern">Modern</option>
 					<option value="office-toolbar">Office Toolbar</option>
 					<option value="office">Office</option>
@@ -111,6 +69,24 @@ If you are using IE9+ or any non-IE browser just type [b]:[/b]) and it should be
 				</select>
 			</div>
 		</form>
+
+
+		<script>
+			var textarea = document.getElementById('example');
+			sceditor.create(textarea, {
+				format: 'bbcode',
+				icons: 'monocons',
+				style: '../minified/themes/content/default.min.css'
+			});
+
+
+			var themeInput = document.getElementById('theme');
+			themeInput.onchange = function() {
+				var theme = '../minified/themes/' + themeInput.value + '.min.css';
+
+				document.getElementById('theme-style').href = theme;
+			};
+		</script>
 
 		<p>SCEditor is licensed under the <a href="http://www.opensource.org/licenses/mit-license.php">MIT</a></p>
 	</body>
