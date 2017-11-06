@@ -106,12 +106,9 @@
 				if (colorPath) {
 					var color = 'inherit';
 
-					if (!isSourceMode) {
-						if (currentNode && currentNode.nodeType === 3) {
-							currentNode = currentNode.parentNode;
-						}
-
-						color = dom.css(currentNode, 'color');
+					if (!isSourceMode && currentNode) {
+						color = currentNode.ownerDocument
+							.queryCommandValue('forecolor');
 					}
 
 					dom.css(colorPath, 'fill', color);
