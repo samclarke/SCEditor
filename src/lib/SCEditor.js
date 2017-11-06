@@ -524,12 +524,16 @@ export default function SCEditor(el, userOptions) {
 			options.height || dom.height(original)
 		);
 
+		// Add IE version class to the HTML element so can apply
+		// conditional styling without CSS hacks
+		var className = IE_VER ? 'ie ie' + IE_VER : '';
+		// Add ios to HTML so can apply CSS fix to only it
+		className += browser.ios ? ' ios' : '';
+
 		wysiwygDocument = wysiwygEditor.contentDocument;
 		wysiwygDocument.open();
 		wysiwygDocument.write(_tmpl('html', {
-			// Add IE version class to the HTML element so can apply
-			// conditional styling without CSS hacks
-			attrs: IE_VER ? ' class="ie ie' + IE_VER + '"' : '',
+			attrs: ' class="' + className + '"',
 			spellcheck: options.spellcheck ? '' : 'spellcheck="false"',
 			charset: options.charset,
 			style: options.style

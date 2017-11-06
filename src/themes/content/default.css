@@ -10,16 +10,18 @@ html, body, p, code:before, table {
 }
 html {
 	height: 100%;
-
+}
+.ios {
 	/* Needed for iOS scrolling bug fix */
 	overflow: auto;
 	-webkit-overflow-scrolling: touch;
 }
-body {
+.ios body {
 	/* Needed for iOS scrolling bug fix */
 	position: relative;
 	overflow: auto;
-
+}
+body {
 	/* Needed to make sure body covers the whole editor and that
 		long lines don't cause horizontal scrolling */
 	min-height: 100%;
