@@ -124,7 +124,7 @@ export var isWysiwygSupported = (function () {
 	}
 
 	// IE <= 8 is not supported any more
-	if (ie < 9) {
+	if (ie <= 9) {
 		isUnsupported = true;
 	}
 

@@ -1,5 +1,4 @@
 import * as utils from './utils.js';
-import { ie as IE_VER } from './browser.js';
 
 /**
  * Cache of camelCase CSS property names
@@ -326,7 +325,7 @@ export function css(node, rule, value) {
 			css(node, key, value);
 		});
 	} else {
-		// isNaN returns false for null, false and emmpty strings
+		// isNaN returns false for null, false and empty strings
 		// so need to check it's truthy or 0
 		var isNumeric = (value || value === 0) && !isNaN(value);
 		node.style[rule] = isNumeric ? value + 'px' : value;
@@ -380,18 +379,7 @@ export function is(node, selector) {
 	var result = false;
 
 	if (node && node.nodeType === ELEMENT_NODE) {
-		var doc = node.ownerDocument;
 		var parent, nextSibling, isAppended;
-
-		// IE 9 fails on disconnected nodes so must
-		// add them to the body to test them
-		if (IE_VER < 10 && !node.document) {
-			isAppended = true;
-			parent = node.parentNode;
-			nextSibling = node.nextSibling;
-
-			appendChild(doc.body, node);
-		}
 
 		result = (node.matches || node.msMatchesSelector ||
 			node.webkitMatchesSelector).call(node, selector);

@@ -132,12 +132,6 @@ module.exports = (grunt) => {
 						expand: true,
 						src: 'emoticons/**',
 						dest: 'dist/'
-					},
-					{
-						expand: true,
-						cwd: 'src/themes/inc/',
-						src: 'iesize.htc',
-						dest: 'dist/development/themes/'
 					}
 				]
 			},
@@ -159,12 +153,6 @@ module.exports = (grunt) => {
 						rename: function (dest, src) {
 							return dest + src.replace('.css','.min.css');
 						}
-					},
-					{
-						expand: true,
-						cwd: 'src/themes/inc',
-						src: 'iesize.htc',
-						dest: 'minified/themes/'
 					}
 				]
 			}

@@ -16,7 +16,7 @@ Version 2.0.0:
 	Fixed issue with jQuery noConflict mode.
 		- Thanks to @Globulopolis for reporting
 	Changed from JSCS and JSHint to ESLint for linting
-	Dropped support for IE <= 8
+	Dropped support for IE <= 9
 	Updated default color palette to be smaller and increased color picker size.
 	Added autoyoutube plugin that converts pasted Youtube links.
 		- Thanks to @cyphix333 for suggesting

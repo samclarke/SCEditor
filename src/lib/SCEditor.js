@@ -2142,19 +2142,7 @@ export default function SCEditor(el, userOptions) {
 
 		lastRange = null;
 		dom.toggle(sourceEditor);
-
-		// Fixes IE9 unspecified error. Not sure why it
-		// is being triggered but this fixes it.
-		if (!isInSourceMode && IE_VER < 10) {
-			sourceEditor.focus();
-		}
-
 		dom.toggle(wysiwygEditor);
-
-		// Undo the previous IE 9 fix
-		if (!isInSourceMode && IE_VER < 10) {
-			sourceEditor.blur();
-		}
 
 		dom.toggleClass(editorContainer, 'wysiwygMode', isInSourceMode);
 		dom.toggleClass(editorContainer, 'sourceMode', !isInSourceMode);
