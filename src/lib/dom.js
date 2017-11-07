@@ -379,19 +379,8 @@ export function is(node, selector) {
 	var result = false;
 
 	if (node && node.nodeType === ELEMENT_NODE) {
-		var parent, nextSibling, isAppended;
-
 		result = (node.matches || node.msMatchesSelector ||
 			node.webkitMatchesSelector).call(node, selector);
-
-		// Put node back where it came from after IE 9 fix
-		if (isAppended) {
-			remove(node);
-
-			if (parent) {
-				parent.insertBefore(node, nextSibling);
-			}
-		}
 	}
 
 	return result;
