@@ -101,8 +101,8 @@ QUnit.test('find()', function (assert) {
 	var paragraphs = dom.find(div, 'p');
 	assert.equal(paragraphs.length, 1, 'Select paragraphs');
 
-	var paragraphs = dom.find(div, '*');
-	assert.equal(paragraphs.length, 2, 'Select all');
+	var nodes = dom.find(div, '*');
+	assert.equal(nodes.length, 2, 'Select all');
 });
 
 QUnit.test('on()', function (assert) {
