@@ -3234,7 +3234,8 @@ export default function SCEditor(el, userOptions) {
 		node   = range.startContainer;
 		offset = range.startOffset;
 
-		if (offset !== 0 || !(parent = currentStyledBlockNode())) {
+		if (offset !== 0 || !(parent = currentStyledBlockNode()) ||
+			dom.is(parent, 'body')) {
 			return;
 		}
 
@@ -3252,10 +3253,6 @@ export default function SCEditor(el, userOptions) {
 			if (!(node = node.parentNode)) {
 				return;
 			}
-		}
-
-		if (!parent || dom.is(parent, 'body')) {
-			return;
 		}
 
 		// The backspace was pressed at the start of
