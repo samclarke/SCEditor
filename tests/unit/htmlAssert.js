@@ -6,15 +6,11 @@ var normalize = function (parentNode) {
 
 	while (node) {
 		if (node.nodeType === 3) {
-			nextSibling = node.nextSibling;
-
 			while ((nextSibling = node.nextSibling) &&
 				nextSibling.nodeType === 3) {
 
 				node.nodeValue += nextSibling.nodeValue;
 				parentNode.removeChild(nextSibling);
-
-				nextSibling = node.nextSibling;
 			}
 		} else {
 			normalize(node);
