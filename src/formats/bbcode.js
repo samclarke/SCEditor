@@ -673,7 +673,8 @@
 				}
 
 				if (cite || attr(element, authorAttr)) {
-					author = cite.textContent || attr(element, authorAttr);
+					author = cite && cite.textContent ||
+						attr(element, authorAttr);
 
 					attr(element, authorAttr, author);
 
