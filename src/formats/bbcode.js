@@ -2405,7 +2405,7 @@
 				// <block><inline><br></inline></block>
 				do {
 					parent          = element.parentNode;
-					parentLastChild = parent.lastChild;
+					parentLastChild = parent && parent.lastChild;
 
 					isLastBlockChild = parentLastChild === element;
 					element = parent;
