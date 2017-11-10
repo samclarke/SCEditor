@@ -294,7 +294,7 @@ module.exports = (grunt) => {
 						require('autoprefixer')({
 							browsers: [
 								'last 4 versions',
-								'ie 9'
+								'ie 10'
 							]
 						}),
 						require('postcss-clean')({
