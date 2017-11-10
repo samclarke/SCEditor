@@ -420,7 +420,7 @@
 				var	color;
 
 				if (!is(elm, 'font') || !(color = attr(elm, 'color'))) {
-					color = elm.style.color || elm.css(elm, 'color');
+					color = elm.style.color || css(elm, 'color');
 				}
 
 				return '[color=' + _normaliseColour(color) + ']' +

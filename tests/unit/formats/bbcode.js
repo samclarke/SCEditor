@@ -558,11 +558,14 @@ QUnit.test('colour', function (assert) {
 		'Font tag color attribute normal'
 	);
 
-	assert.equal(
-		this.htmlToBBCode('<font color="rgb(0,0,0)">test</font>'),
-		'[color=#000000]test[/color]',
-		'Font tag color attribute rgb'
-	);
+	// Edge 16 doesn't support rgb as color attribute value
+	if (!/Edge/.test(navigator.userAgent)) {
+		assert.equal(
+			this.htmlToBBCode('<font color="rgb(0,0,0)">test</font>'),
+			'[color=#000000]test[/color]',
+			'Font tag color attribute rgb'
+		);
+	}
 });
 
 
