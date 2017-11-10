@@ -1,4 +1,4 @@
-# [SCEditor](http://www.sceditor.com/) v1.5.2
+# [SCEditor](http://www.sceditor.com/) v2.0.0
 
 [![Build Status](http://img.shields.io/travis/samclarke/SCEditor/master.svg?style=flat-square)](https://travis-ci.org/samclarke/SCEditor)
 [![Dependency Status](http://img.shields.io/gemnasium/samclarke/SCEditor.svg?style=flat-square)](https://gemnasium.com/samclarke/SCEditor)
@@ -6,6 +6,8 @@
 [![License](http://img.shields.io/npm/l/sceditor.svg?style=flat-square)](https://github.com/samclarke/SCEditor/blob/master/LICENSE.md)
 
 A lightweight WYSIWYG BBCode and XHTML editor.
+
+![SCEditor demo](/demo.gif)
 
 For more information visit [sceditor.com](http://www.sceditor.com/)
 
@@ -15,29 +17,31 @@ For more information visit [sceditor.com](http://www.sceditor.com/)
 Include the JQuery and SCEditor JavaScript:
 
 ```html
-<link rel="stylesheet" href="minified/jquery.sceditor.min.css" />
-<script src="minified/jquery.sceditor.bbcode.min.js"></script>
+<link rel="stylesheet" href="minified/themes/default.min.css" />
+<script src="minified/sceditor.min.js"></script>
+<script src="minified/plugins/bbcode.js"></script>
+<script src="minified/plugins/xhtml.js"></script>
 ```
 
-Then to change all textareas to WYSIWYG editors, simply do:
+Then to convert a textarea into SCEditor, simply do:
 
 ```js
-$(function() {
-	$('textarea').sceditor({
-		plugins: 'xhtml',
-		style: 'minified/jquery.sceditor.default.min.css'
-	});
+var textarea = document.getElementById('id-of-textarea');
+
+sceditor.create(textarea, {
+	plugins: 'xhtml',
+	style: 'minified/themes/content/default.min.css'
 });
 ```
 
 or for a BBCode WYSIWYG editor do:
 
 ```js
-$(function() {
-	$('textarea').sceditor({
-		plugins: 'bbcode',
-		style: 'minified/jquery.sceditor.default.min.css'
-	});
+var textarea = document.getElementById('id-of-textarea');
+
+sceditor.create(textarea, {
+	plugins: 'bbcode',
+	style: 'minified/themes/content/default.min.css'
 });
 ```
 
@@ -104,10 +108,10 @@ or via [Flattr](http://flattr.com/thing/400345/SCEditor)
 
 ## License
 
-SCEditor is licensed under the [MIT](http://www.opensource.org/licenses/mit-license.php) license:
+SCEditor is licensed under the [MIT](/LICENSE.md) license:
 
 
-Copyright (C) 2011 - 2015 Sam Clarke and contributors – sceditor.com
+Copyright (C) 2011 - 2017 Sam Clarke and contributors – sceditor.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
