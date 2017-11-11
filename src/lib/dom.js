@@ -318,7 +318,7 @@ export function toggle(node) {
 export function css(node, rule, value) {
 	if (arguments.length < 3) {
 		if (utils.isString(rule)) {
-			return getComputedStyle(node)[rule];
+			return node.nodeType === 1 ? getComputedStyle(node)[rule] : null;
 		}
 
 		utils.each(rule, function (key, value) {
