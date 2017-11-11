@@ -2563,29 +2563,42 @@
 		/**
 		 * Converts HTML into BBCode
 		 *
+		 * @param {boolean} asFragment
 		 * @param {string}	html
 		 * @param {!Document} [context]
 		 * @param {!HTMLElement} [parent]
 		 * @return {string}
 		 * @private
 		 */
-		function toSource(html, context, parent) {
+		function toSource(asFragment, html, context, parent) {
 			context = context || document;
 
-			var	bbcode, elements,
-				container = context.createElement('div'),
-				parser = new BBCodeParser(base.opts.parserOptions);
+			var	bbcode, elements;
+			var containerParent = context.createElement('div');
+			var container = context.createElement('div');
+			var parser = new BBCodeParser(base.opts.parserOptions);
 
 			container.innerHTML = html;
-			css(container, 'visibility', 'hidden');
-			context.body.appendChild(container);
+			css(containerParent, 'visibility', 'hidden');
+			containerParent.appendChild(container);
+			context.body.appendChild(containerParent);
+
+			if (asFragment) {
+				// Add text before and after so removeWhiteSpace doesn't remove
+				// leading and trailing whitespace
+				containerParent.insertBefore(
+					context.createTextNode('#'),
+					containerParent.firstChild
+				);
+				containerParent.appendChild(context.createTextNode('#'));
+			}
 
 			// Match parents white-space handling
 			if (parent) {
 				css(container, 'whiteSpace', css(parent, 'whiteSpace'));
 			}
 
-			dom.removeWhiteSpace(container);
+			dom.removeWhiteSpace(containerParent);
 
 			// Remove all nodes with sceditor-ignore class
 			elements = container.getElementsByClassName('sceditor-ignore');
@@ -2595,7 +2608,7 @@
 
 			bbcode = elementToBbcode(container);
 
-			context.body.removeChild(container);
+			context.body.removeChild(containerParent);
 
 			bbcode = parser.toBBCode(bbcode, true);
 
@@ -2608,8 +2621,8 @@
 
 		base.toHtml = toHtml.bind(null, false);
 		base.fragmentToHtml = toHtml.bind(null, true);
-		base.toSource = toSource;
-		base.fragmentToSource = toSource;
+		base.toSource = toSource.bind(null, false);
+		base.fragmentToSource = toSource.bind(null, true);
 	};
 
 	/**
