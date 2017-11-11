@@ -658,32 +658,32 @@ QUnit.test('Image', function (assert) {
 	);
 });
 
-QUnit.test('Image dimensions when loaded', function (assert) {
-	var done = assert.async();
-	var plugin = this.format;
-	var div = utils.htmlToDiv(
-		'<img src="http://www.sceditor.com/emoticons/smile.png" ' +
-			'width="200" />'
-	);
+// QUnit.test('Image dimensions when loaded', function (assert) {
+// 	var done = assert.async();
+// 	var plugin = this.format;
+// 	var div = utils.htmlToDiv(
+// 		'<img src="http://www.sceditor.com/emoticons/smile.png" ' +
+// 			'width="200" />'
+// 	);
 
-	var checkLoaded = function () {
-		if (!div.firstChild.complete || div.firstChild.naturalWidth === 0) {
-			setTimeout(checkLoaded, 100);
-			return;
-		}
+// 	var checkLoaded = function () {
+// 		if (!div.firstChild.complete || div.firstChild.naturalWidth === 0) {
+// 			setTimeout(checkLoaded, 100);
+// 			return;
+// 		}
 
-		assert.equal(
-			plugin.toSource(
-				'<img src="http://www.sceditor.com/emoticons/smile.png" ' +
-				'width="200" />', document),
-			'[img=200x200]http://www.sceditor.com/emoticons/smile.png[/img]'
-		);
+// 		assert.equal(
+// 			plugin.toSource(
+// 				'<img src="http://www.sceditor.com/emoticons/smile.png" ' +
+// 				'width="200" />', document),
+// 			'[img=200x200]http://www.sceditor.com/emoticons/smile.png[/img]'
+// 		);
 
-		done();
-	};
+// 		done();
+// 	};
 
-	checkLoaded();
-});
+// 	checkLoaded();
+// });
 
 
 QUnit.test('URL', function (assert) {
