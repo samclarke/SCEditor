@@ -664,8 +664,12 @@ export default function SCEditor(el, userOptions) {
 
 		dom.on(editorContainer, 'selectionchanged', checkNodeChanged);
 		dom.on(editorContainer, 'selectionchanged', updateActiveButtons);
-		dom.on(editorContainer, 'selectionchanged valuechanged nodechanged',
-			handleEvent);
+		// Custom events to forward
+		dom.on(
+			editorContainer,
+			'selectionchanged valuechanged nodechanged pasteraw paste',
+			handleEvent
+		);
 	};
 
 	/**
@@ -1543,21 +1547,22 @@ export default function SCEditor(el, userOptions) {
 	 * @private
 	 */
 	handlePasteData = function (data) {
-		var pastearea = dom.createElement('div', {}, wysiwygDocument);
+		var pasteArea = dom.createElement('div', {}, wysiwygDocument);
 
 		pluginManager.call('pasteRaw', data);
+		dom.trigger(editorContainer, 'pasteraw', data);
 
 		if (data.html) {
-			pastearea.innerHTML = data.html;
+			pasteArea.innerHTML = data.html;
 
 			// fix any invalid nesting
-			dom.fixNesting(pastearea);
+			dom.fixNesting(pasteArea);
 		} else {
-			pastearea.innerHTML = escape.entities(data.text || '');
+			pasteArea.innerHTML = escape.entities(data.text || '');
 		}
 
 		var paste = {
-			val: pastearea.innerHTML
+			val: pasteArea.innerHTML
 		};
 
 		if ('fragmentToSource' in format) {
@@ -1566,6 +1571,7 @@ export default function SCEditor(el, userOptions) {
 		}
 
 		pluginManager.call('paste', paste);
+		dom.trigger(editorContainer, 'paste', paste);
 
 		if ('fragmentToHtml' in format) {
 			paste.val = format
