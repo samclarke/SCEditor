@@ -14,7 +14,7 @@ export default {
 	 */
 	toolbar: 'bold,italic,underline,strike,subscript,superscript|' +
 		'left,center,right,justify|font,size,color,removeformat|' +
-		'cut,copy,paste,pastetext|bulletlist,orderedlist,indent,outdent|' +
+		'cut,copy,pastetext|bulletlist,orderedlist,indent,outdent|' +
 		'table|code,quote|horizontalrule,image,email,link,unlink|' +
 		'emoticon,youtube,date,time|ltr,rtl|print,maximize,source',
 
