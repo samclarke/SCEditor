@@ -14,7 +14,7 @@ For more information visit [sceditor.com](http://www.sceditor.com/)
 
 ## Usage
 
-Include the JQuery and SCEditor JavaScript:
+Include the SCEditor JavaScript:
 
 ```html
 <link rel="stylesheet" href="minified/themes/default.min.css" />
