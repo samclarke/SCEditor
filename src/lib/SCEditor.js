@@ -49,12 +49,12 @@ function wrapInlines(body, doc) {
 /**
  * SCEditor - A lightweight WYSIWYG editor
  *
- * @param {Element} el The textarea to be converted
- * @return {Object} userOptions
+ * @param {HTMLTextAreaElement} original The textarea to be converted
+ * @param {Object} userOptions
  * @class SCEditor
  * @name SCEditor
  */
-export default function SCEditor(el, userOptions) {
+export default function SCEditor(original, userOptions) {
 	/**
 	 * Alias of this
 	 *
@@ -66,14 +66,6 @@ export default function SCEditor(el, userOptions) {
 	 * Editor format like BBCode or HTML
 	 */
 	var format;
-
-	/**
-	 * The textarea element being replaced
-	 *
-	 * @type {HTMLTextAreaElement}
-	 * @private
-	 */
-	var original = el.get ? el.get(0) : el;
 
 	/**
 	 * The div which contains the editor and toolbar
