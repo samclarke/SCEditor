@@ -1,3 +1,13 @@
+Version 2.1.0:
+	Fixed surrounding space being removed when calling insert().
+		- Thanks to @brunoais for reporting
+	Added autosave plugin.
+	Added ability to bind to paste & pasteraw events.
+	Remove get() call on textarea (fixes mootools conflict).
+		- Thanks to @compojoom for reporting.
+	Removed paste command from default toolbar as only supported in IE.
+	Fixed error getting computed style on none element nodes in DOM css().
+
 Version 2.0.0:
 	Changed theme to use flexbox. Custom themes will need tweaking but otherwise
 		this is backwards compatible.
