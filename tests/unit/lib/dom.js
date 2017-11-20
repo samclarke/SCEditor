@@ -256,6 +256,12 @@ QUnit.test('css()', function (assert) {
 		1,
 		'Get computed value'
 	);
+
+	assert.equal(
+		dom.css(window, 'width'),
+		null,
+		'Get computed value of window'
+	);
 });
 
 QUnit.test('data()', function (assert) {
@@ -292,6 +298,19 @@ QUnit.test('is()', function (assert) {
 	assert.notOk(dom.is(null));
 	assert.notOk(dom.is(div, 'p'));
 	assert.notOk(dom.is(div, '.testing'));
+});
+
+QUnit.test('remove()', function (assert) {
+	var parent = document.createElement('div');
+	var child = document.createElement('div');
+
+	parent.appendChild(child);
+	dom.remove(child);
+
+	assert.ok(!child.parentNode);
+
+	// Make sure doesn't throw if has no parent
+	dom.remove(child);
 });
 
 QUnit.test('contains()', function (assert) {

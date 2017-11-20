@@ -129,7 +129,9 @@ export function closest(node, selector) {
  * @param {!HTMLElement} node
  */
 export function remove(node) {
-	node.parentNode.removeChild(node);
+	if (node.parentNode) {
+		node.parentNode.removeChild(node);
+	}
 }
 
 /**
