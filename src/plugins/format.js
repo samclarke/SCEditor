@@ -46,7 +46,7 @@
 				pOpts = opts.paragraphformat;
 
 			// Don't enable if the BBCode plugin is enabled.
-			if (opts.plugins && opts.plugins.indexOf('bbcode') > -1) {
+			if (opts.format && opts.format === 'bbcode') {
 				return;
 			}
 
