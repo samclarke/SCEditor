@@ -648,7 +648,9 @@ var defaultCmds = {
 
 			var createContent = function (includeMore) {
 				var	moreLink,
-					emoticonsCompat = editor.opts.emoticonsCompat,
+					opts            = editor.opts,
+					emoticonsRoot   = opts.emoticonsRoot || '',
+					emoticonsCompat = opts.emoticonsCompat,
 					rangeHelper     = editor.getRangeHelper(),
 					startSpace      = emoticonsCompat &&
 						rangeHelper.getOuterText(true, 1) !== ' ' ? ' ' : '',
@@ -659,8 +661,8 @@ var defaultCmds = {
 					perLine         = 0,
 					emoticons       = utils.extend(
 						{},
-						editor.opts.emoticons.dropdown,
-						includeMore ? editor.opts.emoticons.more : {}
+						opts.emoticons.dropdown,
+						includeMore ? opts.emoticons.more : {}
 					);
 
 				dom.appendChild(content, line);
@@ -676,7 +678,7 @@ var defaultCmds = {
 
 				utils.each(emoticons, function (code, emoticon) {
 					dom.appendChild(line, dom.createElement('img', {
-						src: emoticon.url || emoticon,
+						src: emoticonsRoot + (emoticon.url || emoticon),
 						alt: code,
 						title: emoticon.tooltip || code
 					}));
@@ -687,7 +689,7 @@ var defaultCmds = {
 					}
 				});
 
-				if (!includeMore && editor.opts.emoticons.more) {
+				if (!includeMore && opts.emoticons.more) {
 					moreLink = dom.createElement('a', {
 						className: 'sceditor-more'
 					});
