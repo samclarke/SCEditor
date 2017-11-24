@@ -1027,7 +1027,8 @@
 	/**
 	 * SCEditor BBCode parser class
 	 *
-	 * @param {Object} options
+	 * @param {Object} Global editor options
+	 * @param {Object} Global editor template
 	 * @class BBCodeParser
 	 * @name BBCodeParser
 	 * @since v1.4.0
@@ -1035,7 +1036,8 @@
 	function BBCodeParser(options) {
 		var base = this;
 
-		base.opts = extend({}, BBCodeParser.defaults, options);
+		base.parserOptions = extend({}, BBCodeParser.defaults,
+			options.parserOptions);
 
 		/**
 		 * Takes a BBCode string and splits it into open,
@@ -1219,7 +1221,7 @@
 		 */
 		base.parse = function (str, preserveNewLines) {
 			var ret  = parseTokens(base.tokenize(str));
-			var opts = base.opts;
+			var opts = base.parserOptions;
 
 			if (opts.fixInvalidNesting) {
 				fixNesting(ret);
@@ -1272,7 +1274,7 @@
 			var	parentBBCode    = parent ? bbcodeHandlers[parent.name] : {},
 				allowedChildren = parentBBCode.allowedChildren;
 
-			if (base.opts.fixInvalidChildren && allowedChildren) {
+			if (base.parserOptions.fixInvalidChildren && allowedChildren) {
 				return allowedChildren.indexOf(child.name || '#') > -1;
 			}
 
@@ -1468,7 +1470,7 @@
 									openTags.pop();
 								} else if (bbcode &&
 									bbcode.isInline === false &&
-									base.opts.breakAfterBlock &&
+									base.parserOptions.breakAfterBlock &&
 									bbcode.breakAfter !== false) {
 									openTags.pop();
 								}
@@ -1541,7 +1543,7 @@
 						// (breakStartBlock, breakStart) e.g. [tag]\n
 						if (!left) {
 							if (parentBBCode.isInline === false &&
-								base.opts.breakStartBlock &&
+								base.parserOptions.breakStartBlock &&
 								parentBBCode.breakStart !== false) {
 								remove = true;
 							}
@@ -1555,7 +1557,7 @@
 						// remove last line break (breakEndBlock, breakEnd)
 						} else if (!removedBreakEnd && !right) {
 							if (parentBBCode.isInline === false &&
-								base.opts.breakEndBlock &&
+								base.parserOptions.breakEndBlock &&
 								parentBBCode.breakEnd !== false) {
 								remove = true;
 							}
@@ -1572,7 +1574,7 @@
 						if ((bbcode = bbcodeHandlers[left.name])) {
 							if (!onlyRemoveBreakAfter) {
 								if (bbcode.isInline === false &&
-									base.opts.breakAfterBlock &&
+									base.parserOptions.breakAfterBlock &&
 									bbcode.breakAfter !== false) {
 									remove = true;
 								}
@@ -1591,7 +1593,7 @@
 
 						if ((bbcode = bbcodeHandlers[right.name])) {
 							if (bbcode.isInline === false &&
-								base.opts.breakBeforeBlock &&
+								base.parserOptions.breakBeforeBlock &&
 								bbcode.breakBefore !== false) {
 								remove = true;
 							}
@@ -1942,25 +1944,25 @@
 				isBlock       = !(!bbcode || bbcode.isInline !== false);
 				isSelfClosing = bbcode && bbcode.isSelfClosing;
 
-				breakBefore = (isBlock && base.opts.breakBeforeBlock &&
+				breakBefore = (isBlock && base.parserOptions.breakBeforeBlock &&
 						bbcode.breakBefore !== false) ||
 					(bbcode && bbcode.breakBefore);
 
 				breakStart = (isBlock && !isSelfClosing &&
-						base.opts.breakStartBlock &&
+						base.parserOptions.breakStartBlock &&
 						bbcode.breakStart !== false) ||
 					(bbcode && bbcode.breakStart);
 
-				breakEnd = (isBlock && base.opts.breakEndBlock &&
+				breakEnd = (isBlock && base.parserOptions.breakEndBlock &&
 						bbcode.breakEnd !== false) ||
 					(bbcode && bbcode.breakEnd);
 
-				breakAfter = (isBlock && base.opts.breakAfterBlock &&
+				breakAfter = (isBlock && base.parserOptions.breakAfterBlock &&
 						bbcode.breakAfter !== false) ||
 					(bbcode && bbcode.breakAfter);
 
 				quoteType = (bbcode ? bbcode.quoteType : null) ||
-					base.opts.quoteType || QuoteType.auto;
+					base.parserOptions.quoteType || QuoteType.auto;
 
 				if (!bbcode && token.type === TOKEN_OPEN) {
 					ret.push(token.val);
@@ -2551,7 +2553,7 @@
 		 * @param {boolean} [legacyAsFragment] Used by fromBBCode() method
 		 */
 		function toHtml(asFragment, source, legacyAsFragment) {
-			var	parser = new BBCodeParser(base.opts.parserOptions);
+			var	parser = new BBCodeParser(base.opts);
 			var html = parser.toHTML(
 				base.opts.bbcodeTrim ? source.trim() : source
 			);
@@ -2576,7 +2578,7 @@
 			var	bbcode, elements;
 			var containerParent = context.createElement('div');
 			var container = context.createElement('div');
-			var parser = new BBCodeParser(base.opts.parserOptions);
+			var parser = new BBCodeParser(base.opts);
 
 			container.innerHTML = html;
 			css(containerParent, 'visibility', 'hidden');
