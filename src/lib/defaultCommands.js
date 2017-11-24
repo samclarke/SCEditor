@@ -760,7 +760,8 @@ var defaultCmds = {
 			defaultCmds.youtube._dropDown(editor, btn, function (id, time) {
 				editor.wysiwygEditorInsertHtml(_tmpl('youtube', {
 					id: id,
-					time: time
+					time: time,
+					params: editor.opts.youtubeParameters
 				}));
 			});
 		},
