@@ -2228,24 +2228,7 @@ export default function SCEditor(original, userOptions) {
 		}
 
 		try {
-			if (command === 'fontsize') {
-				// execCommand for fontsize accepts only numbers from 1 to 7,
-				// and it was deprecated!
-				// We'll set it to 3 and go over all the font tags with size 3
-				// and change it to use the style with specified
-
-				executed = wysiwygDocument.execCommand(command, false, 3);
-
-				var fontElements = wysiwygDocument.getElementsByTagName('font');
-				for (var i = 0, len = fontElements.length; i < len; ++i) {
-					if (fontElements[i].size === '3') {
-						fontElements[i].removeAttribute('size');
-						fontElements[i].style.fontSize = param + '%';
-					}
-				}
-			} else {
-				executed = wysiwygDocument.execCommand(command, false, param);
-			}
+			executed = wysiwygDocument.execCommand(command, false, param);
 		} catch (ex) { }
 
 		// show error if execution failed and an error message exists
