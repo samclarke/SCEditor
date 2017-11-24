@@ -415,8 +415,7 @@ export default function RangeHelper(win, d) {
 			style: 'display:none;line-height:0'
 		}, doc);
 
-		// Do we really need it?
-		//marker.innerHTML = ' ';
+		marker.innerHTML = ' ';
 
 		return marker;
 	};
