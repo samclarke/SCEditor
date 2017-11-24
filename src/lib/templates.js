@@ -37,7 +37,7 @@ var _templates = {
 		'data-font="{font}"><font face="{font}">{font}</font></a>',
 
 	sizeOpt: '<a class="sceditor-fontsize-option" data-size="{size}" ' +
-		'href="#"><font size="{size}">{size}</font></a>',
+		'href="#"><font style="font-size={size}%">{size}%</font></a>',
 
 	pastetext:
 		'<div><label for="txt">{label}</label> ' +

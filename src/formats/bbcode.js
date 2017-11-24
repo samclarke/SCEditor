@@ -369,39 +369,15 @@
 					size     = 2;
 
 				if (!fontSize) {
-					fontSize = css(element, 'fontSize');
+					fontSize = element.style['font-size'];
 				}
 
-				// Most browsers return px value but IE returns 1-7
-				if (fontSize.indexOf('px') > -1) {
-					// convert size to an int
-					fontSize = fontSize.replace('px', '') - 0;
-
-					if (fontSize < 12) {
-						size = 1;
-					}
-					if (fontSize > 15) {
-						size = 3;
-					}
-					if (fontSize > 17) {
-						size = 4;
-					}
-					if (fontSize > 23) {
-						size = 5;
-					}
-					if (fontSize > 31) {
-						size = 6;
-					}
-					if (fontSize > 47) {
-						size = 7;
-					}
-				} else {
-					size = fontSize;
-				}
+				// remove "%" from the option
+				size = fontSize.replace('%', '');
 
 				return '[size=' + size + ']' + content + '[/size]';
 			},
-			html: '<font size="{defaultattr}">{!0}</font>'
+			html: '<font style="font-size:{defaultattr}%">{!0}</font>'
 		},
 		// END_COMMAND
 

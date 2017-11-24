@@ -159,11 +159,11 @@ var defaultCmds = {
 				e.preventDefault();
 			});
 
-			for (var i = 1; i <= 7; i++) {
-				dom.appendChild(content, _tmpl('sizeOpt', {
-					size: i
-				}, true));
-			}
+			dom.appendChild(content, _tmpl('sizeOpt', {	size: 50}, true));
+			dom.appendChild(content, _tmpl('sizeOpt', {	size: 75}, true));
+			dom.appendChild(content, _tmpl('sizeOpt', {	size: 100}, true));
+			dom.appendChild(content, _tmpl('sizeOpt', {	size: 150}, true));
+			dom.appendChild(content, _tmpl('sizeOpt', {	size: 200}, true));
 
 			editor.createDropDown(caller, 'fontsize-picker', content);
 		},
