@@ -18,6 +18,8 @@
 	var escapeUriScheme = sceditor.escapeUriScheme;
 	var dom             = sceditor.dom;
 	var utils           = sceditor.utils;
+	var templates	    = sceditor._tmpl;
+	var options			= sceditor.options;
 
 	var css    = dom.css;
 	var attr   = dom.attr;
@@ -769,9 +771,13 @@
 
 				return element ? '[youtube]' + element + '[/youtube]' : content;
 			},
-			html: '<iframe width="560" height="315" frameborder="0" ' +
-				'src="https://www.youtube.com/embed/{0}?wmode=opaque" ' +
-				'data-youtube-id="{0}" allowfullscreen></iframe>'
+			html: function (token, attrs, content) {
+				return templates('youtube', {
+					id: content,
+					time: 0,
+					params: options.youtubeParameters
+				});
+			}
 		},
 		// END_COMMAND
 

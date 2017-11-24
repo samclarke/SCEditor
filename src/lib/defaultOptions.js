@@ -489,5 +489,14 @@ export default {
 	 *
 	 * @type {Object}
 	 */
-	dropDownCss: { }
+	dropDownCss: { },
+
+	/**
+	 * Parameters that will be added to YouTube frame tag
+	 *
+	 * @type {string}
+	 */
+	youtubeParameters: 'width="560" height="315" frameborder="0" ' +
+		'allowfullscreen'
+
 };
