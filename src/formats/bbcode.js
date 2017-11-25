@@ -2598,13 +2598,13 @@
 				css(container, 'whiteSpace', css(parent, 'whiteSpace'));
 			}
 
-			dom.removeWhiteSpace(containerParent);
-
 			// Remove all nodes with sceditor-ignore class
 			elements = container.getElementsByClassName('sceditor-ignore');
 			while (elements.length) {
 				elements[0].parentNode.removeChild(elements[0]);
 			}
+
+			dom.removeWhiteSpace(containerParent);
 
 			bbcode = elementToBbcode(container);
 

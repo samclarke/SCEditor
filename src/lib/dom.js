@@ -874,6 +874,7 @@ export function removeWhiteSpace(root) {
 			while (hasClass(previous, 'sceditor-ignore')) {
 				previous = getSibling(previous, true);
 			}
+
 			// If previous sibling isn't inline or is a textnode that
 			// ends in whitespace, time the start whitespace
 			if (isInline(node) && previous) {
@@ -881,6 +882,11 @@ export function removeWhiteSpace(root) {
 
 				while (previousSibling.lastChild) {
 					previousSibling = previousSibling.lastChild;
+
+					// eslint-disable-next-line max-depth
+					while (hasClass(previousSibling, 'sceditor-ignore')) {
+						previousSibling = getSibling(previousSibling, true);
+					}
 				}
 
 				trimStart = previousSibling.nodeType === TEXT_NODE ?
