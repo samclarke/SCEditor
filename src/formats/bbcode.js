@@ -1027,8 +1027,7 @@
 	/**
 	 * SCEditor BBCode parser class
 	 *
-	 * @param {Object} Global editor options
-	 * @param {Object} Global editor template
+	 * @param {Object} Editor options
 	 * @class BBCodeParser
 	 * @name BBCodeParser
 	 * @since v1.4.0
@@ -1036,6 +1035,7 @@
 	function BBCodeParser(options) {
 		var base = this;
 
+		base.editorOptions = options;
 		base.parserOptions = extend({}, BBCodeParser.defaults,
 			options.parserOptions);
 

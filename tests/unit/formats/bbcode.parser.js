@@ -10,7 +10,7 @@ var IE_BR_STR = IE_BR_FIX ? '' : '<br />';
 
 QUnit.module('plugins/bbcode#Parser', {
 	beforeEach: function () {
-		this.parser = new sceditor.BBCodeParser({});
+		this.parser = new sceditor.BBCodeParser({ parserOptions: {}});
 	}
 });
 
@@ -67,7 +67,7 @@ QUnit.test('Fix invalid nesting', function (assert) {
 
 QUnit.test('Rename BBCode', function (assert) {
 	sceditor.formats.bbcode.rename('b', 'testbold');
-	this.parser = new sceditor.BBCodeParser({});
+	this.parser = new sceditor.BBCodeParser({ parserOptions: {}});
 
 	assert.ok(
 		!!sceditor.formats.bbcode.get('testbold'),
@@ -140,9 +140,9 @@ QUnit.test('BBCode closed outside block', function (assert) {
 });
 
 QUnit.test('BBCode closed outside block - No children fix', function (assert) {
-	this.parser = new sceditor.BBCodeParser({
+	this.parser = new sceditor.BBCodeParser({ parserOptions: {
 		fixInvalidChildren: false
-	});
+	}});
 
 	assert.equal(
 		this.parser.toBBCode('[b]test[code]test[/b][/code]test[/b]'),
@@ -307,9 +307,9 @@ QUnit.test('Attributes QuoteType.auto', function (assert) {
 		quoteType: null
 	});
 
-	this.parser = new sceditor.BBCodeParser({
+	this.parser = new sceditor.BBCodeParser({ parserOptions: {
 		quoteType: sceditor.BBCodeParser.QuoteType.auto
-	});
+	}});
 
 	assert.equal(
 		this.parser.toBBCode(
@@ -387,9 +387,9 @@ QUnit.test('Attributes QuoteType.never', function (assert) {
 		quoteType: null
 	});
 
-	this.parser = new $.sceditor.BBCodeParser({
+	this.parser = new $.sceditor.BBCodeParser({ parserOptions: {
 		quoteType: $.sceditor.BBCodeParser.QuoteType.never
-	});
+	}});
 
 	assert.equal(
 		this.parser.toBBCode(
@@ -467,9 +467,9 @@ QUnit.test('Attributes QuoteType.always', function (assert) {
 		quoteType: null
 	});
 
-	this.parser = new $.sceditor.BBCodeParser({
+	this.parser = new $.sceditor.BBCodeParser({ parserOptions: {
 		quoteType: $.sceditor.BBCodeParser.QuoteType.always
-	});
+	}});
 
 	assert.equal(
 		this.parser.toBBCode(
@@ -548,13 +548,13 @@ QUnit.test('Attributes QuoteType custom', function (assert) {
 		quoteType: null
 	});
 
-	this.parser = new $.sceditor.BBCodeParser({
+	this.parser = new $.sceditor.BBCodeParser({ parserOptions: {
 		quoteType: function (str) {
 			return '\'' +
 				str.replace('\\', '\\\\').replace('\'', '\\\'') +
 				'\'';
 		}
-	});
+	}});
 
 	assert.equal(
 		this.parser.toBBCode(
@@ -628,7 +628,7 @@ QUnit.test('Attributes QuoteType custom', function (assert) {
 
 QUnit.module('plugins/bbcode#Parser - To HTML', {
 	beforeEach: function () {
-		this.parser = new sceditor.BBCodeParser({});
+		this.parser = new sceditor.BBCodeParser({ parserOptions: {}});
 	}
 });
 
@@ -929,7 +929,7 @@ QUnit.test('YouTube', function (assert) {
 
 QUnit.module('plugins/bbcode#Parser - XSS', {
 	beforeEach: function () {
-		this.parser = new sceditor.BBCodeParser({});
+		this.parser = new sceditor.BBCodeParser({ parserOptions: {}});
 	}
 });
 
