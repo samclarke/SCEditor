@@ -858,4 +858,14 @@ QUnit.test('YouTube', function (assert) {
 		this.htmlToBBCode('<iframe data-youtube-id="xyz"></iframe>'),
 		'[youtube]xyz[/youtube]'
 	);
+
+	assert.equal(
+		this.htmlToBBCode('<iframe data-youtube-id="xyz" data-youtube-start="0"></iframe>'),
+		'[youtube]xyz[/youtube]'
+	);
+
+	assert.equal(
+		this.htmlToBBCode('<iframe data-youtube-id="xyz" data-youtube-start="123"></iframe>'),
+		'[youtube=123]xyz[/youtube]'
+	);
 });

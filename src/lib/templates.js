@@ -87,7 +87,7 @@ var _templates = {
 	youtube:
 		'<iframe {params} ' +
 		'src="https://www.youtube.com/embed/{id}?start={time}" ' +
-		'data-youtube-id="{id}"></iframe>'
+		'data-youtube-id="{id}" data-youtube-start="{time}"></iframe>'
 };
 
 /**

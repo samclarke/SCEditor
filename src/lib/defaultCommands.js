@@ -733,7 +733,8 @@ var defaultCmds = {
 			dom.on(content, 'click', '.button', function (e) {
 				var val = dom.find(content, '#link')[0].value;
 				var idMatch = val.match(/(?:v=|v\/|embed\/|youtu.be\/)(.{11})/);
-				var timeMatch = val.match(/[&|?](?:star)?t=((\d+[hms]?){1,3})/);
+				var timeMatch = val.match(
+					/[&|?](?:t=|start=|time_continue=)((\d+[hms]?){1,3})/);
 				var time = 0;
 
 				if (timeMatch) {

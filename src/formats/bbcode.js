@@ -785,18 +785,30 @@
 			allowsEmpty: true,
 			tags: {
 				iframe: {
-					'data-youtube-id': null
+					'data-youtube-id': null,
+					'data-youtube-start': null
 				}
 			},
 			format: function (element, content) {
-				element = attr(element, 'data-youtube-id');
+				var id = attr(element, 'data-youtube-id');
+				var start = attr(element, 'data-youtube-start');
 
-				return element ? '[youtube]' + element + '[/youtube]' : content;
+				if (start > 0) {
+					return id ? '[youtube=' + start + ']' + id +
+						'[/youtube]' : content;
+				} else {
+					return id ? '[youtube]' + id + '[/youtube]' : content;
+				}
 			},
 			html: function (token, attrs, content) {
+				var start = 0;
+				if (attrs.defaultattr) {
+					start = escapeEntities(attrs.defaultattr);
+				}
+
 				return this.template.render('youtube', {
 					id: content,
-					time: 0,
+					time: start,
 					params: this.options.youtubeParameters
 				});
 			}

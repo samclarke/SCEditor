@@ -935,7 +935,16 @@ QUnit.test('YouTube', function (assert) {
 		this.parser.toHTML('[youtube]xyz[/youtube]'),
 		'<div><iframe width="123" height="456" frameborder="0" allowfullscreen ' +
 			'src="https://www.youtube.com/embed/xyz?start=0" ' +
-			'data-youtube-id="xyz">' +
+			'data-youtube-id="xyz" data-youtube-start="0">' +
+			'</iframe></div>\n',
+		'Normal'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[youtube=321]xyz[/youtube]'),
+		'<div><iframe width="123" height="456" frameborder="0" allowfullscreen ' +
+			'src="https://www.youtube.com/embed/xyz?start=321" ' +
+			'data-youtube-id="xyz" data-youtube-start="321">' +
 			'</iframe></div>\n',
 		'Normal'
 	);
