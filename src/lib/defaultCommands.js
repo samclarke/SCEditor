@@ -1,7 +1,7 @@
 import * as dom from './dom.js';
 import * as utils from './utils.js';
 import { ie as IE_VER } from './browser.js';
-import _tmpl from './templates.js';
+import * as template from './templates.js';
 
 // In IE < 11 a BR at the end of a block level element
 // causes a line break. In all other browsers it's collapsed.
@@ -131,7 +131,7 @@ var defaultCmds = {
 			});
 
 			editor.opts.fonts.split(',').forEach(function (font) {
-				dom.appendChild(content, _tmpl('fontOpt', {
+				dom.appendChild(content, template.render('fontOpt', {
 					font: font
 				}, true));
 			});
@@ -160,7 +160,7 @@ var defaultCmds = {
 			});
 
 			for (var i = 1; i <= 7; i++) {
-				dom.appendChild(content, _tmpl('sizeOpt', {
+				dom.appendChild(content, template.render('sizeOpt', {
 					size: i
 				}, true));
 			}
@@ -259,7 +259,7 @@ var defaultCmds = {
 				content = dom.createElement('div'),
 				editor  = this;
 
-			dom.appendChild(content, _tmpl('pastetext', {
+			dom.appendChild(content, template.render('pastetext', {
 				label: editor._(
 					'Paste your text inside the following box:'
 				),
@@ -377,7 +377,7 @@ var defaultCmds = {
 			var	editor  = this,
 				content = dom.createElement('div');
 
-			dom.appendChild(content, _tmpl('table', {
+			dom.appendChild(content, template.render('table', {
 				rows: editor._('Rows:'),
 				cols: editor._('Cols:'),
 				insert: editor._('Insert')
@@ -435,7 +435,7 @@ var defaultCmds = {
 		_dropDown: function (editor, caller, selected, cb) {
 			var	content = dom.createElement('div');
 
-			dom.appendChild(content, _tmpl('image', {
+			dom.appendChild(content, template.render('image', {
 				url: editor._('URL:'),
 				width: editor._('Width (optional):'),
 				height: editor._('Height (optional):'),
@@ -495,7 +495,7 @@ var defaultCmds = {
 		_dropDown: function (editor, caller, cb) {
 			var	content = dom.createElement('div');
 
-			dom.appendChild(content, _tmpl('email', {
+			dom.appendChild(content, template.render('email', {
 				label: editor._('E-mail:'),
 				desc: editor._('Description (optional):'),
 				insert: editor._('Insert')
@@ -545,7 +545,7 @@ var defaultCmds = {
 		_dropDown: function (editor, caller, cb) {
 			var content = dom.createElement('div');
 
-			dom.appendChild(content, _tmpl('link', {
+			dom.appendChild(content, template.render('link', {
 				url: editor._('URL:'),
 				desc: editor._('Description (optional):'),
 				ins: editor._('Insert')
@@ -725,7 +725,7 @@ var defaultCmds = {
 		_dropDown: function (editor, caller, callback) {
 			var	content = dom.createElement('div');
 
-			dom.appendChild(content, _tmpl('youtubeMenu', {
+			dom.appendChild(content, template.render('youtubeMenu', {
 				label: editor._('Video URL:'),
 				insert: editor._('Insert')
 			}, true));
@@ -758,7 +758,7 @@ var defaultCmds = {
 			var editor = this;
 
 			defaultCmds.youtube._dropDown(editor, btn, function (id, time) {
-				editor.wysiwygEditorInsertHtml(_tmpl('youtube', {
+				editor.wysiwygEditorInsertHtml(template.render('youtube', {
 					id: id,
 					time: time,
 					params: editor.opts.youtubeParameters

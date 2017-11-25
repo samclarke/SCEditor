@@ -793,9 +793,13 @@
 
 				return element ? '[youtube]' + element + '[/youtube]' : content;
 			},
-			html: '<iframe width="560" height="315" frameborder="0" ' +
-				'src="https://www.youtube.com/embed/{0}?wmode=opaque" ' +
-				'data-youtube-id="{0}" allowfullscreen></iframe>'
+			html: function (token, attrs, content) {
+				return this.template.render('youtube', {
+					id: content,
+					time: 0,
+					params: this.options.youtubeParameters
+				});
+			}
 		},
 		// END_COMMAND
 
@@ -1028,16 +1032,18 @@
 	 * SCEditor BBCode parser class
 	 *
 	 * @param {Object} Editor options
+	 * @param {Object} Editor template
 	 * @class BBCodeParser
 	 * @name BBCodeParser
 	 * @since v1.4.0
 	 */
-	function BBCodeParser(options) {
+	function BBCodeParser(options, template) {
 		var base = this;
 
-		base.editorOptions = options;
+		base.options = options;
 		base.parserOptions = extend({}, BBCodeParser.defaults,
 			options.parserOptions);
+		base.template = template;
 
 		/**
 		 * Takes a BBCode string and splits it into open,
@@ -2530,7 +2536,8 @@
 		 * @private
 		 */
 		base.init = function () {
-			base.opts = this.opts;
+			base.options = this.opts;
+			base.template = this.template;
 			base.elementToBbcode = elementToBbcode;
 
 			// build the BBCode cache
@@ -2553,9 +2560,9 @@
 		 * @param {boolean} [legacyAsFragment] Used by fromBBCode() method
 		 */
 		function toHtml(asFragment, source, legacyAsFragment) {
-			var	parser = new BBCodeParser(base.opts);
+			var	parser = new BBCodeParser(base.options, base.template);
 			var html = parser.toHTML(
-				base.opts.bbcodeTrim ? source.trim() : source
+				base.options.bbcodeTrim ? source.trim() : source
 			);
 
 			return (asFragment || legacyAsFragment) ?
@@ -2578,7 +2585,7 @@
 			var	bbcode, elements;
 			var containerParent = context.createElement('div');
 			var container = context.createElement('div');
-			var parser = new BBCodeParser(base.opts);
+			var parser = new BBCodeParser(base.options, base.template);
 
 			container.innerHTML = html;
 			css(containerParent, 'visibility', 'hidden');
@@ -2614,7 +2621,7 @@
 
 			bbcode = parser.toBBCode(bbcode, true);
 
-			if (base.opts.bbcodeTrim) {
+			if (base.options.bbcodeTrim) {
 				bbcode = bbcode.trim();
 			}
 
