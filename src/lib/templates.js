@@ -39,6 +39,12 @@ var _templates = {
 	sizeOpt: '<a class="sceditor-fontsize-option" data-size="{size}" ' +
 		'href="#"><font size="{size}">{size}</font></a>',
 
+	ulistTypeOpt: '<a class="sceditor-listtype-option" data-type="{type}" ' +
+		'href="#"><ul style="list-style-type:{type}"><li>{text}</li></ul></a>',
+
+	olistTypeOpt: '<a class="sceditor-listtype-option" data-type="{type}" ' +
+		'href="#">{text}</a>',
+
 	pastetext:
 		'<div><label for="txt">{label}</label> ' +
 			'<textarea cols="20" rows="7" id="txt"></textarea></div>' +

@@ -284,18 +284,76 @@ var defaultCmds = {
 	// END_COMMAND
 	// START_COMMAND: Bullet List
 	bulletlist: {
-		exec: function () {
-			fixFirefoxListBug(this);
-			this.execCommand('insertunorderedlist');
+		_dropDown: function (editor, caller, callback) {
+			var	content = dom.createElement('div');
+
+			dom.on(content, 'click', 'a', function (e) {
+				callback(dom.data(this, 'type'));
+				editor.closeDropDown(true);
+				e.preventDefault();
+			});
+
+			dom.appendChild(content, _tmpl('ulistTypeOpt',
+				{ type: 'disc', text: 'Point' }, true));
+			dom.appendChild(content, _tmpl('ulistTypeOpt',
+				{ type: 'circle', text: 'Circle' }, true));
+			dom.appendChild(content, _tmpl('ulistTypeOpt',
+				{ type: 'square', text: 'Square' }, true));
+
+			editor.createDropDown(caller, 'listtype-picker', content);
+		},
+		exec: function (caller) {
+			var	editor  = this;
+
+			defaultCmds.bulletlist._dropDown(editor, caller, function (type) {
+				fixFirefoxListBug(this);
+				editor.wysiwygEditorInsertHtml(
+					'<ul style="list-style-type:' + type +
+					'"><li><br></li></ul>'
+				);
+			});
 		},
 		tooltip: 'Bullet list'
 	},
 	// END_COMMAND
 	// START_COMMAND: Ordered List
 	orderedlist: {
-		exec: function () {
-			fixFirefoxListBug(this);
-			this.execCommand('insertorderedlist');
+		_dropDown: function (editor, caller, callback) {
+			var	content = dom.createElement('div');
+
+			dom.on(content, 'click', 'a', function (e) {
+				callback(dom.data(this, 'type'));
+				editor.closeDropDown(true);
+				e.preventDefault();
+			});
+
+			dom.appendChild(content, _tmpl('olistTypeOpt',
+				{ type: '1', text: 'Decimal numbers (1, 2, 3, 4)' }, true
+			));
+			dom.appendChild(content, _tmpl('olistTypeOpt',
+				{ type: 'a', text: 'Alphabetic lowercase (a, b, c, d)' }, true
+			));
+			dom.appendChild(content, _tmpl('olistTypeOpt',
+				{ type: 'A', text: 'Alphabetic uppercase (A, B, C, D)' }, true
+			));
+			dom.appendChild(content, _tmpl('olistTypeOpt',
+				{ type: 'i', text: 'Roman lowercase (i, ii, iii, iv)' }, true
+			));
+			dom.appendChild(content, _tmpl('olistTypeOpt',
+				{ type: 'I', text: 'Roman uppercase (I, II, III, IV)' }, true
+			));
+
+			editor.createDropDown(caller, 'listtype-picker', content);
+		},
+		exec: function (caller) {
+			var	editor  = this;
+
+			defaultCmds.orderedlist._dropDown(editor, caller, function (type) {
+				fixFirefoxListBug(this);
+				editor.wysiwygEditorInsertHtml(
+					'<ol type="' + type + '"><li><br></li></ol>'
+				);
+			});
 		},
 		tooltip: 'Numbered list'
 	},
