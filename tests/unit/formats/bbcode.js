@@ -571,55 +571,64 @@ QUnit.test('colour', function (assert) {
 
 QUnit.test('List', function (assert) {
 	assert.equal(
-		this.htmlToBBCode('<ul style="list-style-type:disc"><li>test' + IE_BR_STR + '</li></ul>'),
+		this.htmlToBBCode('<ul style="list-style-type:disc"><li>test' +
+			IE_BR_STR + '</li></ul>'),
 		'[ul]\n[li]test[/li]\n[/ul]\n',
 		'UL tag, disc type'
 	);
 
 	assert.equal(
-		this.htmlToBBCode('<ul style="list-style-type:circle"><li>test' + IE_BR_STR + '</li></ul>'),
+		this.htmlToBBCode('<ul style="list-style-type:circle"><li>test' +
+			IE_BR_STR + '</li></ul>'),
 		'[ul=circle]\n[li]test[/li]\n[/ul]\n',
 		'UL tag, circle type'
 	);
 
 	assert.equal(
-		this.htmlToBBCode('<ul style="list-style-type:square"><li>test' + IE_BR_STR + '</li></ul>'),
+		this.htmlToBBCode('<ul style="list-style-type:square"><li>test' +
+			IE_BR_STR + '</li></ul>'),
 		'[ul=square]\n[li]test[/li]\n[/ul]\n',
 		'UL tag, square type'
 	);
 
 	assert.equal(
-		this.htmlToBBCode('<ul style="list-style-type:none"><li>test' + IE_BR_STR + '</li></ul>'),
+		this.htmlToBBCode('<ul style="list-style-type:none"><li>test' +
+			IE_BR_STR + '</li></ul>'),
 		'[ul=none]\n[li]test[/li]\n[/ul]\n',
 		'UL tag, none type'
 	);
 
 	assert.equal(
-		this.htmlToBBCode('<ol type="1"><li>test' + IE_BR_STR + '</li></ol>'),
+		this.htmlToBBCode('<ol style="list-style-type:decimal" ' +
+			'data-tagtype="1"><li>test' + IE_BR_STR + '</li></ol>'),
 		'[ol]\n[li]test[/li]\n[/ol]\n',
 		'OL tag, type="1"'
 	);
 
 	assert.equal(
-		this.htmlToBBCode('<ol type="A"><li>test' + IE_BR_STR + '</li></ol>'),
+		this.htmlToBBCode('<ol style="list-style-type:upper-alpha" ' +
+			'data-tagtype="A"><li>test' + IE_BR_STR + '</li></ol>'),
 		'[ol=A]\n[li]test[/li]\n[/ol]\n',
 		'OL tag, type="A"'
 	);
 
 	assert.equal(
-		this.htmlToBBCode('<ol type="a"><li>test' + IE_BR_STR + '</li></ol>'),
+		this.htmlToBBCode('<ol style="list-style-type:lower-alpha" ' +
+			'data-tagtype="a"><li>test' + IE_BR_STR + '</li></ol>'),
 		'[ol=a]\n[li]test[/li]\n[/ol]\n',
 		'OL tag, type="a"'
 	);
 
 	assert.equal(
-		this.htmlToBBCode('<ol type="I"><li>test' + IE_BR_STR + '</li></ol>'),
+		this.htmlToBBCode('<ol style="list-style-type:upper-roman" ' +
+			'data-tagtype="I"><li>test' + IE_BR_STR + '</li></ol>'),
 		'[ol=I]\n[li]test[/li]\n[/ol]\n',
 		'OL tag, type="I"'
 	);
 
 	assert.equal(
-		this.htmlToBBCode('<ol type="i"><li>test' + IE_BR_STR + '</li></ol>'),
+		this.htmlToBBCode('<ol style="list-style-type:lower-roman" ' +
+			'data-tagtype="i"><li>test' + IE_BR_STR + '</li></ol>'),
 		'[ol=i]\n[li]test[/li]\n[/ol]\n',
 		'OL tag, type="i"'
 	);

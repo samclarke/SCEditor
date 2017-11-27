@@ -324,38 +324,57 @@ var defaultCmds = {
 			var	content = dom.createElement('div');
 
 			dom.on(content, 'click', 'a', function (e) {
-				callback(dom.data(this, 'type'));
+				callback(dom.data(this, 'tagtype'),
+					dom.data(this, 'styletype'));
 				editor.closeDropDown(true);
 				e.preventDefault();
 			});
 
 			dom.appendChild(content, _tmpl('olistTypeOpt',
-				{ type: '1', text: 'Decimal numbers (1, 2, 3, 4)' }, true
-			));
+				{
+					tagType: '1',
+					styleType: 'decimal',
+					text: 'Decimal numbers (1, 2, 3, 4)'
+				}, true));
 			dom.appendChild(content, _tmpl('olistTypeOpt',
-				{ type: 'a', text: 'Alphabetic lowercase (a, b, c, d)' }, true
-			));
+				{
+					tagType: 'a',
+					styleType: 'lower-alpha',
+					text: 'Alphabetic lowercase (a, b, c, d)'
+				}, true));
 			dom.appendChild(content, _tmpl('olistTypeOpt',
-				{ type: 'A', text: 'Alphabetic uppercase (A, B, C, D)' }, true
-			));
+				{
+					tagType: 'A',
+					styleType: 'upper-alpha',
+					text: 'Alphabetic uppercase (A, B, C, D)'
+				}, true));
 			dom.appendChild(content, _tmpl('olistTypeOpt',
-				{ type: 'i', text: 'Roman lowercase (i, ii, iii, iv)' }, true
-			));
+				{
+					tagType: 'i',
+					styleType: 'lower-roman',
+					text: 'Roman lowercase (i, ii, iii, iv)'
+				}, true));
 			dom.appendChild(content, _tmpl('olistTypeOpt',
-				{ type: 'I', text: 'Roman uppercase (I, II, III, IV)' }, true
-			));
+				{
+					tagType: 'I',
+					styleType: 'upper-roman',
+					text: 'Roman uppercase (I, II, III, IV)'
+				}, true));
 
 			editor.createDropDown(caller, 'listtype-picker', content);
 		},
 		exec: function (caller) {
 			var	editor  = this;
 
-			defaultCmds.orderedlist._dropDown(editor, caller, function (type) {
-				fixFirefoxListBug(this);
-				editor.wysiwygEditorInsertHtml(
-					'<ol type="' + type + '"><li><br></li></ol>'
-				);
-			});
+			defaultCmds.orderedlist._dropDown(editor, caller,
+				function (tagType, styleType) {
+					fixFirefoxListBug(this);
+					editor.wysiwygEditorInsertHtml(
+						'<ol style="list-style-type:' + styleType +
+						'" data-tagtype="' + tagType + '"><li><br></li></ol>'
+					);
+				}
+			);
 		},
 		tooltip: 'Numbered list'
 	},

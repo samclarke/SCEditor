@@ -170,19 +170,19 @@
 				getEditorCommand('orderedlist')._dropDown(
 					editor,
 					caller,
-					function (listType) {
+					function (tagType) {
 						selected.split(/\r?\n/).forEach(function (item) {
 							content += (content ? '\n' : '') +
 								'[li]' + item + '[/li]';
 						});
 
-						if (listType === '1') {
+						if (tagType === '1') {
 							editor.insertText(
 								'[ol]\n' + content + '\n[/ol]'
 							);
 						} else {
 							editor.insertText(
-								'[ol=' + listType + ']\n' + content + '\n[/ol]'
+								'[ol=' + tagType + ']\n' + content + '\n[/ol]'
 							);
 						}
 					}
@@ -473,8 +473,14 @@
 			isInline: false,
 			skipLastLineBreak: true,
 			format: function (element, content) {
-				var	listType = element.style['list-style-type'];
+				var tag = element.nodeName.toLowerCase();
+				var listType = element.style['list-style-type'];
 				var validTypes = ['disc', 'circle', 'square', 'none'];
+
+				// That call is not for this tag, skip it
+				if (tag !== 'ul') {
+					return content;
+				}
 
 				if (listType && listType !== 'disc' &&
 					validTypes.indexOf(listType) > -1) {
@@ -503,37 +509,50 @@
 			html: '<ul>{0}</ul>'
 		},
 		ol: {
-			tags: {
-				ol: null
+			styles: {
+				'list-style-type': null
 			},
 			breakStart: true,
 			isInline: false,
 			skipLastLineBreak: true,
 			format: function (element, content) {
-				var	listType = attr(element, 'type');
+				var tag = element.nodeName.toLowerCase();
+				var tagType = attr(element, 'data-tagtype');
 				var validTypes = ['1', 'A', 'a', 'I', 'i'];
 
-				if (listType && listType !== '1' &&
-					validTypes.indexOf(listType) > -1) {
-					return '[ol=' + listType + ']' + content + '[/ol]';
+				// That call is not for this tag, skip it
+				if (tag !== 'ol') {
+					return content;
+				}
+
+				if (tagType && tagType !== '1' &&
+					validTypes.indexOf(tagType) > -1) {
+					return '[ol=' + tagType + ']' + content + '[/ol]';
 				} else {
 					return '[ol]' + content + '[/ol]';
 				}
 			},
 			html: function (token, attrs, content) {
-				var listType = '1';
+				var tagType = '1';
+				var styleType = 'decimal';
 				var validTypes = ['1', 'A', 'a', 'I', 'i'];
 				var attr = attrs.defaultattr;
 
 				if (attr && validTypes.indexOf(attr) > -1) {
-					listType = attr;
+					tagType = attr;
 				}
 
-				if (listType === '1') {
-					return '<ol>' + content + '</ol>';
-				} else {
-					return '<ol type="' + listType + '">' + content + '</ol>';
+				switch (tagType) {
+					case '1': styleType = 'decimal'; break;
+					case 'A': styleType = 'upper-alpha'; break;
+					case 'a': styleType = 'lower-alpha'; break;
+					case 'I': styleType = 'upper-roman'; break;
+					case 'i': styleType = 'lower-roman'; break;
+					default: styleType = 'decimal'; break;
 				}
+
+				return '<ol style="list-style-type:' + styleType + '" ' +
+					'data-tagtype="' + tagType + '">' + content + '</ol>';
 			}
 		},
 		li: {
