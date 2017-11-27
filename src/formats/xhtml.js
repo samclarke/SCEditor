@@ -100,7 +100,26 @@
 			}
 		},
 		bulletlist: {
-			txtExec: ['<ul><li>', '</li></ul>']
+			txtExec: function (caller, selected) {
+				var editor = this;
+				var content = '';
+
+				getEditorCommand('bulletlist')._dropDown(
+					editor,
+					caller,
+					function (listType) {
+						selected.split(/\r?\n/).forEach(function (item) {
+							content += (content ? '\n' : '') +
+								'<li>' + item + '</li>';
+						});
+
+						editor.insertText(
+							'<ul style="list-style-type:' + listType + '">' +
+							content + '</ul>'
+						);
+					}
+				);
+			}
 		},
 		orderedlist: {
 			txtExec: ['<ol><li>', '</li></ol>']
