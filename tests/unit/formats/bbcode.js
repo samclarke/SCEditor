@@ -589,6 +589,12 @@ QUnit.test('List', function (assert) {
 	);
 
 	assert.equal(
+		this.htmlToBBCode('<ul style="list-style-type:none"><li>test' + IE_BR_STR + '</li></ul>'),
+		'[ul=none]\n[li]test[/li]\n[/ul]\n',
+		'UL tag, none type'
+	);
+
+	assert.equal(
 		this.htmlToBBCode('<ol><li>test' + IE_BR_STR + '</li></ol>'),
 		'[ol]\n[li]test[/li]\n[/ol]\n',
 		'OL tag'

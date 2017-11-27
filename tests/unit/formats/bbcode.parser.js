@@ -752,6 +752,12 @@ QUnit.test('List', function (assert) {
 	);
 
 	assert.htmlEqual(
+		this.parser.toHTML('[ul=none][li]test[/li][/ul]'),
+		'<ul style="list-style-type:none"><li>test' + IE_BR_STR + '</li></ul>',
+		'UL, none type'
+	);
+
+	assert.htmlEqual(
 		this.parser.toHTML('[ul=zzz][li]test[/li][/ul]'),
 		'<ul style="list-style-type:disc"><li>test' + IE_BR_STR + '</li></ul>',
 		'UL, unknown type'

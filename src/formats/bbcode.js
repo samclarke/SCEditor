@@ -149,9 +149,15 @@
 								'[li]' + item + '[/li]';
 						});
 
-						editor.insertText(
-							'[ul=' + listType + ']\n' + content + '\n[/ul]'
-						);
+						if (listType === 'disc') {
+							editor.insertText(
+								'[ul]\n' + content + '\n[/ul]'
+							);
+						} else {
+							editor.insertText(
+								'[ul=' + listType + ']\n' + content + '\n[/ul]'
+							);
+						}
 					}
 				);
 			}
@@ -453,7 +459,7 @@
 			skipLastLineBreak: true,
 			format: function (element, content) {
 				var	listType = element.style['list-style-type'];
-				var validTypes = ['disc', 'circle', 'square'];
+				var validTypes = ['disc', 'circle', 'square', 'none'];
 
 				if (listType && listType !== 'disc' &&
 					validTypes.indexOf(listType) > -1) {
@@ -464,7 +470,7 @@
 			},
 			html: function (token, attrs, content) {
 				var listType = 'disc';
-				var validTypes = ['disc', 'circle', 'square'];
+				var validTypes = ['disc', 'circle', 'square', 'none'];
 				var attr = attrs.defaultattr;
 
 				if (attr && validTypes.indexOf(attr) > -1) {

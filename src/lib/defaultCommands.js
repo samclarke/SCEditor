@@ -294,11 +294,13 @@ var defaultCmds = {
 			});
 
 			dom.appendChild(content, _tmpl('ulistTypeOpt',
-				{ type: 'disc', text: 'Point' }, true));
+				{ type: 'disc', text: 'Bullet' }, true));
 			dom.appendChild(content, _tmpl('ulistTypeOpt',
 				{ type: 'circle', text: 'Circle' }, true));
 			dom.appendChild(content, _tmpl('ulistTypeOpt',
 				{ type: 'square', text: 'Square' }, true));
+			dom.appendChild(content, _tmpl('ulistTypeOpt',
+				{ type: 'none', text: 'None' }, true));
 
 			editor.createDropDown(caller, 'listtype-picker', content);
 		},
