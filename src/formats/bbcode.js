@@ -164,14 +164,29 @@
 		},
 		orderedlist: {
 			txtExec: function (caller, selected) {
+				var editor = this;
 				var content = '';
 
-				each(selected.split(/\r?\n/), function () {
-					content += (content ? '\n' : '') +
-						'[li]' + this + '[/li]';
-				});
+				getEditorCommand('orderedlist')._dropDown(
+					editor,
+					caller,
+					function (listType) {
+						selected.split(/\r?\n/).forEach(function (item) {
+							content += (content ? '\n' : '') +
+								'[li]' + item + '[/li]';
+						});
 
-				this.insertText('[ol]\n' + content + '\n[/ol]');
+						if (listType === '1') {
+							editor.insertText(
+								'[ol]\n' + content + '\n[/ol]'
+							);
+						} else {
+							editor.insertText(
+								'[ol=' + listType + ']\n' + content + '\n[/ol]'
+							);
+						}
+					}
+				);
 			}
 		},
 		table: {
@@ -494,8 +509,32 @@
 			breakStart: true,
 			isInline: false,
 			skipLastLineBreak: true,
-			format: '[ol]{0}[/ol]',
-			html: '<ol>{0}</ol>'
+			format: function (element, content) {
+				var	listType = attr(element, 'type');
+				var validTypes = ['1', 'A', 'a', 'I', 'i'];
+
+				if (listType && listType !== '1' &&
+					validTypes.indexOf(listType) > -1) {
+					return '[ol=' + listType + ']' + content + '[/ol]';
+				} else {
+					return '[ol]' + content + '[/ol]';
+				}
+			},
+			html: function (token, attrs, content) {
+				var listType = '1';
+				var validTypes = ['1', 'A', 'a', 'I', 'i'];
+				var attr = attrs.defaultattr;
+
+				if (attr && validTypes.indexOf(attr) > -1) {
+					listType = attr;
+				}
+
+				if (listType === '1') {
+					return '<ol>' + content + '</ol>';
+				} else {
+					return '<ol type="' + listType + '">' + content + '</ol>';
+				}
+			}
 		},
 		li: {
 			tags: {

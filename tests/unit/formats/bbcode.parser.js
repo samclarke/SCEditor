@@ -766,7 +766,37 @@ QUnit.test('List', function (assert) {
 	assert.htmlEqual(
 		this.parser.toHTML('[ol][li]test[/li][/ol]'),
 		'<ol><li>test' + IE_BR_STR + '</li></ol>',
-		'OL'
+		'OL no type'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ol=1][li]test[/li][/ol]'),
+		'<ol><li>test' + IE_BR_STR + '</li></ol>',
+		'OL, type="1"'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ol=A][li]test[/li][/ol]'),
+		'<ol type="A"><li>test' + IE_BR_STR + '</li></ol>',
+		'OL, type="A"'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ol=a][li]test[/li][/ol]'),
+		'<ol type="a"><li>test' + IE_BR_STR + '</li></ol>',
+		'OL, type="a"'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ol=I][li]test[/li][/ol]'),
+		'<ol type="I"><li>test' + IE_BR_STR + '</li></ol>',
+		'OL, type="I"'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ol=i][li]test[/li][/ol]'),
+		'<ol type="i"><li>test' + IE_BR_STR + '</li></ol>',
+		'OL, type="i"'
 	);
 
 	assert.htmlEqual(
