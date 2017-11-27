@@ -122,7 +122,32 @@
 			}
 		},
 		orderedlist: {
-			txtExec: ['<ol><li>', '</li></ol>']
+			txtExec: function (caller, selected) {
+				var editor = this;
+				var content = '';
+
+				getEditorCommand('orderedlist')._dropDown(
+					editor,
+					caller,
+					function (listType) {
+						selected.split(/\r?\n/).forEach(function (item) {
+							content += (content ? '\n' : '') +
+								'<li>' + item + '</li>';
+						});
+
+						if (listType === '1') {
+							editor.insertText(
+								'<ol>' + content + '</ol>'
+							);
+						} else {
+							editor.insertText(
+								'<ol type="' + listType + '">' + content +
+								'</ol>'
+							);
+						}
+					}
+				);
+			}
 		},
 		table: {
 			txtExec: ['<table><tr><td>', '</td></tr></table>']
