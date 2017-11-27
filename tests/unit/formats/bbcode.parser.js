@@ -729,8 +729,32 @@ QUnit.test('Font colour', function (assert) {
 QUnit.test('List', function (assert) {
 	assert.htmlEqual(
 		this.parser.toHTML('[ul][li]test[/li][/ul]'),
-		'<ul><li>test' + IE_BR_STR + '</li></ul>',
-		'UL'
+		'<ul style="list-style-type:disc"><li>test' + IE_BR_STR + '</li></ul>',
+		'UL, no type'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ul=disc][li]test[/li][/ul]'),
+		'<ul style="list-style-type:disc"><li>test' + IE_BR_STR + '</li></ul>',
+		'UL, disc type'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ul=circle][li]test[/li][/ul]'),
+		'<ul style="list-style-type:circle"><li>test' + IE_BR_STR + '</li></ul>',
+		'UL, circle type'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ul=square][li]test[/li][/ul]'),
+		'<ul style="list-style-type:square"><li>test' + IE_BR_STR + '</li></ul>',
+		'UL, square type'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ul=zzz][li]test[/li][/ul]'),
+		'<ul style="list-style-type:disc"><li>test' + IE_BR_STR + '</li></ul>',
+		'UL, unknown type'
 	);
 
 	assert.htmlEqual(
@@ -740,8 +764,10 @@ QUnit.test('List', function (assert) {
 	);
 
 	assert.htmlEqual(
-		this.parser.toHTML('[ul][li]test[ul][li]sub[/li][/ul][/li][/ul]'),
-		'<ul><li>test<ul><li>sub' + IE_BR_STR + '</li></ul></li></ul>',
+		this.parser.toHTML('[ul][li]test[ul=circle][li]sub[/li][/ul][/li][/ul]'),
+		'<ul style="list-style-type:disc"><li>test' +
+		'<ul style="list-style-type:circle"><li>sub' + IE_BR_STR +
+		'</li></ul></li></ul>',
 		'Nested UL'
 	);
 });

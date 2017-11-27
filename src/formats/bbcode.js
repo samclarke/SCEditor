@@ -137,14 +137,23 @@
 		},
 		bulletlist: {
 			txtExec: function (caller, selected) {
+				var editor = this;
 				var content = '';
 
-				each(selected.split(/\r?\n/), function () {
-					content += (content ? '\n' : '') +
-						'[li]' + this + '[/li]';
-				});
+				getEditorCommand('bulletlist')._dropDown(
+					editor,
+					caller,
+					function (listType) {
+						selected.split(/\r?\n/).forEach(function (item) {
+							content += (content ? '\n' : '') +
+								'[li]' + item + '[/li]';
+						});
 
-				this.insertText('[ul]\n' + content + '\n[/ul]');
+						editor.insertText(
+							'[ul=' + listType + ']\n' + content + '\n[/ul]'
+						);
+					}
+				);
 			}
 		},
 		orderedlist: {
@@ -436,14 +445,35 @@
 
 		// START_COMMAND: Lists
 		ul: {
-			tags: {
-				ul: null
+			styles: {
+				'list-style-type': null
 			},
 			breakStart: true,
 			isInline: false,
 			skipLastLineBreak: true,
-			format: '[ul]{0}[/ul]',
-			html: '<ul>{0}</ul>'
+			format: function (element, content) {
+				var	listType = element.style['list-style-type'];
+				var validTypes = ['disc', 'circle', 'square'];
+
+				if (listType && listType !== 'disc' &&
+					validTypes.indexOf(listType) > -1) {
+					return '[ul=' + listType + ']' + content + '[/ul]';
+				} else {
+					return '[ul]' + content + '[/ul]';
+				}
+			},
+			html: function (token, attrs, content) {
+				var listType = 'disc';
+				var validTypes = ['disc', 'circle', 'square'];
+				var attr = attrs.defaultattr;
+
+				if (attr && validTypes.indexOf(attr) > -1) {
+					listType = attr;
+				}
+
+				return '<ul style="list-style-type:' + listType + '">' +
+					content + '</ul>';
+			}
 		},
 		list: {
 			breakStart: true,

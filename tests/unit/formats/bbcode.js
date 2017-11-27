@@ -253,7 +253,7 @@ QUnit.test('New line handling', function (assert) {
 		this.htmlToBBCode(
 			'<div>text</div>' +
 			'<div>' + IE_BR_STR + '</div>' +
-			'<ul><li>text</li></ul>'
+			'<ul style="list-style-type:disc"><li>text</li></ul>'
 		),
 		'text\n\n[ul]\n[li]text[/li]\n[/ul]\n',
 		'Div siblings with a list'
@@ -264,7 +264,7 @@ QUnit.test('New line handling', function (assert) {
 			'<div>text</div>' +
 			'<div>' + IE_BR_STR + '</div>' +
 			'<div>' + IE_BR_STR + '</div>' +
-			'<ul><li>text</li></ul>'
+			'<ul style="list-style-type:disc"><li>text</li></ul>'
 		),
 		'text\n\n\n[ul]\n[li]text[/li]\n[/ul]\n',
 		'Multiple div siblings with a list'
@@ -284,7 +284,7 @@ QUnit.test('New line handling', function (assert) {
 
 	assert.equal(
 		this.htmlToBBCode(
-			'<ul><li>newline<br />' + IE_BR_STR + '</li></ul>'
+			'<ul style="list-style-type:disc"><li>newline<br />' + IE_BR_STR + '</li></ul>'
 		),
 		'[ul]\n[li]newline\n[/li]\n[/ul]\n',
 		'List item last child block level'
@@ -571,9 +571,21 @@ QUnit.test('colour', function (assert) {
 
 QUnit.test('List', function (assert) {
 	assert.equal(
-		this.htmlToBBCode('<ul><li>test' + IE_BR_STR + '</li></ul>'),
+		this.htmlToBBCode('<ul style="list-style-type:disc"><li>test' + IE_BR_STR + '</li></ul>'),
 		'[ul]\n[li]test[/li]\n[/ul]\n',
-		'UL tag'
+		'UL tag, disc type'
+	);
+
+	assert.equal(
+		this.htmlToBBCode('<ul style="list-style-type:circle"><li>test' + IE_BR_STR + '</li></ul>'),
+		'[ul=circle]\n[li]test[/li]\n[/ul]\n',
+		'UL tag, circle type'
+	);
+
+	assert.equal(
+		this.htmlToBBCode('<ul style="list-style-type:square"><li>test' + IE_BR_STR + '</li></ul>'),
+		'[ul=square]\n[li]test[/li]\n[/ul]\n',
+		'UL tag, square type'
 	);
 
 	assert.equal(
@@ -584,15 +596,15 @@ QUnit.test('List', function (assert) {
 
 	assert.equal(
 		this.htmlToBBCode(
-			'<ul>' +
+			'<ul style="list-style-type:disc">' +
 				'<li>test' +
-					'<ul>' +
+					'<ul style="list-style-type:circle">' +
 						'<li>sub' + IE_BR_STR + '</li>' +
 					'</ul>' +
 				'</li>' +
 			'</ul>'
 		),
-		'[ul]\n[li]test\n[ul]\n[li]sub[/li]\n[/ul]\n[/li]\n[/ul]\n',
+		'[ul]\n[li]test\n[ul=circle]\n[li]sub[/li]\n[/ul]\n[/li]\n[/ul]\n',
 		'Nested UL tag'
 	);
 });
