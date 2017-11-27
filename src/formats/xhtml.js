@@ -129,20 +129,20 @@
 				getEditorCommand('orderedlist')._dropDown(
 					editor,
 					caller,
-					function (listType) {
+					function (tagType, styleType) {
 						selected.split(/\r?\n/).forEach(function (item) {
 							content += (content ? '\n' : '') +
 								'<li>' + item + '</li>';
 						});
 
-						if (listType === '1') {
+						if (styleType === 'decimal') {
 							editor.insertText(
 								'<ol>' + content + '</ol>'
 							);
 						} else {
 							editor.insertText(
-								'<ol type="' + listType + '">' + content +
-								'</ol>'
+								'<ol style="list-style-type:' + styleType +
+								'">' + content + '</ol>'
 							);
 						}
 					}
@@ -1199,6 +1199,16 @@
 			},
 			conv: function (node) {
 				node.parentNode.removeChild(node);
+			}
+		},
+		{
+			tags: {
+				ol: {
+					'data-tagtype': null
+				}
+			},
+			conv: function (node) {
+				removeAttr(node, 'data-tagtype');
 			}
 		}
 	];

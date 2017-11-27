@@ -42,7 +42,8 @@ var _templates = {
 	ulistTypeOpt: '<a class="sceditor-listtype-option" data-type="{type}" ' +
 		'href="#"><ul style="list-style-type:{type}"><li>{text}</li></ul></a>',
 
-	olistTypeOpt: '<a class="sceditor-listtype-option" data-type="{type}" ' +
+	olistTypeOpt: '<a class="sceditor-listtype-option" ' +
+		'data-styletype="{styleType}" data-tagtype="{tagType}" ' +
 		'href="#">{text}</a>',
 
 	pastetext:
