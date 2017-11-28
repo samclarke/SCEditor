@@ -1,5 +1,5 @@
-import * as dom from './dom';
-import * as escape from './escape';
+import * as dom from './dom.js';
+import * as escape from './escape.js';
 
 
 /**

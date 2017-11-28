@@ -1,4 +1,4 @@
-import { attr } from './dom';
+import { attr } from './dom.js';
 
 /**
  * Default options for SCEditor
