@@ -2,6 +2,8 @@ Version 2.1.1:
 	Fix emoticonsRoot not updating the dropdown menu path.
 	Make Numeric and URL fields be LTR, even in RTL mode.
 		- Thanks to @abetis for updating
+	Fix issue with spaces sometimes being removed when switching to BBCode.
+		- Thanks to @abetis for reporting
 	Fix issue with including SCEditor as an ES6 module in browsers.
 
 Version 2.1.0:
