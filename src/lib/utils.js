@@ -68,7 +68,8 @@ export function extend(targetArg, sourceArg) {
 			// Skip undefined values to match jQuery and
 			// skip if target to prevent infinite loop
 			if (!isUndefined(value)) {
-				var isObject = value !== null && typeof value === 'object';
+				var isObject = value !== null && typeof value === 'object' &&
+					Object.getPrototypeOf(value) === Object.prototype;
 				var isArray = Array.isArray(value);
 
 				if (isDeep && (isObject || isArray)) {
