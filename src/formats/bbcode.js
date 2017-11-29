@@ -18,6 +18,8 @@
 	var escapeUriScheme = sceditor.escapeUriScheme;
 	var dom             = sceditor.dom;
 	var utils           = sceditor.utils;
+	var templates	    = sceditor._tmpl;
+	var options			= sceditor.options;
 
 	var css    = dom.css;
 	var attr   = dom.attr;
