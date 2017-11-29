@@ -85,9 +85,9 @@ var _templates = {
 			'</div>',
 
 	youtube:
-		'<iframe width="560" height="315" frameborder="0" allowfullscreen' +
-		'src="https://www.youtube.com/embed/{id}?wmode=opaque&start={time}" ' +
-		'data-youtube-id="{id}"></iframe>'
+		'<iframe {params} ' +
+		'src="https://www.youtube.com/embed/{id}?start={time}" ' +
+		'data-youtube-id="{id}" data-youtube-start="{time}"></iframe>'
 };
 
 /**
@@ -102,7 +102,7 @@ var _templates = {
  * @returns {string|DocumentFragment}
  * @private
  */
-export default function (name, params, createHtml) {
+export function render(name, params, createHtml) {
 	var template = _templates[name];
 
 	Object.keys(params).forEach(function (name) {

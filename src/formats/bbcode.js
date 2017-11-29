@@ -785,17 +785,33 @@
 			allowsEmpty: true,
 			tags: {
 				iframe: {
-					'data-youtube-id': null
+					'data-youtube-id': null,
+					'data-youtube-start': null
 				}
 			},
 			format: function (element, content) {
-				element = attr(element, 'data-youtube-id');
+				var id = attr(element, 'data-youtube-id');
+				var start = attr(element, 'data-youtube-start');
 
-				return element ? '[youtube]' + element + '[/youtube]' : content;
+				if (start > 0) {
+					return id ? '[youtube=' + start + ']' + id +
+						'[/youtube]' : content;
+				} else {
+					return id ? '[youtube]' + id + '[/youtube]' : content;
+				}
 			},
-			html: '<iframe width="560" height="315" frameborder="0" ' +
-				'src="https://www.youtube.com/embed/{0}?wmode=opaque" ' +
-				'data-youtube-id="{0}" allowfullscreen></iframe>'
+			html: function (token, attrs, content) {
+				var start = 0;
+				if (attrs.defaultattr) {
+					start = escapeEntities(attrs.defaultattr);
+				}
+
+				return this.template.render('youtube', {
+					id: content,
+					time: start,
+					params: this.options.youtubeParameters
+				});
+			}
 		},
 		// END_COMMAND
 
@@ -1027,15 +1043,19 @@
 	/**
 	 * SCEditor BBCode parser class
 	 *
-	 * @param {Object} options
+	 * @param {Object} Editor options
+	 * @param {Object} Editor template
 	 * @class BBCodeParser
 	 * @name BBCodeParser
 	 * @since v1.4.0
 	 */
-	function BBCodeParser(options) {
+	function BBCodeParser(options, template) {
 		var base = this;
 
-		base.opts = extend({}, BBCodeParser.defaults, options);
+		base.options = options;
+		base.parserOptions = extend({}, BBCodeParser.defaults,
+			options.parserOptions);
+		base.template = template;
 
 		/**
 		 * Takes a BBCode string and splits it into open,
@@ -1219,7 +1239,7 @@
 		 */
 		base.parse = function (str, preserveNewLines) {
 			var ret  = parseTokens(base.tokenize(str));
-			var opts = base.opts;
+			var opts = base.parserOptions;
 
 			if (opts.fixInvalidNesting) {
 				fixNesting(ret);
@@ -1272,7 +1292,7 @@
 			var	parentBBCode    = parent ? bbcodeHandlers[parent.name] : {},
 				allowedChildren = parentBBCode.allowedChildren;
 
-			if (base.opts.fixInvalidChildren && allowedChildren) {
+			if (base.parserOptions.fixInvalidChildren && allowedChildren) {
 				return allowedChildren.indexOf(child.name || '#') > -1;
 			}
 
@@ -1468,7 +1488,7 @@
 									openTags.pop();
 								} else if (bbcode &&
 									bbcode.isInline === false &&
-									base.opts.breakAfterBlock &&
+									base.parserOptions.breakAfterBlock &&
 									bbcode.breakAfter !== false) {
 									openTags.pop();
 								}
@@ -1541,7 +1561,7 @@
 						// (breakStartBlock, breakStart) e.g. [tag]\n
 						if (!left) {
 							if (parentBBCode.isInline === false &&
-								base.opts.breakStartBlock &&
+								base.parserOptions.breakStartBlock &&
 								parentBBCode.breakStart !== false) {
 								remove = true;
 							}
@@ -1555,7 +1575,7 @@
 						// remove last line break (breakEndBlock, breakEnd)
 						} else if (!removedBreakEnd && !right) {
 							if (parentBBCode.isInline === false &&
-								base.opts.breakEndBlock &&
+								base.parserOptions.breakEndBlock &&
 								parentBBCode.breakEnd !== false) {
 								remove = true;
 							}
@@ -1572,7 +1592,7 @@
 						if ((bbcode = bbcodeHandlers[left.name])) {
 							if (!onlyRemoveBreakAfter) {
 								if (bbcode.isInline === false &&
-									base.opts.breakAfterBlock &&
+									base.parserOptions.breakAfterBlock &&
 									bbcode.breakAfter !== false) {
 									remove = true;
 								}
@@ -1591,7 +1611,7 @@
 
 						if ((bbcode = bbcodeHandlers[right.name])) {
 							if (bbcode.isInline === false &&
-								base.opts.breakBeforeBlock &&
+								base.parserOptions.breakBeforeBlock &&
 								bbcode.breakBefore !== false) {
 								remove = true;
 							}
@@ -1942,25 +1962,25 @@
 				isBlock       = !(!bbcode || bbcode.isInline !== false);
 				isSelfClosing = bbcode && bbcode.isSelfClosing;
 
-				breakBefore = (isBlock && base.opts.breakBeforeBlock &&
+				breakBefore = (isBlock && base.parserOptions.breakBeforeBlock &&
 						bbcode.breakBefore !== false) ||
 					(bbcode && bbcode.breakBefore);
 
 				breakStart = (isBlock && !isSelfClosing &&
-						base.opts.breakStartBlock &&
+						base.parserOptions.breakStartBlock &&
 						bbcode.breakStart !== false) ||
 					(bbcode && bbcode.breakStart);
 
-				breakEnd = (isBlock && base.opts.breakEndBlock &&
+				breakEnd = (isBlock && base.parserOptions.breakEndBlock &&
 						bbcode.breakEnd !== false) ||
 					(bbcode && bbcode.breakEnd);
 
-				breakAfter = (isBlock && base.opts.breakAfterBlock &&
+				breakAfter = (isBlock && base.parserOptions.breakAfterBlock &&
 						bbcode.breakAfter !== false) ||
 					(bbcode && bbcode.breakAfter);
 
 				quoteType = (bbcode ? bbcode.quoteType : null) ||
-					base.opts.quoteType || QuoteType.auto;
+					base.parserOptions.quoteType || QuoteType.auto;
 
 				if (!bbcode && token.type === TOKEN_OPEN) {
 					ret.push(token.val);
@@ -2528,7 +2548,8 @@
 		 * @private
 		 */
 		base.init = function () {
-			base.opts = this.opts;
+			base.options = this.opts;
+			base.template = this.template;
 			base.elementToBbcode = elementToBbcode;
 
 			// build the BBCode cache
@@ -2551,9 +2572,9 @@
 		 * @param {boolean} [legacyAsFragment] Used by fromBBCode() method
 		 */
 		function toHtml(asFragment, source, legacyAsFragment) {
-			var	parser = new BBCodeParser(base.opts.parserOptions);
+			var	parser = new BBCodeParser(base.options, base.template);
 			var html = parser.toHTML(
-				base.opts.bbcodeTrim ? source.trim() : source
+				base.options.bbcodeTrim ? source.trim() : source
 			);
 
 			return (asFragment || legacyAsFragment) ?
@@ -2576,7 +2597,7 @@
 			var	bbcode, elements;
 			var containerParent = context.createElement('div');
 			var container = context.createElement('div');
-			var parser = new BBCodeParser(base.opts.parserOptions);
+			var parser = new BBCodeParser(base.options, base.template);
 
 			container.innerHTML = html;
 			css(containerParent, 'visibility', 'hidden');
@@ -2612,7 +2633,7 @@
 
 			bbcode = parser.toBBCode(bbcode, true);
 
-			if (base.opts.bbcodeTrim) {
+			if (base.options.bbcodeTrim) {
 				bbcode = bbcode.trim();
 			}
 
