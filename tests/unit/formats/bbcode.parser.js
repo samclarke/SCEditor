@@ -11,7 +11,14 @@ var IE_BR_STR = IE_BR_FIX ? '' : '<br />';
 
 QUnit.module('plugins/bbcode#Parser', {
 	beforeEach: function () {
-		this.parser = new sceditor.BBCodeParser({ parserOptions: {}}, template);
+		this.parser = new sceditor.BBCodeParser({
+			parserOptions: {},
+			bulletList: {
+				'disc': 'Bullet',
+				'circle': 'Circle',
+				'square': 'Square'
+			}
+		}, template);
 	}
 });
 
@@ -636,7 +643,14 @@ QUnit.test('Attributes QuoteType custom', function (assert) {
 
 QUnit.module('plugins/bbcode#Parser - To HTML', {
 	beforeEach: function () {
-		this.parser = new sceditor.BBCodeParser({ parserOptions: {}}, template);
+		this.parser = new sceditor.BBCodeParser({
+			parserOptions: {},
+			bulletList: {
+				'disc': 'Bullet',
+				'circle': 'Circle',
+				'square': 'Square'
+			}
+		}, template);
 	}
 });
 
@@ -757,12 +771,6 @@ QUnit.test('List', function (assert) {
 		this.parser.toHTML('[ul=square][li]test[/li][/ul]'),
 		'<ul style="list-style-type:square"><li>test' + IE_BR_STR + '</li></ul>',
 		'UL, square type'
-	);
-
-	assert.htmlEqual(
-		this.parser.toHTML('[ul=none][li]test[/li][/ul]'),
-		'<ul style="list-style-type:none"><li>test' + IE_BR_STR + '</li></ul>',
-		'UL, none type'
 	);
 
 	assert.htmlEqual(

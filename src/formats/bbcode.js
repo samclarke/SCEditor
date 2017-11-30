@@ -475,15 +475,14 @@
 			format: function (element, content) {
 				var tag = element.nodeName.toLowerCase();
 				var listType = element.style['list-style-type'];
-				var validTypes = ['disc', 'circle', 'square', 'none'];
+				var list = this.options.bulletList;
 
 				// That call is not for this tag, skip it
 				if (tag !== 'ul') {
 					return content;
 				}
 
-				if (listType && listType !== 'disc' &&
-					validTypes.indexOf(listType) > -1) {
+				if (listType && listType !== 'disc' && list[listType]) {
 					return '[ul=' + listType + ']' + content + '[/ul]';
 				} else {
 					return '[ul]' + content + '[/ul]';
@@ -491,11 +490,16 @@
 			},
 			html: function (token, attrs, content) {
 				var listType = 'disc';
-				var validTypes = ['disc', 'circle', 'square', 'none'];
 				var attr = attrs.defaultattr;
+				var list = this.options.bulletList;
 
-				if (attr && validTypes.indexOf(attr) > -1) {
+				if (attr) {
 					listType = attr;
+				}
+
+				// Specified list type is not valid, backup to default
+				if (!list[listType]) {
+					listType = 'disc';
 				}
 
 				return '<ul style="list-style-type:' + listType + '">' +

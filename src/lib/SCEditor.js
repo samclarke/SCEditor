@@ -378,6 +378,9 @@ export default function SCEditor(original, userOptions) {
 	// Don't deep extend emoticons (fixes #565)
 	base.opts.emoticons = userOptions.emoticons || defaultOptions.emoticons;
 
+	// Don't deep extend list options
+	base.opts.bulletList = userOptions.bulletList || defaultOptions.bulletList;
+
 	/**
 	 * Creates the editor iframe and textarea
 	 * @private

@@ -293,14 +293,10 @@ var defaultCmds = {
 				e.preventDefault();
 			});
 
-			dom.appendChild(content, template.render('ulistTypeOpt',
-				{ type: 'disc', text: 'Bullet' }, true));
-			dom.appendChild(content, template.render('ulistTypeOpt',
-				{ type: 'circle', text: 'Circle' }, true));
-			dom.appendChild(content, template.render('ulistTypeOpt',
-				{ type: 'square', text: 'Square' }, true));
-			dom.appendChild(content, template.render('ulistTypeOpt',
-				{ type: 'none', text: 'None' }, true));
+			utils.each(editor.opts.bulletList, function (tagName, description) {
+				dom.appendChild(content, template.render('ulistTypeOpt',
+					{ type: tagName, text: description }, true));
+			});
 
 			editor.createDropDown(caller, 'listtype-picker', content);
 		},
