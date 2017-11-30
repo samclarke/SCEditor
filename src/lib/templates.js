@@ -39,10 +39,11 @@ var _templates = {
 	sizeOpt: '<a class="sceditor-fontsize-option" data-size="{size}" ' +
 		'href="#"><font size="{size}">{size}</font></a>',
 
-	ulistTypeOpt: '<ul style="list-style-type:{type}" ' +
+	ulistTypeOpt: '<a class="sceditor-listtype-option" data-type="{type}" ' +
+		'href="#">' +
+		'<ul style="list-style-type:{type}" ' +
 		'class="sceditor-listtype"><li>' +
-		'<a class="sceditor-listtype-option" data-type="{type}" ' +
-		'href="#">{text}</a></li></ul>',
+		'{text}</li></ul></a>',
 
 	olistTypeOpt: '<a class="sceditor-listtype-option" ' +
 		'data-styletype="{styleType}" data-tagtype="{tagType}" ' +
