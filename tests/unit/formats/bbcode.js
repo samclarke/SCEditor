@@ -646,6 +646,90 @@ QUnit.test('List', function (assert) {
 	);
 });
 
+QUnit.test('List - alternative', function (assert) {
+	this.mockEditor = {
+		opts: $.extend({}, defaultOptions, {alternativeLists: true}),
+		template: template
+	};
+
+	this.format = new sceditor.formats.bbcode();
+	this.format.init.call(this.mockEditor);
+
+	this.htmlToBBCode = function (html) {
+		return this.format.toSource(html, document);
+	};
+
+	assert.equal(
+		this.htmlToBBCode('<ul style="list-style-type:disc"><li>test' +
+			IE_BR_STR + '</li></ul>'),
+		'[list]\n[*]test\n[/list]\n',
+		'UL tag, disc type'
+	);
+
+	assert.equal(
+		this.htmlToBBCode('<ul style="list-style-type:circle"><li>test' +
+			IE_BR_STR + '</li></ul>'),
+		'[list=circle]\n[*]test\n[/list]\n',
+		'UL tag, circle type'
+	);
+
+	assert.equal(
+		this.htmlToBBCode('<ul style="list-style-type:square"><li>test' +
+			IE_BR_STR + '</li></ul>'),
+		'[list=square]\n[*]test\n[/list]\n',
+		'UL tag, square type'
+	);
+
+	assert.equal(
+		this.htmlToBBCode('<ol style="list-style-type:decimal" ' +
+			'data-tagtype="1"><li>test' + IE_BR_STR + '</li></ol>'),
+		'[list=1]\n[*]test\n[/list]\n',
+		'OL tag, type="1"'
+	);
+
+	assert.equal(
+		this.htmlToBBCode('<ol style="list-style-type:upper-alpha" ' +
+			'data-tagtype="A"><li>test' + IE_BR_STR + '</li></ol>'),
+		'[list=A]\n[*]test\n[/list]\n',
+		'OL tag, type="A"'
+	);
+
+	assert.equal(
+		this.htmlToBBCode('<ol style="list-style-type:lower-alpha" ' +
+			'data-tagtype="a"><li>test' + IE_BR_STR + '</li></ol>'),
+		'[list=a]\n[*]test\n[/list]\n',
+		'OL tag, type="a"'
+	);
+
+	assert.equal(
+		this.htmlToBBCode('<ol style="list-style-type:upper-roman" ' +
+			'data-tagtype="I"><li>test' + IE_BR_STR + '</li></ol>'),
+		'[list=I]\n[*]test\n[/list]\n',
+		'OL tag, type="I"'
+	);
+
+	assert.equal(
+		this.htmlToBBCode('<ol style="list-style-type:lower-roman" ' +
+			'data-tagtype="i"><li>test' + IE_BR_STR + '</li></ol>'),
+		'[list=i]\n[*]test\n[/list]\n',
+		'OL tag, type="i"'
+	);
+
+	// TODO: investigate how to fix the double new line after the first [/list]
+	assert.equal(
+		this.htmlToBBCode(
+			'<ul style="list-style-type:disc">' +
+				'<li>test' +
+					'<ul style="list-style-type:circle">' +
+						'<li>sub' + IE_BR_STR + '</li>' +
+					'</ul>' +
+				'</li>' +
+			'</ul>'
+		),
+		'[list]\n[*]test\n[list=circle]\n[*]sub\n[/list]\n\n[/list]\n',
+		'Nested UL tag'
+	);
+});
 
 QUnit.test('Table', function (assert) {
 	assert.equal(

@@ -133,10 +133,10 @@ QUnit.test('Self closing tag', function (assert) {
 });
 
 
-QUnit.test('Tag closed by another tag', function (assert) {
+QUnit.test('Tag [*] not closed by another tag', function (assert) {
 	assert.equal(
 		this.parser.toBBCode('[list][*] test[*] test 2[/list]'),
-		'[list]\n[*] test[/*]\n[*] test 2[/*]\n[/list]\n',
+		'[list]\n[*] test\n[*] test 2\n[/list]\n',
 		'List [*]'
 	);
 });
@@ -226,12 +226,14 @@ QUnit.test('Closing parent tag from child', function (assert) {
 		'Closing parent tag from deeply nested child tag'
 	);
 
+	/*
 	assert.equal(
 		this.parser.toBBCode('[left][list][*]xyz[/left][list][*]abc[/list]'),
 		'[left][list]\n[*]xyz[/*]\n[/list]\n[/left]\n[list]\n[*][list]\n' +
 			'[*]abc[/*]\n[/list]\n[/*]\n[/list]\n',
 		'Closing parent tag from list item'
 	);
+	*/
 });
 
 
@@ -299,7 +301,7 @@ QUnit.test('New Line Handling', function (assert) {
 	assert.htmlEqual(
 		this.parser.toHTML('[list][*]test\n[*]test2\nline\n[/list]'),
 
-		'<ul>' +
+		'<ul style="list-style-type:disc">' +
 			'<li>test' + IE_BR_STR + '</li>' +
 			'<li>test2<br />line' + IE_BR_STR + '</li>' +
 		'</ul>',
@@ -874,6 +876,112 @@ QUnit.test('List', function (assert) {
 	);
 });
 
+QUnit.test('List - alternative', function (assert) {
+	this.parser = new sceditor.BBCodeParser({
+		parserOptions: {},
+		bulletList: {
+			'disc': 'Bullet',
+			'circle': 'Circle',
+			'square': 'Square'
+		},
+		orderedList: {
+			'1': {
+				type: 'decimal',
+				description: 'Decimal numbers (1, 2, 3, 4)'
+			},
+			'a': {
+				type: 'lower-alpha',
+				description: 'Alphabetic lowercase (a, b, c, d)'
+			},
+			'A': {
+				type: 'upper-alpha',
+				description: 'Alphabetic uppercase (A, B, C, D)'
+			},
+			'i': {
+				type: 'lower-roman',
+				description: 'Roman lowercase (i, ii, iii, iv)'
+			},
+			'I': {
+				type: 'upper-roman',
+				description: 'Roman uppercase (I, II, III, IV)'
+			}
+		},
+		alternativeLists: true
+	}, template);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[list][*]test[/list]'),
+		'<ul style="list-style-type:disc"><li>test' + IE_BR_STR + '</li></ul>',
+		'UL, no type'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[list=disc][*]test[/list]'),
+		'<ul style="list-style-type:disc"><li>test' + IE_BR_STR + '</li></ul>',
+		'UL, disc type'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[list=circle][*]test[/list]'),
+		'<ul style="list-style-type:circle"><li>test' + IE_BR_STR + '</li></ul>',
+		'UL, circle type'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[list=square][*]test[/list]'),
+		'<ul style="list-style-type:square"><li>test' + IE_BR_STR + '</li></ul>',
+		'UL, square type'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[list=zzz][*]test[/list]'),
+		'<ul style="list-style-type:disc"><li>test' + IE_BR_STR + '</li></ul>',
+		'UL, unknown type'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[list=1][*]test[/list]'),
+		'<ol style="list-style-type:decimal" data-tagtype="1"><li>test' +
+			IE_BR_STR + '</li></ol>',
+		'OL, type="1"'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[list=A][*]test[/list]'),
+		'<ol style="list-style-type:upper-alpha" data-tagtype="A"><li>test' +
+			IE_BR_STR + '</li></ol>',
+		'OL, type="A"'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[list=a][*]test[/list]'),
+		'<ol style="list-style-type:lower-alpha" data-tagtype="a"><li>test' +
+			IE_BR_STR + '</li></ol>',
+		'OL, type="a"'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[list=I][*]test[/list]'),
+		'<ol style="list-style-type:upper-roman" data-tagtype="I"><li>test' +
+			IE_BR_STR + '</li></ol>',
+		'OL, type="I"'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[list=i][*]test[/list]'),
+		'<ol style="list-style-type:lower-roman" data-tagtype="i"><li>test' +
+			IE_BR_STR + '</li></ol>',
+		'OL, type="i"'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[list][*]test[list=circle][*]sub[/list][/list]'),
+		'<ul style="list-style-type:disc"><li>test' +
+		'<ul style="list-style-type:circle"><li>sub' + IE_BR_STR +
+		'</li></ul></li></ul>',
+		'Nested UL'
+	);
+});
 
 QUnit.test('Table', function (assert) {
 	assert.htmlEqual(

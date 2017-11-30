@@ -427,6 +427,6 @@ export default {
 	 *
 	 * @type {boolean}
 	 */
-	alternativeLists: true
+	alternativeLists: false
 
 };
