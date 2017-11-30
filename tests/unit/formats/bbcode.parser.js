@@ -17,6 +17,28 @@ QUnit.module('plugins/bbcode#Parser', {
 				'disc': 'Bullet',
 				'circle': 'Circle',
 				'square': 'Square'
+			},
+			orderedList: {
+				'1': {
+					type: 'decimal',
+					description: 'Decimal numbers (1, 2, 3, 4)'
+				},
+				'a': {
+					type: 'lower-alpha',
+					description: 'Alphabetic lowercase (a, b, c, d)'
+				},
+				'A': {
+					type: 'upper-alpha',
+					description: 'Alphabetic uppercase (A, B, C, D)'
+				},
+				'i': {
+					type: 'lower-roman',
+					description: 'Roman lowercase (i, ii, iii, iv)'
+				},
+				'I': {
+					type: 'upper-roman',
+					description: 'Roman uppercase (I, II, III, IV)'
+				}
 			}
 		}, template);
 	}
@@ -649,6 +671,28 @@ QUnit.module('plugins/bbcode#Parser - To HTML', {
 				'disc': 'Bullet',
 				'circle': 'Circle',
 				'square': 'Square'
+			},
+			orderedList: {
+				'1': {
+					type: 'decimal',
+					description: 'Decimal numbers (1, 2, 3, 4)'
+				},
+				'a': {
+					type: 'lower-alpha',
+					description: 'Alphabetic lowercase (a, b, c, d)'
+				},
+				'A': {
+					type: 'upper-alpha',
+					description: 'Alphabetic uppercase (A, B, C, D)'
+				},
+				'i': {
+					type: 'lower-roman',
+					description: 'Roman lowercase (i, ii, iii, iv)'
+				},
+				'I': {
+					type: 'upper-roman',
+					description: 'Roman uppercase (I, II, III, IV)'
+				}
 			}
 		}, template);
 	}

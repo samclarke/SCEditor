@@ -373,7 +373,7 @@ export default {
 	 *
 	 * The list should include BBCode tagName, which is valid css style name
 	 * and the description of the option that will be shown in the dropdown list
-	 * 
+	 *
 	 * The format of the list is:
 	 * bbCode-type: Description
 	 *
@@ -383,5 +383,40 @@ export default {
 		'disc': 'Bullet',
 		'circle': 'Circle',
 		'square': 'Square'
+	},
+
+	/**
+	 * Configuration of the ordered list options.
+	 * The configuration overrides the default options.
+	 *
+	 * The list should include BBCode tagName, valid css style list-style-type
+	 * and the description of the option that will be shown in the dropdown list
+	 *
+	 * The format of the list is:
+	 * bbCode-type: { "type": style-type, "description": Description }
+	 *
+	 * @type {Object}
+	 */
+	orderedList: {
+		'1': {
+			type: 'decimal',
+			description: 'Decimal numbers (1, 2, 3, 4)'
+		},
+		'a': {
+			type: 'lower-alpha',
+			description: 'Alphabetic lowercase (a, b, c, d)'
+		},
+		'A': {
+			type: 'upper-alpha',
+			description: 'Alphabetic uppercase (A, B, C, D)'
+		},
+		'i': {
+			type: 'lower-roman',
+			description: 'Roman lowercase (i, ii, iii, iv)'
+		},
+		'I': {
+			type: 'upper-roman',
+			description: 'Roman uppercase (I, II, III, IV)'
+		}
 	}
 };

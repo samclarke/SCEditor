@@ -522,15 +522,14 @@
 			format: function (element, content) {
 				var tag = element.nodeName.toLowerCase();
 				var tagType = attr(element, 'data-tagtype');
-				var validTypes = ['1', 'A', 'a', 'I', 'i'];
+				var list = this.options.orderedList;
 
 				// That call is not for this tag, skip it
 				if (tag !== 'ol') {
 					return content;
 				}
 
-				if (tagType && tagType !== '1' &&
-					validTypes.indexOf(tagType) > -1) {
+				if (tagType && tagType !== '1' && list[tagType]) {
 					return '[ol=' + tagType + ']' + content + '[/ol]';
 				} else {
 					return '[ol]' + content + '[/ol]';
@@ -538,22 +537,20 @@
 			},
 			html: function (token, attrs, content) {
 				var tagType = '1';
-				var styleType = 'decimal';
-				var validTypes = ['1', 'A', 'a', 'I', 'i'];
+				var styleType;
+				var list = this.options.orderedList;
 				var attr = attrs.defaultattr;
 
-				if (attr && validTypes.indexOf(attr) > -1) {
+				if (attr) {
 					tagType = attr;
 				}
 
-				switch (tagType) {
-					case '1': styleType = 'decimal'; break;
-					case 'A': styleType = 'upper-alpha'; break;
-					case 'a': styleType = 'lower-alpha'; break;
-					case 'I': styleType = 'upper-roman'; break;
-					case 'i': styleType = 'lower-roman'; break;
-					default: styleType = 'decimal'; break;
+				// Specified list type is not valid, backup to default
+				if (!list[tagType]) {
+					tagType = '1';
 				}
+
+				styleType = list[tagType].type;
 
 				return '<ol style="list-style-type:' + styleType + '" ' +
 					'data-tagtype="' + tagType + '">' + content + '</ol>';

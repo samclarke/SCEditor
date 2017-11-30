@@ -326,36 +326,14 @@ var defaultCmds = {
 				e.preventDefault();
 			});
 
-			dom.appendChild(content, template.render('olistTypeOpt',
-				{
-					tagType: '1',
-					styleType: 'decimal',
-					text: 'Decimal numbers (1, 2, 3, 4)'
-				}, true));
-			dom.appendChild(content, template.render('olistTypeOpt',
-				{
-					tagType: 'a',
-					styleType: 'lower-alpha',
-					text: 'Alphabetic lowercase (a, b, c, d)'
-				}, true));
-			dom.appendChild(content, template.render('olistTypeOpt',
-				{
-					tagType: 'A',
-					styleType: 'upper-alpha',
-					text: 'Alphabetic uppercase (A, B, C, D)'
-				}, true));
-			dom.appendChild(content, template.render('olistTypeOpt',
-				{
-					tagType: 'i',
-					styleType: 'lower-roman',
-					text: 'Roman lowercase (i, ii, iii, iv)'
-				}, true));
-			dom.appendChild(content, template.render('olistTypeOpt',
-				{
-					tagType: 'I',
-					styleType: 'upper-roman',
-					text: 'Roman uppercase (I, II, III, IV)'
-				}, true));
+			utils.each(editor.opts.orderedList, function (tagName, item) {
+				dom.appendChild(content, template.render('olistTypeOpt',
+					{
+						tagType: tagName,
+						styleType: item.type,
+						text: item.description
+					}, true));
+			});
 
 			editor.createDropDown(caller, 'listtype-picker', content);
 		},
