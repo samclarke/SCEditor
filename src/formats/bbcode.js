@@ -203,7 +203,7 @@
 							});
 						}
 
-						if (tagType === '1') {
+						if (tagType === '1' && !editor.opts.alternativeLists) {
 							editor.insertText(
 								'[' + tag + ']\n' + content + '\n[/' + tag + ']'
 							);
@@ -545,7 +545,27 @@
 			breakStart: true,
 			isInline: false,
 			skipLastLineBreak: true,
-			html: '<ul>{0}</ul>'
+			html: function (token, attrs, content) {
+				var listType = 'disc';
+				var toHtml = null;
+
+				if (attrs.defaultattr) {
+					listType = attrs.defaultattr;
+				}
+
+				if (this.options.bulletList[listType]) {
+					// This listType belongs to bulletList (UL)
+					toHtml = bbcodeHandlers.ul.html;
+				} else if (this.options.orderedList[listType]) {
+					// This listType belongs to orderedList (OL)
+					toHtml = bbcodeHandlers.ol.html;
+				} else {
+					// unknown listType, use default bullet list behavior
+					toHtml = bbcodeHandlers.ul.html;
+				}
+
+				return toHtml.call(this, token, attrs, content);
+			}
 		},
 		ol: {
 			styles: {
@@ -570,7 +590,8 @@
 					tag = 'ol';
 				}
 
-				if (tagType && tagType !== '1' && list[tagType]) {
+				if ((tagType && tagType !== '1' ||
+					this.options.alternativeLists) && list[tagType]) {
 					return '[' + tag + '=' + tagType + ']' + content +
 						'[/' + tag + ']';
 				} else {
