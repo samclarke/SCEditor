@@ -418,5 +418,15 @@ export default {
 			type: 'upper-roman',
 			description: 'Roman uppercase (I, II, III, IV)'
 		}
-	}
+	},
+
+	/**
+	 * Set to true in order to use alternative bbcode list representation as
+	 * [list][/list] instead of [ul][/ul] or [ol][/ol]
+	 * and [*] as list item instead of [li][/li]
+	 *
+	 * @type {boolean}
+	 */
+	alternativeLists: true
+
 };

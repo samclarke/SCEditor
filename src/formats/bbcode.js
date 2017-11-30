@@ -144,18 +144,32 @@
 					editor,
 					caller,
 					function (listType) {
-						selected.split(/\r?\n/).forEach(function (item) {
-							content += (content ? '\n' : '') +
-								'[li]' + item + '[/li]';
-						});
+						var tag;
+
+						if (editor.opts.alternativeLists) {
+							tag = 'list';
+
+							selected.split(/\r?\n/).forEach(function (item) {
+								content += (content ? '\n' : '') +
+									'[*]' + item;
+							});
+						} else {
+							tag = 'ul';
+
+							selected.split(/\r?\n/).forEach(function (item) {
+								content += (content ? '\n' : '') +
+									'[li]' + item + '[/li]';
+							});
+						}
 
 						if (listType === 'disc') {
 							editor.insertText(
-								'[ul]\n' + content + '\n[/ul]'
+								'[' + tag + ']\n' + content + '\n[/' + tag + ']'
 							);
 						} else {
 							editor.insertText(
-								'[ul=' + listType + ']\n' + content + '\n[/ul]'
+								'[' + tag + '=' + listType + ']\n' + content +
+								'\n[/' + tag + ']'
 							);
 						}
 					}
@@ -171,18 +185,32 @@
 					editor,
 					caller,
 					function (tagType) {
-						selected.split(/\r?\n/).forEach(function (item) {
-							content += (content ? '\n' : '') +
-								'[li]' + item + '[/li]';
-						});
+						var tag;
+
+						if (editor.opts.alternativeLists) {
+							tag = 'list';
+
+							selected.split(/\r?\n/).forEach(function (item) {
+								content += (content ? '\n' : '') +
+									'[*]' + item;
+							});
+						} else {
+							tag = 'ol';
+
+							selected.split(/\r?\n/).forEach(function (item) {
+								content += (content ? '\n' : '') +
+									'[li]' + item + '[/li]';
+							});
+						}
 
 						if (tagType === '1') {
 							editor.insertText(
-								'[ol]\n' + content + '\n[/ol]'
+								'[' + tag + ']\n' + content + '\n[/' + tag + ']'
 							);
 						} else {
 							editor.insertText(
-								'[ol=' + tagType + ']\n' + content + '\n[/ol]'
+								'[' + tag + '=' + tagType + ']\n' + content +
+								'\n[/' + tag + ']'
 							);
 						}
 					}
@@ -482,10 +510,17 @@
 					return content;
 				}
 
-				if (listType && listType !== 'disc' && list[listType]) {
-					return '[ul=' + listType + ']' + content + '[/ul]';
+				if (this.options.alternativeLists) {
+					tag = 'list';
 				} else {
-					return '[ul]' + content + '[/ul]';
+					tag = 'ul';
+				}
+
+				if (listType && listType !== 'disc' && list[listType]) {
+					return '[' + tag + '=' + listType + ']' + content +
+						'[/' + tag + ']';
+				} else {
+					return '[' + tag + ']' + content + '[/' + tag + ']';
 				}
 			},
 			html: function (token, attrs, content) {
@@ -529,10 +564,17 @@
 					return content;
 				}
 
-				if (tagType && tagType !== '1' && list[tagType]) {
-					return '[ol=' + tagType + ']' + content + '[/ol]';
+				if (this.options.alternativeLists) {
+					tag = 'list';
 				} else {
-					return '[ol]' + content + '[/ol]';
+					tag = 'ol';
+				}
+
+				if (tagType && tagType !== '1' && list[tagType]) {
+					return '[' + tag + '=' + tagType + ']' + content +
+						'[/' + tag + ']';
+				} else {
+					return '[' + tag + ']' + content + '[/' + tag + ']';
 				}
 			},
 			html: function (token, attrs, content) {
@@ -562,11 +604,18 @@
 			},
 			isInline: false,
 			closedBy: ['/ul', '/ol', '/list', '*', 'li'],
-			format: '[li]{0}[/li]',
+			format: function (element, content) {
+				if (this.options.alternativeLists) {
+					return '[*]' + content;
+				} else {
+					return '[li]' + content + '[/li]';
+				}
+			},
 			html: '<li>{0}</li>'
 		},
 		'*': {
 			isInline: false,
+			excludeClosing: true,
 			closedBy: ['/ul', '/ol', '/list', '*', 'li'],
 			html: '<li>{0}</li>'
 		},
