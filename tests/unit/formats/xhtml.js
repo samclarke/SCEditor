@@ -1,10 +1,12 @@
 import defaultOptions from 'src/lib/defaultOptions.js';
+import * as template from 'src/lib/templates.js';
 import * as utils from 'tests/unit/utils.js';
 import 'src/formats/xhtml.js';
 
 var moduleSetup = function () {
 	this.mockEditor = {
-		opts: $.extend({}, defaultOptions)
+		opts: $.extend({}, defaultOptions),
+		template: template
 	};
 
 	this.plugin = new sceditor.formats.xhtml();

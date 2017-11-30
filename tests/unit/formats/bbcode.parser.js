@@ -1,5 +1,6 @@
 import * as utils from 'tests/unit/utils.js';
 import * as browser from 'src/lib/browser.js';
+import * as template from 'src/lib/templates.js';
 import 'src/formats/bbcode.js';
 
 // In IE < 11 a BR at the end of a block level element
@@ -10,7 +11,36 @@ var IE_BR_STR = IE_BR_FIX ? '' : '<br />';
 
 QUnit.module('plugins/bbcode#Parser', {
 	beforeEach: function () {
-		this.parser = new sceditor.BBCodeParser({});
+		this.parser = new sceditor.BBCodeParser({
+			parserOptions: {},
+			bulletList: {
+				'disc': 'Bullet',
+				'circle': 'Circle',
+				'square': 'Square'
+			},
+			orderedList: {
+				'1': {
+					type: 'decimal',
+					description: 'Decimal numbers (1, 2, 3, 4)'
+				},
+				'a': {
+					type: 'lower-alpha',
+					description: 'Alphabetic lowercase (a, b, c, d)'
+				},
+				'A': {
+					type: 'upper-alpha',
+					description: 'Alphabetic uppercase (A, B, C, D)'
+				},
+				'i': {
+					type: 'lower-roman',
+					description: 'Roman lowercase (i, ii, iii, iv)'
+				},
+				'I': {
+					type: 'upper-roman',
+					description: 'Roman uppercase (I, II, III, IV)'
+				}
+			}
+		}, template);
 	}
 });
 
@@ -67,7 +97,7 @@ QUnit.test('Fix invalid nesting', function (assert) {
 
 QUnit.test('Rename BBCode', function (assert) {
 	sceditor.formats.bbcode.rename('b', 'testbold');
-	this.parser = new sceditor.BBCodeParser({});
+	this.parser = new sceditor.BBCodeParser({ parserOptions: {}}, template);
 
 	assert.ok(
 		!!sceditor.formats.bbcode.get('testbold'),
@@ -140,9 +170,10 @@ QUnit.test('BBCode closed outside block', function (assert) {
 });
 
 QUnit.test('BBCode closed outside block - No children fix', function (assert) {
-	this.parser = new sceditor.BBCodeParser({
-		fixInvalidChildren: false
-	});
+	this.parser = new sceditor.BBCodeParser(
+		{ parserOptions: { fixInvalidChildren: false }},
+		template
+	);
 
 	assert.equal(
 		this.parser.toBBCode('[b]test[code]test[/b][/code]test[/b]'),
@@ -307,9 +338,10 @@ QUnit.test('Attributes QuoteType.auto', function (assert) {
 		quoteType: null
 	});
 
-	this.parser = new sceditor.BBCodeParser({
-		quoteType: sceditor.BBCodeParser.QuoteType.auto
-	});
+	this.parser = new sceditor.BBCodeParser(
+		{ parserOptions: { quoteType: sceditor.BBCodeParser.QuoteType.auto }},
+		template
+	);
 
 	assert.equal(
 		this.parser.toBBCode(
@@ -387,9 +419,10 @@ QUnit.test('Attributes QuoteType.never', function (assert) {
 		quoteType: null
 	});
 
-	this.parser = new $.sceditor.BBCodeParser({
-		quoteType: $.sceditor.BBCodeParser.QuoteType.never
-	});
+	this.parser = new $.sceditor.BBCodeParser(
+		{ parserOptions: { quoteType: $.sceditor.BBCodeParser.QuoteType.never }},
+		template
+	);
 
 	assert.equal(
 		this.parser.toBBCode(
@@ -467,9 +500,10 @@ QUnit.test('Attributes QuoteType.always', function (assert) {
 		quoteType: null
 	});
 
-	this.parser = new $.sceditor.BBCodeParser({
-		quoteType: $.sceditor.BBCodeParser.QuoteType.always
-	});
+	this.parser = new $.sceditor.BBCodeParser(
+		{ parserOptions: { quoteType: $.sceditor.BBCodeParser.QuoteType.always }},
+		template
+	);
 
 	assert.equal(
 		this.parser.toBBCode(
@@ -548,13 +582,16 @@ QUnit.test('Attributes QuoteType custom', function (assert) {
 		quoteType: null
 	});
 
-	this.parser = new $.sceditor.BBCodeParser({
-		quoteType: function (str) {
-			return '\'' +
-				str.replace('\\', '\\\\').replace('\'', '\\\'') +
-				'\'';
-		}
-	});
+	this.parser = new $.sceditor.BBCodeParser(
+		{ parserOptions: {
+			quoteType: function (str) {
+				return '\'' +
+					str.replace('\\', '\\\\').replace('\'', '\\\'') +
+					'\'';
+			}}
+		},
+		template
+	);
 
 	assert.equal(
 		this.parser.toBBCode(
@@ -628,7 +665,36 @@ QUnit.test('Attributes QuoteType custom', function (assert) {
 
 QUnit.module('plugins/bbcode#Parser - To HTML', {
 	beforeEach: function () {
-		this.parser = new sceditor.BBCodeParser({});
+		this.parser = new sceditor.BBCodeParser({
+			parserOptions: {},
+			bulletList: {
+				'disc': 'Bullet',
+				'circle': 'Circle',
+				'square': 'Square'
+			},
+			orderedList: {
+				'1': {
+					type: 'decimal',
+					description: 'Decimal numbers (1, 2, 3, 4)'
+				},
+				'a': {
+					type: 'lower-alpha',
+					description: 'Alphabetic lowercase (a, b, c, d)'
+				},
+				'A': {
+					type: 'upper-alpha',
+					description: 'Alphabetic uppercase (A, B, C, D)'
+				},
+				'i': {
+					type: 'lower-roman',
+					description: 'Roman lowercase (i, ii, iii, iv)'
+				},
+				'I': {
+					type: 'upper-roman',
+					description: 'Roman uppercase (I, II, III, IV)'
+				}
+			}
+		}, template);
 	}
 });
 
@@ -729,19 +795,81 @@ QUnit.test('Font colour', function (assert) {
 QUnit.test('List', function (assert) {
 	assert.htmlEqual(
 		this.parser.toHTML('[ul][li]test[/li][/ul]'),
-		'<ul><li>test' + IE_BR_STR + '</li></ul>',
-		'UL'
+		'<ul style="list-style-type:disc"><li>test' + IE_BR_STR + '</li></ul>',
+		'UL, no type'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ul=disc][li]test[/li][/ul]'),
+		'<ul style="list-style-type:disc"><li>test' + IE_BR_STR + '</li></ul>',
+		'UL, disc type'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ul=circle][li]test[/li][/ul]'),
+		'<ul style="list-style-type:circle"><li>test' + IE_BR_STR + '</li></ul>',
+		'UL, circle type'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ul=square][li]test[/li][/ul]'),
+		'<ul style="list-style-type:square"><li>test' + IE_BR_STR + '</li></ul>',
+		'UL, square type'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ul=zzz][li]test[/li][/ul]'),
+		'<ul style="list-style-type:disc"><li>test' + IE_BR_STR + '</li></ul>',
+		'UL, unknown type'
 	);
 
 	assert.htmlEqual(
 		this.parser.toHTML('[ol][li]test[/li][/ol]'),
-		'<ol><li>test' + IE_BR_STR + '</li></ol>',
-		'OL'
+		'<ol style="list-style-type:decimal" data-tagtype="1"><li>test' +
+			IE_BR_STR + '</li></ol>',
+		'OL no type'
 	);
 
 	assert.htmlEqual(
-		this.parser.toHTML('[ul][li]test[ul][li]sub[/li][/ul][/li][/ul]'),
-		'<ul><li>test<ul><li>sub' + IE_BR_STR + '</li></ul></li></ul>',
+		this.parser.toHTML('[ol=1][li]test[/li][/ol]'),
+		'<ol style="list-style-type:decimal" data-tagtype="1"><li>test' +
+			IE_BR_STR + '</li></ol>',
+		'OL, type="1"'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ol=A][li]test[/li][/ol]'),
+		'<ol style="list-style-type:upper-alpha" data-tagtype="A"><li>test' +
+			IE_BR_STR + '</li></ol>',
+		'OL, type="A"'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ol=a][li]test[/li][/ol]'),
+		'<ol style="list-style-type:lower-alpha" data-tagtype="a"><li>test' +
+			IE_BR_STR + '</li></ol>',
+		'OL, type="a"'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ol=I][li]test[/li][/ol]'),
+		'<ol style="list-style-type:upper-roman" data-tagtype="I"><li>test' +
+			IE_BR_STR + '</li></ol>',
+		'OL, type="I"'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ol=i][li]test[/li][/ol]'),
+		'<ol style="list-style-type:lower-roman" data-tagtype="i"><li>test' +
+			IE_BR_STR + '</li></ol>',
+		'OL, type="i"'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ul][li]test[ul=circle][li]sub[/li][/ul][/li][/ul]'),
+		'<ul style="list-style-type:disc"><li>test' +
+		'<ul style="list-style-type:circle"><li>sub' + IE_BR_STR +
+		'</li></ul></li></ul>',
 		'Nested UL'
 	);
 });
@@ -916,11 +1044,27 @@ QUnit.test('Justify', function (assert) {
 
 
 QUnit.test('YouTube', function (assert) {
+	this.parser = new sceditor.BBCodeParser(
+		{ 	youtubeParameters: 'width="123" height="456" frameborder="0" ' +
+			'allowfullscreen'
+		},
+		template
+	);
+
 	assert.htmlEqual(
 		this.parser.toHTML('[youtube]xyz[/youtube]'),
-		'<div><iframe width="560" height="315" ' +
-			'src="https://www.youtube.com/embed/xyz?wmode=opaque" ' +
-			'data-youtube-id="xyz" frameborder="0" allowfullscreen>' +
+		'<div><iframe width="123" height="456" frameborder="0" allowfullscreen ' +
+			'src="https://www.youtube.com/embed/xyz?start=0" ' +
+			'data-youtube-id="xyz" data-youtube-start="0">' +
+			'</iframe></div>\n',
+		'Normal'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[youtube=321]xyz[/youtube]'),
+		'<div><iframe width="123" height="456" frameborder="0" allowfullscreen ' +
+			'src="https://www.youtube.com/embed/xyz?start=321" ' +
+			'data-youtube-id="xyz" data-youtube-start="321">' +
 			'</iframe></div>\n',
 		'Normal'
 	);
@@ -929,7 +1073,7 @@ QUnit.test('YouTube', function (assert) {
 
 QUnit.module('plugins/bbcode#Parser - XSS', {
 	beforeEach: function () {
-		this.parser = new sceditor.BBCodeParser({});
+		this.parser = new sceditor.BBCodeParser({ parserOptions: {}}, template);
 	}
 });
 

@@ -1,6 +1,7 @@
 import defaultOptions from 'src/lib/defaultOptions.js';
 import * as utils from 'tests/unit/utils.js';
 import * as browser from 'src/lib/browser.js';
+import * as template from 'src/lib/templates.js';
 import 'src/formats/bbcode.js';
 
 // In IE < 11 a BR at the end of a block level element
@@ -12,7 +13,8 @@ var IE_BR_STR = IE_BR_FIX ? '' : '<br />';
 QUnit.module('plugins/bbcode', {
 	beforeEach: function () {
 		this.mockEditor = {
-			opts: $.extend({}, defaultOptions)
+			opts: $.extend({}, defaultOptions),
+			template: template
 		};
 
 		this.format = new sceditor.formats.bbcode();
@@ -52,7 +54,8 @@ QUnit.test('From BBCode method as fragment', function (assert) {
 
 QUnit.test('BBcode to HTML trim', function (assert) {
 	this.mockEditor = {
-		opts: $.extend({}, defaultOptions, { bbcodeTrim: true })
+		opts: $.extend({}, defaultOptions, { bbcodeTrim: true }),
+		template: template
 	};
 
 	this.format = new sceditor.formats.bbcode();
@@ -79,7 +82,8 @@ QUnit.test('BBcode to HTML trim', function (assert) {
 
 QUnit.test('HTML to BBCode trim', function (assert) {
 	this.mockEditor = {
-		opts: $.extend({}, defaultOptions, { bbcodeTrim: true })
+		opts: $.extend({}, defaultOptions, { bbcodeTrim: true }),
+		template: template
 	};
 
 	this.format = new sceditor.formats.bbcode();
@@ -109,7 +113,8 @@ QUnit.test('HTML to BBCode trim', function (assert) {
 QUnit.module('plugins/bbcode - HTML to BBCode', {
 	beforeEach: function () {
 		this.mockEditor = {
-			opts: $.extend({}, defaultOptions)
+			opts: $.extend({}, defaultOptions),
+			template: template
 		};
 
 		this.format = new sceditor.formats.bbcode();
@@ -253,7 +258,7 @@ QUnit.test('New line handling', function (assert) {
 		this.htmlToBBCode(
 			'<div>text</div>' +
 			'<div>' + IE_BR_STR + '</div>' +
-			'<ul><li>text</li></ul>'
+			'<ul style="list-style-type:disc"><li>text</li></ul>'
 		),
 		'text\n\n[ul]\n[li]text[/li]\n[/ul]\n',
 		'Div siblings with a list'
@@ -264,7 +269,7 @@ QUnit.test('New line handling', function (assert) {
 			'<div>text</div>' +
 			'<div>' + IE_BR_STR + '</div>' +
 			'<div>' + IE_BR_STR + '</div>' +
-			'<ul><li>text</li></ul>'
+			'<ul style="list-style-type:disc"><li>text</li></ul>'
 		),
 		'text\n\n\n[ul]\n[li]text[/li]\n[/ul]\n',
 		'Multiple div siblings with a list'
@@ -284,7 +289,7 @@ QUnit.test('New line handling', function (assert) {
 
 	assert.equal(
 		this.htmlToBBCode(
-			'<ul><li>newline<br />' + IE_BR_STR + '</li></ul>'
+			'<ul style="list-style-type:disc"><li>newline<br />' + IE_BR_STR + '</li></ul>'
 		),
 		'[ul]\n[li]newline\n[/li]\n[/ul]\n',
 		'List item last child block level'
@@ -571,28 +576,72 @@ QUnit.test('colour', function (assert) {
 
 QUnit.test('List', function (assert) {
 	assert.equal(
-		this.htmlToBBCode('<ul><li>test' + IE_BR_STR + '</li></ul>'),
+		this.htmlToBBCode('<ul style="list-style-type:disc"><li>test' +
+			IE_BR_STR + '</li></ul>'),
 		'[ul]\n[li]test[/li]\n[/ul]\n',
-		'UL tag'
+		'UL tag, disc type'
 	);
 
 	assert.equal(
-		this.htmlToBBCode('<ol><li>test' + IE_BR_STR + '</li></ol>'),
+		this.htmlToBBCode('<ul style="list-style-type:circle"><li>test' +
+			IE_BR_STR + '</li></ul>'),
+		'[ul=circle]\n[li]test[/li]\n[/ul]\n',
+		'UL tag, circle type'
+	);
+
+	assert.equal(
+		this.htmlToBBCode('<ul style="list-style-type:square"><li>test' +
+			IE_BR_STR + '</li></ul>'),
+		'[ul=square]\n[li]test[/li]\n[/ul]\n',
+		'UL tag, square type'
+	);
+
+	assert.equal(
+		this.htmlToBBCode('<ol style="list-style-type:decimal" ' +
+			'data-tagtype="1"><li>test' + IE_BR_STR + '</li></ol>'),
 		'[ol]\n[li]test[/li]\n[/ol]\n',
-		'OL tag'
+		'OL tag, type="1"'
+	);
+
+	assert.equal(
+		this.htmlToBBCode('<ol style="list-style-type:upper-alpha" ' +
+			'data-tagtype="A"><li>test' + IE_BR_STR + '</li></ol>'),
+		'[ol=A]\n[li]test[/li]\n[/ol]\n',
+		'OL tag, type="A"'
+	);
+
+	assert.equal(
+		this.htmlToBBCode('<ol style="list-style-type:lower-alpha" ' +
+			'data-tagtype="a"><li>test' + IE_BR_STR + '</li></ol>'),
+		'[ol=a]\n[li]test[/li]\n[/ol]\n',
+		'OL tag, type="a"'
+	);
+
+	assert.equal(
+		this.htmlToBBCode('<ol style="list-style-type:upper-roman" ' +
+			'data-tagtype="I"><li>test' + IE_BR_STR + '</li></ol>'),
+		'[ol=I]\n[li]test[/li]\n[/ol]\n',
+		'OL tag, type="I"'
+	);
+
+	assert.equal(
+		this.htmlToBBCode('<ol style="list-style-type:lower-roman" ' +
+			'data-tagtype="i"><li>test' + IE_BR_STR + '</li></ol>'),
+		'[ol=i]\n[li]test[/li]\n[/ol]\n',
+		'OL tag, type="i"'
 	);
 
 	assert.equal(
 		this.htmlToBBCode(
-			'<ul>' +
+			'<ul style="list-style-type:disc">' +
 				'<li>test' +
-					'<ul>' +
+					'<ul style="list-style-type:circle">' +
 						'<li>sub' + IE_BR_STR + '</li>' +
 					'</ul>' +
 				'</li>' +
 			'</ul>'
 		),
-		'[ul]\n[li]test\n[ul]\n[li]sub[/li]\n[/ul]\n[/li]\n[/ul]\n',
+		'[ul]\n[li]test\n[ul=circle]\n[li]sub[/li]\n[/ul]\n[/li]\n[/ul]\n',
 		'Nested UL tag'
 	);
 });
@@ -852,5 +901,15 @@ QUnit.test('YouTube', function (assert) {
 	assert.equal(
 		this.htmlToBBCode('<iframe data-youtube-id="xyz"></iframe>'),
 		'[youtube]xyz[/youtube]'
+	);
+
+	assert.equal(
+		this.htmlToBBCode('<iframe data-youtube-id="xyz" data-youtube-start="0"></iframe>'),
+		'[youtube]xyz[/youtube]'
+	);
+
+	assert.equal(
+		this.htmlToBBCode('<iframe data-youtube-id="xyz" data-youtube-start="123"></iframe>'),
+		'[youtube=123]xyz[/youtube]'
 	);
 });
