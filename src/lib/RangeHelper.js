@@ -160,8 +160,8 @@ export default function RangeHelper(win, d) {
 		}
 
 		if (dom.canHaveChildren(lastChild)) {
-			// IE <= 8 and Webkit won't allow the cursor to be placed
-			// inside an empty tag, so add a zero width space to it.
+			// Webkit won't allow the cursor to be placed inside an
+			// empty tag, so add a zero width space to it.
 			if (!lastChild.lastChild) {
 				dom.appendChild(lastChild, document.createTextNode('\u200B'));
 			}
@@ -227,10 +227,7 @@ export default function RangeHelper(win, d) {
 	};
 
 	/**
-	 * <p>Clones the selected Range</p>
-	 *
-	 * <p>IE <= 8 will return a TextRange, all other browsers
-	 * will return a Range object.</p>
+	 * Clones the selected Range
 	 *
 	 * @return {Range}
 	 * @function
@@ -246,10 +243,7 @@ export default function RangeHelper(win, d) {
 	};
 
 	/**
-	 * <p>Gets the selected Range</p>
-	 *
-	 * <p>IE <= 8 will return a TextRange, all other browsers
-	 * will return a Range object.</p>
+	 * Gets the selected Range
 	 *
 	 * @return {Range}
 	 * @function
@@ -266,7 +260,7 @@ export default function RangeHelper(win, d) {
 
 		// When creating a new range, set the start to the first child
 		// element of the body element to avoid errors in FF.
-		if (sel.getRangeAt && sel.rangeCount <= 0) {
+		if (sel.rangeCount <= 0) {
 			firstChild = doc.body;
 			while (firstChild.firstChild) {
 				firstChild = firstChild.firstChild;
