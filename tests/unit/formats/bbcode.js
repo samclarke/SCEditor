@@ -113,7 +113,7 @@ QUnit.test('HTML to BBCode trim', function (assert) {
 QUnit.module('plugins/bbcode - HTML to BBCode', {
 	beforeEach: function () {
 		this.mockEditor = {
-			opts: $.extend({}, defaultOptions),
+			opts: $.extend({}, defaultOptions, { alternativeLists: false }),
 			template: template
 		};
 
@@ -648,7 +648,7 @@ QUnit.test('List', function (assert) {
 
 QUnit.test('List - alternative', function (assert) {
 	this.mockEditor = {
-		opts: $.extend({}, defaultOptions, {alternativeLists: true}),
+		opts: $.extend({}, defaultOptions, { alternativeLists: true }),
 		template: template
 	};
 

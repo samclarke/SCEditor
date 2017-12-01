@@ -39,7 +39,8 @@ QUnit.module('plugins/bbcode#Parser', {
 					type: 'upper-roman',
 					description: 'Roman uppercase (I, II, III, IV)'
 				}
-			}
+			},
+			alternativeLists: false
 		}, template);
 	}
 });
