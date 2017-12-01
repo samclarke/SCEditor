@@ -226,6 +226,9 @@
 		code: {
 			txtExec: ['[code]', '[/code]']
 		},
+		c: {
+			txtExec: ['[c]', '[/c]']
+		},
 		image: {
 			txtExec: function (caller, selected) {
 				var	editor  = this;
@@ -880,6 +883,41 @@
 		},
 		// END_COMMAND
 
+		// START_COMMAND: c (inline code)
+		c: {
+			tags: {
+				c: null
+			},
+			isInline: true,
+			allowedChildren: ['#'],
+			format: '[c]{0}[/c]',
+			html: '<span class="inline-code">{0}</span>'
+		},
+		// END_COMMAND
+
+		// START_COMMAND: c (inline code)
+		span: {
+			tags: {
+				span: null
+			},
+			isInline: true,
+			allowedChildren: ['#'],
+			format: function (element, content) {
+				if (this.options.allowInlineCode) {
+					return '[c]' + content + '[/c]';
+				} else {
+					return content;
+				}
+			},
+			html: function (token, attrs, content) {
+				if (this.options.allowInlineCode) {
+					return '<span class="inline-code">' + content + '</span>';
+				} else {
+					return content;
+				}
+			}
+		},
+		// END_COMMAND
 
 		// START_COMMAND: Left
 		left: {
@@ -2423,7 +2461,8 @@
 			ol: ['li', 'ol', 'ul'],
 			table: ['tr'],
 			tr: ['td', 'th'],
-			code: ['br', 'p', 'div']
+			code: ['br', 'p', 'div'],
+			span: ['br']
 		};
 
 		/**

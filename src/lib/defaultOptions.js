@@ -427,6 +427,14 @@ export default {
 	 *
 	 * @type {boolean}
 	 */
-	alternativeLists: false
+	alternativeLists: false,
+
+	/**
+	 * Set to true to allow creation of inline code segments wrapped with
+	 * [c]code[/c] tags
+	 *
+	 * @type {boolean}
+	 */
+	allowInlineCode: false
 
 };

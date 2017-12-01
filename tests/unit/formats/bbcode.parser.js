@@ -40,7 +40,8 @@ QUnit.module('plugins/bbcode#Parser', {
 					description: 'Roman uppercase (I, II, III, IV)'
 				}
 			},
-			alternativeLists: false
+			alternativeLists: false,
+			allowInlineCode: false
 		}, template);
 	}
 });
@@ -1101,7 +1102,7 @@ QUnit.test('Quote', function (assert) {
 });
 
 
-QUnit.test('Code', function (assert) {
+QUnit.test('Code - block', function (assert) {
 	assert.htmlEqual(
 		this.parser.toHTML('[code]Testing 1.2.3....[/code]'),
 		'<code>Testing 1.2.3....' + IE_BR_STR + '</code>',
@@ -1115,6 +1116,23 @@ QUnit.test('Code', function (assert) {
 	);
 });
 
+QUnit.test('Code - inline', function (assert) {
+	this.parser = new sceditor.BBCodeParser({
+		parserOptions: {}, allowInlineCode: true
+	});
+
+	assert.htmlEqual(
+		this.parser.toHTML('text [c]inline code[/c] text'),
+		'<div>text <span class="inline-code">inline code</span> text</div>\n',
+		'Normal'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('text [c]Testing [b]test[/b][/c] text'),
+		'<div>text <span class="inline-code">Testing [b]test[/b]</span> text</div>\n',
+		'Normal'
+	);
+});
 
 QUnit.test('Left', function (assert) {
 	assert.htmlEqual(
