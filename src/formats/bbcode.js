@@ -931,18 +931,18 @@
 	 * the params provided
 	 *
 	 * @param {string} str The string to format
-	 * @param {string} args... The strings to replace
+	 * @param {...string} arg The strings to replace
 	 * @return {string}
 	 * @since v1.4.0
 	 */
-	function _formatString() {
+	function _formatString(str) {
 		var	undef;
 		var args = arguments;
 
-		return args[0].replace(/\{(\d+)\}/g, function (str, p1) {
-			return args[p1 - 0 + 1] !== undef ?
-				args[p1 - 0 + 1] :
-				'{' + p1 + '}';
+		return str.replace(/\{(\d+)\}/g, function (_, matchNum) {
+			return args[matchNum - 0 + 1] !== undef ?
+				args[matchNum - 0 + 1] :
+				'{' + matchNum + '}';
 		});
 	}
 
@@ -952,6 +952,16 @@
 	var TOKEN_CLOSE = 'close';
 
 
+	/*
+	 * @typedef {Object} TokenizeToken
+	 * @property {string} type
+	 * @property {string} name
+	 * @property {string} val
+	 * @property {Object.<string, string>} attrs
+	 * @property {array} children
+	 * @property {TokenizeToken} closing
+	 */
+
 	/**
 	 * Tokenize token object
 	 *
@@ -959,13 +969,13 @@
 	 *                       should be one of tokenType
 	 * @param  {string} name The name of this token
 	 * @param  {string} val The originally matched string
-	 * @param  {Array} attrs Any attributes. Only set on
+	 * @param  {array} attrs Any attributes. Only set on
 	 *                       TOKEN_TYPE_OPEN tokens
-	 * @param  {Array} children Any children of this token
+	 * @param  {array} children Any children of this token
 	 * @param  {TokenizeToken} closing This tokens closing tag.
 	 *                                 Only set on TOKEN_TYPE_OPEN tokens
-	 * @class TokenizeToken
-	 * @name TokenizeToken
+	 * @class {TokenizeToken}
+	 * @name {TokenizeToken}
 	 * @memberOf BBCodeParser.prototype
 	 */
 	// eslint-disable-next-line max-params
@@ -1047,49 +1057,49 @@
 		 * parse function.
 		 *
 		 * @param {string} str
-		 * @return {Array}
+		 * @return {array}
 		 * @memberOf BBCodeParser.prototype
 		 */
 		base.tokenize = function (str) {
 			var	matches, type, i;
-			var toks   = [];
-			var tokens = [
-				// Close must come before open as they are
-				// the same except close has a / at the start.
+			var tokens = [];
+			// The token types in reverse order of precedence
+			// (they're looped in reverse)
+			var tokenTypes = [
 				{
-					type: TOKEN_CLOSE,
-					regex: /^\[\/[^\[\]]+\]/
-				},
-				{
-					type: TOKEN_OPEN,
-					regex: /^\[[^\[\]]+\]/
+					type: TOKEN_CONTENT,
+					regex: /^([^\[\r\n]+|\[)/
 				},
 				{
 					type: TOKEN_NEWLINE,
 					regex: /^(\r\n|\r|\n)/
 				},
 				{
-					type: TOKEN_CONTENT,
-					regex: /^([^\[\r\n]+|\[)/
+					type: TOKEN_OPEN,
+					regex: /^\[[^\[\]]+\]/
+				},
+				// Close must come before open as they are
+				// the same except close has a / at the start.
+				{
+					type: TOKEN_CLOSE,
+					regex: /^\[\/[^\[\]]+\]/
 				}
 			];
 
-			tokens.reverse();
-
 			strloop:
 			while (str.length) {
-				i = tokens.length;
+				i = tokenTypes.length;
 				while (i--) {
-					type = tokens[i].type;
+					type = tokenTypes[i].type;
 
 					// Check if the string matches any of the tokens
-					if (!(matches = str.match(tokens[i].regex)) ||
+					if (!(matches = str.match(tokenTypes[i].regex)) ||
 						!matches[0]) {
 						continue;
 					}
 
 					// Add the match to the tokens list
-					toks.push(tokenizeTag(type, matches[0]));
+					tokens.push(tokenizeTag(type, matches[0]));
 
 					// Remove the match from the string
 					str = str.substr(matches[0].length);
@@ -1101,13 +1111,13 @@
 				// If there is anything left in the string which doesn't match
 				// any of the tokens then just assume it's content and add it.
 				if (str.length) {
-					toks.push(tokenizeTag(TOKEN_CONTENT, str));
+					tokens.push(tokenizeTag(TOKEN_CONTENT, str));
 				}
 
 				str = '';
 			}
 
-			return toks;
+			return tokens;
 		};
 
 		/**
@@ -1159,7 +1169,7 @@
 		 * all the attributes.
 		 *
 		 * @param {string} attrs
-		 * @return {Array} Assoc array of attributes
+		 * @return {Object} Assoc array of attributes
 		 * @private
 		 */
 		function tokenizeAttrs(attrs) {
@@ -1214,7 +1224,7 @@
 		 * @param  {boolean} preserveNewLines If to preserve all new lines, not
 		 *                                    strip any based on the passed
 		 *                                    formatting options
-		 * @return {Array}                    Array of BBCode objects
+		 * @return {array}                    Array of BBCode objects
 		 * @memberOf BBCodeParser.prototype
 		 */
 		base.parse = function (str, preserveNewLines) {
@@ -1243,7 +1253,7 @@
 		 *
 		 * @param  {string}    name
 		 * @param  {string} type
-		 * @param  {Array}     arr
+		 * @param  {array}     arr
 		 * @return {Boolean}
 		 * @private
 		 */
@@ -1283,8 +1293,8 @@
 		/**
 		 * Parses an array of tokens created by tokenize()
 		 *
-		 * @param  {Array} toks
-		 * @return {Array} Parsed tokens
+		 * @param  {array} toks
+		 * @return {array} Parsed tokens
 		 * @see tokenize()
 		 * @private
 		 */
@@ -1508,7 +1518,7 @@
 		 * the formatting new lines back in when converting
 		 * back to BBCode
 		 *
-		 * @param  {Array} children
+		 * @param  {array} children
 		 * @param  {TokenizeToken} parent
 		 * @param  {boolean} onlyRemoveBreakAfter
 		 * @return {void}
@@ -1636,11 +1646,11 @@
 		 * Will become:
 		 *     [inline]A[/inline][blocklevel]B[/blocklevel][inline]C[/inline]
 		 *
-		 * @param {Array} children
-		 * @param {Array} [parents] Null if there is no parents
-		 * @param {Array} [insideInline] Boolean, if inside an inline element
-		 * @param {Array} [rootArr] Root array if there is one
-		 * @return {Array}
+		 * @param {array} children
+		 * @param {array} [parents] Null if there is no parents
+		 * @param {boolea} [insideInline] If inside an inline element
+		 * @param {array} [rootArr] Root array if there is one
+		 * @return {array}
 		 * @private
 		 */
 		function fixNesting(children, parents, insideInline, rootArr) {
@@ -1719,14 +1729,14 @@
 					rootArr
 				);
 
-				parents.pop(token);
+				parents.pop();
 			}
 		}
 
 		/**
 		 * Removes any empty BBCodes which are not allowed to be empty.
 		 *
-		 * @param {Array} tokens
+		 * @param {array} tokens
 		 * @private
 		 */
 		function removeEmpty(tokens) {
@@ -1921,7 +1931,7 @@
 		 * formatting specified in the options and with any
 		 * fixes specified.
 		 *
-		 * @param  {Array} toks Array of parsed tokens from base.parse()
+		 * @param  {array} toks Array of parsed tokens from base.parse()
 		 * @return {string}
 		 * @private
 		 */
@@ -2061,7 +2071,7 @@
 		/**
 		 * Returns the last element of an array or null
 		 *
-		 * @param {Array} arr
+		 * @param {array} arr
 		 * @return {Object} Last element
 		 * @private
 		 */
@@ -2165,7 +2175,7 @@
 	 *
 	 * Will return 00 if number is not a valid number.
 	 *
-	 * @param  {Number} number
+	 * @param  {any} number
 	 * @return {string}
 	 * @private
 	 */
@@ -2180,7 +2190,13 @@
 
 		return number.length < 2 ? '0' + number : number;
 	}
-
+	/**
+	 * Normalises a CSS colour to hex #xxxxxx format
+	 *
+	 * @param  {string} colorStr
+	 * @return {string}
+	 * @private
+	 */
 	function _normaliseColour(colorStr) {
 		var match;
 
@@ -2191,8 +2207,8 @@
 			colorStr.match(/rgb\((\d{1,3}),\s*?(\d{1,3}),\s*?(\d{1,3})\)/i))) {
 			return '#' +
 				toHex(match[1]) +
-				toHex(match[2] - 0) +
-				toHex(match[3] - 0);
+				toHex(match[2]) +
+				toHex(match[3]);
 		}
 
 		// expand shorthand
@@ -2329,11 +2345,73 @@
 		}
 
 		/**
+		 * Handles adding newlines after block level elements
+		 *
+		 * @param {HTMLElement} element The element to convert
+		 * @param {string} content  The tags text content
+		 * @return {string}
+		 * @private
+		 */
+		function handleBlockNewlines(element, content) {
+			var	tag = element.nodeName.toLowerCase();
+			var isInline = dom.isInline;
+			if (!isInline(element, true) || tag === 'br') {
+				var	isLastBlockChild, parent, parentLastChild,
+					previousSibling = element.previousSibling;
+
+				// Skips selection makers and ignored elements
+				// Skip empty inline elements
+				while (previousSibling &&
+						previousSibling.nodeType === 1 &&
+						!is(previousSibling, 'br') &&
+						isInline(previousSibling, true) &&
+						!previousSibling.firstChild) {
+					previousSibling = previousSibling.previousSibling;
+				}
+
+				// If it's the last block of an inline that is the last
+				// child of a block then it shouldn't cause a line break
+				// except in IE < 11
+				// <block><inline><br></inline></block>
+				do {
+					parent          = element.parentNode;
+					parentLastChild = parent && parent.lastChild;
+
+					isLastBlockChild = parentLastChild === element;
+					element = parent;
+				} while (parent && isLastBlockChild && isInline(parent, true));
+
+				// If this block is:
+				//	* Not the last child of a block level element
+				//	* Is a <li> tag (lists are blocks)
+				//	* Is IE < 11 and the tag is BR. IE < 11 never collapses BR
+				//	  tags.
+				if (!isLastBlockChild || tag === 'li' ||
+					(tag === 'br' && IE_BR_FIX)) {
+					content += '\n';
+				}
+
+				// Check for:
+				// <block>text<block>text</block></block>
+				//
+				// The second opening <block> opening tag should cause a
+				// line break because the previous sibing is inline.
+				if (tag !== 'br' && previousSibling &&
+					!is(previousSibling, 'br') &&
+					isInline(previousSibling, true)) {
+					content = '\n' + content;
+				}
+			}
+
+			return content;
+		}
+
+		/**
 		 * Handles a HTML tag and finds any matching bbcodes
 		 *
-		 * @param {HTMLElement} $element The element to convert
+		 * @param {HTMLElement} element The element to convert
 		 * @param {string} content  The Tags text content
-		 * @param {boolean} blockLevel If to convert block level tags
+		 * @param {boolean} [blockLevel=false] If to convert block level tags
 		 * @return {string} Content with any matching bbcode tags
 		 *                  wrapped around it.
 		 * @private
@@ -2382,55 +2460,6 @@
 						content = _formatString(format, content);
 					}
 				});
-			}
-
-			var isInline = dom.isInline;
-			if (blockLevel && (!isInline(element, true) || tag === 'br')) {
-				var	isLastBlockChild, parent, parentLastChild,
-					previousSibling = element.previousSibling;
-
-				// Skips selection makers and ignored elements
-				// Skip empty inline elements
-				while (previousSibling &&
-						previousSibling.nodeType === 1 &&
-						!is(previousSibling, 'br') &&
-						isInline(previousSibling, true) &&
-						!previousSibling.firstChild) {
-					previousSibling = previousSibling.previousSibling;
-				}
-
-				// If it's the last block of an inline that is the last
-				// child of a block then it shouldn't cause a line break
-				// except in IE < 11
-				// <block><inline><br></inline></block>
-				do {
-					parent          = element.parentNode;
-					parentLastChild = parent && parent.lastChild;
-
-					isLastBlockChild = parentLastChild === element;
-					element = parent;
-				} while (parent && isLastBlockChild && isInline(parent, true));
-
-				// If this block is:
-				//	* Not the last child of a block level element
-				//	* Is a <li> tag (lists are blocks)
-				//	* Is IE < 11 and the tag is BR. IE < 11 never collapses BR
-				//	  tags.
-				if (!isLastBlockChild || tag === 'li' ||
-					(tag === 'br' && IE_BR_FIX)) {
-					content += '\n';
-				}
-
-				// Check for:
-				// <block>text<block>text</block></block>
-				//
-				// The second opening <block> opening tag should cause a
-				// line break because the previous sibing is inline.
-				if (tag !== 'br' && previousSibling &&
-					!is(previousSibling, 'br') &&
-					isInline(previousSibling, true)) {
-					content = '\n' + content;
-				}
 			}
 
 			return content;
@@ -2489,7 +2518,7 @@
 							}
 						}
 
-						// don't loop inside iframes
+						// don't convert iframe contents
 						if (tag !== 'iframe') {
 							curTag = toBBCode(node, vChild);
 						}
@@ -2508,7 +2537,8 @@
 								curTag = handleStyles(node, curTag, true);
 							}
 
-							ret += handleTags(node, curTag, true);
+							curTag = handleTags(node, curTag, true);
+							ret += handleBlockNewlines(node, curTag);
 						} else {
 							ret += curTag;
 						}
