@@ -479,10 +479,6 @@ var defaultCmds = {
 			var selected = editor.getRangeHelper().selectedHtml();
 			var wholeLine = false;
 
-			if (!editor.opts.allowInlineCode) {
-				return;
-			}
-
 			// Check if the whole line was selected
 			// It could be the whole text of the text type node (3)
 			// or innerHTML of an element node (1) if there were some markups
