@@ -780,6 +780,39 @@ QUnit.test('removeWhiteSpace() - Preserve line breaks', function (assert) {
 	);
 });
 
+QUnit.test('removeWhiteSpace() - Ignore marker spaces', function (assert) {
+	var node = utils.htmlToDiv(
+		'aa ' +
+			'<b>bb' +
+				'<span id="sceditor-start-marker" ' +
+					'class="sceditor-selection sceditor-ignore" ' +
+					'style="display: none; line-height: 0;"> </span>' +
+				'<span id="sceditor-end-marker" ' +
+					'class="sceditor-selection sceditor-ignore" ' +
+					'style="display: none; line-height: 0;"> </span>' +
+			'</b>' +
+		' aa'
+	);
+
+	dom.removeWhiteSpace(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToDiv(
+			'aa ' +
+				'<b>bb' +
+					'<span id="sceditor-start-marker" ' +
+						'class="sceditor-selection sceditor-ignore" ' +
+						'style="display: none; line-height: 0;"> </span>' +
+					'<span id="sceditor-end-marker" ' +
+						'class="sceditor-selection sceditor-ignore" ' +
+						'style="display: none; line-height: 0;"> </span>' +
+				'</b>' +
+			' aa'
+		)
+	);
+});
+
 QUnit.test(
 	'removeWhiteSpace() - Siblings with start and end spaces',
 	function (assert) {
