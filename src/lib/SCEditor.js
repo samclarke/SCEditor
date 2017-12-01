@@ -4,7 +4,7 @@ import defaultOptions from './defaultOptions.js';
 import defaultCommands from './defaultCommands.js';
 import PluginManager from './PluginManager.js';
 import RangeHelper from './RangeHelper.js';
-import _tmpl from './templates.js';
+import * as template from './templates.js';
 import * as escape from './escape.js';
 import * as browser from './browser.js';
 import * as emoticons from './emoticons.js';
@@ -368,6 +368,13 @@ export default function SCEditor(original, userOptions) {
 		true, {}, defaultOptions, userOptions
 	);
 
+	/**
+	 * Templates for this editor instance
+	 * @name templates
+	 * @memberOf SCEditor.prototype
+	 */
+	base.template = template;
+
 	// Don't deep extend emoticons (fixes #565)
 	base.opts.emoticons = userOptions.emoticons || defaultOptions.emoticons;
 
@@ -524,7 +531,7 @@ export default function SCEditor(original, userOptions) {
 
 		wysiwygDocument = wysiwygEditor.contentDocument;
 		wysiwygDocument.open();
-		wysiwygDocument.write(_tmpl('html', {
+		wysiwygDocument.write(template.render('html', {
 			attrs: ' class="' + className + '"',
 			spellcheck: options.spellcheck ? '' : 'spellcheck="false"',
 			charset: options.charset,
@@ -698,7 +705,7 @@ export default function SCEditor(original, userOptions) {
 				}
 
 				shortcut = command.shortcut;
-				button   = _tmpl('toolbarButton', {
+				button   = template.render('toolbarButton', {
 					name: commandName,
 					dispName: base._(command.name ||
 							command.tooltip || commandName)
@@ -910,7 +917,7 @@ export default function SCEditor(original, userOptions) {
 		}
 
 		utils.each(allEmoticons, function (key, url) {
-			allEmoticons[key] = _tmpl('emoticon', {
+			allEmoticons[key] = template.render('emoticon', {
 				key: key,
 				// Prefix emoticon root to emoticon urls
 				url: root + (url.url || url),

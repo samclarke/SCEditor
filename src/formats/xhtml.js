@@ -185,13 +185,11 @@
 					editor,
 					caller,
 					function (id, time) {
-						editor.insertText(
-							'<iframe width="560" height="315" ' +
-							'src="https://www.youtube.com/embed/{id}?' +
-							'wmode=opaque&start=' + time + '" ' +
-							'data-youtube-id="' + id + '" ' +
-							'frameborder="0" allowfullscreen></iframe>'
-						);
+						editor.insertText(editor.template.render('youtube', {
+							id: id,
+							time: time,
+							params: editor.opts.youtubeParameters
+						}));
 					}
 				);
 			}

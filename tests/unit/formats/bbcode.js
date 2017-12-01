@@ -1,6 +1,7 @@
 import defaultOptions from 'src/lib/defaultOptions.js';
 import * as utils from 'tests/unit/utils.js';
 import * as browser from 'src/lib/browser.js';
+import * as template from 'src/lib/templates.js';
 import 'src/formats/bbcode.js';
 
 // In IE < 11 a BR at the end of a block level element
@@ -12,7 +13,8 @@ var IE_BR_STR = IE_BR_FIX ? '' : '<br />';
 QUnit.module('plugins/bbcode', {
 	beforeEach: function () {
 		this.mockEditor = {
-			opts: $.extend({}, defaultOptions)
+			opts: $.extend({}, defaultOptions),
+			template: template
 		};
 
 		this.format = new sceditor.formats.bbcode();
@@ -52,7 +54,8 @@ QUnit.test('From BBCode method as fragment', function (assert) {
 
 QUnit.test('BBcode to HTML trim', function (assert) {
 	this.mockEditor = {
-		opts: $.extend({}, defaultOptions, { bbcodeTrim: true })
+		opts: $.extend({}, defaultOptions, { bbcodeTrim: true }),
+		template: template
 	};
 
 	this.format = new sceditor.formats.bbcode();
@@ -79,7 +82,8 @@ QUnit.test('BBcode to HTML trim', function (assert) {
 
 QUnit.test('HTML to BBCode trim', function (assert) {
 	this.mockEditor = {
-		opts: $.extend({}, defaultOptions, { bbcodeTrim: true })
+		opts: $.extend({}, defaultOptions, { bbcodeTrim: true }),
+		template: template
 	};
 
 	this.format = new sceditor.formats.bbcode();
@@ -109,7 +113,8 @@ QUnit.test('HTML to BBCode trim', function (assert) {
 QUnit.module('plugins/bbcode - HTML to BBCode', {
 	beforeEach: function () {
 		this.mockEditor = {
-			opts: $.extend({}, defaultOptions)
+			opts: $.extend({}, defaultOptions),
+			template: template
 		};
 
 		this.format = new sceditor.formats.bbcode();
@@ -852,5 +857,15 @@ QUnit.test('YouTube', function (assert) {
 	assert.equal(
 		this.htmlToBBCode('<iframe data-youtube-id="xyz"></iframe>'),
 		'[youtube]xyz[/youtube]'
+	);
+
+	assert.equal(
+		this.htmlToBBCode('<iframe data-youtube-id="xyz" data-youtube-start="0"></iframe>'),
+		'[youtube]xyz[/youtube]'
+	);
+
+	assert.equal(
+		this.htmlToBBCode('<iframe data-youtube-id="xyz" data-youtube-start="123"></iframe>'),
+		'[youtube=123]xyz[/youtube]'
 	);
 });
