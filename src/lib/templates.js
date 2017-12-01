@@ -39,6 +39,16 @@ var _templates = {
 	sizeOpt: '<a class="sceditor-fontsize-option" data-size="{size}" ' +
 		'href="#"><font size="{size}">{size}</font></a>',
 
+	ulistTypeOpt: '<a class="sceditor-listtype-option" data-type="{type}" ' +
+		'href="#">' +
+		'<ul style="list-style-type:{type}" ' +
+		'class="sceditor-listtype"><li>' +
+		'{text}</li></ul></a>',
+
+	olistTypeOpt: '<a class="sceditor-listtype-option" ' +
+		'data-styletype="{styleType}" data-tagtype="{tagType}" ' +
+		'href="#">{text}</a>',
+
 	pastetext:
 		'<div><label for="txt">{label}</label> ' +
 			'<textarea cols="20" rows="7" id="txt"></textarea></div>' +
@@ -85,9 +95,9 @@ var _templates = {
 			'</div>',
 
 	youtube:
-		'<iframe width="560" height="315" frameborder="0" allowfullscreen' +
-		'src="https://www.youtube.com/embed/{id}?wmode=opaque&start={time}" ' +
-		'data-youtube-id="{id}"></iframe>'
+		'<iframe {params} ' +
+		'src="https://www.youtube.com/embed/{id}?start={time}" ' +
+		'data-youtube-id="{id}" data-youtube-start="{time}"></iframe>'
 };
 
 /**
@@ -102,7 +112,7 @@ var _templates = {
  * @returns {string|DocumentFragment}
  * @private
  */
-export default function (name, params, createHtml) {
+export function render(name, params, createHtml) {
 	var template = _templates[name];
 
 	Object.keys(params).forEach(function (name) {
