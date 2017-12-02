@@ -241,6 +241,22 @@
 				);
 			}
 		},
+		facebook: {
+			txtExec: function (caller) {
+				var editor = this;
+
+				getEditorCommand('facebook')._dropDown(
+					editor,
+					caller,
+					function (id) {
+						editor.insertText(editor.template.render('facebook', {
+							id: id,
+							params: editor.opts.facebookParameters
+						}));
+					}
+				);
+			}
+		},
 		rtl: {
 			txtExec: ['<div stlye="direction:rtl;">', '</div>']
 		},

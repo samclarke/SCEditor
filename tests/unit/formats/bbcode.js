@@ -1028,3 +1028,11 @@ QUnit.test('YouTube', function (assert) {
 		'[youtube=123]xyz[/youtube]'
 	);
 });
+
+
+QUnit.test('Facebook', function (assert) {
+	assert.equal(
+		this.htmlToBBCode('<iframe data-facebook-id="987654"></iframe>'),
+		'[facebook]987654[/facebook]'
+	);
+});

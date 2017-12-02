@@ -846,6 +846,44 @@ var defaultCmds = {
 	},
 	// END_COMMAND
 
+	// START_COMMAND: Facebook
+	facebook: {
+		_dropDown: function (editor, caller, callback) {
+			var	content = dom.createElement('div');
+
+			dom.appendChild(content, template.render('facebookMenu', {
+				label: editor._('Video URL:'),
+				insert: editor._('Insert')
+			}, true));
+
+			dom.on(content, 'click', '.button', function (e) {
+				var val = dom.find(content, '#link')[0].value;
+				var idMatch = val.match(/videos\/(\d+)+|v=(\d+)|vb.\d+\/(\d+)/);
+
+				if (idMatch && /^[a-zA-Z0-9]/.test(idMatch[1])) {
+					callback(idMatch[1]);
+				}
+
+				editor.closeDropDown(true);
+				e.preventDefault();
+			});
+
+			editor.createDropDown(caller, 'insertlink', content);
+		},
+		exec: function (btn) {
+			var editor = this;
+
+			defaultCmds.facebook._dropDown(editor, btn, function (id) {
+				editor.wysiwygEditorInsertHtml(template.render('facebook', {
+					id: id,
+					params: editor.opts.facebookParameters
+				}));
+			});
+		},
+		tooltip: 'Insert a Facebook video'
+	},
+	// END_COMMAND
+
 	// START_COMMAND: Date
 	date: {
 		_date: function (editor) {

@@ -97,7 +97,18 @@ var _templates = {
 	youtube:
 		'<iframe {params} ' +
 		'src="https://www.youtube.com/embed/{id}?start={time}" ' +
-		'data-youtube-id="{id}" data-youtube-start="{time}"></iframe>'
+		'data-youtube-id="{id}" data-youtube-start="{time}"></iframe>',
+
+	facebookMenu:
+		'<div><label for="link">{label}</label> ' +
+			'<input type="text" id="link" dir="ltr" placeholder="https://" /></div>' +
+		'<div><input type="button" class="button" value="{insert}" />' +
+			'</div>',
+
+	facebook:
+		'<iframe {params} ' +
+		'src="https://www.facebook.com/video/embed?video_id={id}" ' +
+		'data-facebook-id="{id}"></iframe>'
 };
 
 /**

@@ -16,7 +16,7 @@ export default {
 		'left,center,right,justify|font,size,color,removeformat|' +
 		'cut,copy,pastetext|bulletlist,orderedlist,indent,outdent|' +
 		'table|code,quote|horizontalrule,image,email,link,unlink|' +
-		'emoticon,youtube,date,time|ltr,rtl|print,maximize,source',
+		'emoticon,youtube,facebook,date,time|ltr,rtl|print,maximize,source',
 
 	/**
 	 * Comma separated list of commands to excludes from the toolbar
@@ -366,6 +366,15 @@ export default {
 	 */
 	youtubeParameters: 'width="560" height="315" frameborder="0" ' +
 		'allowfullscreen',
+
+	/**
+	 * Parameters that will be added to Facebook frame tag
+	 *
+	 * @type {string}
+	 */
+	facebookParameters: 'width="560" height="315"' +
+		'style="border:none;overflow:hidden" scrolling="no" frameborder="0"' +
+		'allowTransparency="true" allowFullScreen="true"',
 
 	/**
 	 * Configuration of the bullets list options.

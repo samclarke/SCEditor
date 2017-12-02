@@ -1197,6 +1197,23 @@ QUnit.test('YouTube', function (assert) {
 	);
 });
 
+QUnit.test('Facebook', function (assert) {
+	this.parser = new sceditor.BBCodeParser(
+		{ 	facebookParameters: 'width="123" height="456" frameborder="0" ' +
+			'allowfullscreen'
+		},
+		template
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[facebook]987654[/facebook]'),
+		'<div><iframe width="123" height="456" frameborder="0" allowfullscreen ' +
+			'src="https://www.facebook.com/video/embed?video_id=987654" ' +
+			'data-facebook-id="987654">' +
+			'</iframe></div>\n',
+		'Normal'
+	);
+});
 
 QUnit.module('plugins/bbcode#Parser - XSS', {
 	beforeEach: function () {

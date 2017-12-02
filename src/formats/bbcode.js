@@ -305,6 +305,19 @@
 				);
 			}
 		},
+		facebook: {
+			txtExec: function (caller) {
+				var editor = this;
+
+				getEditorCommand('facebook')._dropDown(
+					editor,
+					caller,
+					function (id) {
+						editor.insertText('[facebook]' + id + '[/facebook]');
+					}
+				);
+			}
+		},
 		rtl: {
 			txtExec: ['[rtl]', '[/rtl]']
 		},
@@ -1018,6 +1031,27 @@
 		},
 		// END_COMMAND
 
+		// START_COMMAND: Facebook
+		facebook: {
+			allowsEmpty: true,
+			tags: {
+				iframe: {
+					'data-facebook-id': null
+				}
+			},
+			format: function (element, content) {
+				var id = attr(element, 'data-facebook-id');
+
+				return id ? '[facebook]' + id + '[/facebook]' : content;
+			},
+			html: function (token, attrs, content) {
+				return this.template.render('facebook', {
+					id: content,
+					params: this.options.facebookParameters
+				});
+			}
+		},
+		// END_COMMAND
 
 		// START_COMMAND: Rtl
 		rtl: {
