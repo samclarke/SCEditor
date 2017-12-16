@@ -137,26 +137,84 @@
 		},
 		bulletlist: {
 			txtExec: function (caller, selected) {
+				var editor = this;
 				var content = '';
 
-				each(selected.split(/\r?\n/), function () {
-					content += (content ? '\n' : '') +
-						'[li]' + this + '[/li]';
-				});
+				getEditorCommand('bulletlist')._dropDown(
+					editor,
+					caller,
+					function (listType) {
+						var tag;
 
-				this.insertText('[ul]\n' + content + '\n[/ul]');
+						if (editor.opts.alternativeLists) {
+							tag = 'list';
+
+							selected.split(/\r?\n/).forEach(function (item) {
+								content += (content ? '\n' : '') +
+									'[*]' + item;
+							});
+						} else {
+							tag = 'ul';
+
+							selected.split(/\r?\n/).forEach(function (item) {
+								content += (content ? '\n' : '') +
+									'[li]' + item + '[/li]';
+							});
+						}
+
+						if (listType === 'disc') {
+							editor.insertText(
+								'[' + tag + ']\n' + content + '\n[/' + tag + ']'
+							);
+						} else {
+							editor.insertText(
+								'[' + tag + '=' + listType + ']\n' + content +
+								'\n[/' + tag + ']'
+							);
+						}
+					}
+				);
 			}
 		},
 		orderedlist: {
 			txtExec: function (caller, selected) {
+				var editor = this;
 				var content = '';
 
-				each(selected.split(/\r?\n/), function () {
-					content += (content ? '\n' : '') +
-						'[li]' + this + '[/li]';
-				});
+				getEditorCommand('orderedlist')._dropDown(
+					editor,
+					caller,
+					function (tagType) {
+						var tag;
 
-				this.insertText('[ol]\n' + content + '\n[/ol]');
+						if (editor.opts.alternativeLists) {
+							tag = 'list';
+
+							selected.split(/\r?\n/).forEach(function (item) {
+								content += (content ? '\n' : '') +
+									'[*]' + item;
+							});
+						} else {
+							tag = 'ol';
+
+							selected.split(/\r?\n/).forEach(function (item) {
+								content += (content ? '\n' : '') +
+									'[li]' + item + '[/li]';
+							});
+						}
+
+						if (tagType === '1' && !editor.opts.alternativeLists) {
+							editor.insertText(
+								'[' + tag + ']\n' + content + '\n[/' + tag + ']'
+							);
+						} else {
+							editor.insertText(
+								'[' + tag + '=' + tagType + ']\n' + content +
+								'\n[/' + tag + ']'
+							);
+						}
+					}
+				);
 			}
 		},
 		table: {
@@ -167,6 +225,9 @@
 		},
 		code: {
 			txtExec: ['[code]', '[/code]']
+		},
+		c: {
+			txtExec: ['[c]', '[/c]']
 		},
 		image: {
 			txtExec: function (caller, selected) {
@@ -240,6 +301,19 @@
 					caller,
 					function (id) {
 						editor.insertText('[youtube]' + id + '[/youtube]');
+					}
+				);
+			}
+		},
+		facebook: {
+			txtExec: function (caller) {
+				var editor = this;
+
+				getEditorCommand('facebook')._dropDown(
+					editor,
+					caller,
+					function (id) {
+						editor.insertText('[facebook]' + id + '[/facebook]');
 					}
 				);
 			}
@@ -436,30 +510,130 @@
 
 		// START_COMMAND: Lists
 		ul: {
-			tags: {
-				ul: null
+			styles: {
+				'list-style-type': null
 			},
 			breakStart: true,
 			isInline: false,
 			skipLastLineBreak: true,
-			format: '[ul]{0}[/ul]',
-			html: '<ul>{0}</ul>'
+			format: function (element, content) {
+				var tag = element.nodeName.toLowerCase();
+				var listType = element.style['list-style-type'];
+				var list = this.options.bulletList;
+
+				// That call is not for this tag, skip it
+				if (tag !== 'ul') {
+					return content;
+				}
+
+				if (this.options.alternativeLists) {
+					tag = 'list';
+				} else {
+					tag = 'ul';
+				}
+
+				if (listType && listType !== 'disc' && list[listType]) {
+					return '[' + tag + '=' + listType + ']' + content +
+						'[/' + tag + ']';
+				} else {
+					return '[' + tag + ']' + content + '[/' + tag + ']';
+				}
+			},
+			html: function (token, attrs, content) {
+				var listType = 'disc';
+				var attr = attrs.defaultattr;
+				var list = this.options.bulletList;
+
+				if (attr) {
+					listType = attr;
+				}
+
+				// Specified list type is not valid, backup to default
+				if (!list[listType]) {
+					listType = 'disc';
+				}
+
+				return '<ul style="list-style-type:' + listType + '">' +
+					content + '</ul>';
+			}
 		},
 		list: {
 			breakStart: true,
 			isInline: false,
 			skipLastLineBreak: true,
-			html: '<ul>{0}</ul>'
+			html: function (token, attrs, content) {
+				var listType = 'disc';
+				var toHtml = null;
+
+				if (attrs.defaultattr) {
+					listType = attrs.defaultattr;
+				}
+
+				if (this.options.bulletList[listType]) {
+					// This listType belongs to bulletList (UL)
+					toHtml = bbcodeHandlers.ul.html;
+				} else if (this.options.orderedList[listType]) {
+					// This listType belongs to orderedList (OL)
+					toHtml = bbcodeHandlers.ol.html;
+				} else {
+					// unknown listType, use default bullet list behavior
+					toHtml = bbcodeHandlers.ul.html;
+				}
+
+				return toHtml.call(this, token, attrs, content);
+			}
 		},
 		ol: {
-			tags: {
-				ol: null
+			styles: {
+				'list-style-type': null
 			},
 			breakStart: true,
 			isInline: false,
 			skipLastLineBreak: true,
-			format: '[ol]{0}[/ol]',
-			html: '<ol>{0}</ol>'
+			format: function (element, content) {
+				var tag = element.nodeName.toLowerCase();
+				var tagType = attr(element, 'data-tagtype');
+				var list = this.options.orderedList;
+
+				// That call is not for this tag, skip it
+				if (tag !== 'ol') {
+					return content;
+				}
+
+				if (this.options.alternativeLists) {
+					tag = 'list';
+				} else {
+					tag = 'ol';
+				}
+
+				if ((tagType && tagType !== '1' ||
+					this.options.alternativeLists) && list[tagType]) {
+					return '[' + tag + '=' + tagType + ']' + content +
+						'[/' + tag + ']';
+				} else {
+					return '[' + tag + ']' + content + '[/' + tag + ']';
+				}
+			},
+			html: function (token, attrs, content) {
+				var tagType = '1';
+				var styleType;
+				var list = this.options.orderedList;
+				var attr = attrs.defaultattr;
+
+				if (attr) {
+					tagType = attr;
+				}
+
+				// Specified list type is not valid, backup to default
+				if (!list[tagType]) {
+					tagType = '1';
+				}
+
+				styleType = list[tagType].type;
+
+				return '<ol style="list-style-type:' + styleType + '" ' +
+					'data-tagtype="' + tagType + '">' + content + '</ol>';
+			}
 		},
 		li: {
 			tags: {
@@ -467,11 +641,18 @@
 			},
 			isInline: false,
 			closedBy: ['/ul', '/ol', '/list', '*', 'li'],
-			format: '[li]{0}[/li]',
+			format: function (element, content) {
+				if (this.options.alternativeLists) {
+					return '[*]' + content;
+				} else {
+					return '[li]' + content + '[/li]';
+				}
+			},
 			html: '<li>{0}</li>'
 		},
 		'*': {
 			isInline: false,
+			excludeClosing: true,
 			closedBy: ['/ul', '/ol', '/list', '*', 'li'],
 			html: '<li>{0}</li>'
 		},
@@ -715,6 +896,41 @@
 		},
 		// END_COMMAND
 
+		// START_COMMAND: c (inline code)
+		c: {
+			tags: {
+				c: null
+			},
+			isInline: true,
+			allowedChildren: ['#'],
+			format: '[c]{0}[/c]',
+			html: '<span class="inline-code">{0}</span>'
+		},
+		// END_COMMAND
+
+		// START_COMMAND: c (inline code)
+		span: {
+			tags: {
+				span: null
+			},
+			isInline: true,
+			allowedChildren: ['#'],
+			format: function (element, content) {
+				if (this.options.allowInlineCode) {
+					return '[c]' + content + '[/c]';
+				} else {
+					return content;
+				}
+			},
+			html: function (token, attrs, content) {
+				if (this.options.allowInlineCode) {
+					return '<span class="inline-code">' + content + '</span>';
+				} else {
+					return content;
+				}
+			}
+		},
+		// END_COMMAND
 
 		// START_COMMAND: Left
 		left: {
@@ -785,20 +1001,57 @@
 			allowsEmpty: true,
 			tags: {
 				iframe: {
-					'data-youtube-id': null
+					'data-youtube-id': null,
+					'data-youtube-start': null
 				}
 			},
 			format: function (element, content) {
-				element = attr(element, 'data-youtube-id');
+				var id = attr(element, 'data-youtube-id');
+				var start = attr(element, 'data-youtube-start');
 
-				return element ? '[youtube]' + element + '[/youtube]' : content;
+				if (start > 0) {
+					return id ? '[youtube=' + start + ']' + id +
+						'[/youtube]' : content;
+				} else {
+					return id ? '[youtube]' + id + '[/youtube]' : content;
+				}
 			},
-			html: '<iframe width="560" height="315" frameborder="0" ' +
-				'src="https://www.youtube.com/embed/{0}?wmode=opaque" ' +
-				'data-youtube-id="{0}" allowfullscreen></iframe>'
+			html: function (token, attrs, content) {
+				var start = 0;
+				if (attrs.defaultattr) {
+					start = escapeEntities(attrs.defaultattr);
+				}
+
+				return this.template.render('youtube', {
+					id: content,
+					time: start,
+					params: this.options.youtubeParameters
+				});
+			}
 		},
 		// END_COMMAND
 
+		// START_COMMAND: Facebook
+		facebook: {
+			allowsEmpty: true,
+			tags: {
+				iframe: {
+					'data-facebook-id': null
+				}
+			},
+			format: function (element, content) {
+				var id = attr(element, 'data-facebook-id');
+
+				return id ? '[facebook]' + id + '[/facebook]' : content;
+			},
+			html: function (token, attrs, content) {
+				return this.template.render('facebook', {
+					id: content,
+					params: this.options.facebookParameters
+				});
+			}
+		},
+		// END_COMMAND
 
 		// START_COMMAND: Rtl
 		rtl: {
@@ -1027,15 +1280,19 @@
 	/**
 	 * SCEditor BBCode parser class
 	 *
-	 * @param {Object} options
+	 * @param {Object} Editor options
+	 * @param {Object} Editor template
 	 * @class BBCodeParser
 	 * @name BBCodeParser
 	 * @since v1.4.0
 	 */
-	function BBCodeParser(options) {
+	function BBCodeParser(options, template) {
 		var base = this;
 
-		base.opts = extend({}, BBCodeParser.defaults, options);
+		base.options = options;
+		base.parserOptions = extend({}, BBCodeParser.defaults,
+			options.parserOptions);
+		base.template = template;
 
 		/**
 		 * Takes a BBCode string and splits it into open,
@@ -1219,7 +1476,7 @@
 		 */
 		base.parse = function (str, preserveNewLines) {
 			var ret  = parseTokens(base.tokenize(str));
-			var opts = base.opts;
+			var opts = base.parserOptions;
 
 			if (opts.fixInvalidNesting) {
 				fixNesting(ret);
@@ -1272,7 +1529,7 @@
 			var	parentBBCode    = parent ? bbcodeHandlers[parent.name] : {},
 				allowedChildren = parentBBCode.allowedChildren;
 
-			if (base.opts.fixInvalidChildren && allowedChildren) {
+			if (base.parserOptions.fixInvalidChildren && allowedChildren) {
 				return allowedChildren.indexOf(child.name || '#') > -1;
 			}
 
@@ -1468,7 +1725,7 @@
 									openTags.pop();
 								} else if (bbcode &&
 									bbcode.isInline === false &&
-									base.opts.breakAfterBlock &&
+									base.parserOptions.breakAfterBlock &&
 									bbcode.breakAfter !== false) {
 									openTags.pop();
 								}
@@ -1541,7 +1798,7 @@
 						// (breakStartBlock, breakStart) e.g. [tag]\n
 						if (!left) {
 							if (parentBBCode.isInline === false &&
-								base.opts.breakStartBlock &&
+								base.parserOptions.breakStartBlock &&
 								parentBBCode.breakStart !== false) {
 								remove = true;
 							}
@@ -1555,7 +1812,7 @@
 						// remove last line break (breakEndBlock, breakEnd)
 						} else if (!removedBreakEnd && !right) {
 							if (parentBBCode.isInline === false &&
-								base.opts.breakEndBlock &&
+								base.parserOptions.breakEndBlock &&
 								parentBBCode.breakEnd !== false) {
 								remove = true;
 							}
@@ -1572,7 +1829,7 @@
 						if ((bbcode = bbcodeHandlers[left.name])) {
 							if (!onlyRemoveBreakAfter) {
 								if (bbcode.isInline === false &&
-									base.opts.breakAfterBlock &&
+									base.parserOptions.breakAfterBlock &&
 									bbcode.breakAfter !== false) {
 									remove = true;
 								}
@@ -1591,7 +1848,7 @@
 
 						if ((bbcode = bbcodeHandlers[right.name])) {
 							if (bbcode.isInline === false &&
-								base.opts.breakBeforeBlock &&
+								base.parserOptions.breakBeforeBlock &&
 								bbcode.breakBefore !== false) {
 								remove = true;
 							}
@@ -1942,25 +2199,25 @@
 				isBlock       = !(!bbcode || bbcode.isInline !== false);
 				isSelfClosing = bbcode && bbcode.isSelfClosing;
 
-				breakBefore = (isBlock && base.opts.breakBeforeBlock &&
+				breakBefore = (isBlock && base.parserOptions.breakBeforeBlock &&
 						bbcode.breakBefore !== false) ||
 					(bbcode && bbcode.breakBefore);
 
 				breakStart = (isBlock && !isSelfClosing &&
-						base.opts.breakStartBlock &&
+						base.parserOptions.breakStartBlock &&
 						bbcode.breakStart !== false) ||
 					(bbcode && bbcode.breakStart);
 
-				breakEnd = (isBlock && base.opts.breakEndBlock &&
+				breakEnd = (isBlock && base.parserOptions.breakEndBlock &&
 						bbcode.breakEnd !== false) ||
 					(bbcode && bbcode.breakEnd);
 
-				breakAfter = (isBlock && base.opts.breakAfterBlock &&
+				breakAfter = (isBlock && base.parserOptions.breakAfterBlock &&
 						bbcode.breakAfter !== false) ||
 					(bbcode && bbcode.breakAfter);
 
 				quoteType = (bbcode ? bbcode.quoteType : null) ||
-					base.opts.quoteType || QuoteType.auto;
+					base.parserOptions.quoteType || QuoteType.auto;
 
 				if (!bbcode && token.type === TOKEN_OPEN) {
 					ret.push(token.val);
@@ -2238,7 +2495,8 @@
 			ol: ['li', 'ol', 'ul'],
 			table: ['tr'],
 			tr: ['td', 'th'],
-			code: ['br', 'p', 'div']
+			code: ['br', 'p', 'div'],
+			span: ['br']
 		};
 
 		/**
@@ -2528,7 +2786,8 @@
 		 * @private
 		 */
 		base.init = function () {
-			base.opts = this.opts;
+			base.options = this.opts;
+			base.template = this.template;
 			base.elementToBbcode = elementToBbcode;
 
 			// build the BBCode cache
@@ -2551,9 +2810,9 @@
 		 * @param {boolean} [legacyAsFragment] Used by fromBBCode() method
 		 */
 		function toHtml(asFragment, source, legacyAsFragment) {
-			var	parser = new BBCodeParser(base.opts.parserOptions);
+			var	parser = new BBCodeParser(base.options, base.template);
 			var html = parser.toHTML(
-				base.opts.bbcodeTrim ? source.trim() : source
+				base.options.bbcodeTrim ? source.trim() : source
 			);
 
 			return (asFragment || legacyAsFragment) ?
@@ -2576,7 +2835,7 @@
 			var	bbcode, elements;
 			var containerParent = context.createElement('div');
 			var container = context.createElement('div');
-			var parser = new BBCodeParser(base.opts.parserOptions);
+			var parser = new BBCodeParser(base.options, base.template);
 
 			container.innerHTML = html;
 			css(containerParent, 'visibility', 'hidden');
@@ -2612,7 +2871,7 @@
 
 			bbcode = parser.toBBCode(bbcode, true);
 
-			if (base.opts.bbcodeTrim) {
+			if (base.options.bbcodeTrim) {
 				bbcode = bbcode.trim();
 			}
 

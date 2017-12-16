@@ -54,6 +54,17 @@ code {
 	padding: 1em;
 	text-align: left;
 	margin: .25em 0;
+	direction: ltr;
+}
+
+span.inline-code {
+	display: inline;
+	background: #f1f1f1;
+	border: 1px solid #C9D2D8;
+	font-size: 0.9em;
+	font-style: normal;
+	white-space: pre;
+	padding: 0 3px;
 }
 
 blockquote {

@@ -16,7 +16,7 @@ export default {
 		'left,center,right,justify|font,size,color,removeformat|' +
 		'cut,copy,pastetext|bulletlist,orderedlist,indent,outdent|' +
 		'table|code,quote|horizontalrule,image,email,link,unlink|' +
-		'emoticon,youtube,date,time|ltr,rtl|print,maximize,source',
+		'emoticon,youtube,facebook,date,time|ltr,rtl|print,maximize,source',
 
 	/**
 	 * Comma separated list of commands to excludes from the toolbar
@@ -346,7 +346,7 @@ export default {
 	 * BBCode parser options, only applies if using the editor in BBCode
 	 * mode.
 	 *
-	 * See SCEditor.BBCodeParser.defaults for list of valid options
+	 * See BBCodeParser.defaults in formats/bbcode.js for list of valid options
 	 *
 	 * @type {Object}
 	 */
@@ -357,5 +357,93 @@ export default {
 	 *
 	 * @type {Object}
 	 */
-	dropDownCss: { }
+	dropDownCss: { },
+
+	/**
+	 * Parameters that will be added to YouTube frame tag
+	 *
+	 * @type {string}
+	 */
+	youtubeParameters: 'width="560" height="315" frameborder="0" ' +
+		'allowfullscreen',
+
+	/**
+	 * Parameters that will be added to Facebook frame tag
+	 *
+	 * @type {string}
+	 */
+	facebookParameters: 'width="560" height="315"' +
+		'style="border:none;overflow:hidden" scrolling="no" frameborder="0"' +
+		'allowTransparency="true" allowFullScreen="true"',
+
+	/**
+	 * Configuration of the bullets list options.
+	 * The configuration overrides the default options.
+	 *
+	 * The list should include BBCode tagName, which is valid css style name
+	 * and the description of the option that will be shown in the dropdown list
+	 *
+	 * The format of the list is:
+	 * bbCode-type: Description
+	 *
+	 * @type {Object}
+	 */
+	bulletList: {
+		'disc': 'Bullet',
+		'circle': 'Circle',
+		'square': 'Square'
+	},
+
+	/**
+	 * Configuration of the ordered list options.
+	 * The configuration overrides the default options.
+	 *
+	 * The list should include BBCode tagName, valid css style list-style-type
+	 * and the description of the option that will be shown in the dropdown list
+	 *
+	 * The format of the list is:
+	 * bbCode-type: { "type": style-type, "description": Description }
+	 *
+	 * @type {Object}
+	 */
+	orderedList: {
+		'1': {
+			type: 'decimal',
+			description: 'Decimal numbers (1, 2, 3, 4)'
+		},
+		'a': {
+			type: 'lower-alpha',
+			description: 'Alphabetic lowercase (a, b, c, d)'
+		},
+		'A': {
+			type: 'upper-alpha',
+			description: 'Alphabetic uppercase (A, B, C, D)'
+		},
+		'i': {
+			type: 'lower-roman',
+			description: 'Roman lowercase (i, ii, iii, iv)'
+		},
+		'I': {
+			type: 'upper-roman',
+			description: 'Roman uppercase (I, II, III, IV)'
+		}
+	},
+
+	/**
+	 * Set to true in order to use alternative bbcode list representation as
+	 * [list][/list] instead of [ul][/ul] or [ol][/ol]
+	 * and [*] as list item instead of [li][/li]
+	 *
+	 * @type {boolean}
+	 */
+	alternativeLists: false,
+
+	/**
+	 * Set to true to allow creation of inline code segments wrapped with
+	 * [c]code[/c] tags
+	 *
+	 * @type {boolean}
+	 */
+	allowInlineCode: false
+
 };
