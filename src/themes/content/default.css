@@ -54,6 +54,7 @@ code {
 	padding: 1em;
 	text-align: left;
 	margin: .25em 0;
+	direction: ltr;
 }
 
 span.inline-code {
