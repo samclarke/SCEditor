@@ -13,7 +13,7 @@ export default {
 	 * @type {string}
 	 */
 	toolbar: 'bold,italic,underline,strike,subscript,superscript|' +
-		'left,center,right,justify|font,size,color,removeformat|' +
+		'left,center,right,justify|heading,font,size,color,removeformat|' +
 		'cut,copy,pastetext|bulletlist,orderedlist,indent,outdent|' +
 		'table|code,quote|horizontalrule,image,email,link,unlink|' +
 		'emoticon,youtube,facebook,date,time|ltr,rtl|print,maximize,source',
@@ -428,6 +428,20 @@ export default {
 			description: 'Roman uppercase (I, II, III, IV)'
 		}
 	},
+
+	/**
+	 * Configuration of shown heading options.
+	 *
+	 * Sometimes you might not want to show all the headings, for example H1
+	 * might be used for page title and you don't want the use of that heading
+	 * for other purposes as well
+	 *
+	 * The format of the list is comma separated headings tags, without spaces
+	 * 'h1,h2,h3'
+	 *
+	 * @type {Object}
+	 */
+	headingList: 'h2,h3,h4,h5,h6',
 
 	/**
 	 * Set to true in order to use alternative bbcode list representation as

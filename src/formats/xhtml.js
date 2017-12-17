@@ -149,6 +149,20 @@
 				);
 			}
 		},
+		heading: {
+			txtExec: function (caller) {
+				var editor = this;
+
+				getEditorCommand('heading')._dropDown(
+					editor,
+					caller,
+					function (tagName) {
+						editor.insertText('<' + tagName + '>',
+							'</' + tagName + '>');
+					}
+				);
+			}
+		},
 		table: {
 			txtExec: ['<table><tr><td>', '</td></tr></table>']
 		},

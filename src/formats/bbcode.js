@@ -217,6 +217,22 @@
 				);
 			}
 		},
+		heading: {
+			txtExec: function (caller) {
+				var editor = this;
+
+				getEditorCommand('heading')._dropDown(
+					editor,
+					caller,
+					function (type) {
+						editor.insertText(
+							'[' + type + ']',
+							'[/' + type + ']'
+						);
+					}
+				);
+			}
+		},
 		table: {
 			txtExec: ['[table][tr][td]', '[/td][/tr][/table]']
 		},
@@ -1070,6 +1086,78 @@
 			},
 			format: '[ltr]{0}[/ltr]',
 			html: '<div style="direction: ltr">{0}</div>'
+		},
+		// END_COMMAND
+
+		// START_COMMAND: h1
+		h1: {
+			tags: {
+				h1: null
+			},
+			isInline: false,
+			skipLastLineBreak: true,
+			format: '[h1]{0}[/h1]',
+			html: '<h1>{0}</h1>'
+		},
+		// END_COMMAND
+
+		// START_COMMAND: h2
+		h2: {
+			tags: {
+				h2: null
+			},
+			isInline: false,
+			skipLastLineBreak: true,
+			format: '[h2]{0}[/h2]',
+			html: '<h2>{0}</h2>'
+		},
+		// END_COMMAND
+
+		// START_COMMAND: h3
+		h3: {
+			tags: {
+				h3: null
+			},
+			isInline: false,
+			skipLastLineBreak: true,
+			format: '[h3]{0}[/h3]',
+			html: '<h3>{0}</h3>'
+		},
+		// END_COMMAND
+
+		// START_COMMAND: h4
+		h4: {
+			tags: {
+				h4: null
+			},
+			isInline: false,
+			skipLastLineBreak: true,
+			format: '[h4]{0}[/h4]',
+			html: '<h4>{0}</h4>'
+		},
+		// END_COMMAND
+
+		// START_COMMAND: h5
+		h5: {
+			tags: {
+				h5: null
+			},
+			isInline: false,
+			skipLastLineBreak: true,
+			format: '[h5]{0}[/h5]',
+			html: '<h5>{0}</h5>'
+		},
+		// END_COMMAND
+
+		// START_COMMAND: h6
+		h6: {
+			tags: {
+				h6: null
+			},
+			isInline: false,
+			skipLastLineBreak: true,
+			format: '[h6]{0}[/h6]',
+			html: '<h6>{0}</h6>'
 		},
 		// END_COMMAND
 

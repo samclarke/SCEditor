@@ -353,6 +353,34 @@ var defaultCmds = {
 		tooltip: 'Numbered list'
 	},
 	// END_COMMAND
+	// START_COMMAND: Headings List
+	heading: {
+		_dropDown: function (editor, caller, callback) {
+			var	content = dom.createElement('div');
+
+			dom.on(content, 'click', 'a', function (e) {
+				callback(dom.data(this, 'tagName'));
+				editor.closeDropDown(true);
+				e.preventDefault();
+			});
+
+			editor.opts.headingList.split(',').forEach(function (tagName) {
+				dom.appendChild(content, template.render('headingOpt',
+					{ tag: tagName, text: tagName }, true));
+			});
+
+			editor.createDropDown(caller, 'listtype-picker', content);
+		},
+		exec: function (caller) {
+			var	editor  = this;
+
+			defaultCmds.heading._dropDown(editor, caller, function (tagName) {
+				editor.execCommand('heading', tagName);
+			});
+		},
+		tooltip: 'Headings list'
+	},
+	// END_COMMAND
 	// START_COMMAND: Indent
 	indent: {
 		state: function (parents, firstBlock) {

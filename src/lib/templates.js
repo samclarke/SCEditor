@@ -49,6 +49,10 @@ var _templates = {
 		'data-styletype="{styleType}" data-tagtype="{tagType}" ' +
 		'href="#">{text}</a>',
 
+	headingOpt: '<a class="sceditor-heading-option" ' +
+		'data-tagName="{tag}" href="#">' +
+		'<{tag}>{text}</{tag}></a>',
+
 	pastetext:
 		'<div><label for="txt">{label}</label> ' +
 			'<textarea cols="20" rows="7" id="txt"></textarea></div>' +
