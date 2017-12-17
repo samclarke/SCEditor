@@ -100,10 +100,68 @@
 			}
 		},
 		bulletlist: {
-			txtExec: ['<ul><li>', '</li></ul>']
+			txtExec: function (caller, selected) {
+				var editor = this;
+				var content = '';
+
+				getEditorCommand('bulletlist')._dropDown(
+					editor,
+					caller,
+					function (listType) {
+						selected.split(/\r?\n/).forEach(function (item) {
+							content += (content ? '\n' : '') +
+								'<li>' + item + '</li>';
+						});
+
+						editor.insertText(
+							'<ul style="list-style-type:' + listType + '">' +
+							content + '</ul>'
+						);
+					}
+				);
+			}
 		},
 		orderedlist: {
-			txtExec: ['<ol><li>', '</li></ol>']
+			txtExec: function (caller, selected) {
+				var editor = this;
+				var content = '';
+
+				getEditorCommand('orderedlist')._dropDown(
+					editor,
+					caller,
+					function (tagType, styleType) {
+						selected.split(/\r?\n/).forEach(function (item) {
+							content += (content ? '\n' : '') +
+								'<li>' + item + '</li>';
+						});
+
+						if (styleType === 'decimal') {
+							editor.insertText(
+								'<ol>' + content + '</ol>'
+							);
+						} else {
+							editor.insertText(
+								'<ol style="list-style-type:' + styleType +
+								'">' + content + '</ol>'
+							);
+						}
+					}
+				);
+			}
+		},
+		heading: {
+			txtExec: function (caller) {
+				var editor = this;
+
+				getEditorCommand('heading')._dropDown(
+					editor,
+					caller,
+					function (tagName) {
+						editor.insertText('<' + tagName + '>',
+							'</' + tagName + '>');
+					}
+				);
+			}
 		},
 		table: {
 			txtExec: ['<table><tr><td>', '</td></tr></table>']
@@ -113,6 +171,9 @@
 		},
 		code: {
 			txtExec: ['<code>', '</code>']
+		},
+		c: {
+			txtExec: ['<span class="inline-code">', '</span>']
 		},
 		image: {
 			txtExec: function (caller, selected) {
@@ -185,13 +246,27 @@
 					editor,
 					caller,
 					function (id, time) {
-						editor.insertText(
-							'<iframe width="560" height="315" ' +
-							'src="https://www.youtube.com/embed/{id}?' +
-							'wmode=opaque&start=' + time + '" ' +
-							'data-youtube-id="' + id + '" ' +
-							'frameborder="0" allowfullscreen></iframe>'
-						);
+						editor.insertText(editor.template.render('youtube', {
+							id: id,
+							time: time,
+							params: editor.opts.youtubeParameters
+						}));
+					}
+				);
+			}
+		},
+		facebook: {
+			txtExec: function (caller) {
+				var editor = this;
+
+				getEditorCommand('facebook')._dropDown(
+					editor,
+					caller,
+					function (id) {
+						editor.insertText(editor.template.render('facebook', {
+							id: id,
+							params: editor.opts.facebookParameters
+						}));
 					}
 				);
 			}
@@ -1155,6 +1230,16 @@
 			},
 			conv: function (node) {
 				node.parentNode.removeChild(node);
+			}
+		},
+		{
+			tags: {
+				ol: {
+					'data-tagtype': null
+				}
+			},
+			conv: function (node) {
+				removeAttr(node, 'data-tagtype');
 			}
 		}
 	];

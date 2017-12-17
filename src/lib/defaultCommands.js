@@ -1,7 +1,7 @@
 import * as dom from './dom.js';
 import * as utils from './utils.js';
 import { ie as IE_VER } from './browser.js';
-import _tmpl from './templates.js';
+import * as template from './templates.js';
 
 // In IE < 11 a BR at the end of a block level element
 // causes a line break. In all other browsers it's collapsed.
@@ -131,7 +131,7 @@ var defaultCmds = {
 			});
 
 			editor.opts.fonts.split(',').forEach(function (font) {
-				dom.appendChild(content, _tmpl('fontOpt', {
+				dom.appendChild(content, template.render('fontOpt', {
 					font: font
 				}, true));
 			});
@@ -160,7 +160,7 @@ var defaultCmds = {
 			});
 
 			for (var i = 1; i <= 7; i++) {
-				dom.appendChild(content, _tmpl('sizeOpt', {
+				dom.appendChild(content, template.render('sizeOpt', {
 					size: i
 				}, true));
 			}
@@ -259,7 +259,7 @@ var defaultCmds = {
 				content = dom.createElement('div'),
 				editor  = this;
 
-			dom.appendChild(content, _tmpl('pastetext', {
+			dom.appendChild(content, template.render('pastetext', {
 				label: editor._(
 					'Paste your text inside the following box:'
 				),
@@ -284,20 +284,101 @@ var defaultCmds = {
 	// END_COMMAND
 	// START_COMMAND: Bullet List
 	bulletlist: {
-		exec: function () {
-			fixFirefoxListBug(this);
-			this.execCommand('insertunorderedlist');
+		_dropDown: function (editor, caller, callback) {
+			var	content = dom.createElement('div');
+
+			dom.on(content, 'click', 'a', function (e) {
+				callback(dom.data(this, 'type'));
+				editor.closeDropDown(true);
+				e.preventDefault();
+			});
+
+			utils.each(editor.opts.bulletList, function (tagName, description) {
+				dom.appendChild(content, template.render('ulistTypeOpt',
+					{ type: tagName, text: description }, true));
+			});
+
+			editor.createDropDown(caller, 'listtype-picker', content);
+		},
+		exec: function (caller) {
+			var	editor  = this;
+
+			defaultCmds.bulletlist._dropDown(editor, caller, function (type) {
+				fixFirefoxListBug(this);
+				editor.wysiwygEditorInsertHtml(
+					'<ul style="list-style-type:' + type +
+					'"><li><br></li></ul>'
+				);
+			});
 		},
 		tooltip: 'Bullet list'
 	},
 	// END_COMMAND
 	// START_COMMAND: Ordered List
 	orderedlist: {
-		exec: function () {
-			fixFirefoxListBug(this);
-			this.execCommand('insertorderedlist');
+		_dropDown: function (editor, caller, callback) {
+			var	content = dom.createElement('div');
+
+			dom.on(content, 'click', 'a', function (e) {
+				callback(dom.data(this, 'tagtype'),
+					dom.data(this, 'styletype'));
+				editor.closeDropDown(true);
+				e.preventDefault();
+			});
+
+			utils.each(editor.opts.orderedList, function (tagName, item) {
+				dom.appendChild(content, template.render('olistTypeOpt',
+					{
+						tagType: tagName,
+						styleType: item.type,
+						text: item.description
+					}, true));
+			});
+
+			editor.createDropDown(caller, 'listtype-picker', content);
+		},
+		exec: function (caller) {
+			var	editor  = this;
+
+			defaultCmds.orderedlist._dropDown(editor, caller,
+				function (tagType, styleType) {
+					fixFirefoxListBug(this);
+					editor.wysiwygEditorInsertHtml(
+						'<ol style="list-style-type:' + styleType +
+						'" data-tagtype="' + tagType + '"><li><br></li></ol>'
+					);
+				}
+			);
 		},
 		tooltip: 'Numbered list'
+	},
+	// END_COMMAND
+	// START_COMMAND: Headings List
+	heading: {
+		_dropDown: function (editor, caller, callback) {
+			var	content = dom.createElement('div');
+
+			dom.on(content, 'click', 'a', function (e) {
+				callback(dom.data(this, 'tagName'));
+				editor.closeDropDown(true);
+				e.preventDefault();
+			});
+
+			editor.opts.headingList.split(',').forEach(function (tagName) {
+				dom.appendChild(content, template.render('headingOpt',
+					{ tag: tagName, text: tagName }, true));
+			});
+
+			editor.createDropDown(caller, 'listtype-picker', content);
+		},
+		exec: function (caller) {
+			var	editor  = this;
+
+			defaultCmds.heading._dropDown(editor, caller, function (tagName) {
+				editor.execCommand('heading', tagName);
+			});
+		},
+		tooltip: 'Headings list'
 	},
 	// END_COMMAND
 	// START_COMMAND: Indent
@@ -377,7 +458,7 @@ var defaultCmds = {
 			var	editor  = this,
 				content = dom.createElement('div');
 
-			dom.appendChild(content, _tmpl('table', {
+			dom.appendChild(content, template.render('table', {
 				rows: editor._('Rows:'),
 				cols: editor._('Cols:'),
 				insert: editor._('Insert')
@@ -421,10 +502,33 @@ var defaultCmds = {
 	// START_COMMAND: Code
 	code: {
 		exec: function () {
-			this.wysiwygEditorInsertHtml(
-				'<code>',
-				(IE_BR_FIX ? '' : '<br />') + '</code>'
-			);
+			var editor = this;
+			var range = editor.getRangeHelper().selectedRange();
+			var selected = editor.getRangeHelper().selectedHtml();
+			var wholeLine = false;
+
+			// Check if the whole line was selected
+			// It could be the whole text of the text type node (3)
+			// or innerHTML of an element node (1) if there were some markups
+			// in the text, so its containted in a paragraph <p>...</p>
+			if ((range.commonAncestorContainer.nodeType === 3 &&
+				range.commonAncestorContainer.wholeText === selected) ||
+				(range.commonAncestorContainer.nodeType === 1 &&
+				range.commonAncestorContainer.innerHTML === selected)) {
+				wholeLine = true;
+			}
+
+			if (editor.opts.allowInlineCode && !wholeLine && selected &&
+				selected.length > 0 && !selected.includes('<p>')) {
+				this.wysiwygEditorInsertHtml(
+					'<span class="inline-code">', '</span>'
+				);
+			} else {
+				this.wysiwygEditorInsertHtml(
+					'<code>',
+					(IE_BR_FIX ? '' : '<br />') + '</code>'
+				);
+			}
 		},
 		tooltip: 'Code'
 	},
@@ -435,7 +539,7 @@ var defaultCmds = {
 		_dropDown: function (editor, caller, selected, cb) {
 			var	content = dom.createElement('div');
 
-			dom.appendChild(content, _tmpl('image', {
+			dom.appendChild(content, template.render('image', {
 				url: editor._('URL:'),
 				width: editor._('Width (optional):'),
 				height: editor._('Height (optional):'),
@@ -495,7 +599,7 @@ var defaultCmds = {
 		_dropDown: function (editor, caller, cb) {
 			var	content = dom.createElement('div');
 
-			dom.appendChild(content, _tmpl('email', {
+			dom.appendChild(content, template.render('email', {
 				label: editor._('E-mail:'),
 				desc: editor._('Description (optional):'),
 				insert: editor._('Insert')
@@ -545,7 +649,7 @@ var defaultCmds = {
 		_dropDown: function (editor, caller, cb) {
 			var content = dom.createElement('div');
 
-			dom.appendChild(content, _tmpl('link', {
+			dom.appendChild(content, template.render('link', {
 				url: editor._('URL:'),
 				desc: editor._('Description (optional):'),
 				ins: editor._('Insert')
@@ -725,7 +829,7 @@ var defaultCmds = {
 		_dropDown: function (editor, caller, callback) {
 			var	content = dom.createElement('div');
 
-			dom.appendChild(content, _tmpl('youtubeMenu', {
+			dom.appendChild(content, template.render('youtubeMenu', {
 				label: editor._('Video URL:'),
 				insert: editor._('Insert')
 			}, true));
@@ -733,7 +837,8 @@ var defaultCmds = {
 			dom.on(content, 'click', '.button', function (e) {
 				var val = dom.find(content, '#link')[0].value;
 				var idMatch = val.match(/(?:v=|v\/|embed\/|youtu.be\/)(.{11})/);
-				var timeMatch = val.match(/[&|?](?:star)?t=((\d+[hms]?){1,3})/);
+				var timeMatch = val.match(
+					/[&|?](?:t=|start=|time_continue=)((\d+[hms]?){1,3})/);
 				var time = 0;
 
 				if (timeMatch) {
@@ -758,13 +863,52 @@ var defaultCmds = {
 			var editor = this;
 
 			defaultCmds.youtube._dropDown(editor, btn, function (id, time) {
-				editor.wysiwygEditorInsertHtml(_tmpl('youtube', {
+				editor.wysiwygEditorInsertHtml(template.render('youtube', {
 					id: id,
-					time: time
+					time: time,
+					params: editor.opts.youtubeParameters
 				}));
 			});
 		},
 		tooltip: 'Insert a YouTube video'
+	},
+	// END_COMMAND
+
+	// START_COMMAND: Facebook
+	facebook: {
+		_dropDown: function (editor, caller, callback) {
+			var	content = dom.createElement('div');
+
+			dom.appendChild(content, template.render('facebookMenu', {
+				label: editor._('Video URL:'),
+				insert: editor._('Insert')
+			}, true));
+
+			dom.on(content, 'click', '.button', function (e) {
+				var val = dom.find(content, '#link')[0].value;
+				var idMatch = val.match(/videos\/(\d+)+|v=(\d+)|vb.\d+\/(\d+)/);
+
+				if (idMatch && /^[a-zA-Z0-9]/.test(idMatch[1])) {
+					callback(idMatch[1]);
+				}
+
+				editor.closeDropDown(true);
+				e.preventDefault();
+			});
+
+			editor.createDropDown(caller, 'insertlink', content);
+		},
+		exec: function (btn) {
+			var editor = this;
+
+			defaultCmds.facebook._dropDown(editor, btn, function (id) {
+				editor.wysiwygEditorInsertHtml(template.render('facebook', {
+					id: id,
+					params: editor.opts.facebookParameters
+				}));
+			});
+		},
+		tooltip: 'Insert a Facebook video'
 	},
 	// END_COMMAND
 
