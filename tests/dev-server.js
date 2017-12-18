@@ -68,7 +68,7 @@ exports.create = function (port, coverage) {
 			contentBase: path.join(__dirname, '..'),
 			compress: true,
 			publicPath: '/webpack-build/'
-		}).listen(port, 'localhost', function (err) {
+		}).listen(port, '', function (err) {
 			if (err) {
 				reject(err);
 			}
