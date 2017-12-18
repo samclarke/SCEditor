@@ -19,8 +19,8 @@
 				var key = localStorage.key(i);
 
 				if (/^sce\-autodraft\-/.test(key)) {
-					if (JSON.parse(localStorage.getItem(storageKey)).time <
-						Date.now() - expires) {
+					var item = JSON.parse(localStorage.getItem(storageKey));
+					if (item && item.time < Date.now() - expires) {
 						localStorage.removeItem(key);
 					}
 				}
