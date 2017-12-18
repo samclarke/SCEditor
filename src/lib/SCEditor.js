@@ -100,6 +100,14 @@ export default function SCEditor(original, userOptions) {
 	var wysiwygEditor;
 
 	/**
+	 * The editors window
+	 *
+	 * @type {Window}
+	 * @private
+	 */
+	var wysiwygWindow;
+
+	/**
 	 * The WYSIWYG editors body element
 	 *
 	 * @type {HTMLBodyElement}
@@ -533,6 +541,7 @@ export default function SCEditor(original, userOptions) {
 		wysiwygDocument.close();
 
 		wysiwygBody = wysiwygDocument.body;
+		wysiwygWindow = wysiwygEditor.contentWindow;
 
 		base.readOnly(!!options.readOnly);
 
@@ -550,7 +559,7 @@ export default function SCEditor(original, userOptions) {
 		dom.attr(sourceEditor, 'tabindex', tabIndex);
 		dom.attr(wysiwygEditor, 'tabindex', tabIndex);
 
-		rangeHelper = new RangeHelper(wysiwygEditor.contentWindow);
+		rangeHelper = new RangeHelper(wysiwygWindow);
 
 		// load any textarea value into the editor
 		dom.hide(original);
@@ -2250,9 +2259,13 @@ export default function SCEditor(original, userOptions) {
 	 */
 	checkSelectionChanged = function () {
 		function check() {
+			// Don't create new selection if there isn't one (like after
+			// blur event in iOS)
+			if (wysiwygWindow.getSelection().rangeCount <= 0) {
+				currentSelection = null;
 			// rangeHelper could be null if editor was destroyed
 			// before the timeout had finished
-			if (rangeHelper && !rangeHelper.compare(currentSelection)) {
+			} else if (rangeHelper && !rangeHelper.compare(currentSelection)) {
 				currentSelection = rangeHelper.cloneSelected();
 
 				// If the selection is in an inline wrap it in a block.
@@ -2731,8 +2744,8 @@ export default function SCEditor(original, userOptions) {
 				return;
 			}
 
-			var container,
-				rng = rangeHelper.selectedRange();
+			var container;
+			var rng = rangeHelper.selectedRange();
 
 			// Fix FF bug where it shows the cursor in the wrong place
 			// if the editor hasn't had focus before. See issue #393
@@ -2754,7 +2767,7 @@ export default function SCEditor(original, userOptions) {
 				}
 			}
 
-			wysiwygEditor.contentWindow.focus();
+			wysiwygWindow.focus();
 			wysiwygBody.focus();
 
 			// Needed for IE
