@@ -549,13 +549,15 @@
 
 		/**
 		 * Converts the WYSIWYG content to XHTML
+		 *
+		 * @param  {boolean} isFragment
 		 * @param  {string} html
 		 * @param  {Document} context
 		 * @param  {HTMLElement} [parent]
 		 * @return {string}
 		 * @memberOf jQuery.sceditor.plugins.xhtml.prototype
 		 */
-		base.toSource = function (html, context) {
+		function toSource(isFragment, html, context) {
 			var xhtml,
 				container = context.createElement('div');
 			container.innerHTML = html;
@@ -566,7 +568,10 @@
 			convertTags(container);
 			removeTags(container);
 			removeAttribs(container);
-			wrapInlines(container);
+
+			if (!isFragment) {
+				wrapInlines(container);
+			}
 
 			xhtml = (new sceditor.XHTMLSerializer()).serialize(container, true);
 
@@ -575,7 +580,9 @@
 			return xhtml;
 		};
 
-		base.fragmentToSource = base.toSource;
+		base.toSource = toSource.bind(null, false);
+
+		base.fragmentToSource = toSource.bind(null, true);;
 
 		/**
 		 * Runs all converters for the specified tagName
