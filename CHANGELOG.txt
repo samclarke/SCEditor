@@ -1,3 +1,17 @@
+Version 2.1.2:
+	Fixed issue with extend() trying to copy non-plain objects.
+		- Thanks to @mtsnr for reporting
+	Fixed issue with youtube not showing when first inserted.
+		- Thanks to @zebroid for reporting and @abetis for fixing.
+	Fixed iOS issue where editor didn't let go of focus.
+		- Thanks to @redeye86 for reporting.
+	Fixed issue with autosave plugin throwing error when two editors on the page.
+		- Thanks to @q2apro for reporting.
+	Fixed bug with XHTML format wrapping pasted text in <p> tags.
+		- Thanks to @q2apro for reporting.
+	Updated autosave plugin to clear after submitting and add clear method.
+		- Thanks to @q2apro for reporting.
+
 Version 2.1.1:
 	Fix emoticonsRoot not updating the dropdown menu path.
 	Make Numeric and URL fields be LTR, even in RTL mode.
