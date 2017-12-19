@@ -135,5 +135,5 @@
 		};
 	};
 
-	sceditor.icons.monocons.icons = icons;
+	sceditor.icons.material.icons = icons;
 })(document, sceditor);
