@@ -1,14 +1,16 @@
 (function (sceditor) {
 	'use strict';
 
+	var defaultKey = 'sce-autodraft-' + location.pathname + location.search;
+
 	function clear(key) {
-		localStorage.removeItem(key);
+		localStorage.removeItem(key || defaultKey);
 	}
 
 	sceditor.plugins.autosave = function () {
 		var base = this;
 		var editor;
-		var storageKey = 'sce-autodraft-' + location.pathname + location.search;
+		var storageKey = defaultKey;
 		// 86400000 = 24 hrs (24 * 60 * 60 * 1000)
 		var expires = 86400000;
 		var saveHandler = function (value) {
