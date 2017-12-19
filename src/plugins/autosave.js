@@ -1,6 +1,10 @@
 (function (sceditor) {
 	'use strict';
 
+	function clear(key) {
+		localStorage.removeItem(key);
+	}
+
 	sceditor.plugins.autosave = function () {
 		var base = this;
 		var editor;
@@ -21,7 +25,7 @@
 				if (/^sce\-autodraft\-/.test(key)) {
 					var item = JSON.parse(localStorage.getItem(storageKey));
 					if (item && item.time < Date.now() - expires) {
-						localStorage.removeItem(key);
+						clear(key);
 					}
 				}
 			}
@@ -40,8 +44,20 @@
 		};
 
 		base.signalReady = function () {
-			var state = loadHandler();
+			// Add submit event listener to clear autosave
+			var parent = editor.getContentAreaContainer();
+			while (parent) {
+				if (/form/i.test(parent.nodeName)) {
+					parent.addEventListener(
+						'submit', clear.bind(null, storageKey), true
+					);
+					break;
+				}
 
+				parent = parent.parentNode;
+			}
+
+			var state = loadHandler();
 			if (state) {
 				editor.sourceMode(state.sourceMode);
 				editor.val(state.value, false);
@@ -71,4 +87,6 @@
 			});
 		};
 	};
+
+	sceditor.plugins.autosave.clear = clear;
 }(sceditor));
