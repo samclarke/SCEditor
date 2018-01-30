@@ -7,7 +7,7 @@
 
 A lightweight WYSIWYG BBCode and XHTML editor.
 
-![SCEditor demo](/demo.gif)
+![SCEditor preview](https://cdn.rawgit.com/samclarke/sceditor/master/preview.svg)
 
 For more information visit [sceditor.com](http://www.sceditor.com/)
 
