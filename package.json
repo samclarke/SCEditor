@@ -44,26 +44,26 @@
     "dev": "node ./tests/dev-server.js"
   },
   "devDependencies": {
-    "autoprefixer": "^7.1.6",
-    "grunt": "~1.0.1",
+    "autoprefixer": "^8.1.0",
+    "grunt": "~1.0.2",
     "grunt-contrib-clean": "^1.1.0",
     "grunt-contrib-compress": "^1.4.3",
     "grunt-contrib-concat": "~1.0.1",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-less": "^1.4.1",
     "grunt-contrib-qunit": "^2.0.0",
-    "grunt-contrib-uglify": "^3.1.0",
+    "grunt-contrib-uglify": "^3.3.0",
     "grunt-dev-update": "^2.3.0",
     "grunt-eslint": "^20.1.0",
     "grunt-githooks": "^0.6.0",
     "grunt-postcss": "^0.9.0",
-    "grunt-rollup": "^6.0.0",
+    "grunt-rollup": "^9.0.0",
     "grunt-saucelabs": "^9.0.0",
     "istanbul": "^0.4.5",
     "istanbul-instrumenter-loader": "^3.0.0",
     "postcss-clean": "^1.1.0",
     "time-grunt": "^1.4.0",
-    "webpack": "^3.8.1",
-    "webpack-dev-server": "^2.9.4"
+    "webpack": "^4.1.1",
+    "webpack-dev-server": "^3.1.0"
   }
 }
