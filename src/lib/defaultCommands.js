@@ -302,13 +302,11 @@ var defaultCmds = {
 	// END_COMMAND
 	// START_COMMAND: Indent
 	indent: {
-		state: function (parents, firstBlock) {
+		state: function (parent, firstBlock) {
 			// Only works with lists, for now
-			var	range, startParent, endParent,
-				parentLists = dom.parents(firstBlock, 'ul,ol,menu');
+			var	range, startParent, endParent;
 
-			// in case it's a list with only a single <li>
-			if (parentLists.length > 1 && parentLists[0].children.length > 1) {
+			if (dom.is(firstBlock, 'li')) {
 				return 0;
 			}
 
@@ -348,7 +346,7 @@ var defaultCmds = {
 			// of complications and issues around how to indent text
 			// As default, let's just stay with indenting the lists,
 			// at least, for now.
-			if (dom.parents(block, 'ul,ol,menu')) {
+			if (dom.closest(block, 'ul,ol,menu')) {
 				editor.execCommand('indent');
 			}
 		},
@@ -358,12 +356,11 @@ var defaultCmds = {
 	// START_COMMAND: Outdent
 	outdent: {
 		state: function (parents, firstBlock) {
-			return dom.closest(firstBlock, 'ul,ol,menu') > 0 ? 0 : -1;
+			return dom.closest(firstBlock, 'ul,ol,menu') ? 0 : -1;
 		},
 		exec: function () {
 			var	block = this.getRangeHelper().getFirstBlockParent();
-
-			if (dom.parents(block, 'ul,ol,menu')) {
+			if (dom.closest(block, 'ul,ol,menu')) {
 				this.execCommand('outdent');
 			}
 		},
