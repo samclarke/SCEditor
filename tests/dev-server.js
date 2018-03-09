@@ -8,6 +8,7 @@ const path = require('path');
 exports.create = function (port, coverage) {
 	return new Promise(function (resolve, reject) {
 		const webpackOptions = {
+			mode: 'development',
 			entry: {
 				main: [
 					'./src/sceditor.js',
