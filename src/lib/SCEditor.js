@@ -594,7 +594,7 @@ export default function SCEditor(original, userOptions) {
 		if (options.autoExpand) {
 			// Need to update when images (or anything else) loads
 			dom.on(wysiwygBody, 'load', autoExpand, dom.EVENT_CAPTURE);
-			dom.on(wysiwygDocument, 'input keyup', autoExpand);
+			dom.on(wysiwygBody, 'input keyup', autoExpand);
 		}
 
 		if (options.resizeEnabled) {
@@ -1290,7 +1290,7 @@ export default function SCEditor(original, userOptions) {
 
 	autoExpand = function () {
 		if (options.autoExpand && !autoExpandThrottle) {
-			setTimeout(base.expandToContent, 200);
+			autoExpandThrottle = setTimeout(base.expandToContent, 200);
 		}
 	};
 
@@ -1312,6 +1312,7 @@ export default function SCEditor(original, userOptions) {
 			return;
 		}
 
+		clearTimeout(autoExpandThrottle);
 		autoExpandThrottle = false;
 
 		if (!autoExpandBounds) {
@@ -1328,9 +1329,9 @@ export default function SCEditor(original, userOptions) {
 		range.selectNodeContents(wysiwygBody);
 
 		var rect = range.getBoundingClientRect();
-		var current = wysiwygDocument.documentElement.clientHeight;
+		var current = wysiwygDocument.documentElement.clientHeight - 1;
 		var spaceNeeded = rect.bottom - rect.top;
-		var newHeight = base.height() + (spaceNeeded - current);
+		var newHeight = base.height() + 1 + (spaceNeeded - current);
 
 		if (!ignoreMaxHeight && autoExpandBounds.max !== -1) {
 			newHeight = Math.min(newHeight, autoExpandBounds.max);
