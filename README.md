@@ -29,7 +29,7 @@ Then to convert a textarea into SCEditor, simply do:
 var textarea = document.getElementById('id-of-textarea');
 
 sceditor.create(textarea, {
-	plugins: 'xhtml',
+	format: 'xhtml',
 	style: 'minified/themes/content/default.min.css'
 });
 ```
@@ -40,7 +40,7 @@ or for a BBCode WYSIWYG editor do:
 var textarea = document.getElementById('id-of-textarea');
 
 sceditor.create(textarea, {
-	plugins: 'bbcode',
+	format: 'bbcode',
 	style: 'minified/themes/content/default.min.css'
 });
 ```
