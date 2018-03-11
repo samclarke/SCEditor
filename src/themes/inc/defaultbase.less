@@ -20,18 +20,13 @@
 	border: 1px solid #d9d9d9;
 	font-size: 13px;
 	font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
-	color: #222;
+	color: #333;
 	line-height: 1;
 	font-weight: bold;
-	overflow: hidden;
 	height: 250px;
 
 	.rounded(4px);
 
-	// Fix for Bootstrap 3 and any other page that changes
-	// the default box-sizing. Would be much easier to use
-	// the border-box but IE 7 support means SCEditor can't
-	// use it.
 	*, *:before, *:after {
 		-webkit-box-sizing: content-box;
 		-moz-box-sizing: content-box;
@@ -159,10 +154,16 @@ div.sceditor-dropdown div {
 		position: absolute;
 		border: 1px solid #ccc;
 		background: #fff;
-		color: #333;
 		z-index: 4000;
 		padding: 10px;
-		line-height: 1;
+		font-weight: normal;
+		font-size: 15px;
+
+		*, *:before, *:after {
+			-webkit-box-sizing: border-box;
+			-moz-box-sizing: border-box;
+			box-sizing: border-box;
+		}
 
 		.rounded(2px);
 		.box-shadow(1px 2px 4px rgba(0,0,0,0.2));

@@ -1429,8 +1429,8 @@ export default function SCEditor(original, userOptions) {
 		}
 
 		dropDownCss = utils.extend({
-			top: dom.getOffset(menuItem).top,
-			left: dom.getOffset(menuItem).left,
+			top: menuItem.offsetTop,
+			left: menuItem.offsetLeft,
 			marginTop: menuItem.clientHeight
 		}, options.dropDownCss);
 
@@ -1440,7 +1440,7 @@ export default function SCEditor(original, userOptions) {
 
 		dom.css(dropdown, dropDownCss);
 		dom.appendChild(dropdown, content);
-		dom.appendChild(globalDoc.body, dropdown);
+		dom.appendChild(editorContainer, dropdown);
 		dom.on(dropdown, 'click focusin', function (e) {
 			// stop clicks within the dropdown from being handled
 			e.stopPropagation();
