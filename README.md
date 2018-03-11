@@ -19,8 +19,8 @@ Include the SCEditor JavaScript:
 ```html
 <link rel="stylesheet" href="minified/themes/default.min.css" />
 <script src="minified/sceditor.min.js"></script>
-<script src="minified/plugins/bbcode.js"></script>
-<script src="minified/plugins/xhtml.js"></script>
+<script src="minified/formats/bbcode.js"></script>
+<script src="minified/formats/xhtml.js"></script>
 ```
 
 Then to convert a textarea into SCEditor, simply do:
