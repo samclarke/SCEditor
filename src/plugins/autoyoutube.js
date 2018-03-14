@@ -76,14 +76,10 @@
 				return;
 			}
 
-			if (data.html || data.text) {
+			if (data.text) {
 				var html = document.createElement('div');
 
-				if (data.html) {
-					html.innerHTML = data.html;
-				} else {
-					html.textContent = data.text;
-				}
+				html.textContent = data.text;
 
 				convertYoutubeLinks(html);
 
