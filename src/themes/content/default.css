@@ -46,6 +46,9 @@ table, td {
 	empty-cells: show;
 }
 
+table td {
+	min-width: 30px;
+}
 
 code {
 	display: block;
