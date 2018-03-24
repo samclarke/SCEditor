@@ -47,7 +47,7 @@ table, td {
 }
 
 table td {
-	min-width: 30px;
+	min-width: 5px;
 }
 
 code {
