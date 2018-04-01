@@ -2262,7 +2262,8 @@ export default function SCEditor(original, userOptions) {
 		function check() {
 			// Don't create new selection if there isn't one (like after
 			// blur event in iOS)
-			if (wysiwygWindow.getSelection() && wysiwygWindow.getSelection().rangeCount <= 0) {
+			if (wysiwygWindow.getSelection() &&
+				wysiwygWindow.getSelection().rangeCount <= 0) {
 				currentSelection = null;
 			// rangeHelper could be null if editor was destroyed
 			// before the timeout had finished
