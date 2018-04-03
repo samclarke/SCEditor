@@ -96,6 +96,18 @@ var defaultCmds = {
 
 	// START_COMMAND: Left
 	left: {
+		state: function (node) {
+			if (node && node.nodeType === 3) {
+				node = node.parentNode;
+			}
+
+			if (node) {
+				var isLtr = dom.css(node, 'direction') === 'ltr';
+				var align = dom.css(node, 'textAlign');
+
+				return align === 'left' || align === (isLtr ? 'start' : 'end');
+			}
+		},
 		exec: 'justifyleft',
 		tooltip: 'Align left'
 	},
@@ -108,6 +120,18 @@ var defaultCmds = {
 	// END_COMMAND
 	// START_COMMAND: Right
 	right: {
+		state: function (node) {
+			if (node && node.nodeType === 3) {
+				node = node.parentNode;
+			}
+
+			if (node) {
+				var isLtr = dom.css(node, 'direction') === 'ltr';
+				var align = dom.css(node, 'textAlign');
+
+				return align === 'right' || align === (isLtr ? 'end' : 'start');
+			}
+		},
 		exec: 'justifyright',
 		tooltip: 'Align right'
 	},
