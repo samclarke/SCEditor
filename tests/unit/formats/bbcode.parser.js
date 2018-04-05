@@ -10,7 +10,10 @@ var IE_BR_STR = IE_BR_FIX ? '' : '<br />';
 
 QUnit.module('plugins/bbcode#Parser', {
 	beforeEach: function () {
-		this.parser = new sceditor.BBCodeParser({});
+		this.parser = new sceditor.BBCodeParser({
+			parserOptions: {},
+			allowInlineCode: false
+		});
 	}
 });
 
@@ -864,7 +867,7 @@ QUnit.test('Quote', function (assert) {
 });
 
 
-QUnit.test('Code', function (assert) {
+QUnit.test('Code - block', function (assert) {
 	assert.htmlEqual(
 		this.parser.toHTML('[code]Testing 1.2.3....[/code]'),
 		'<code>Testing 1.2.3....' + IE_BR_STR + '</code>',
@@ -874,6 +877,25 @@ QUnit.test('Code', function (assert) {
 	assert.htmlEqual(
 		this.parser.toHTML('[code]Testing [b]test[/b][/code]'),
 		'<code>Testing [b]test[/b]' + IE_BR_STR + '</code>',
+		'Normal'
+	);
+});
+
+
+QUnit.test('Code - inline', function (assert) {
+	this.parser = new sceditor.BBCodeParser({
+		parserOptions: {}, allowInlineCode: true
+	});
+
+	assert.htmlEqual(
+		this.parser.toHTML('text [c]inline code[/c] text'),
+		'<div>text <span class="inline-code" data-inline-code="1">inline code</span> text</div>\n',
+		'Normal'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('text [c]Testing [b]test[/b][/c] text'),
+		'<div>text <span class="inline-code" data-inline-code="1">Testing [b]test[/b]</span> text</div>\n',
 		'Normal'
 	);
 });

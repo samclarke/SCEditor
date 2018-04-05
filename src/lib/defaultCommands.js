@@ -442,10 +442,33 @@ var defaultCmds = {
 	// START_COMMAND: Code
 	code: {
 		exec: function () {
-			this.wysiwygEditorInsertHtml(
-				'<code>',
-				(IE_BR_FIX ? '' : '<br />') + '</code>'
-			);
+			var editor = this;
+			var range = editor.getRangeHelper().selectedRange();
+			var selected = editor.getRangeHelper().selectedHtml();
+			var wholeLine = false;
+
+			// Check if the whole line was selected
+			// It could be the whole text of the text type node (3)
+			// or innerHTML of an element node (1) if there were some markups
+			// in the text, so its containted in a paragraph <p>...</p>
+			if ((range.commonAncestorContainer.nodeType === 3 &&
+				range.commonAncestorContainer.wholeText === selected) ||
+				(range.commonAncestorContainer.nodeType === 1 &&
+				range.commonAncestorContainer.innerHTML === selected)) {
+				wholeLine = true;
+			}
+
+			if (editor.opts.allowInlineCode && !wholeLine && selected &&
+				selected.length > 0 && !selected.includes('<p>')) {
+				this.wysiwygEditorInsertHtml(
+					'<span class="inline-code" data-inline-code="1">', '</span>'
+				);
+			} else {
+				this.wysiwygEditorInsertHtml(
+					'<code>',
+					(IE_BR_FIX ? '' : '<br />') + '</code>'
+				);
+			}
 		},
 		tooltip: 'Code'
 	},

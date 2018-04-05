@@ -109,7 +109,7 @@ QUnit.test('HTML to BBCode trim', function (assert) {
 QUnit.module('plugins/bbcode - HTML to BBCode', {
 	beforeEach: function () {
 		this.mockEditor = {
-			opts: $.extend({}, defaultOptions)
+			opts: $.extend({}, defaultOptions, { allowInlineCode: true })
 		};
 
 		this.format = new sceditor.formats.bbcode();
@@ -766,7 +766,7 @@ QUnit.test('Quote', function (assert) {
 });
 
 
-QUnit.test('Code', function (assert) {
+QUnit.test('Code - block', function (assert) {
 	assert.equal(
 		this.htmlToBBCode('<code>Testing 1.2.3....</code>'),
 		'[code]Testing 1.2.3....[/code]\n',
@@ -778,6 +778,36 @@ QUnit.test('Code', function (assert) {
 			'<code><b>ignore this</b> Testing 1.2.3....</code>'
 		),
 		'[code]ignore this Testing 1.2.3....[/code]\n',
+		'Code with styling'
+	);
+});
+
+
+QUnit.test('Code - inline', function (assert) {
+	this.mockEditor = {
+		opts: $.extend({}, defaultOptions, { allowInlineCode: true })
+	};
+
+	this.format = new sceditor.formats.bbcode();
+	this.format.init.call(this.mockEditor);
+
+	this.htmlToBBCode = function (html) {
+		return this.format.toSource(html, document);
+	};
+
+	assert.equal(
+		this.htmlToBBCode(
+			'text <span class="inline-code" data-inline-code="1">inline code</span> text'
+		),
+		'text [c]inline code[/c] text',
+		'Simple code'
+	);
+
+	assert.equal(
+		this.htmlToBBCode(
+			'text <span class="inline-code" data-inline-code="1"><b>ignore this</b> Testing 1.2.3....</span> text'
+		),
+		'text [c]ignore this Testing 1.2.3....[/c] text',
 		'Code with styling'
 	);
 });
