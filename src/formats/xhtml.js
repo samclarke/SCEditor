@@ -12,6 +12,12 @@
 (function (sceditor) {
 	'use strict';
 
+	var IE_VER = sceditor.ie;
+
+	// In IE < 11 a BR at the end of a block level element
+	// causes a double line break.
+	var IE_BR_FIX = IE_VER && IE_VER < 11;
+
 	var dom = sceditor.dom;
 	var utils = sceditor.utils;
 
@@ -707,6 +713,7 @@
 						isTopLevel && noSiblings && tagName !== 'br'),
 					document        = node.ownerDocument,
 					allowedTags     = xhtmlFormat.allowedTags,
+					firstChild   	= node.firstChild,
 					disallowedTags  = xhtmlFormat.disallowedTags;
 
 				// 3 = text node
@@ -718,6 +725,19 @@
 					tagName = '!cdata';
 				} else if (tagName === '!' || nodeType === 8) {
 					tagName = '!comment';
+				}
+
+				if (nodeType === 1) {
+					// skip empty nlf elements (new lines automatically
+					// added after block level elements like quotes)
+					if (is(node, '.sceditor-nlf')) {
+						if (!firstChild || (!IE_BR_FIX &&
+							node.childNodes.length === 1 &&
+							/br/i.test(firstChild.nodeName))) {
+							// Mark as empty,it will be removed by the next code
+							empty = true;
+						}
+					}
 				}
 
 				if (empty) {
