@@ -736,6 +736,12 @@
 							/br/i.test(firstChild.nodeName))) {
 							// Mark as empty,it will be removed by the next code
 							empty = true;
+						} else {
+							node.classList.remove('sceditor-nlf');
+
+							if (!node.className) {
+								removeAttr(node, 'class');
+							}
 						}
 					}
 				}
