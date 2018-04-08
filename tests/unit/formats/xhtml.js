@@ -956,3 +956,41 @@ QUnit.test('Mozilla\'s junk attributes fix', function (assert) {
 		'_moz_editor_bogus_node attribute on div'
 	);
 });
+
+
+QUnit.test('Should remove empty nlf tags', function (assert) {
+	var IE_VER = sceditor.ie;
+
+	// In IE < 11 a BR at the end of a block level element
+	// causes a double line break.
+	var IE_BR_FIX = IE_VER && IE_VER < 11;
+
+	assert.htmlEqual(
+		this.filterStripWhiteSpace('<div class="sceditor-nlf"></div>'),
+		'',
+		'Empty'
+	);
+
+	if (!IE_BR_FIX) {
+		assert.htmlEqual(
+			this.filterStripWhiteSpace('<div class="sceditor-nlf"><br /></div>'),
+			'',
+			'Empty with BR'
+		);
+	}
+});
+
+QUnit.test('Should remove the nlf class from none empty nlf tags', function (assert) {
+	assert.htmlEqual(
+		this.filterStripWhiteSpace('<div class="sceditor-nlf">test</div>'),
+		'<div>test</div>',
+		'None empty'
+	);
+
+	assert.htmlEqual(
+		this.filterHtml('<div class="sceditor-nlf test">test</div>'),
+		'<div class="test">\n\ttest\n</div>',
+		'None empty with extra class'
+	);
+});
+
