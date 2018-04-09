@@ -1035,7 +1035,6 @@
 		}
 	};
 
-
 	/**
 	 * SCEditor BBCode parser class
 	 *
@@ -1283,6 +1282,10 @@
 		function isChildAllowed(parent, child) {
 			var	parentBBCode    = parent ? bbcodeHandlers[parent.name] : {},
 				allowedChildren = parentBBCode.allowedChildren;
+
+			if (isFunction(allowedChildren)) {
+				allowedChildren = allowedChildren.call(base, parent);
+			}
 
 			if (base.opts.fixInvalidChildren && allowedChildren) {
 				return allowedChildren.indexOf(child.name || '#') > -1;
