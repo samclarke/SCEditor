@@ -40,11 +40,11 @@
 			}
 
 			// The plugin will override current code implementation
-			this.commands.code = {
+			sceditor.command.set('code', {
 				exec: formatCmd,
 				txtExec: formatCmd,
 				tooltip: 'Code'
-			};
+			});
 
 			sceditor.formats.bbcode.set('code', {
 				tags: {
