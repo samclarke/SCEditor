@@ -50,7 +50,7 @@
 				tags: {
 					code: null
 				},
-				isInline: true,
+				isInline: false,
 				allowedChildren: function (parent) {
 					if (parent.name === 'code') {
 						return ['#', '#newline'];
@@ -93,31 +93,51 @@
 		 * @private
 		 */
 		insertTag = function (editor) {
-			var range = editor.getRangeHelper().selectedRange();
-			var selected = editor.getRangeHelper().selectedHtml();
+			var selected = '';
 			var wholeLine = false;
 			var inline = false;
 
-			// prevent double code blocks one inside the other
-			if (selected.includes('<code')) {
-				return;
-			}
-
 			// Check if the whole line was selected
-			// It could be the whole text of the text type node (3)
-			// or innerHTML of an element node (1) if there were some markups
-			// in the text, so its containted in a paragraph <p>...</p>
-			if ((range.commonAncestorContainer.nodeType === 3 &&
-				range.commonAncestorContainer.wholeText === selected) ||
-				(range.commonAncestorContainer.nodeType === 1 &&
-				range.commonAncestorContainer.innerHTML === selected)) {
-				wholeLine = true;
+			if (editor.sourceMode()) {
+				selected = editor.sourceEditorSelectedText();
+
+				// prevent double code blocks one inside the other
+				if (selected.includes('[code]') || selected.includes('[c]')) {
+					return;
+				}
+
+				if (selected.includes('\n')) {
+					wholeLine = true;
+				}
+
+				if (!wholeLine && selected.length > 0) {
+					inline = true;
+				}
+			} else {
+				var range = editor.getRangeHelper().selectedRange();
+				selected = editor.getRangeHelper().selectedHtml();
+
+				// prevent double code blocks one inside the other
+				if (selected.includes('<code')) {
+					return;
+				}
+
+				// It could be the whole text of the text type node (3)
+				// or innerHTML of element node (1) if there were some markups
+				// in the text, so its containted in a paragraph <p>...</p>
+				if ((range.commonAncestorContainer.nodeType === 3 &&
+					range.commonAncestorContainer.wholeText === selected) ||
+					(range.commonAncestorContainer.nodeType === 1 &&
+					range.commonAncestorContainer.innerHTML === selected)) {
+					wholeLine = true;
+				}
+
+				if (!wholeLine && selected &&
+					selected.length > 0 && !selected.includes('<p>')) {
+					inline = true;
+				}
 			}
 
-			if (!wholeLine && selected &&
-				selected.length > 0 && !selected.includes('<p>')) {
-				inline = true;
-			}
 
 			if (editor.sourceMode()) {
 				if (inline) {

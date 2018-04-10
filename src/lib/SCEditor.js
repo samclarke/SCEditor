@@ -345,7 +345,6 @@ export default function SCEditor(original, userOptions) {
 		handleDocumentClick,
 		updateToolBar,
 		updateActiveButtons,
-		sourceEditorSelectedText,
 		appendNewLine,
 		checkSelectionChanged,
 		checkNodeChanged,
@@ -2166,9 +2165,8 @@ export default function SCEditor(original, userOptions) {
 	/**
 	 * Gets the selected text of the source editor
 	 * @return {string}
-	 * @private
 	 */
-	sourceEditorSelectedText = function () {
+	base.sourceEditorSelectedText = function () {
 		sourceEditor.focus();
 
 		return sourceEditor.value.substring(
@@ -2188,7 +2186,8 @@ export default function SCEditor(original, userOptions) {
 				if (Array.isArray(cmd.txtExec)) {
 					base.sourceEditorInsertText.apply(base, cmd.txtExec);
 				} else {
-					cmd.txtExec.call(base, caller, sourceEditorSelectedText());
+					cmd.txtExec.call(base, caller,
+						base.sourceEditorSelectedText());
 				}
 			}
 		} else if (cmd.exec) {
