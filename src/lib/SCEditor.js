@@ -406,6 +406,15 @@ export default function SCEditor(original, userOptions) {
 		isRequired = original.required;
 		original.required = false;
 
+		// Plugins should be initiated before the formatters since plugin
+		// may add/change the handlers and format init should create cache
+		// with those changes
+		initPlugins();
+
+		// Plugins might change the commands, should re-build it
+		base.commands = utils
+			.extend(true, {}, (userOptions.commands || defaultCommands));
+
 		var FormatCtor = SCEditor.formats[options.format];
 		format = FormatCtor ? new FormatCtor() : {};
 		if ('init' in format) {
@@ -413,7 +422,6 @@ export default function SCEditor(original, userOptions) {
 		}
 
 		// create the editor
-		initPlugins();
 		initEmoticons();
 		initToolBar();
 		initEditor();
