@@ -71,84 +71,18 @@
 
 			// Initialize BBCode handlers
 			if (opts.format === 'bbcode') {
-				sceditor.formats.bbcode.set('h1', {
-					tags: {
-						h1: null
-					},
-					isInline: false,
-					allowedChildren: ['#'],
-					format: '[h1]{0}[/h1]',
-					html: '<h1>{0}</h1>'
-				});
+				sceditor.utils.each(tags, function (tag) {
+					var handler = {
+						tags: {},
+						isInline: false,
+						allowedChildren: ['#'],
+						format: '[' + tag + ']{0}[/' + tag + ']',
+						html: '<' + tag + '>{0}</' + tag + '>'
+					};
 
-				sceditor.formats.bbcode.set('h2', {
-					tags: {
-						h2: null
-					},
-					isInline: false,
-					allowedChildren: ['#'],
-					format: '[h2]{0}[/h2]',
-					html: '<h2>{0}</h2>'
-				});
+					handler.tags[tag] = null;
 
-				sceditor.formats.bbcode.set('h3', {
-					tags: {
-						h3: null
-					},
-					isInline: false,
-					allowedChildren: ['#'],
-					format: '[h3]{0}[/h3]',
-					html: '<h3>{0}</h3>'
-				});
-
-				sceditor.formats.bbcode.set('h4', {
-					tags: {
-						h4: null
-					},
-					isInline: false,
-					allowedChildren: ['#'],
-					format: '[h4]{0}[/h4]',
-					html: '<h4>{0}</h4>'
-				});
-
-				sceditor.formats.bbcode.set('h5', {
-					tags: {
-						h5: null
-					},
-					isInline: false,
-					allowedChildren: ['#'],
-					format: '[h5]{0}[/h5]',
-					html: '<h5>{0}</h5>'
-				});
-
-				sceditor.formats.bbcode.set('h6', {
-					tags: {
-						h6: null
-					},
-					isInline: false,
-					allowedChildren: ['#'],
-					format: '[h6]{0}[/h6]',
-					html: '<h6>{0}</h6>'
-				});
-
-				sceditor.formats.bbcode.set('pre', {
-					tags: {
-						pre: null
-					},
-					isInline: false,
-					allowedChildren: ['#'],
-					format: '[pre]{0}[/pre]',
-					html: '<pre>{0}</pre>'
-				});
-
-				sceditor.formats.bbcode.set('address', {
-					tags: {
-						address: null
-					},
-					isInline: false,
-					allowedChildren: ['#'],
-					format: '[address]{0}[/address]',
-					html: '<address>{0}</address>'
+					sceditor.formats.bbcode.set(tag, handler);
 				});
 			}
 
