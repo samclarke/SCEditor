@@ -45,8 +45,9 @@
 			var	opts  = this.opts,
 				pOpts = opts.paragraphformat;
 
-			// Don't enable if the BBCode plugin is enabled.
-			if (opts.format && opts.format === 'bbcode') {
+			// Enable only for supported formats
+			if (!opts.format ||
+				(opts.format !== 'bbcode' && opts.format !== 'xhtml')) {
 				return;
 			}
 
@@ -62,12 +63,93 @@
 				}
 			}
 
-			if (!this.commands.format) {
-				this.commands.format = {
-					exec: formatCmd,
-					txtExec: formatCmd,
-					tooltip: 'Format Paragraph'
-				};
+			sceditor.command.set('format', {
+				exec: formatCmd,
+				txtExec: formatCmd,
+				tooltip: 'Format Paragraph'
+			});
+
+			// Initialize BBCode handlers
+			if (opts.format === 'bbcode') {
+				sceditor.formats.bbcode.set('h1', {
+					tags: {
+						h1: null
+					},
+					isInline: false,
+					allowedChildren: ['#'],
+					format: '[h1]{0}[/h1]',
+					html: '<h1>{0}</h1>'
+				});
+
+				sceditor.formats.bbcode.set('h2', {
+					tags: {
+						h2: null
+					},
+					isInline: false,
+					allowedChildren: ['#'],
+					format: '[h2]{0}[/h2]',
+					html: '<h2>{0}</h2>'
+				});
+
+				sceditor.formats.bbcode.set('h3', {
+					tags: {
+						h3: null
+					},
+					isInline: false,
+					allowedChildren: ['#'],
+					format: '[h3]{0}[/h3]',
+					html: '<h3>{0}</h3>'
+				});
+
+				sceditor.formats.bbcode.set('h4', {
+					tags: {
+						h4: null
+					},
+					isInline: false,
+					allowedChildren: ['#'],
+					format: '[h4]{0}[/h4]',
+					html: '<h4>{0}</h4>'
+				});
+
+				sceditor.formats.bbcode.set('h5', {
+					tags: {
+						h5: null
+					},
+					isInline: false,
+					allowedChildren: ['#'],
+					format: '[h5]{0}[/h5]',
+					html: '<h5>{0}</h5>'
+				});
+
+				sceditor.formats.bbcode.set('h6', {
+					tags: {
+						h6: null
+					},
+					isInline: false,
+					allowedChildren: ['#'],
+					format: '[h6]{0}[/h6]',
+					html: '<h6>{0}</h6>'
+				});
+
+				sceditor.formats.bbcode.set('pre', {
+					tags: {
+						pre: null
+					},
+					isInline: false,
+					allowedChildren: ['#'],
+					format: '[pre]{0}[/pre]',
+					html: '<pre>{0}</pre>'
+				});
+
+				sceditor.formats.bbcode.set('address', {
+					tags: {
+						address: null
+					},
+					isInline: false,
+					allowedChildren: ['#'],
+					format: '[address]{0}[/address]',
+					html: '<address>{0}</address>'
+				});
 			}
 
 			if (opts.toolbar === sceditor.defaultOptions.toolbar) {
@@ -84,8 +166,14 @@
 		 * @private
 		 */
 		insertTag = function (editor, tag) {
+			var	opts = editor.opts;
+
 			if (editor.sourceMode()) {
-				editor.insert('<' + tag + '>', '</' + tag + '>');
+				if (opts.format === 'bbcode') {
+					editor.insert('[' + tag + ']', '[/' + tag + ']');
+				} else {
+					editor.insert('<' + tag + '>', '</' + tag + '>');
+				}
 			} else {
 				editor.execCommand('formatblock', '<' + tag + '>');
 			}
