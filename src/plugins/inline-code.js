@@ -21,7 +21,7 @@
 	// causes a line break. In all other browsers it's collapsed.
 	var IE_BR_FIX = IE_VER && IE_VER < 11;
 
-	sceditor.plugins.code = function () {
+	sceditor.plugins['inline-code'] = function () {
 		var base = this;
 
 		/**
