@@ -785,21 +785,37 @@
 			allowsEmpty: true,
 			tags: {
 				iframe: {
-					'data-youtube-id': null
+					'data-youtube-id': null,
+					'data-youtube-start': null
 				}
 			},
 			format: function (element, content) {
-				element = attr(element, 'data-youtube-id');
+				var id = attr(element, 'data-youtube-id');
+				var start = attr(element, 'data-youtube-start');
 
-				return element ? '[youtube]' + element + '[/youtube]' : content;
+				if (start > 0) {
+					return id ? '[youtube=' + start + ']' + id +
+						'[/youtube]' : content;
+				} else {
+					return id ? '[youtube]' + id + '[/youtube]' : content;
+				}
 			},
 			html: function (token, attrs, content) {
 				var pOpts = this.opts;
 				var id = content;
+				var start = 0;
+
+				if (attrs.defaultattr) {
+					start = escapeEntities(attrs.defaultattr);
+				}
 
 				return '<iframe ' + pOpts.youtubeParameters + ' ' +
-				'src="https://www.youtube.com/embed/' + id + '?wmode=opaque" ' +
-				'data-youtube-id="' + id + '"></iframe>';
+				'src="https://www.youtube.com/embed/' + id +
+				'?start=' + start +
+				'&wmode=opaque" ' +
+				'data-youtube-id="' + id + '" ' +
+				'data-youtube-start="' + start + '">' +
+				'</iframe>';
 			}
 		},
 		// END_COMMAND
