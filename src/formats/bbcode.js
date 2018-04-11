@@ -793,9 +793,14 @@
 
 				return element ? '[youtube]' + element + '[/youtube]' : content;
 			},
-			html: '<iframe width="560" height="315" frameborder="0" ' +
-				'src="https://www.youtube.com/embed/{0}?wmode=opaque" ' +
-				'data-youtube-id="{0}" allowfullscreen></iframe>'
+			html: function (token, attrs, content) {
+				var pOpts = this.opts;
+				var id = content;
+
+				return '<iframe ' + pOpts.youtubeParameters + ' ' +
+				'src="https://www.youtube.com/embed/' + id + '?wmode=opaque" ' +
+				'data-youtube-id="' + id + '"></iframe>';
+			}
 		},
 		// END_COMMAND
 

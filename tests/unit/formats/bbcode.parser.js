@@ -628,7 +628,12 @@ QUnit.test('Attributes QuoteType custom', function (assert) {
 
 QUnit.module('plugins/bbcode#Parser - To HTML', {
 	beforeEach: function () {
-		this.parser = new sceditor.BBCodeParser({});
+		this.parser = new sceditor.BBCodeParser(
+			{
+				youtubeParameters: 'width="123" height="456" frameborder="0" ' +
+				'allowfullscreen'
+			}
+		);
 	}
 });
 
@@ -918,9 +923,9 @@ QUnit.test('Justify', function (assert) {
 QUnit.test('YouTube', function (assert) {
 	assert.htmlEqual(
 		this.parser.toHTML('[youtube]xyz[/youtube]'),
-		'<div><iframe width="560" height="315" ' +
+		'<div><iframe width="123" height="456" frameborder="0" allowfullscreen ' +
 			'src="https://www.youtube.com/embed/xyz?wmode=opaque" ' +
-			'data-youtube-id="xyz" frameborder="0" allowfullscreen>' +
+			'data-youtube-id="xyz">' +
 			'</iframe></div>\n',
 		'Normal'
 	);
