@@ -180,17 +180,20 @@
 		youtube: {
 			txtExec: function (caller) {
 				var editor = this;
+				var pOpts = editor.opts.parserOptions;
 
 				getEditorCommand('youtube')._dropDown(
 					editor,
 					caller,
-					function (id, time) {
+					function (id, start) {
 						editor.insertText(
-							'<iframe width="560" height="315" ' +
-							'src="https://www.youtube.com/embed/{id}?' +
-							'wmode=opaque&start=' + time + '" ' +
+							'<iframe ' + pOpts.youtubeParameters + ' ' +
+							'src="https://www.youtube.com/embed/' + id +
+							'?start=' + start +
+							'&wmode=opaque" ' +
 							'data-youtube-id="' + id + '" ' +
-							'frameborder="0" allowfullscreen></iframe>'
+							'data-youtube-start="' + start + '">' +
+							'</iframe>'
 						);
 					}
 				);
