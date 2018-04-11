@@ -39,11 +39,18 @@
 		var	commandHandler;
 
 		base.init = function () {
-			var	opts  = this.opts;
+			var opts = this.opts;
+			var pOpts = opts.percentageFontsize;
 
 			// Enable for BBCode only
 			if (opts.format && opts.format !== 'bbcode') {
 				return;
+			}
+
+			if (pOpts) {
+				if (pOpts.sizes) {
+					sizes = pOpts.sizes;
+				}
 			}
 
 			// The plugin will override current fontsize implementation
@@ -67,7 +74,7 @@
 					var size;
 
 					if (!fontSize) {
-						fontSize = element.style['font-size'];
+						fontSize = element.style.fontSize;
 					}
 
 					// remove "%" from the option
@@ -105,21 +112,9 @@
 					if (editor.sourceMode()) {
 						editor.insert('[size=' + size + ']', '[/size]');
 					} else {
-						// execCommand for fontsize accepts only numbers
-						// from 1 to 7, and it was deprecated!
-						// We'll set it to 3 and go over all the font tags with
-						// size 3 and change it to use the style as specified
-						editor.execCommand('fontsize', 3);
-
-						var fontElements = editor.wysiwygGetTags('font');
-						for (var i = 0,
-							len = fontElements.length;
-							i < len; ++i) {
-							if (fontElements[i].size === '3') {
-								fontElements[i].removeAttribute('size');
-								fontElements[i].style.fontSize = size + '%';
-							}
-						}
+						editor.wysiwygEditorInsertHtml(
+							'<font style="font-size: ' + size + '%;">',
+							'</font>');
 					}
 
 					e.preventDefault();
