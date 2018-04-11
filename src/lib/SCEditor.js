@@ -2251,6 +2251,18 @@ export default function SCEditor(original, userOptions) {
 	};
 
 	/**
+	 * Returns list of tags from the WYSIWYG editor
+	 *
+	 * @param {string} tagName
+	 * @function
+	 * @name execCommand
+	 * @memberOf SCEditor.prototype
+	 */
+	base.wysiwygGetTags = function (tagName) {
+		return wysiwygDocument.getElementsByTagName(tagName);
+	};
+
+	/**
 	 * Checks if the current selection has changed and triggers
 	 * the selectionchanged event if it has.
 	 *
