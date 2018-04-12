@@ -729,19 +729,87 @@ QUnit.test('Font colour', function (assert) {
 QUnit.test('List', function (assert) {
 	assert.htmlEqual(
 		this.parser.toHTML('[ul][li]test[/li][/ul]'),
-		'<ul><li>test' + IE_BR_STR + '</li></ul>',
-		'UL'
+		'<ul style="list-style-type:disc"><li>test' + IE_BR_STR + '</li></ul>',
+		'UL, no type'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ul=disc][li]test[/li][/ul]'),
+		'<ul style="list-style-type:disc"><li>test' + IE_BR_STR + '</li></ul>',
+		'UL, disc type'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ul=circle][li]test[/li][/ul]'),
+		'<ul style="list-style-type:circle"><li>test' + IE_BR_STR + '</li></ul>',
+		'UL, circle type'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ul=square][li]test[/li][/ul]'),
+		'<ul style="list-style-type:square"><li>test' + IE_BR_STR + '</li></ul>',
+		'UL, square type'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ul=none][li]test[/li][/ul]'),
+		'<ul style="list-style-type:none"><li>test' + IE_BR_STR + '</li></ul>',
+		'UL, none type'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ul=zzz][li]test[/li][/ul]'),
+		'<ul style="list-style-type:disc"><li>test' + IE_BR_STR + '</li></ul>',
+		'UL, unknown type'
 	);
 
 	assert.htmlEqual(
 		this.parser.toHTML('[ol][li]test[/li][/ol]'),
-		'<ol><li>test' + IE_BR_STR + '</li></ol>',
-		'OL'
+		'<ol style="list-style-type:decimal" data-tagtype="1"><li>test' +
+			IE_BR_STR + '</li></ol>',
+		'OL no type'
 	);
 
 	assert.htmlEqual(
-		this.parser.toHTML('[ul][li]test[ul][li]sub[/li][/ul][/li][/ul]'),
-		'<ul><li>test<ul><li>sub' + IE_BR_STR + '</li></ul></li></ul>',
+		this.parser.toHTML('[ol=1][li]test[/li][/ol]'),
+		'<ol style="list-style-type:decimal" data-tagtype="1"><li>test' +
+			IE_BR_STR + '</li></ol>',
+		'OL, type="1"'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ol=A][li]test[/li][/ol]'),
+		'<ol style="list-style-type:upper-alpha" data-tagtype="A"><li>test' +
+			IE_BR_STR + '</li></ol>',
+		'OL, type="A"'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ol=a][li]test[/li][/ol]'),
+		'<ol style="list-style-type:lower-alpha" data-tagtype="a"><li>test' +
+			IE_BR_STR + '</li></ol>',
+		'OL, type="a"'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ol=I][li]test[/li][/ol]'),
+		'<ol style="list-style-type:upper-roman" data-tagtype="I"><li>test' +
+			IE_BR_STR + '</li></ol>',
+		'OL, type="I"'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ol=i][li]test[/li][/ol]'),
+		'<ol style="list-style-type:lower-roman" data-tagtype="i"><li>test' +
+			IE_BR_STR + '</li></ol>',
+		'OL, type="i"'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[ul][li]test[ul=circle][li]sub[/li][/ul][/li][/ul]'),
+		'<ul style="list-style-type:disc"><li>test' +
+		'<ul style="list-style-type:circle"><li>sub' + IE_BR_STR +
+		'</li></ul></li></ul>',
 		'Nested UL'
 	);
 });

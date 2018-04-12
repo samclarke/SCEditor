@@ -137,26 +137,56 @@
 		},
 		bulletlist: {
 			txtExec: function (caller, selected) {
+				var editor = this;
 				var content = '';
 
-				each(selected.split(/\r?\n/), function () {
-					content += (content ? '\n' : '') +
-						'[li]' + this + '[/li]';
-				});
+				getEditorCommand('bulletlist')._dropDown(
+					editor,
+					caller,
+					function (listType) {
+						selected.split(/\r?\n/).forEach(function (item) {
+							content += (content ? '\n' : '') +
+								'[li]' + item + '[/li]';
+						});
 
-				this.insertText('[ul]\n' + content + '\n[/ul]');
+						if (listType === 'disc') {
+							editor.insertText(
+								'[ul]\n' + content + '\n[/ul]'
+							);
+						} else {
+							editor.insertText(
+								'[ul=' + listType + ']\n' + content + '\n[/ul]'
+							);
+						}
+					}
+				);
 			}
 		},
 		orderedlist: {
 			txtExec: function (caller, selected) {
+				var editor = this;
 				var content = '';
 
-				each(selected.split(/\r?\n/), function () {
-					content += (content ? '\n' : '') +
-						'[li]' + this + '[/li]';
-				});
+				getEditorCommand('orderedlist')._dropDown(
+					editor,
+					caller,
+					function (tagType) {
+						selected.split(/\r?\n/).forEach(function (item) {
+							content += (content ? '\n' : '') +
+								'[li]' + item + '[/li]';
+						});
 
-				this.insertText('[ol]\n' + content + '\n[/ol]');
+						if (tagType === '1') {
+							editor.insertText(
+								'[ol]\n' + content + '\n[/ol]'
+							);
+						} else {
+							editor.insertText(
+								'[ol=' + tagType + ']\n' + content + '\n[/ol]'
+							);
+						}
+					}
+				);
 			}
 		},
 		table: {
@@ -436,14 +466,41 @@
 
 		// START_COMMAND: Lists
 		ul: {
-			tags: {
-				ul: null
+			styles: {
+				'list-style-type': null
 			},
 			breakStart: true,
 			isInline: false,
 			skipLastLineBreak: true,
-			format: '[ul]{0}[/ul]',
-			html: '<ul>{0}</ul>'
+			format: function (element, content) {
+				var tag = element.nodeName.toLowerCase();
+				var listType = element.style['list-style-type'];
+				var validTypes = ['disc', 'circle', 'square', 'none'];
+
+				// That call is not for this tag, skip it
+				if (tag !== 'ul') {
+					return content;
+				}
+
+				if (listType && listType !== 'disc' &&
+					validTypes.indexOf(listType) > -1) {
+					return '[ul=' + listType + ']' + content + '[/ul]';
+				} else {
+					return '[ul]' + content + '[/ul]';
+				}
+			},
+			html: function (token, attrs, content) {
+				var listType = 'disc';
+				var validTypes = ['disc', 'circle', 'square', 'none'];
+				var attr = attrs.defaultattr;
+
+				if (attr && validTypes.indexOf(attr) > -1) {
+					listType = attr;
+				}
+
+				return '<ul style="list-style-type:' + listType + '">' +
+					content + '</ul>';
+			}
 		},
 		list: {
 			breakStart: true,
@@ -452,14 +509,51 @@
 			html: '<ul>{0}</ul>'
 		},
 		ol: {
-			tags: {
-				ol: null
+			styles: {
+				'list-style-type': null
 			},
 			breakStart: true,
 			isInline: false,
 			skipLastLineBreak: true,
-			format: '[ol]{0}[/ol]',
-			html: '<ol>{0}</ol>'
+			format: function (element, content) {
+				var tag = element.nodeName.toLowerCase();
+				var tagType = attr(element, 'data-tagtype');
+				var validTypes = ['1', 'A', 'a', 'I', 'i'];
+
+				// That call is not for this tag, skip it
+				if (tag !== 'ol') {
+					return content;
+				}
+
+				if (tagType && tagType !== '1' &&
+					validTypes.indexOf(tagType) > -1) {
+					return '[ol=' + tagType + ']' + content + '[/ol]';
+				} else {
+					return '[ol]' + content + '[/ol]';
+				}
+			},
+			html: function (token, attrs, content) {
+				var tagType = '1';
+				var styleType = 'decimal';
+				var validTypes = ['1', 'A', 'a', 'I', 'i'];
+				var attr = attrs.defaultattr;
+
+				if (attr && validTypes.indexOf(attr) > -1) {
+					tagType = attr;
+				}
+
+				switch (tagType) {
+					case '1': styleType = 'decimal'; break;
+					case 'A': styleType = 'upper-alpha'; break;
+					case 'a': styleType = 'lower-alpha'; break;
+					case 'I': styleType = 'upper-roman'; break;
+					case 'i': styleType = 'lower-roman'; break;
+					default: styleType = 'decimal'; break;
+				}
+
+				return '<ol style="list-style-type:' + styleType + '" ' +
+					'data-tagtype="' + tagType + '">' + content + '</ol>';
+			}
 		},
 		li: {
 			tags: {

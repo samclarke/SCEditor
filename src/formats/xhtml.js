@@ -100,10 +100,54 @@
 			}
 		},
 		bulletlist: {
-			txtExec: ['<ul><li>', '</li></ul>']
+			txtExec: function (caller, selected) {
+				var editor = this;
+				var content = '';
+
+				getEditorCommand('bulletlist')._dropDown(
+					editor,
+					caller,
+					function (listType) {
+						selected.split(/\r?\n/).forEach(function (item) {
+							content += (content ? '\n' : '') +
+								'<li>' + item + '</li>';
+						});
+
+						editor.insertText(
+							'<ul style="list-style-type:' + listType + '">' +
+							content + '</ul>'
+						);
+					}
+				);
+			}
 		},
 		orderedlist: {
-			txtExec: ['<ol><li>', '</li></ol>']
+			txtExec: function (caller, selected) {
+				var editor = this;
+				var content = '';
+
+				getEditorCommand('orderedlist')._dropDown(
+					editor,
+					caller,
+					function (tagType, styleType) {
+						selected.split(/\r?\n/).forEach(function (item) {
+							content += (content ? '\n' : '') +
+								'<li>' + item + '</li>';
+						});
+
+						if (styleType === 'decimal') {
+							editor.insertText(
+								'<ol>' + content + '</ol>'
+							);
+						} else {
+							editor.insertText(
+								'<ol style="list-style-type:' + styleType +
+								'">' + content + '</ol>'
+							);
+						}
+					}
+				);
+			}
 		},
 		table: {
 			txtExec: ['<table><tr><td>', '</td></tr></table>']
@@ -1162,6 +1206,16 @@
 			},
 			conv: function (node) {
 				node.parentNode.removeChild(node);
+			}
+		},
+		{
+			tags: {
+				ol: {
+					'data-tagtype': null
+				}
+			},
+			conv: function (node) {
+				removeAttr(node, 'data-tagtype');
 			}
 		}
 	];
