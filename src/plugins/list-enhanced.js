@@ -172,7 +172,7 @@
 				},
 				html: function (token, attrs, content) {
 					var tagType = '1';
-					var styleType = 'decimal';
+					var styleType;
 					var list = orderedList;
 					var attr = attrs.defaultattr;
 
