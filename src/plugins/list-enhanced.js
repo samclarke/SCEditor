@@ -18,6 +18,10 @@
 
 	var dom = sceditor.dom;
 
+	function isFunction(fn) {
+		return typeof fn === 'function';
+	}
+
 	/**
 	* Fixes a bug in FF where it sometimes wraps
 	* new lines in their own list item.
@@ -115,6 +119,19 @@
 		};
 
 		/**
+		* Use aleternative list format configration option.
+		* Default: True
+		*
+		* Alternative list format craetes lists in phpBB format:
+		* [list=type]
+		* [*]text
+		* [*]text
+		* [/list]
+		* @type {Boolean}
+		*/
+		var alternativeLists = true;
+
+		/**
 		 * Private functions
 		 * @private
 		 */
@@ -138,6 +155,10 @@
 				if (pOpts.bulletList) {
 					bulletList = pOpts.bulletList;
 				}
+
+				if (pOpts.alternativeLists) {
+					alternativeLists = pOpts.alternativeLists;
+				}
 			}
 
 			// The plugin will override current implementation
@@ -153,6 +174,64 @@
 				tooltip: 'Bullet list'
 			});
 
+			sceditor.formats.bbcode.set('list', {
+				breakStart: true,
+				isInline: false,
+				skipLastLineBreak: true,
+				html: function (token, attrs, content) {
+					var listType = 'disc';
+					var toHtml = null;
+
+					if (attrs.defaultattr) {
+						listType = attrs.defaultattr;
+					}
+
+					if (bulletList[listType]) {
+						// This listType belongs to bulletList (UL)
+						toHtml = sceditor.formats.bbcode.get('ul').html;
+					} else if (orderedList[listType]) {
+						// This listType belongs to orderedList (OL)
+						toHtml = sceditor.formats.bbcode.get('ol').html;
+					} else {
+						// unknown listType, use default bullet list behavior
+						toHtml = sceditor.formats.bbcode.get('ul').html;
+					}
+
+					if (isFunction(toHtml)) {
+						return toHtml.call(this, token, attrs, content);
+					} else {
+						token.attrs['0'] = content;
+						return sceditor.formats.bbcode.formatBBCodeString(
+							toHtml, token.attrs);
+					}
+				}
+			});
+
+			sceditor.formats.bbcode.set('li', {
+				tags: {
+					li: null
+				},
+				isInline: false,
+				closedBy: ['/ul', '/ol', '/list', '*', 'li'],
+				format: function (element, content) {
+					if (alternativeLists) {
+						return '[*]' + content;
+					} else {
+						return '[li]' + content + '[/li]';
+					}
+				},
+				html: '<li>{0}</li>'
+			});
+
+			if (alternativeLists) {
+				sceditor.formats.bbcode.set('*', {
+					isInline: false,
+					excludeClosing: true,
+					closedBy: ['/ul', '/ol', '/list', '*', 'li'],
+					html: '<li>{0}</li>'
+				});
+			}
+
 			sceditor.formats.bbcode.set('ol', {
 				tags: {
 					ol: null
@@ -163,11 +242,21 @@
 				format: function (element, content) {
 					var tagType = dom.attr(element, 'data-tagtype');
 					var list = orderedList;
+					var listTag = 'ol';
 
-					if (tagType && tagType !== '1' && list[tagType]) {
-						return '[ol=' + tagType + ']' + content + '[/ol]';
+					if (alternativeLists) {
+						listTag = 'list';
+					}
+
+					if ((tagType && tagType !== '1' ||
+						alternativeLists) && list[tagType]) {
+						return '[' + listTag + '=' + tagType + ']' +
+							content +
+							'[/' + listTag + ']';
 					} else {
-						return '[ol]' + content + '[/ol]';
+						return '[' + listTag + ']' +
+							content +
+							'[/' + listTag + ']';
 					}
 				},
 				html: function (token, attrs, content) {
@@ -202,11 +291,20 @@
 				format: function (element, content) {
 					var listType = element.style['list-style-type'];
 					var list = bulletList;
+					var listTag = 'ul';
+
+					if (alternativeLists) {
+						listTag = 'list';
+					}
 
 					if (listType && listType !== 'disc' && list[listType]) {
-						return '[ul=' + listType + ']' + content + '[/ul]';
+						return '[' + listTag + '=' + listType + ']' +
+							content +
+							'[/' + listTag + ']';
 					} else {
-						return '[ul]' + content + '[/ul]';
+						return '[' + listTag + ']' +
+							content +
+							'[/' + listTag + ']';
 					}
 				},
 				html: function (token, attrs, content) {
@@ -246,6 +344,15 @@
 				link.textContent = item.description;;
 				link.addEventListener('click', function (e) {
 					var tagType = dom.attr(this, 'data-tagtype');
+					var listTag = 'ol';
+					var itemStart = '[li]';
+					var itemEnd = '[/li]';
+
+					if (alternativeLists) {
+						listTag = 'list';
+						itemStart = '[*]';
+						itemEnd = '';
+					}
 
 					editor.closeDropDown(true);
 					fixFirefoxListBug(this);
@@ -255,16 +362,20 @@
 
 						selected.split(/\r?\n/).forEach(function (item) {
 							content += (content ? '\n' : '') +
-								'[li]' + item + '[/li]';
+								itemStart + item + itemEnd;
 						});
 
-						if (tagType === '1') {
+						if (tagType === '1' && !alternativeLists) {
 							editor.insertText(
-								'[ol]\n' + content + '\n[/ol]'
+								'[' + listTag + ']\n' +
+								content +
+								'\n[/' + listTag + ']'
 							);
 						} else {
 							editor.insertText(
-								'[ol=' + tagType + ']\n' + content + '\n[/ol]'
+								'[' + listTag + '=' + tagType + ']\n' +
+								content +
+								'\n[/' + listTag + ']'
 							);
 						}
 					} else {
@@ -303,6 +414,15 @@
 				link.textContent = description;;
 				link.addEventListener('click', function (e) {
 					var tagType = dom.attr(this, 'data-tagtype');
+					var listTag = 'ul';
+					var itemStart = '[li]';
+					var itemEnd = '[/li]';
+
+					if (alternativeLists) {
+						listTag = 'list';
+						itemStart = '[*]';
+						itemEnd = '';
+					}
 
 					editor.closeDropDown(true);
 					fixFirefoxListBug(this);
@@ -312,16 +432,20 @@
 
 						selected.split(/\r?\n/).forEach(function (item) {
 							content += (content ? '\n' : '') +
-								'[li]' + item + '[/li]';
+								itemStart + item + itemEnd;
 						});
 
 						if (tagType === 'disc') {
 							editor.insertText(
-								'[ul]\n' + content + '\n[/ul]'
+								'[' + listTag + ']\n' +
+								content +
+								'\n[/' + listTag + ']'
 							);
 						} else {
 							editor.insertText(
-								'[ul=' + tagType + ']\n' + content + '\n[/ul]'
+								'[' + listTag + '=' + tagType + ']\n' +
+								content +
+								'\n[/' + listTag + ']'
 							);
 						}
 					} else {
