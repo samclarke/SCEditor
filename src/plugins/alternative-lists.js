@@ -32,8 +32,9 @@
 		 * Private functions
 		 * @private
 		 */
-		var	bulletHandler;
-		var	orderedHandler;
+		var bulletHandler;
+		var orderedHandler;
+		var insertListTag;
 
 		base.init = function () {
 			var opts = this.opts;
@@ -118,6 +119,22 @@
 			});
 		};
 
+		insertListTag = function (editor, listType, selected) {
+			var content = '';
+
+			utils.each(selected.split(/\r?\n/), function (item) {
+				content += (content ? '\n' : '') +
+					'[*]' + item;
+			});
+
+			if (listType === '') {
+				editor.insertText('[list]\n' + content + '\n[/list]');
+			} else {
+				editor.insertText('[list=' + listType + ']\n' + content +
+				'\n[/list]');
+			}
+		};
+
 		/**
 		 * Function for the txtExec and exec properties
 		 *
@@ -125,25 +142,15 @@
 		 * @private
 		 */
 		orderedHandler = function (caller, selected) {
-			var content = '';
+			var editor = this;
 
-			utils.each(selected.split(/\r?\n/), function (item) {
-				content += (content ? '\n' : '') +
-					'[*]' + item;
-			});
-
-			this.insertText('[list=1]\n' + content + '\n[/list]');
+			insertListTag(editor, '1', selected);
 		};
 
 		bulletHandler = function (caller, selected) {
-			var content = '';
+			var editor = this;
 
-			utils.each(selected.split(/\r?\n/), function (item) {
-				content += (content ? '\n' : '') +
-					'[*]' + item;
-			});
-
-			this.insertText('[list]\n' + content + '\n[/list]');
+			insertListTag(editor, '', selected);
 		};
 
 	};
