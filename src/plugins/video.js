@@ -20,11 +20,18 @@
 	sceditor.plugins.video = function () {
 		var base = this;
 
+		var utils = sceditor.utils;
+		var dom = sceditor.dom;
+
 		/**
 		 * Private functions
 		 * @private
 		 */
 		var commandHandler;
+		var processYoutube;
+		var processFacebook;
+		var youtubeHtml;
+		var facebookHtml;
 
 		base.init = function () {
 			var opts = this.opts;
@@ -37,6 +44,8 @@
 			if (opts.toolbar === sceditor.defaultOptions.toolbar) {
 				opts.toolbar = opts.toolbar.replace(',image,',
 					',image,video,');
+
+				opts.toolbar = opts.toolbar.replace(',youtube', '');
 			}
 
 			// Remove youtube command
@@ -49,93 +58,93 @@
 				tooltip: 'Insert a video (YouTube, Facebook)'
 			});
 
-			/*
-			// Override current implementation
-			sceditor.formats.bbcode.set('list', {
-				breakStart: true,
-				isInline: false,
-				skipLastLineBreak: true,
+			sceditor.formats.bbcode.set('facebook', {
+				allowsEmpty: true,
+				tags: {
+					iframe: {
+						'data-facebook-id': null
+					}
+				},
+				format: function (element, content) {
+					var id = dom.attr(element, 'data-facebook-id');
+
+					return id ? '[facebook]' + id + '[/facebook]' : content;
+				},
 				html: function (token, attrs, content) {
-					var listType = 'disc';
-					var toHtml = null;
-
-					if (attrs.defaultattr) {
-						listType = attrs.defaultattr;
-					}
-
-					if (listType === '1') {
-						// This listType belongs to orderedList (OL)
-						toHtml = sceditor.formats.bbcode.get('ol').html;
-					} else {
-						// unknown listType, use default bullet list behavior
-						toHtml = sceditor.formats.bbcode.get('ul').html;
-					}
-
-					if (isFunction(toHtml)) {
-						return toHtml.call(this, token, attrs, content);
-					} else {
-						token.attrs['0'] = content;
-						return sceditor.formats.bbcode.formatBBCodeString(
-							toHtml, token.attrs);
-					}
+					return facebookHtml(this.opts.facebookParameters, content);
 				}
-			});
-
-			sceditor.formats.bbcode.set('ul', {
-				tags: {
-					ul: null
-				},
-				breakStart: true,
-				isInline: false,
-				skipLastLineBreak: true,
-				format: '[list]{0}[/list]',
-				html: '<ul>{0}</ul>'
-			});
-
-			sceditor.formats.bbcode.set('ol', {
-				tags: {
-					ol: null
-				},
-				breakStart: true,
-				isInline: false,
-				skipLastLineBreak: true,
-				format: '[list=1]{0}[/list]',
-				html: '<ol>{0}</ol>'
-			});
-
-			sceditor.formats.bbcode.set('li', {
-				tags: {
-					li: null
-				},
-				isInline: false,
-				closedBy: ['/ul', '/ol', '/list', '*', 'li'],
-				format: '[*]{0}',
-				html: '<li>{0}</li>'
-			});
-
-			sceditor.formats.bbcode.set('*', {
-				isInline: false,
-				excludeClosing: true,
-				closedBy: ['/ul', '/ol', '/list', '*', 'li'],
-				html: '<li>{0}</li>'
 			});
 		};
 
-		insertListTag = function (editor, listType, selected) {
-			var content = '';
+		youtubeHtml = function (pOpts, id, time) {
+			return '<iframe ' + pOpts + ' ' +
+				'src="https://www.youtube.com/embed/' + id +
+				'?start=' + time +
+				'&wmode=opaque" ' +
+				'data-youtube-id="' + id + '" ' +
+				'data-youtube-start="' + time + '"></iframe>';
+		};
 
-			utils.each(selected.split(/\r?\n/), function (item) {
-				content += (content ? '\n' : '') +
-					'[*]' + item;
-			});
+		facebookHtml = function (pOpts, id) {
+			return '<iframe ' + pOpts + ' ' +
+				'src="https://www.facebook.com/video/embed?video_id=' +
+				id + '" ' +
+				'data-facebook-id="' + id + '"></iframe>';
+		};
 
-			if (listType === '') {
-				editor.insertText('[list]\n' + content + '\n[/list]');
-			} else {
-				editor.insertText('[list=' + listType + ']\n' + content +
-				'\n[/list]');
+		processYoutube = function (editor, val) {
+			var pOpts = editor.opts.parserOptions;
+			var idMatch = val.match(/(?:v=|v\/|embed\/|youtu.be\/)(.{11})/);
+			var timeMatch = val.match(/[&|?](?:star)?t=((\d+[hms]?){1,3})/);
+			var time = 0;
+
+			if (timeMatch) {
+				utils.each(timeMatch[1].split(/[hms]/), function (i, val) {
+					if (val !== '') {
+						time = (time * 60) + Number(val);
+					}
+				});
 			}
-			*/
+
+			if (idMatch && /^[a-zA-Z0-9_\-]{11}$/.test(idMatch[1])) {
+				var id = idMatch[1];
+
+				if (editor.sourceMode()) {
+					if (time === 0) {
+						editor.insertText('[youtube]' + id + '[/youtube]');
+					} else {
+						editor.insertText('[youtube=' + time + ']' + id +
+							'[/youtube]');
+					}
+				} else {
+					editor.wysiwygEditorInsertHtml(
+						youtubeHtml(pOpts.youtubeParameters, id, time));
+				}
+
+				return true;
+			} else {
+				return false;
+			}
+		};
+
+		processFacebook = function (editor, val) {
+			var pOpts = editor.opts.parserOptions;
+			var idMatch = val.match(/videos\/(\d+)+|v=(\d+)|vb.\d+\/(\d+)/);
+
+			if (idMatch && /^[a-zA-Z0-9]/.test(idMatch[1])) {
+				var id = idMatch[1];
+
+				if (editor.sourceMode()) {
+					editor.insertText('[facebook]' + id + '[/facebook]');
+				} else {
+					editor.wysiwygEditorInsertHtml(
+						facebookHtml(pOpts.facebookParameters, id));
+				}
+
+				return true;
+			} else {
+				return false;
+			}
 		};
 
 		/**
@@ -144,10 +153,52 @@
 		 * @param  {node} caller
 		 * @private
 		 */
-		commandHandler = function (caller, selected) {
+		commandHandler = function (caller) {
 			var editor = this;
+			var content = document.createElement('div');
 
-			editor.insertText(selected);
+			var div;
+			var label;
+			var input;
+			var button;
+
+			div = document.createElement('div');
+			label = document.createElement('label');
+			label.setAttribute('for', 'link');
+			label.textContent = editor._('Video URL:');
+			input = document.createElement('input');
+			input.type = 'text';
+			input.id = 'link';
+			input.dir = 'ltr';
+			input.placeholder = 'https://';
+			div.appendChild(label);
+			div.appendChild(input);
+
+			content.appendChild(div);
+
+			div = document.createElement('div');
+			button = document.createElement('input');
+			button.type = 'button';
+			button.className = 'button';
+			button.value = editor._('Insert');
+			div.appendChild(button);
+
+			content.appendChild(div);
+
+			button.addEventListener('click', function (e) {
+				var val = input.value;
+				var done = false;
+
+				done = processYoutube(editor, val);
+				if (!done) {
+					done = processFacebook(editor, val);
+				}
+
+				editor.closeDropDown(true);
+				e.preventDefault();
+			});
+
+			editor.createDropDown(caller, 'insertlink', content);
 		};
 	};
 })(sceditor);

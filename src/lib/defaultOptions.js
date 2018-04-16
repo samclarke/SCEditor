@@ -357,7 +357,16 @@ export default {
 		* @type {string}
 		*/
 		youtubeParameters: 'width="560" height="315" frameborder="0" ' +
-			'allowfullscreen'
+			'allowfullscreen',
+
+		/**
+			* Parameters that will be added to Facebook frame tag
+			*
+			* @type {string}
+			*/
+		facebookParameters: 'width="560" height="315"' +
+			'style="border:none;overflow:hidden" scrolling="no" ' +
+			'frameborder="0" allowTransparency="true" allowFullScreen="true"'
 	},
 
 	/**
