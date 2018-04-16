@@ -777,11 +777,13 @@ var defaultCmds = {
 		},
 		exec: function (btn) {
 			var editor = this;
+			var pOpts = editor.opts.parserOptions;
 
 			defaultCmds.youtube._dropDown(editor, btn, function (id, time) {
 				editor.wysiwygEditorInsertHtml(_tmpl('youtube', {
 					id: id,
-					time: time
+					time: time,
+					params: pOpts.youtubeParameters
 				}));
 			});
 		},
