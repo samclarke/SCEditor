@@ -364,7 +364,7 @@ export default {
 			*
 			* @type {string}
 			*/
-		facebookParameters: 'width="560" height="315"' +
+		facebookParameters: 'width="560" height="315" ' +
 			'style="border:none;overflow:hidden" scrolling="no" ' +
 			'frameborder="0" allowTransparency="true" allowFullScreen="true"'
 	},
