@@ -317,7 +317,7 @@ export default {
 	 *
 	 * @type {string}
 	 */
-	plugins: '',
+	plugins: 'video',
 
 	/**
 	 * z-index to set the editor container to. Needed for jQuery UI dialog.
