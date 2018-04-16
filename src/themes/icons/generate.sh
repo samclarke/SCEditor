@@ -38,11 +38,12 @@ done
 montage -mode concatenate -background none -tile 1x $INIMAGES $IMAGE
 montage -mode concatenate -background none -tile 1x $IMAGE src/famfamfam/grip.png src/famfamfam/grip-rtl.png $IMAGE
 
-echo -e '' >> $OUT
-echo -e 'div.sceditor-grip {' >> $OUT
-echo -e '	background-position: 0px -640px;' >> $OUT
-echo -e '	width: 10px;' >> $OUT
-echo -e '	height: 10px;' >> $OUT
-echo -e '}' >> $OUT
-echo -e '.rtl div.sceditor-grip { background-position: 0px -650px; }' >> $OUT
+echo -e "" >> $OUT
+echo -e "div.sceditor-grip {" >> $OUT
+echo -e "	background-position: 0px $Y""px;" >> $OUT
+echo -e "	width: 10px;" >> $OUT
+echo -e "	height: 10px;" >> $OUT
+echo -e "}" >> $OUT
+let "Y-=10"
+echo -e ".rtl div.sceditor-grip { background-position: 0px $Y""px; }" >> $OUT
 
