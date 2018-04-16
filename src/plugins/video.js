@@ -187,11 +187,11 @@
 
 			button.addEventListener('click', function (e) {
 				var val = input.value;
-				var done = false;
+				var done;
 
 				done = processYoutube(editor, val);
 				if (!done) {
-					done = processFacebook(editor, val);
+					processFacebook(editor, val);
 				}
 
 				editor.closeDropDown(true);
