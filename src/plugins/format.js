@@ -21,7 +21,7 @@
 		 * @type {Object}
 		 * @private
 		 */
-		var tags = {
+		var xhtmlTags = {
 			p: 'Paragraph',
 			h1: 'Heading 1',
 			h2: 'Heading 2',
@@ -32,6 +32,19 @@
 			address: 'Address',
 			pre: 'Preformatted Text'
 		};
+
+		var bbcodeTags = {
+			h1: 'Heading 1',
+			h2: 'Heading 2',
+			h3: 'Heading 3',
+			h4: 'Heading 4',
+			h5: 'Heading 5',
+			h6: 'Heading 6',
+			address: 'Address',
+			pre: 'Preformatted Text'
+		};
+
+		var tags;
 
 		/**
 		 * Private functions
@@ -49,6 +62,12 @@
 			if (!opts.format ||
 				(opts.format !== 'bbcode' && opts.format !== 'xhtml')) {
 				return;
+			}
+
+			if (opts.format === 'xhtml') {
+				tags = xhtmlTags;
+			} else if (opts.format === 'bbcode') {
+				tags = bbcodeTags;
 			}
 
 			if (pOpts) {
