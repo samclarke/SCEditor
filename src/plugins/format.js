@@ -33,6 +33,8 @@
 			pre: 'Preformatted Text'
 		};
 
+		// BBCode should not implement <p> tag, otherwise all the lines will be
+		// wrapped with [p][/p] tags
 		var bbcodeTags = {
 			h1: 'Heading 1',
 			h2: 'Heading 2',
@@ -44,6 +46,9 @@
 			pre: 'Preformatted Text'
 		};
 
+		// tags variable is assigned with the list from bbcodeTags or
+		// xhtmlTags according to the used formatter engine. The rest
+		// of the plugin logic uses that variable
 		var tags;
 
 		/**
