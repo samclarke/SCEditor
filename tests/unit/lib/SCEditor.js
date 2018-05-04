@@ -18,11 +18,11 @@ var $fixture = $('#qunit-module-fixture');
 
 var testFormat = function () {
 	this.toHtml = function () {
-		return '<b>test wysiwyg</b>';
+		return '<p><b>test wysiwyg</b></p>';
 	};
 
 	this.toSource = function () {
-		return '<b>test source</b>';
+		return '<p><b>test source</b></p>';
 	};
 };
 
@@ -392,12 +392,12 @@ QUnit.test('getWysiwygEditorValue() - Filter', function (assert) {
 
 	assert.htmlEqual(
 		sceditor.getWysiwygEditorValue(false),
-		'<b>test wysiwyg</b>'
+		'<p><b>test wysiwyg</b></p>'
 	);
 
 	assert.htmlEqual(
 		sceditor.getWysiwygEditorValue(true),
-		'<b>test source</b>'
+		'<p><b>test source</b></p>'
 	);
 });
 
@@ -428,12 +428,12 @@ QUnit.test('getSourceEditorValue() - Uses format', function (assert) {
 	sceditor.sourceMode(true);
 	assert.htmlEqual(
 		sceditor.getSourceEditorValue(false),
-		'<b>test source</b>'
+		'<p><b>test source</b></p>'
 	);
 
 	assert.htmlEqual(
 		sceditor.getSourceEditorValue(true),
-		'<b>test wysiwyg</b>'
+		'<p><b>test wysiwyg</b></p>'
 	);
 });
 

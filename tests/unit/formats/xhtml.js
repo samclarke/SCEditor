@@ -118,8 +118,8 @@ QUnit.test('Should not remove empty tags in allowedEmptyTags', function (assert)
 
 QUnit.test('Should not empty tags with a size', function (assert) {
 	assert.htmlEqual(
-		this.filterStripWhiteSpace('<p><i style="display:inline-block;width:1px;height:1px;"></i></p>'),
-		'<p><istyle="display:inline-block;width:1px;height:1px;"></i></p>',
+		this.filterHtml('<p><i style="display:inline-block;width:1px;height:1px;"></i></p>'),
+		'<p>\n\t<i style="display:inline-block;width:1px;height:1px;">\n\t</i>\n</p>',
 		'Empty tag with size'
 	);
 });
@@ -702,6 +702,8 @@ QUnit.test('Face', function (assert) {
 	assert.ok(
 		result === utils.stripWhiteSpace(
 			'<div style="font-family: arial black;">test</div>') ||
+		result === utils.stripWhiteSpace(
+			'<div style="font-family: arial\\ black;">test</div>') ||
 		result === utils.stripWhiteSpace(
 			'<div style="font-family: &quot;arial black&quot;;">test</div>') ||
 		result === utils.stripWhiteSpace(
