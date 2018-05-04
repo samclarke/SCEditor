@@ -1,3 +1,22 @@
+Version 2.1.3:
+	Fixed issue with monocons showing underline if text-decoration is set.
+		- Thanks to @q2apro for reporting.
+	Fixed bug with indent & outdent not being enabled.
+		- Thanks to @mbiddle for reporting.
+	Improved autoExpand throttling and better handle rounding.
+	Added defult with to empty table cells to make them easier to edit.
+		- Thanks to @ata81 for fixing
+	Fixed bug with FF sometimes throwing error when selection changes.
+		- Thanks to @Sesquipedalian for fixing
+	Updated left and right align buttons to show as active by default in Edge
+		and IE to match Chrome & Firefox behaviour.
+		- Thanks to @chrisbetson for reporting.
+	Fixed bug with [rtl] and [ltr] BBCodes sometimes adding new lines.
+	Updated default content style to keep code as rtl in ltr mode.
+		- Thanks to @abetis for fixing.
+	Fixed bug with HTML format adding extra divs to the end of the output.
+		- Thanks to @pnowy for reporting and @abetis for fixing.
+
 Version 2.1.2:
 	Fixed issue with extend() trying to copy non-plain objects.
 		- Thanks to @mtsnr for reporting
