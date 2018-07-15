@@ -622,6 +622,7 @@ export default function SCEditor(original, userOptions) {
 		if (form) {
 			dom.on(form, 'reset', handleFormReset);
 			dom.on(form, 'submit', base.updateOriginal, dom.EVENT_CAPTURE);
+			dom.on(window, 'unload', base.updateOriginal, dom.EVENT_CAPTURE);
 		}
 
 		dom.on(wysiwygBody, 'keypress', handleKeyPress);
@@ -1373,6 +1374,7 @@ export default function SCEditor(original, userOptions) {
 		if (form) {
 			dom.off(form, 'reset', handleFormReset);
 			dom.off(form, 'submit', base.updateOriginal);
+			dom.off(window, 'unload', base.updateOriginal);
 		}
 
 		dom.remove(sourceEditor);
