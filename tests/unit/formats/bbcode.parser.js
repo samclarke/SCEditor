@@ -705,7 +705,7 @@ QUnit.test('Font face', function (assert) {
 QUnit.test('Size', function (assert) {
 	assert.htmlEqual(
 		this.parser.toHTML('[size=4]test[/size]'),
-		'<div><font size="4">test</font></div>\n',
+		'<div><span style="font-size: 20px">test</span></div>\n',
 		'Normal'
 	);
 });

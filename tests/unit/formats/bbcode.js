@@ -497,13 +497,13 @@ QUnit.test('Font face', function (assert) {
 QUnit.test('Size', function (assert) {
 	assert.equal(
 		this.htmlToBBCode('<span style="font-size: 11px">test</span>'),
-		'[size=1]test[/size]',
+		'[size=11px]test[/size]',
 		'CSS px'
 	);
 
 	assert.equal(
 		this.htmlToBBCode('<span style="font-size: 1100px">test</span>'),
-		'[size=7]test[/size]',
+		'[size=1100px]test[/size]',
 		'CSS px too large'
 	);
 
