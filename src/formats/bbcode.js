@@ -370,11 +370,13 @@
 				'font-size': null
 			},
 			format: function (element, content) {
-				var fontSize = attr(element, 'size'),
-					size = 3;
+				var fontSize = attr(element, 'size');
 
 				if (!fontSize) {
 					fontSize = css(element, 'fontSize');
+					if (!fontSize) {
+						fontSize = 3;
+					}
 				}
 				if (fontSize.indexOf('px') !== -1) {
 					var ind = sizes.indexOf(fontSize) + 1;
@@ -388,9 +390,8 @@
 						fontSize = 1;
 					}
 				}
-				size = fontSize;
 
-				return '[size=' + size + ']' + content + '[/size]';
+				return '[size=' + fontSize + ']' + content + '[/size]';
 			},
 			html: function (token, attrs, content) {
 				var fontSize = escapeEntities(attrs.defaultattr);
