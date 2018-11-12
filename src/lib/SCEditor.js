@@ -2071,6 +2071,21 @@ export default function SCEditor(original, userOptions) {
 	/**
 	 * Replaces any emoticon codes in the passed HTML
 	 * with their emoticon images
+	 *
+	 * @function
+	 * @name replaceEmoticons
+	 * @since XYZ
+	 * @memberOf SCEditor.prototype
+	 */
+	base.replaceEmoticons = function (el) {
+		if (options.emoticonsEnabled) {
+			emoticons
+				.replace(el, allEmoticons, options.emoticonsCompat);
+		}
+	};
+	/**
+	 * Replaces any emoticon codes in the passed HTML
+	 * with their emoticon images
 	 * @private
 	 */
 	replaceEmoticons = function () {
