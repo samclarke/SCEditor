@@ -727,6 +727,7 @@
 				]
 			},
 			isInline: false,
+			allowsEmpty: true,
 			format: '[left]{0}[/left]',
 			html: '<div align="left">{0}</div>'
 		},
@@ -743,6 +744,7 @@
 				]
 			},
 			isInline: false,
+			allowsEmpty: true,
 			format: '[center]{0}[/center]',
 			html: '<div align="center">{0}</div>'
 		},
@@ -759,6 +761,7 @@
 				]
 			},
 			isInline: false,
+			allowsEmpty: true,
 			format: '[right]{0}[/right]',
 			html: '<div align="right">{0}</div>'
 		},
