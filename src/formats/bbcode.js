@@ -778,6 +778,7 @@
 				]
 			},
 			isInline: false,
+      allowsEmpty: true,
 			format: '[justify]{0}[/justify]',
 			html: '<div align="justify">{0}</div>'
 		},
