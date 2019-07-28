@@ -45,6 +45,13 @@ sceditor.create(textarea, {
 });
 ```
 
+Finally, to get the contents of the editor:
+
+```js
+var textarea = document.getElementById("id-of-textarea");
+
+sceditor.instance(textarea).val();
+```
 
 
 ## Options
