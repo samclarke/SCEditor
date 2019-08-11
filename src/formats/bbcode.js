@@ -176,7 +176,7 @@
 					editor,
 					caller,
 					selected,
-					function (url, width, height) {
+					function (url, width, height, alt) {
 						var attrs  = '';
 
 						if (width) {
@@ -185,6 +185,10 @@
 
 						if (height) {
 							attrs += ' height=' + height;
+						}
+
+						if (alt) {
+							attrs += ' alt="' + alt + '"';
 						}
 
 						editor.insertText(
@@ -557,7 +561,7 @@
 			allowedChildren: ['#'],
 			quoteType: QuoteType.never,
 			format: function (element, content) {
-				var	width, height,
+				var	width, height, alt,
 					attribs   = '',
 					style     = function (name) {
 						return element.style ? element.style[name] : null;
@@ -570,24 +574,40 @@
 
 				width = attr(element, 'width') || style('width');
 				height = attr(element, 'height') || style('height');
+				alt = attr(element, 'alt') || style('alt');
 
-				// only add width and height if one is specified
-				if ((element.complete && (width || height)) ||
-					(width && height)) {
+				if(alt != '')
+				{
+					attribs = ' alt="' + alt + '"';
 
-					attribs = '=' + dom.width(element) + 'x' +
-						dom.height(element);
+					if ((element.complete && (width || height)) ||
+						(width && height)) {
+
+						attribs += ' width="' + dom.width(element) + '"';
+						attribs += ' height="' + dom.height(element) + '"';
+					}
+				}
+				else
+				{
+					// only add width and height if one is specified
+					if ((element.complete && (width || height)) ||
+						(width && height)) {
+
+						attribs = '=' + dom.width(element) + 'x' +
+							dom.height(element);
+					}
 				}
 
 				return '[img' + attribs + ']' + attr(element, 'src') + '[/img]';
 			},
 			html: function (token, attrs, content) {
-				var	undef, width, height, match,
+				var	undef, width, height, alt, match,
 					attribs = '';
 
 				// handle [img width=340 height=240]url[/img]
 				width  = attrs.width;
 				height = attrs.height;
+				alt = attrs.alt;
 
 				// handle [img=340x240]url[/img]
 				if (attrs.defaultattr) {
@@ -603,6 +623,10 @@
 
 				if (height !== undef) {
 					attribs += ' height="' + escapeEntities(height, true) + '"';
+				}
+
+				if (alt !== undef) {
+					attribs += ' alt="' + escapeEntities(alt, true) + '"';
 				}
 
 				return '<img' + attribs +

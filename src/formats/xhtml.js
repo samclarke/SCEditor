@@ -128,7 +128,7 @@
 					editor,
 					caller,
 					selected,
-					function (url, width, height) {
+					function (url, width, height, alt) {
 						var attrs  = '';
 
 						if (width) {
@@ -137,6 +137,10 @@
 
 						if (height) {
 							attrs += ' height="' + height + '"';
+						}
+
+						if (alt) {
+							attrs += ' alt="' + alt + '"';
 						}
 
 						editor.insertText(

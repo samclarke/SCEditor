@@ -460,6 +460,7 @@ var defaultCmds = {
 				url: editor._('URL:'),
 				width: editor._('Width (optional):'),
 				height: editor._('Height (optional):'),
+				alt: editor._('ALT text (optional):'),
 				insert: editor._('Insert')
 			}, true));
 
@@ -474,6 +475,7 @@ var defaultCmds = {
 						urlInput.value,
 						dom.find(content, '#width')[0].value,
 						dom.find(content, '#height')[0].value
+						dom.find(content, '#alt')[0].value
 					);
 				}
 
