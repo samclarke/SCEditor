@@ -776,6 +776,27 @@ QUnit.test('Image', function (assert) {
 	);
 
 	assert.htmlEqual(
+		this.parser.toHTML('[img width="10" height="20"]http://test.com/test.png[/img]'),
+		'<div><img width="10" height="20" ' +
+			'src="http://test.com/test.png" /></div>\n',
+		'Expanded'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[img width="10" height="20" alt="ALT text"]http://test.com/test.png[/img]'),
+		'<div><img width="10" height="20" alt="ALT text" ' +
+			'src="http://test.com/test.png" /></div>\n',
+		'Width, height and ALT attributes'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[img alt="ALT text"]http://test.com/test.png[/img]'),
+		'<div><img alt="ALT text" ' +
+			'src="http://test.com/test.png" /></div>\n',
+		'ALT only'
+	);
+
+	assert.htmlEqual(
 		this.parser.toHTML('[img width=10]http://test.com/test.png[/img]'),
 		'<div><img width="10" src="http://test.com/test.png" /></div>\n',
 		'Width only'

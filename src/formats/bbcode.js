@@ -180,15 +180,18 @@
 						var attrs  = '';
 
 						if (width) {
-							attrs += ' width=' + width;
+							attrs += ' width="' +
+								escapeEntities(width, true) + '"';
 						}
 
 						if (height) {
-							attrs += ' height=' + height;
+							attrs += ' height="' +
+								escapeEntities(height, true) + '"';
 						}
 
 						if (alt) {
-							attrs += ' alt="' + alt + '"';
+							attrs += ' alt="' +
+								escapeEntities(alt, true) + '"';
 						}
 
 						editor.insertText(
@@ -559,7 +562,7 @@
 				}
 			},
 			allowedChildren: ['#'],
-			quoteType: QuoteType.never,
+			quoteType: QuoteType.auto,
 			format: function (element, content) {
 				var	width, height, alt,
 					attribs   = '',
@@ -574,21 +577,21 @@
 
 				width = attr(element, 'width') || style('width');
 				height = attr(element, 'height') || style('height');
-				alt = attr(element, 'alt') || style('alt');
+				alt = attr(element, 'alt');
 
-				if(alt != '')
-				{
-					attribs = ' alt="' + alt + '"';
-
-					if ((element.complete && (width || height)) ||
-						(width && height)) {
-
-						attribs += ' width="' + dom.width(element) + '"';
-						attribs += ' height="' + dom.height(element) + '"';
+				if (alt) {
+					if (width) {
+						attribs += ' width="' +
+							escapeEntities(width, true) + '"';
 					}
-				}
-				else
-				{
+
+					if (height) {
+						attribs += ' height="' +
+							escapeEntities(height, true) + '"';
+					}
+
+					attribs += ' alt="' + escapeEntities(alt, true) + '"';
+				} else {
 					// only add width and height if one is specified
 					if ((element.complete && (width || height)) ||
 						(width && height)) {

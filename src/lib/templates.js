@@ -60,6 +60,8 @@ var _templates = {
 			'<input type="text" id="width" size="2" dir="ltr" /></div>' +
 		'<div><label for="height">{height}</label> ' +
 			'<input type="text" id="height" size="2" dir="ltr" /></div>' +
+		'<div><label for="alt">{alt}</label> ' +
+			'<input type="text" id="alt" dir="ltr" /></div>' +
 		'<div><input type="button" class="button" value="{insert}" />' +
 			'</div>',
 
