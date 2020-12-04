@@ -510,8 +510,7 @@ export default function SCEditor(original, userOptions) {
 		}
 
 		if (globalWin.location.protocol === 'https:') {
-			// eslint-disable-next-line no-script-url
-			dom.attr(wysiwygEditor, 'src', 'javascript:false');
+			dom.attr(wysiwygEditor, 'src', 'about:blank');
 		}
 
 		// Add the editor to the container
