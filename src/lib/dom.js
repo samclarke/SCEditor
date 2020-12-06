@@ -336,7 +336,7 @@ export function css(node, rule, value) {
 
 
 /**
- * Gets or sets thee data attributes on a node
+ * Gets or sets the data attributes on a node
  *
  * Unlike the jQuery version this only stores data
  * in the DOM attributes which means only strings
