@@ -635,10 +635,26 @@ QUnit.test('Horizontal rule', function (assert) {
 QUnit.test('Image', function (assert) {
 	assert.equal(
 		this.htmlToBBCode(
-			'<img width=10 height=10 src="http://example.com/test.png" />'
+			'<img width=10 height=20 src="http://example.com/test.png" />'
 		),
-		'[img=10x10]http://example.com/test.png[/img]',
+		'[img=10x20]http://example.com/test.png[/img]',
 		'Image tag with width and height attributes'
+	);
+
+	assert.equal(
+		this.htmlToBBCode(
+			'<img width="10" height="20" src="http://example.com/test.png" />'
+		),
+		'[img=10x20]http://example.com/test.png[/img]',
+		'Image tag with quoted width and height attributes'
+	);
+
+	assert.equal(
+		this.htmlToBBCode(
+			'<img width="10" height="20" alt="ALT text" src="http://example.com/test.png" />'
+		),
+		'[img width=10 height=20 alt="ALT text"]http://example.com/test.png[/img]',
+		'Image tag with width,height and ALT attributes'
 	);
 
 	assert.equal(

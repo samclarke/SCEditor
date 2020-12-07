@@ -460,6 +460,7 @@ var defaultCmds = {
 				url: editor._('URL:'),
 				width: editor._('Width (optional):'),
 				height: editor._('Height (optional):'),
+				alt: editor._('ALT text (optional):'),
 				insert: editor._('Insert')
 			}, true));
 
@@ -473,7 +474,8 @@ var defaultCmds = {
 					cb(
 						urlInput.value,
 						dom.find(content, '#width')[0].value,
-						dom.find(content, '#height')[0].value
+						dom.find(content, '#height')[0].value,
+						dom.find(content, '#alt')[0].value
 					);
 				}
 
@@ -490,7 +492,7 @@ var defaultCmds = {
 				editor,
 				caller,
 				'',
-				function (url, width, height) {
+				function (url, width, height, alt) {
 					var attrs  = '';
 
 					if (width) {
@@ -499,6 +501,10 @@ var defaultCmds = {
 
 					if (height) {
 						attrs += ' height="' + height + '"';
+					}
+
+					if (alt) {
+						attrs += ' alt="' + alt + '"';
 					}
 
 					editor.wysiwygEditorInsertHtml(
