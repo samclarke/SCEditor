@@ -1,5 +1,6 @@
 import * as dom from './dom.js';
 import * as utils from './utils.js';
+import * as escape from './escape.js';
 import { ie as IE_VER } from './browser.js';
 import _tmpl from './templates.js';
 
@@ -494,15 +495,17 @@ var defaultCmds = {
 					var attrs  = '';
 
 					if (width) {
-						attrs += ' width="' + width + '"';
+						attrs += ' width="' + parseInt(width) + '"';
 					}
 
 					if (height) {
-						attrs += ' height="' + height + '"';
+						attrs += ' height="' + parseInt(height) + '"';
 					}
 
+					attrs += ' src="' + escape.entities(url) + '"';
+
 					editor.wysiwygEditorInsertHtml(
-						'<img' + attrs + ' src="' + url + '" />'
+						'<img' + attrs + ' />'
 					);
 				}
 			);
@@ -547,8 +550,9 @@ var defaultCmds = {
 
 					if (!editor.getRangeHelper().selectedHtml() || text) {
 						editor.wysiwygEditorInsertHtml(
-							'<a href="' + 'mailto:' + email + '">' +
-								(text || email) +
+							'<a href="' +
+							'mailto:' + escape.entities(email) + '">' +
+								escape.entities((text || email)) +
 							'</a>'
 						);
 					} else {
@@ -607,7 +611,9 @@ var defaultCmds = {
 					text = text || url;
 
 					editor.wysiwygEditorInsertHtml(
-						'<a href="' + url + '">' + text + '</a>'
+						'<a href="' + escape.entities(url) + '">' +
+							escape.entities(text) +
+						'</a>'
 					);
 				} else {
 					editor.execCommand('createlink', url);
@@ -648,7 +654,9 @@ var defaultCmds = {
 			// if there is HTML passed set end to null so any selected
 			// text is replaced
 			if (html) {
-				author = (author ? '<cite>' + author + '</cite>' : '');
+				author = (author ? '<cite>' +
+					escape.entities(author) +
+				'</cite>' : '');
 				before = before + author + html + end;
 				end    = null;
 			// if not add a newline to the end of the inserted quote
