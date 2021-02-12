@@ -482,3 +482,31 @@ QUnit.test('emoticons() - Longest first', function (assert) {
 	assert.equal($body.find('img[data-sceditor-emoticon=">:("]').length, 1);
 	assert.equal($body.find('img[data-sceditor-emoticon=":("]').length, 1);
 });
+
+QUnit.test('Insert image XSS', function (assert) {
+	var done = assert.async();
+
+	reloadEditor({});
+
+	var called = false;
+	sceditor.getBody().xss = function () {
+		called = true;
+	};
+
+	var button = document.getElementsByClassName('sceditor-button-image')[0];
+	defaultCommands.image.exec.call(sceditor, button);
+
+	var dropdown = document.getElementsByClassName('sceditor-insertimage')[0];
+	var input = document.getElementById('image');
+	var insertButton = dropdown.getElementsByClassName('button')[0];
+
+	input.value = '<img src="http://url.to.file.which/not.exist" onerror=body.xss();>';
+	insertButton.click();
+
+	sceditor.getBody().addEventListener('error', function () {
+		setTimeout(function () {
+			assert.notOk(called);
+			done();
+		}, 1);
+	}, true);
+});
