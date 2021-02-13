@@ -76,7 +76,7 @@ var outerText = function (range, isLeft, length) {
  * @class RangeHelper
  * @name RangeHelper
  */
-export default function RangeHelper(win, d) {
+export default function RangeHelper(win, d, sanitize) {
 	var	_createMarker, _prepareInput,
 		doc          = d || win.contentDocument || win.document,
 		startMarker  = 'sceditor-start-marker',
@@ -112,7 +112,7 @@ export default function RangeHelper(win, d) {
 
 		div           = dom.createElement('p', {}, doc);
 		node          = doc.createDocumentFragment();
-		div.innerHTML = html;
+		div.innerHTML = sanitize(html);
 
 		while (div.firstChild) {
 			dom.appendChild(node, div.firstChild);

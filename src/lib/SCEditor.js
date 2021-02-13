@@ -8,6 +8,7 @@ import _tmpl from './templates.js';
 import * as escape from './escape.js';
 import * as browser from './browser.js';
 import * as emoticons from './emoticons.js';
+import DOMPurify from 'dompurify';
 
 var globalWin  = window;
 var globalDoc  = document;
@@ -380,6 +381,18 @@ export default function SCEditor(original, userOptions) {
 	base.opts.emoticons = userOptions.emoticons || defaultOptions.emoticons;
 
 	/**
+	 * Sanitize HTML to avoid XSS
+	 *
+	 * @param {string} html
+	 * @return {string} html
+	 */
+	base.sanitize = function (html) {
+		// This is added as a method so plugins can use it without having to
+		// include their own version of DOMPurify
+		return DOMPurify.sanitize(html);
+	};
+
+	/**
 	 * Creates the editor iframe and textarea
 	 * @private
 	 */
@@ -558,7 +571,7 @@ export default function SCEditor(original, userOptions) {
 		dom.attr(sourceEditor, 'tabindex', tabIndex);
 		dom.attr(wysiwygEditor, 'tabindex', tabIndex);
 
-		rangeHelper = new RangeHelper(wysiwygWindow);
+		rangeHelper = new RangeHelper(wysiwygWindow, null, base.sanitize);
 
 		// load any textarea value into the editor
 		dom.hide(original);
@@ -1554,7 +1567,7 @@ export default function SCEditor(original, userOptions) {
 		dom.trigger(editorContainer, 'pasteraw', data);
 
 		if (data.html) {
-			pasteArea.innerHTML = data.html;
+			pasteArea.innerHTML = base.sanitize(data.html);
 
 			// fix any invalid nesting
 			dom.fixNesting(pasteArea);
@@ -2032,7 +2045,7 @@ export default function SCEditor(original, userOptions) {
 			value = '<p>' + (IE_VER ? '' : '<br />') + '</p>';
 		}
 
-		wysiwygBody.innerHTML = value;
+		wysiwygBody.innerHTML = base.sanitize(value);
 		replaceEmoticons();
 
 		appendNewLine();

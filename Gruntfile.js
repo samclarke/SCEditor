@@ -2,6 +2,8 @@
 module.exports = (grunt) => {
 	require('time-grunt')(grunt);
 	const istanbul = require('istanbul');
+	const nodeResolve = require('rollup-plugin-node-resolve');
+
 
 	grunt.event.on('qunit.coverage', function (data) {
 		const Report = istanbul.Report;
@@ -163,6 +165,13 @@ module.exports = (grunt) => {
 				external: ['jquery'],
 				globals: {
 					jquery: 'jQuery'
+				},
+				plugins: function () {
+					return [
+						nodeResolve({
+							module: true
+						})
+					];
 				}
 			},
 			build: {

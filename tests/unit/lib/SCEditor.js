@@ -510,3 +510,23 @@ QUnit.test('Insert image XSS', function (assert) {
 		}, 1);
 	}, true);
 });
+
+QUnit.test('Insert HTML filter JS', function (assert) {
+	var done = assert.async();
+
+	reloadEditor({
+		format: 'bbcode'
+	});
+
+	var called = false;
+	sceditor.getBody().xss = function () {
+		called = true;
+	};
+	sceditor.wysiwygEditorInsertHtml('<img src="http://url.to.file.which/not.exist" onerror=body.xss();>');
+	sceditor.getBody().addEventListener('error', function () {
+		setTimeout(function () {
+			assert.notOk(called);
+			done();
+		}, 1);
+	}, true);
+});

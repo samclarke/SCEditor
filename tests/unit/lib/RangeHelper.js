@@ -1,6 +1,7 @@
 import RangeHelper from 'src/lib/RangeHelper.js';
 import * as utils from 'tests/unit/utils.js';
 import rangy from 'rangy';
+import DOMPurify from 'dompurify';
 
 var editableDiv, rangeHelper;
 
@@ -20,7 +21,7 @@ QUnit.module('lib/RangeHelper', {
 
 		fixture.appendChild(editableDiv);
 
-		rangeHelper = new RangeHelper(window, document);
+		rangeHelper = new RangeHelper(window, document, DOMPurify.sanitize);
 	}
 });
 
