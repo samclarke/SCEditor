@@ -4,6 +4,11 @@ import * as escape from './escape.js';
 import { ie as IE_VER } from './browser.js';
 import _tmpl from './templates.js';
 
+const createDOMPurify = require('dompurify');
+const { JSDOM } = require('jsdom');
+const window = new JSDOM('').window;
+const DOMPurify = createDOMPurify(window);
+
 // In IE < 11 a BR at the end of a block level element
 // causes a line break. In all other browsers it's collapsed.
 var IE_BR_FIX = IE_VER && IE_VER < 11;
@@ -421,7 +426,7 @@ var defaultCmds = {
 
 					html += '</table>';
 
-					editor.wysiwygEditorInsertHtml(html);
+					editor.wysiwygEditorInsertHtml(DOMPurify.sanitize(html));
 					editor.closeDropDown(true);
 					e.preventDefault();
 				}
