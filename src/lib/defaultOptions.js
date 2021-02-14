@@ -343,6 +343,19 @@ export default {
 	disableBlockRemove: false,
 
 	/**
+	 * Array of allowed URL (should be either strings or regex) for iframes.
+	 *
+	 * If it's a string then iframes where the start of the src matches the
+	 * specified string will be allowed.
+	 *
+	 * If it's a regex then iframes where the src matches the regex will be
+	 * allowed.
+	 *
+	 * @type {Array}
+	 */
+	allowedIframeUrls: [],
+
+	/**
 	 * BBCode parser options, only applies if using the editor in BBCode
 	 * mode.
 	 *

@@ -380,18 +380,39 @@ export default function SCEditor(original, userOptions) {
 	// Don't deep extend emoticons (fixes #565)
 	base.opts.emoticons = userOptions.emoticons || defaultOptions.emoticons;
 
-	// Allow YouTube iframes
+	if (!Array.isArray(options.allowedIframeUrls)) {
+		options.allowedIframeUrls = [];
+	}
+	options.allowedIframeUrls.push('https://www.youtube-nocookie.com/embed/');
+
+	// Create new instance of DOMPurify for each editor instance so can
+	// have different allowed iframe URLs
+	// eslint-disable-next-line new-cap
+	var domPurify = DOMPurify();
+
+	// Allow iframes for things like YouTube, see:
 	// https://github.com/cure53/DOMPurify/issues/340#issuecomment-670758980
-	DOMPurify.addHook('uponSanitizeElement', (node, data) => {
+	domPurify.addHook('uponSanitizeElement', function (node, data) {
+		var allowedUrls = options.allowedIframeUrls;
+
 		if (data.tagName === 'iframe') {
 			var src = node.getAttribute('src') || '';
-			if (src.substr(0, 39) !== 'https://www.youtube-nocookie.com/embed/') {
-				if (node.parentNode) {
-					return node.parentNode.removeChild(node);
+
+			for (var i = 0; i < allowedUrls.length; i++) {
+				var url = allowedUrls[i];
+
+				if (utils.isString(url) && src.substr(0, url.length) === url) {
+					return;
 				}
 
-				return null;
+				// Handle regex
+				if (url.test && url.test(src)) {
+					return;
+				}
 			}
+
+			// No match so remove
+			dom.remove(node);
 		}
 	});
 
@@ -403,7 +424,7 @@ export default function SCEditor(original, userOptions) {
 	 * @private
 	 */
 	function sanitize(html) {
-		return DOMPurify.sanitize(html,{
+		return domPurify.sanitize(html, {
 			ADD_TAGS: ['iframe'],
 			ADD_ATTR: ['allowfullscreen', 'frameborder']
 		});
