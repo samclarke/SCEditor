@@ -14,24 +14,12 @@
 					}
 				};
 			}
-			if (prop === 'nextSibling') {
+			if (prop === 'nextSibling' ||
+				prop === 'childNodes' ||
+				prop === 'parentNode') {
 				return {
 					value: function () {
-						return this.nextSibling;
-					}
-				};
-			}
-			if (prop === 'childNodes') {
-				return {
-					value: function () {
-						return this.childNodes;
-					}
-				};
-			}
-			if (prop === 'parentNode') {
-				return {
-					value: function () {
-						return this.parentNode;
+						return this[prop];
 					}
 				};
 			}
