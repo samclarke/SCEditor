@@ -86,7 +86,7 @@ var _templates = {
 
 	youtube:
 		'<iframe width="560" height="315" frameborder="0" allowfullscreen ' +
-		'src="https://www.youtube.com/embed/{id}?wmode=opaque&start={time}" ' +
+		'src="https://www.youtube-nocookie.com/embed/{id}?wmode=opaque&start={time}" ' +
 		'data-youtube-id="{id}"></iframe>'
 };
 

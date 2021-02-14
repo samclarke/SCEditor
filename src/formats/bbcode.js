@@ -798,7 +798,7 @@
 				return element ? '[youtube]' + element + '[/youtube]' : content;
 			},
 			html: '<iframe width="560" height="315" frameborder="0" ' +
-				'src="https://www.youtube.com/embed/{0}?wmode=opaque" ' +
+				'src="https://www.youtube-nocookie.com/embed/{0}?wmode=opaque" ' +
 				'data-youtube-id="{0}" allowfullscreen></iframe>'
 		},
 		// END_COMMAND

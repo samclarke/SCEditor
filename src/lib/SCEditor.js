@@ -380,6 +380,21 @@ export default function SCEditor(original, userOptions) {
 	// Don't deep extend emoticons (fixes #565)
 	base.opts.emoticons = userOptions.emoticons || defaultOptions.emoticons;
 
+	// Allow YouTube iframes
+	// https://github.com/cure53/DOMPurify/issues/340#issuecomment-670758980
+	DOMPurify.addHook('uponSanitizeElement', (node, data) => {
+		if (data.tagName === 'iframe') {
+			var src = node.getAttribute('src') || '';
+			if (src.substr(0, 39) !== 'https://www.youtube-nocookie.com/embed/') {
+				if (node.parentNode) {
+					return node.parentNode.removeChild(node);
+				}
+
+				return null;
+			}
+		}
+	});
+
 	/**
 	 * Sanitize HTML to avoid XSS
 	 *
@@ -388,9 +403,10 @@ export default function SCEditor(original, userOptions) {
 	 * @private
 	 */
 	function sanitize(html) {
-		// This is added as a method so plugins can use it without having to
-		// include their own version of DOMPurify
-		return DOMPurify.sanitize(html);
+		return DOMPurify.sanitize(html,{
+			ADD_TAGS: ['iframe'],
+			ADD_ATTR: ['allowfullscreen', 'frameborder']
+		});
 	};
 
 	/**
