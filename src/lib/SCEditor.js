@@ -385,8 +385,9 @@ export default function SCEditor(original, userOptions) {
 	 *
 	 * @param {string} html
 	 * @return {string} html
+	 * @private
 	 */
-	base.sanitize = function (html) {
+	function sanitize(html) {
 		// This is added as a method so plugins can use it without having to
 		// include their own version of DOMPurify
 		return DOMPurify.sanitize(html);
@@ -571,7 +572,7 @@ export default function SCEditor(original, userOptions) {
 		dom.attr(sourceEditor, 'tabindex', tabIndex);
 		dom.attr(wysiwygEditor, 'tabindex', tabIndex);
 
-		rangeHelper = new RangeHelper(wysiwygWindow, null, base.sanitize);
+		rangeHelper = new RangeHelper(wysiwygWindow, null, sanitize);
 
 		// load any textarea value into the editor
 		dom.hide(original);
@@ -1523,7 +1524,7 @@ export default function SCEditor(original, userOptions) {
 			}
 			// Call plugins here with file?
 			data.text = data['text/plain'];
-			data.html = data['text/html'];
+			data.html = sanitize(data['text/html']);
 
 			handlePasteData(data);
 		// If contentsFragment exists then we are already waiting for a
@@ -1550,7 +1551,7 @@ export default function SCEditor(original, userOptions) {
 
 				rangeHelper.restoreRange();
 
-				handlePasteData({ html: html });
+				handlePasteData({ html: sanitize(html) });
 			}, 0);
 		}
 	};
@@ -1567,7 +1568,8 @@ export default function SCEditor(original, userOptions) {
 		dom.trigger(editorContainer, 'pasteraw', data);
 
 		if (data.html) {
-			pasteArea.innerHTML = base.sanitize(data.html);
+			// Sanatise again in case plugins modified the HTML
+			pasteArea.innerHTML = sanitize(data.html);
 
 			// fix any invalid nesting
 			dom.fixNesting(pasteArea);
@@ -2045,7 +2047,7 @@ export default function SCEditor(original, userOptions) {
 			value = '<p>' + (IE_VER ? '' : '<br />') + '</p>';
 		}
 
-		wysiwygBody.innerHTML = base.sanitize(value);
+		wysiwygBody.innerHTML = sanitize(value);
 		replaceEmoticons();
 
 		appendNewLine();
