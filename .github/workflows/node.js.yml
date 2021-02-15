@@ -1,0 +1,33 @@
+name: Node.js CI
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+env:
+  FORCE_COLOR: 1
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: 15
+    - name: Get npm cache directory
+      id: npm-cache-dir
+      run: echo "::set-output name=dir::$(npm root)"
+    - uses: actions/cache@v2
+      id: npm-cache
+      with:
+        path: ${{ steps.npm-cache-dir.outputs.dir }}
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
+        restore-keys: ${{ runner.os }}-node-
+    - if: steps.npm-cache.outputs.cache-hit != 'true'
+      run: npm ci
+    - run: npm t
