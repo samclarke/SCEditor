@@ -761,6 +761,33 @@ QUnit.test('fixNesting() - Deeply nested list', function (assert) {
 	);
 });
 
+QUnit.test('fixNesting() - With comments', function (assert) {
+	var node = utils.htmlToDiv(
+		'<p>' +
+			'<strong>' +
+				'a<!-- test -->b' +
+			'</strong>' +
+		'</p>'
+	);
+
+	dom.fixNesting(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToDiv(
+			'<p>' +
+				'<strong>' +
+					'a' +
+				'</strong>' +
+				'<!-- test -->' +
+				'<strong>' +
+					'b' +
+				'</strong>' +
+			'</p>'
+		)
+	);
+});
+
 QUnit.test('removeWhiteSpace() - Preserve line breaks', function (assert) {
 	var node = utils.htmlToDiv(
 		'<div style="white-space: pre-line">    ' +

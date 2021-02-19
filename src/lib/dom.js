@@ -757,7 +757,9 @@ export function isInline(elm, includeCodeAsBlock) {
  * @param {HTMLElement} to
  */
 export function copyCSS(from, to) {
-	to.style.cssText = from.style.cssText + to.style.cssText;
+	if (to.style && from.style) {
+		to.style.cssText = from.style.cssText + to.style.cssText;
+	}
 }
 
 /**
