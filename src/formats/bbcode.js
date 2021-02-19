@@ -137,26 +137,20 @@
 		},
 		bulletlist: {
 			txtExec: function (caller, selected) {
-				var content = '';
-
-				each(selected.split(/\r?\n/), function (_, t) {
-					content += (content ? '\n' : '') +
-						'[li]' + t + '[/li]';
-				});
-
-				this.insertText('[ul]\n' + content + '\n[/ul]');
+				this.insertText(
+					'[ul]\n[li]' +
+					selected.split(/\r?\n/).join('[/li]\n[li]') +
+					'[/li]\n[/ul]'
+				);
 			}
 		},
 		orderedlist: {
 			txtExec: function (caller, selected) {
-				var content = '';
-
-				each(selected.split(/\r?\n/), function (_, t) {
-					content += (content ? '\n' : '') +
-						'[li]' + t + '[/li]';
-				});
-
-				this.insertText('[ol]\n' + content + '\n[/ol]');
+				this.insertText(
+					'[ol]\n[li]' +
+					selected.split(/\r?\n/).join('[/li]\n[li]') +
+					'[/li]\n[/ol]'
+				);
 			}
 		},
 		table: {
