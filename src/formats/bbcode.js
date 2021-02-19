@@ -139,9 +139,9 @@
 			txtExec: function (caller, selected) {
 				var content = '';
 
-				each(selected.split(/\r?\n/), function () {
+				each(selected.split(/\r?\n/), function (_, t) {
 					content += (content ? '\n' : '') +
-						'[li]' + this + '[/li]';
+						'[li]' + t + '[/li]';
 				});
 
 				this.insertText('[ul]\n' + content + '\n[/ul]');
@@ -151,9 +151,9 @@
 			txtExec: function (caller, selected) {
 				var content = '';
 
-				each(selected.split(/\r?\n/), function () {
+				each(selected.split(/\r?\n/), function (_, t) {
 					content += (content ? '\n' : '') +
-						'[li]' + this + '[/li]';
+						'[li]' + t + '[/li]';
 				});
 
 				this.insertText('[ol]\n' + content + '\n[/ol]');
