@@ -559,7 +559,7 @@ QUnit.test('Attributes QuoteType custom', function (assert) {
 	this.parser = new $.sceditor.BBCodeParser({
 		quoteType: function (str) {
 			return '\'' +
-				str.replace('\\', '\\\\').replace('\'', '\\\'') +
+				str.replace(/\\/g, '\\\\').replace(/'/g, '\\\'') +
 				'\'';
 		}
 	});
@@ -576,9 +576,9 @@ QUnit.test('Attributes QuoteType custom', function (assert) {
 
 	assert.equal(
 		this.parser.toBBCode(
-			'[quote author=\'poster\\\'s\']hi[/quote]'
+			'[quote author=\'poster\\\'s\\\'s\']hi[/quote]'
 		),
-		'[quote author=\'poster\\\'s\']hi[/quote]\n',
+		'[quote author=\'poster\\\'s\\\'s\']hi[/quote]\n',
 		'Quoted attribute with a single quote'
 	);
 
