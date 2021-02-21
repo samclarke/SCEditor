@@ -516,6 +516,14 @@ QUnit.test('Attributes QuoteType.always', function (assert) {
 
 	assert.equal(
 		this.parser.toBBCode(
+			'[quote="test\\"s\\"s" test="test\\"s\\"s"]hi[/quote]'
+		),
+		'[quote="test\\"s\\"s" test="test\\"s\\"s"]hi[/quote]\n',
+		'Attribute with multiple quotes inside'
+	);
+
+	assert.equal(
+		this.parser.toBBCode(
 			'[quote ' +
 				'quoted=\'words word=word\\\' link=lala=lalala\' ' +
 				'author=anything that does not have an equals after it ' +

@@ -2065,7 +2065,7 @@
 				return str;
 			}
 
-			return '"' + str.replace('\\', '\\\\').replace('"', '\\"') + '"';
+			return '"' + str.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
 		}
 
 		/**
