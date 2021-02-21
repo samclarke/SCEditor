@@ -11,7 +11,7 @@ import * as escape from './escape.js';
  * @return {void}
  */
 export function checkWhitespace(node, rangeHelper) {
-	var noneWsRegex = /[^\s\xA0\u2002\u2003\u2009\u00a0]+/;
+	var noneWsRegex = /[^\s\xA0\u2002\u2003\u2009]+/;
 	var emoticons = node && dom.find(node, 'img[data-sceditor-emoticon]');
 
 	if (!node || !emoticons.length) {
