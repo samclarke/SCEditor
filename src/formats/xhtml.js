@@ -1189,6 +1189,29 @@
 			conv: function (node) {
 				node.parentNode.removeChild(node);
 			}
+		},
+		{
+			tags: {
+				'*': {
+					'data-sce-target': null
+				}
+			},
+			conv: function (node) {
+				var rel = attr(node, 'rel') || '';
+				var target = attr(node, 'data-sce-target');
+
+				// Only allow the value _blank and only on links
+				if (target === '_blank' && is(node, 'a')) {
+					if (!/(^|\s)noopener(\s|$)/.test(rel)) {
+						attr(node, 'rel', 'noopener' + (rel ? ' ' + rel : ''));
+					}
+
+					attr(node, 'target', target);
+				}
+
+
+				removeAttr(node, 'data-sce-target');
+			}
 		}
 	];
 

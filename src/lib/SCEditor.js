@@ -396,7 +396,7 @@ export default function SCEditor(original, userOptions) {
 		var allowedUrls = options.allowedIframeUrls;
 
 		if (data.tagName === 'iframe') {
-			var src = node.getAttribute('src') || '';
+			var src = dom.attr(node, 'src') || '';
 
 			for (var i = 0; i < allowedUrls.length; i++) {
 				var url = allowedUrls[i];
@@ -416,6 +416,16 @@ export default function SCEditor(original, userOptions) {
 		}
 	});
 
+	// Convert target attribute into data-sce-target attributes so XHTML format
+	// can allow them
+	domPurify.addHook('afterSanitizeAttributes', function (node) {
+		if ('target' in node) {
+			dom.attr(node, 'data-sce-target', dom.attr(node, 'target'));
+		}
+
+		dom.removeAttr(node, 'target');
+	});
+
 	/**
 	 * Sanitize HTML to avoid XSS
 	 *
@@ -426,7 +436,7 @@ export default function SCEditor(original, userOptions) {
 	function sanitize(html) {
 		return domPurify.sanitize(html, {
 			ADD_TAGS: ['iframe'],
-			ADD_ATTR: ['allowfullscreen', 'frameborder']
+			ADD_ATTR: ['allowfullscreen', 'frameborder', 'target']
 		});
 	};
 
