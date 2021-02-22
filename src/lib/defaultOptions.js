@@ -317,7 +317,7 @@ export default {
 	 *
 	 * @type {string}
 	 */
-	plugins: '',
+	plugins: 'video',
 
 	/**
 	 * z-index to set the editor container to. Needed for jQuery UI dialog.
@@ -350,7 +350,24 @@ export default {
 	 *
 	 * @type {Object}
 	 */
-	parserOptions: { },
+	parserOptions: {
+		/**
+		* Parameters that will be added to YouTube frame tag
+		*
+		* @type {string}
+		*/
+		youtubeParameters: 'width="560" height="315" frameborder="0" ' +
+			'allowfullscreen',
+
+		/**
+			* Parameters that will be added to Facebook frame tag
+			*
+			* @type {string}
+			*/
+		facebookParameters: 'width="560" height="315" ' +
+			'style="border:none;overflow:hidden" scrolling="no" ' +
+			'frameborder="0" allowTransparency="true" allowFullScreen="true"'
+	},
 
 	/**
 	 * CSS that will be added to the to dropdown menu (eg. z-index)
