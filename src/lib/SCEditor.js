@@ -8,6 +8,7 @@ import _tmpl from './templates.js';
 import * as escape from './escape.js';
 import * as browser from './browser.js';
 import * as emoticons from './emoticons.js';
+import DOMPurify from 'dompurify';
 
 var globalWin  = window;
 var globalDoc  = document;
@@ -379,6 +380,66 @@ export default function SCEditor(original, userOptions) {
 	// Don't deep extend emoticons (fixes #565)
 	base.opts.emoticons = userOptions.emoticons || defaultOptions.emoticons;
 
+	if (!Array.isArray(options.allowedIframeUrls)) {
+		options.allowedIframeUrls = [];
+	}
+	options.allowedIframeUrls.push('https://www.youtube-nocookie.com/embed/');
+
+	// Create new instance of DOMPurify for each editor instance so can
+	// have different allowed iframe URLs
+	// eslint-disable-next-line new-cap
+	var domPurify = DOMPurify();
+
+	// Allow iframes for things like YouTube, see:
+	// https://github.com/cure53/DOMPurify/issues/340#issuecomment-670758980
+	domPurify.addHook('uponSanitizeElement', function (node, data) {
+		var allowedUrls = options.allowedIframeUrls;
+
+		if (data.tagName === 'iframe') {
+			var src = dom.attr(node, 'src') || '';
+
+			for (var i = 0; i < allowedUrls.length; i++) {
+				var url = allowedUrls[i];
+
+				if (utils.isString(url) && src.substr(0, url.length) === url) {
+					return;
+				}
+
+				// Handle regex
+				if (url.test && url.test(src)) {
+					return;
+				}
+			}
+
+			// No match so remove
+			dom.remove(node);
+		}
+	});
+
+	// Convert target attribute into data-sce-target attributes so XHTML format
+	// can allow them
+	domPurify.addHook('afterSanitizeAttributes', function (node) {
+		if ('target' in node) {
+			dom.attr(node, 'data-sce-target', dom.attr(node, 'target'));
+		}
+
+		dom.removeAttr(node, 'target');
+	});
+
+	/**
+	 * Sanitize HTML to avoid XSS
+	 *
+	 * @param {string} html
+	 * @return {string} html
+	 * @private
+	 */
+	function sanitize(html) {
+		return domPurify.sanitize(html, {
+			ADD_TAGS: ['iframe'],
+			ADD_ATTR: ['allowfullscreen', 'frameborder', 'target']
+		});
+	};
+
 	/**
 	 * Creates the editor iframe and textarea
 	 * @private
@@ -558,7 +619,7 @@ export default function SCEditor(original, userOptions) {
 		dom.attr(sourceEditor, 'tabindex', tabIndex);
 		dom.attr(wysiwygEditor, 'tabindex', tabIndex);
 
-		rangeHelper = new RangeHelper(wysiwygWindow);
+		rangeHelper = new RangeHelper(wysiwygWindow, null, sanitize);
 
 		// load any textarea value into the editor
 		dom.hide(original);
@@ -1510,7 +1571,7 @@ export default function SCEditor(original, userOptions) {
 			}
 			// Call plugins here with file?
 			data.text = data['text/plain'];
-			data.html = data['text/html'];
+			data.html = sanitize(data['text/html']);
 
 			handlePasteData(data);
 		// If contentsFragment exists then we are already waiting for a
@@ -1537,7 +1598,7 @@ export default function SCEditor(original, userOptions) {
 
 				rangeHelper.restoreRange();
 
-				handlePasteData({ html: html });
+				handlePasteData({ html: sanitize(html) });
 			}, 0);
 		}
 	};
@@ -1554,7 +1615,8 @@ export default function SCEditor(original, userOptions) {
 		dom.trigger(editorContainer, 'pasteraw', data);
 
 		if (data.html) {
-			pasteArea.innerHTML = data.html;
+			// Sanitize again in case plugins modified the HTML
+			pasteArea.innerHTML = sanitize(data.html);
 
 			// fix any invalid nesting
 			dom.fixNesting(pasteArea);
@@ -2032,7 +2094,7 @@ export default function SCEditor(original, userOptions) {
 			value = '<p>' + (IE_VER ? '' : '<br />') + '</p>';
 		}
 
-		wysiwygBody.innerHTML = value;
+		wysiwygBody.innerHTML = sanitize(value);
 		replaceEmoticons();
 
 		appendNewLine();

@@ -2,6 +2,32 @@
 	// Report QUnit results to SauceLabs
 	var log = [];
 
+	// dompurify PhantomJS support
+	// See: https://github.com/cure53/DOMPurify/issues/502#issuecomment-763651764
+	if ('_phantom' in window) {
+		const orig = Object.getOwnPropertyDescriptor;
+		Object.getOwnPropertyDescriptor = function (obj, prop) {
+			if (prop === 'cloneNode') {
+				return {
+					value: function () {
+						return this.cloneNode();
+					}
+				};
+			}
+			if (prop === 'nextSibling' ||
+				prop === 'childNodes' ||
+				prop === 'parentNode') {
+				return {
+					value: function () {
+						return this[prop];
+					}
+				};
+			}
+
+			return orig(obj, prop);
+		};
+	}
+
 	QUnit.done(function (testResults) {
 		var tests = [];
 

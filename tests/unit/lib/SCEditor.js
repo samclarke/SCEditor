@@ -510,3 +510,47 @@ QUnit.test('Insert image XSS', function (assert) {
 		}, 1);
 	}, true);
 });
+
+QUnit.test('Insert HTML filter JS', function (assert) {
+	var done = assert.async();
+
+	reloadEditor({
+		format: 'bbcode'
+	});
+
+	var called = false;
+	sceditor.getBody().xss = function () {
+		called = true;
+	};
+	sceditor.wysiwygEditorInsertHtml('<img src="http://url.to.file.which/not.exist" onerror=body.xss();>');
+	sceditor.getBody().addEventListener('error', function () {
+		setTimeout(function () {
+			assert.notOk(called);
+			done();
+		}, 1);
+	}, true);
+});
+
+
+QUnit.test('Allow target=blank links', function (assert) {
+	reloadEditor({
+		format: 'xhtml'
+	});
+
+	sceditor.val(
+		'<a href="#" target="_blank">blank</a>' +
+		'<a href="#" rel="  noopener" target="_blank">safe</a>' +
+		'<a href="#" rel="noreferrer" target="_blank">referer</a>' +
+		'<a href="#" rel="noreferrernoopener" target="_blank">invalid noopener</a>' +
+		'<a href="#" target="blank">removed</a>' +
+		'<img src="removed.jpg" target="_blank" />'
+	);
+	assert.htmlEqual(sceditor.val(), '<p>\n	' +
+		'<a href=\"#\" rel=\"noopener\" target=\"_blank\">blank</a>' +
+		'<a href=\"#\" rel=\"noopener\" target=\"_blank\">safe</a>' +
+		'<a href=\"#\" rel=\"noopener noreferrer\" target=\"_blank\">referer</a>' +
+		'<a href=\"#\" rel=\"noopener noreferrernoopener\" target=\"_blank\">invalid noopener</a>' +
+		'<a href="#">removed</a>' +
+		'<img src=\"removed.jpg\" />\n' +
+	'</p>');
+});
