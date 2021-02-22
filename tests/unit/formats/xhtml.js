@@ -15,15 +15,7 @@ var moduleSetup = function () {
 	};
 
 	this.filterStripWhiteSpace = function (html) {
-		return utils
-			.stripWhiteSpace(this.filterHtml(html))
-			// IE < 9 outputs styles in upper case
-			.replace(/style="[^"]+"/g, function (match) {
-				return match
-					.toLowerCase()
-					// Make sure the last ; is added to the style attribute
-					.replace(/;?"$/, ';"');
-			});
+		return utils.stripWhiteSpace(this.filterHtml(html));
 	};
 };
 
@@ -961,25 +953,17 @@ QUnit.test('Mozilla\'s junk attributes fix', function (assert) {
 
 
 QUnit.test('Should remove empty nlf tags', function (assert) {
-	var IE_VER = sceditor.ie;
-
-	// In IE < 11 a BR at the end of a block level element
-	// causes a double line break.
-	var IE_BR_FIX = IE_VER && IE_VER < 11;
-
 	assert.htmlEqual(
 		this.filterStripWhiteSpace('<div class="sceditor-nlf"></div>'),
 		'',
 		'Empty'
 	);
 
-	if (!IE_BR_FIX) {
-		assert.htmlEqual(
-			this.filterStripWhiteSpace('<div class="sceditor-nlf"><br /></div>'),
-			'',
-			'Empty with BR'
-		);
-	}
+	assert.htmlEqual(
+		this.filterStripWhiteSpace('<div class="sceditor-nlf"><br /></div>'),
+		'',
+		'Empty with BR'
+	);
 });
 
 QUnit.test('Should remove the nlf class from none empty nlf tags', function (assert) {

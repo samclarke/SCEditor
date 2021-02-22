@@ -13,7 +13,7 @@ var USER_AGENT = navigator.userAgent;
  * @name ie
  * @type {number}
  */
-export var ie = (function () {
+var ie = (function () {
 	var	undef,
 		v   = 3,
 		doc = document,
@@ -37,7 +37,6 @@ export var ie = (function () {
 	return v > 4 ? v : undef;
 }());
 
-export var edge = '-ms-ime-align' in document.documentElement.style;
 
 /**
  * Detects if the browser is iOS
@@ -61,8 +60,10 @@ export var ios = /iPhone|iPod|iPad| wosbrowser\//i.test(USER_AGENT);
 export var isWysiwygSupported = (function () {
 	var	match, isUnsupported;
 
+	var legacyEdge = '-ms-ime-align' in document.documentElement.style;
+
 	var div = document.createElement('div');
-	div.contentEditable = true ;
+	div.contentEditable = true;
 
 	// Check if the contentEditable attribute is supported
 	if (!('contentEditable' in document.documentElement) ||
@@ -123,8 +124,8 @@ export var isWysiwygSupported = (function () {
 		isUnsupported = false;
 	}
 
-	// IE <= 9 is not supported any more
-	if (ie <= 9) {
+	// IE and legacy edge are not supported any more
+	if (ie || legacyEdge) {
 		isUnsupported = true;
 	}
 

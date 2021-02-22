@@ -1,10 +1,5 @@
 import * as dom from './dom.js';
 import * as escape from './escape.js';
-import { ie as IE_VER } from './browser.js';
-
-// In IE < 11 a BR at the end of a block level element
-// causes a line break. In all other browsers it's collapsed.
-var IE_BR_FIX = IE_VER && IE_VER < 11;
 
 
 /**
@@ -508,7 +503,7 @@ export default function RangeHelper(win, d, sanitize) {
 		// Check if cursor is set after a BR when the BR is the only
 		// child of the parent. In Firefox this causes a line break
 		// to occur when something is typed. See issue #321
-		if (!IE_BR_FIX && range.collapsed && container &&
+		if (range.collapsed && container &&
 			!dom.isInline(container, true)) {
 
 			lastChild = container.lastChild;

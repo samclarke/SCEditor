@@ -12,13 +12,6 @@ var _templates = {
 		'<!DOCTYPE html>' +
 		'<html{attrs}>' +
 			'<head>' +
-				'<style>.ie * {min-height: auto !important} ' +
-					'.ie table td {height:15px} ' +
-					// Target Edge (fixes edge issues)
-					'@supports (-ms-ime-align:auto) { ' +
-						'* { min-height: auto !important; } ' +
-					'}' +
-					'</style>' +
 				'<meta http-equiv="Content-Type" ' +
 					'content="text/html;charset={charset}" />' +
 				'<link rel="stylesheet" type="text/css" href="{style}" />' +

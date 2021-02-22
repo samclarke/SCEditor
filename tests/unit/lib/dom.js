@@ -1146,11 +1146,10 @@ QUnit.test('getStyle()', function (assert) {
 
 QUnit.test('getStyle() - Normalise text-align', function (assert) {
 	var node = utils.htmlToNode(
-		'<div style="direction: rtl;text-align: right;">test</div>'
+		'<div style="direction: rtl;">test</div>'
 	);
 
-	// If direction is left-to-right and text-align is right,
-	// it shouldn't return anything.
+	// It shouldn't return anything to text-align as isn't set.
 	assert.strictEqual(dom.getStyle(node, 'direction'), 'rtl');
 	assert.strictEqual(dom.getStyle(node, 'textAlign'), '');
 });

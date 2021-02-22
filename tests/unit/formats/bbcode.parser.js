@@ -1,11 +1,5 @@
 import * as utils from 'tests/unit/utils.js';
-import * as browser from 'src/lib/browser.js';
 import 'src/formats/bbcode.js';
-
-// In IE < 11 a BR at the end of a block level element
-// causes a line break. In all other browsers it's collapsed.
-var IE_BR_FIX = browser.ie && browser.ie < 11;
-var IE_BR_STR = IE_BR_FIX ? '' : '<br />';
 
 
 QUnit.module('plugins/bbcode#Parser', {
@@ -254,12 +248,12 @@ QUnit.test('Unknown tags', function (assert) {
 QUnit.test('Do not strip start and end spaces', function (assert) {
 	assert.equal(
 		this.parser.toHTML('\n\n[quote]test[/quote]\n\n\n\n'),
-		'<div>' + IE_BR_STR + '</div>\n' +
-		'<div>' + IE_BR_STR + '</div>\n' +
-		'<blockquote>test' + IE_BR_STR + '</blockquote>' +
-		'<div>' + IE_BR_STR + '</div>\n' +
-		'<div>' + IE_BR_STR + '</div>\n' +
-		'<div><br />' + IE_BR_STR + '</div>\n'
+		'<div><br /></div>\n' +
+		'<div><br /></div>\n' +
+		'<blockquote>test<br /></blockquote>' +
+		'<div><br /></div>\n' +
+		'<div><br /></div>\n' +
+		'<div><br /><br /></div>\n'
 	);
 });
 
@@ -269,8 +263,8 @@ QUnit.test('New Line Handling', function (assert) {
 		this.parser.toHTML('[list][*]test\n[*]test2\nline\n[/list]'),
 
 		'<ul>' +
-			'<li>test' + IE_BR_STR + '</li>' +
-			'<li>test2<br />line' + IE_BR_STR + '</li>' +
+			'<li>test<br /></li>' +
+			'<li>test2<br />line<br /></li>' +
 		'</ul>',
 
 		'List with non-closed [*]'
@@ -278,13 +272,13 @@ QUnit.test('New Line Handling', function (assert) {
 
 	assert.htmlEqual(
 		this.parser.toHTML('[code]test\nline\n[/code]'),
-		'<code>test<br />line<br />' + IE_BR_STR + '</code>',
+		'<code>test<br />line<br /><br /></code>',
 		'Code test'
 	);
 
 	assert.htmlEqual(
 		this.parser.toHTML('[quote]test\nline\n[/quote]'),
-		'<blockquote>test<br />line<br />' + IE_BR_STR + '</blockquote>',
+		'<blockquote>test<br />line<br /><br /></blockquote>',
 		'Quote test'
 	);
 
@@ -292,7 +286,7 @@ QUnit.test('New Line Handling', function (assert) {
 		this.parser.toHTML('[quote][center]test[/center][/quote]'),
 
 		'<blockquote>' +
-			'<div align="center">test' + IE_BR_STR + '</div>' +
+			'<div align="center">test<br /></div>' +
 		'</blockquote>',
 
 		'Two block-level elements together'
@@ -737,19 +731,19 @@ QUnit.test('Font colour', function (assert) {
 QUnit.test('List', function (assert) {
 	assert.htmlEqual(
 		this.parser.toHTML('[ul][li]test[/li][/ul]'),
-		'<ul><li>test' + IE_BR_STR + '</li></ul>',
+		'<ul><li>test<br /></li></ul>',
 		'UL'
 	);
 
 	assert.htmlEqual(
 		this.parser.toHTML('[ol][li]test[/li][/ol]'),
-		'<ol><li>test' + IE_BR_STR + '</li></ol>',
+		'<ol><li>test<br /></li></ol>',
 		'OL'
 	);
 
 	assert.htmlEqual(
 		this.parser.toHTML('[ul][li]test[ul][li]sub[/li][/ul][/li][/ul]'),
-		'<ul><li>test<ul><li>sub' + IE_BR_STR + '</li></ul></li></ul>',
+		'<ul><li>test<ul><li>sub<br /></li></ul></li></ul>',
 		'Nested UL'
 	);
 });
@@ -759,8 +753,8 @@ QUnit.test('Table', function (assert) {
 	assert.htmlEqual(
 		this.parser.toHTML('[table][tr][th]test[/th][/tr]' +
 			'[tr][td]data1[/td][/tr][/table]'),
-		'<div><table><tr><th>test' + IE_BR_STR + '</th></tr>' +
-			'<tr><td>data1' + IE_BR_STR + '</td></tr></table></div>\n',
+		'<div><table><tr><th>test<br /></th></tr>' +
+			'<tr><td>data1<br /></td></tr></table></div>\n',
 		'Normal'
 	);
 });
@@ -859,14 +853,13 @@ QUnit.test('Email', function (assert) {
 QUnit.test('Quote', function (assert) {
 	assert.htmlEqual(
 		this.parser.toHTML('[quote]Testing 1.2.3....[/quote]'),
-		'<blockquote>Testing 1.2.3....' + IE_BR_STR + '</blockquote>',
+		'<blockquote>Testing 1.2.3....<br /></blockquote>',
 		'Normal'
 	);
 
 	assert.htmlEqual(
 		this.parser.toHTML('[quote=admin]Testing 1.2.3....[/quote]'),
-		'<blockquote><cite>admin</cite>Testing 1.2.3....' + IE_BR_STR +
-			'</blockquote>',
+		'<blockquote><cite>admin</cite>Testing 1.2.3....<br /></blockquote>',
 		'With author'
 	);
 });
@@ -875,13 +868,13 @@ QUnit.test('Quote', function (assert) {
 QUnit.test('Code', function (assert) {
 	assert.htmlEqual(
 		this.parser.toHTML('[code]Testing 1.2.3....[/code]'),
-		'<code>Testing 1.2.3....' + IE_BR_STR + '</code>',
+		'<code>Testing 1.2.3....<br /></code>',
 		'Normal'
 	);
 
 	assert.htmlEqual(
 		this.parser.toHTML('[code]Testing [b]test[/b][/code]'),
-		'<code>Testing [b]test[/b]' + IE_BR_STR + '</code>',
+		'<code>Testing [b]test[/b]<br /></code>',
 		'Normal'
 	);
 });
@@ -890,7 +883,7 @@ QUnit.test('Code', function (assert) {
 QUnit.test('Left', function (assert) {
 	assert.htmlEqual(
 		this.parser.toHTML('[left]Testing 1.2.3....[/left]'),
-		'<div align="left">Testing 1.2.3....' + IE_BR_STR + '</div>',
+		'<div align="left">Testing 1.2.3....<br /></div>',
 		'Normal'
 	);
 });
@@ -899,7 +892,7 @@ QUnit.test('Left', function (assert) {
 QUnit.test('Right', function (assert) {
 	assert.htmlEqual(
 		this.parser.toHTML('[right]Testing 1.2.3....[/right]'),
-		'<div align="right">Testing 1.2.3....' + IE_BR_STR + '</div>',
+		'<div align="right">Testing 1.2.3....<br /></div>',
 		'Normal'
 	);
 });
@@ -908,7 +901,7 @@ QUnit.test('Right', function (assert) {
 QUnit.test('Centre', function (assert) {
 	assert.htmlEqual(
 		this.parser.toHTML('[center]Testing 1.2.3....[/center]'),
-		'<div align="center">Testing 1.2.3....' + IE_BR_STR + '</div>',
+		'<div align="center">Testing 1.2.3....<br /></div>',
 		'Normal'
 	);
 });
@@ -917,7 +910,7 @@ QUnit.test('Centre', function (assert) {
 QUnit.test('Justify', function (assert) {
 	assert.htmlEqual(
 		this.parser.toHTML('[justify]Testing 1.2.3....[/justify]'),
-		'<div align="justify">Testing 1.2.3....' + IE_BR_STR + '</div>',
+		'<div align="justify">Testing 1.2.3....<br /></div>',
 		'Normal'
 	);
 });
@@ -1140,7 +1133,7 @@ QUnit.test('HTML injection', function (assert) {
 	assert.equal(
 		this.parser.toHTML('[quote=test<b>test</b>test]test[/quote]'),
 		'<blockquote><cite>test&lt;b&gt;test&lt;/b&gt;test</cite>' +
-			'test' + IE_BR_STR + '</blockquote>',
+			'test<br /></blockquote>',
 		'Inject HTML script'
 	);
 });

@@ -1,17 +1,7 @@
 export function htmlToDiv(html) {
 	var container = document.createElement('div');
 
-	// IE < 9 strips whitespace from innerHTML.
-	// To fix it wrap the HTML in a <pre> tag so IE keeps the
-	// whitespce intact and then move the children out of the
-	// <pre> tag.
-	container.innerHTML = '<pre>' + html + '</pre>';
-
-	var pre = container.firstChild;
-	while (pre.firstChild) {
-		container.appendChild(pre.firstChild);
-	}
-	container.removeChild(pre);
+	container.innerHTML = html;
 
 	$('#qunit-fixture').append(container);
 

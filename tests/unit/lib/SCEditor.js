@@ -1,7 +1,6 @@
 import SCEditor from 'src/lib/SCEditor.js';
 import defaultCommands from 'src/lib/defaultCommands.js';
 import defaultOptions from 'src/lib/defaultOptions.js';
-import * as browser from 'src/lib/browser.js';
 import * as utils from 'tests/unit/utils.js';
 import rangy from 'rangy';
 
@@ -130,13 +129,6 @@ QUnit.test('autofocusEnd', function (assert) {
 
 	var expected = '<p>The quick brown fox jumps ' +
 		'over the lazy dog.|<br /></p>';
-
-	// IE treats <br />'s as newlines even at the end of blocks so
-	// if it is a BR, the cursor should be placed after the
-	if (browser.ie && browser.ie < 11) {
-		expected = '<p>The quick brown fox jumps ' +
-		'over the lazy dog.<br />|</p>';
-	}
 
 	assert.nodesEqual(body.firstChild, utils.htmlToNode(expected));
 });

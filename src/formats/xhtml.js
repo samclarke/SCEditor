@@ -12,12 +12,6 @@
 (function (sceditor) {
 	'use strict';
 
-	var IE_VER = sceditor.ie;
-
-	// In IE < 11 a BR at the end of a block level element
-	// causes a double line break.
-	var IE_BR_FIX = IE_VER && IE_VER < 11;
-
 	var dom = sceditor.dom;
 	var utils = sceditor.utils;
 
@@ -312,14 +306,7 @@
 		function serializeNode(node, parentIsPre) {
 			switch (node.nodeType) {
 				case 1: // element
-					var tagName = node.nodeName.toLowerCase();
-
-					// IE comment
-					if (tagName === '!') {
-						handleComment(node);
-					} else {
-						handleElement(node, parentIsPre);
-					}
+					handleElement(node, parentIsPre);
 					break;
 
 				case 3: // text
@@ -731,8 +718,7 @@
 					// skip empty nlf elements (new lines automatically
 					// added after block level elements like quotes)
 					if (is(node, '.sceditor-nlf')) {
-						if (!firstChild || (!IE_BR_FIX &&
-							node.childNodes.length === 1 &&
+						if (!firstChild || (node.childNodes.length === 1 &&
 							/br/i.test(firstChild.nodeName))) {
 							// Mark as empty,it will be removed by the next code
 							empty = true;

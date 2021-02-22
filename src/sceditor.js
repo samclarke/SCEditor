@@ -26,7 +26,6 @@ window.sceditor = {
 	commands: defaultCommands,
 	defaultOptions: defaultOptions,
 
-	ie: browser.ie,
 	ios: browser.ios,
 	isWysiwygSupported: browser.isWysiwygSupported,
 

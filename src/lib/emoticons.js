@@ -32,12 +32,7 @@ export function checkWhitespace(node, rangeHelper) {
 		var range = rangeHelper.cloneSelected();
 		var rangeStart = -1;
 		var rangeStartContainer = range.startContainer;
-		var previousText = prev.nodeValue;
-
-		// For IE's HTMLPhraseElement
-		if (previousText === null) {
-			previousText = prev.innerText || '';
-		}
+		var previousText = prev.nodeValue || '';
 
 		previousText += dom.data(emoticon, 'sceditor-emoticon');
 
