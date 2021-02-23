@@ -27,10 +27,7 @@ exports.create = function (port, coverage) {
 					{
 						test: /\.js$/,
 						include: path.resolve('src/'),
-						loader: 'istanbul-instrumenter-loader',
-						options: {
-							esModules: true
-						}
+						loader: __dirname + '/loader.js'
 					}
 				]
 			},

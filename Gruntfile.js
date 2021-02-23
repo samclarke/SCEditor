@@ -1,22 +1,29 @@
 /*global module:false, require:false*/
+const libCoverage = require('istanbul-lib-coverage');
+const libReport = require('istanbul-lib-report');
+const reports = require('istanbul-reports');
+const nodeResolve = require('@rollup/plugin-node-resolve').default;
+const rimraf = require('rimraf');
+
 module.exports = (grunt) => {
 	require('time-grunt')(grunt);
-	const istanbul = require('istanbul');
-	const nodeResolve = require('rollup-plugin-node-resolve');
-
 
 	grunt.event.on('qunit.coverage', function (data) {
-		const Report = istanbul.Report;
-		const Collector = istanbul.Collector;
-		const collector = new Collector();
+		const outputDir = __dirname + '/coverage';
 
-		collector.add(data);
+		rimraf.sync(outputDir);
+
+		const coverageMap = libCoverage.createCoverageMap(data);
+		const context = libReport.createContext({
+		  dir: outputDir,
+		  defaultSummarizer: 'nested',
+		  coverageMap: coverageMap
+		});
 
 		console.log('\n\n\nCoverage:');
-		Report.create('text').writeReport(collector, true);
-		Report.create('html', {
-			dir: './coverage/html'
-		}).writeReport(collector, true);
+		reports.create('text').execute(context);
+		reports.create('html').execute(context);
+		console.log('\n');
 	});
 
 	grunt.registerTask('dev-server', 'Dev server', function () {
@@ -32,7 +39,9 @@ module.exports = (grunt) => {
 		qunit: {
 			all: {
 				options: {
-					urls: ['http://localhost:9001/tests/unit/index.html']
+					urls: ['http://localhost:9001/tests/unit/index.html'],
+					// Some tests rely on failing URLs so want to ignore them
+					console: false
 				}
 			}
 		},
