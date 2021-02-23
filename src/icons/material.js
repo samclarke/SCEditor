@@ -109,13 +109,6 @@
 					if (!isSourceMode && currentNode) {
 						color = currentNode.ownerDocument
 							.queryCommandValue('forecolor');
-
-						// Needed for IE
-						if (parseInt(color) === color) {
-							// eslint-disable-next-line
-							color = ((color & 0x0000ff) << 16) | (color & 0x00ff00) | ((color & 0xff0000) >>> 16);
-							color = '#' + ('000000' + color.toString(16)).slice(-6);
-						}
 					}
 
 					dom.css(colorPath, 'fill', color);

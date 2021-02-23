@@ -1800,7 +1800,7 @@
 		function convertToHTML(tokens, isRoot) {
 			var	undef, token, bbcode, content, html, needsBlockWrap,
 				blockWrapOpen, isInline, lastChild,
-				ret = [];
+				ret = '';
 
 			isInline = function (bbcode) {
 				return (!bbcode || (bbcode.isHtmlInline !== undef ?
@@ -1850,26 +1850,26 @@
 					}
 				} else if (token.type === TOKEN_NEWLINE) {
 					if (!isRoot) {
-						ret.push('<br />');
+						ret += '<br />';
 						continue;
 					}
 
 					// If not already in a block wrap then start a new block
 					if (!blockWrapOpen) {
-						ret.push('<div>');
+						ret += '<div>';
 					}
 
-					ret.push('<br />');
+					ret += '<br />';
 
 					// Normally the div acts as a line-break with by moving
 					// whatever comes after onto a new line.
 					// If this is the last token, add an extra line-break so it
 					// shows as there will be nothing after it.
 					if (!tokens.length) {
-						ret.push('<br />');
+						ret += '<br />';
 					}
 
-					ret.push('</div>\n');
+					ret += '</div>\n';
 					blockWrapOpen = false;
 					continue;
 				// content
@@ -1879,21 +1879,21 @@
 				}
 
 				if (needsBlockWrap && !blockWrapOpen) {
-					ret.push('<div>');
+					ret += '<div>';
 					blockWrapOpen = true;
 				} else if (!needsBlockWrap && blockWrapOpen) {
-					ret.push('</div>\n');
+					ret += '</div>\n';
 					blockWrapOpen = false;
 				}
 
-				ret.push(html);
+				ret += html;
 			}
 
 			if (blockWrapOpen) {
-				ret.push('</div>\n');
+				ret += '</div>\n';
 			}
 
-			return ret.join('');
+			return ret;
 		}
 
 		/**
@@ -1925,10 +1925,7 @@
 		function convertToBBCode(toks) {
 			var	token, attr, bbcode, isBlock, isSelfClosing, quoteType,
 				breakBefore, breakStart, breakEnd, breakAfter,
-				// Create an array of strings which are joined together
-				// before being returned as this is faster in slow browsers.
-				// (Old versions of IE).
-				ret = [];
+				ret = '';
 
 			while (toks.length > 0) {
 				if (!(token = toks.shift())) {
@@ -1960,75 +1957,75 @@
 					base.opts.quoteType || QuoteType.auto;
 
 				if (!bbcode && token.type === TOKEN_OPEN) {
-					ret.push(token.val);
+					ret += token.val;
 
 					if (token.children) {
-						ret.push(convertToBBCode(token.children));
+						ret += convertToBBCode(token.children);
 					}
 
 					if (token.closing) {
-						ret.push(token.closing.val);
+						ret += token.closing.val;
 					}
 				} else if (token.type === TOKEN_OPEN) {
 					if (breakBefore) {
-						ret.push('\n');
+						ret += '\n';
 					}
 
 					// Convert the tag and it's attributes to BBCode
-					ret.push('[' + token.name);
+					ret += '[' + token.name;
 					if (token.attrs) {
 						if (token.attrs.defaultattr) {
-							ret.push('=', quote(
+							ret += '=' + quote(
 								token.attrs.defaultattr,
 								quoteType,
 								'defaultattr'
-							));
+							);
 
 							delete token.attrs.defaultattr;
 						}
 
 						for (attr in token.attrs) {
 							if (token.attrs.hasOwnProperty(attr)) {
-								ret.push(' ', attr, '=',
-									quote(token.attrs[attr], quoteType, attr));
+								ret += ' ' + attr + '=' +
+									quote(token.attrs[attr], quoteType, attr);
 							}
 						}
 					}
-					ret.push(']');
+					ret += ']';
 
 					if (breakStart) {
-						ret.push('\n');
+						ret += '\n';
 					}
 
 					// Convert the tags children to BBCode
 					if (token.children) {
-						ret.push(convertToBBCode(token.children));
+						ret += convertToBBCode(token.children);
 					}
 
 					// add closing tag if not self closing
 					if (!isSelfClosing && !bbcode.excludeClosing) {
 						if (breakEnd) {
-							ret.push('\n');
+							ret += '\n';
 						}
 
-						ret.push('[/' + token.name + ']');
+						ret += '[/' + token.name + ']';
 					}
 
 					if (breakAfter) {
-						ret.push('\n');
+						ret += '\n';
 					}
 
 					// preserve whatever was recognized as the
 					// closing tag if it is a self closing tag
 					if (token.closing && isSelfClosing) {
-						ret.push(token.closing.val);
+						ret += token.closing.val;
 					}
 				} else {
-					ret.push(token.val);
+					ret += token.val;
 				}
 			}
 
-			return ret.join('');
+			return ret;
 		}
 
 		/**
