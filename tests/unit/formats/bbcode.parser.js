@@ -161,6 +161,11 @@ QUnit.test('BBCode closed outside block - No children fix', function (assert) {
 		'[quote][b]something[/b][/quote]\n[b][b]something[/b][/b]',
 		'Quote with tag closed outside'
 	);
+
+	// Put it back the way you found it
+	this.parser = new sceditor.BBCodeParser({
+		fixInvalidChildren: true
+	});
 });
 
 
@@ -916,18 +921,6 @@ QUnit.test('Justify', function (assert) {
 });
 
 
-QUnit.test('YouTube', function (assert) {
-	assert.htmlEqual(
-		this.parser.toHTML('[youtube]xyz[/youtube]'),
-		'<div><iframe width="560" height="315" ' +
-			'src="https://www.youtube-nocookie.com/embed/xyz?wmode=opaque" ' +
-			'data-youtube-id="xyz" frameborder="0" allowfullscreen>' +
-			'</iframe></div>\n',
-		'Normal'
-	);
-});
-
-
 QUnit.module('formats/bbcode#Parser - XSS', {
 	beforeEach: function () {
 		this.parser = new sceditor.BBCodeParser({});
@@ -979,21 +972,21 @@ QUnit.test('[img]', function (assert) {
 
 	assert.equal(
 		this.parser.toHTML('[img=\'"2]uri[/img]'),
-		'<div><img width="&#39;&#34;2" height="&#39;&#34;2" src="uri" />' +
+		'<div><img src="uri" />' +
 			'</div>\n',
 		'Dimension attribute injection'
 	);
 
 	assert.equal(
 		this.parser.toHTML('[img=\'"2x3]uri[/img]'),
-		'<div><img width="&#39;&#34;2" height="3" src="uri" /></div>\n',
+		'<div><img height="3" src="uri" /></div>\n',
 		'Width attribute injection'
 	);
 
 	assert.equal(
 		this.parser.toHTML('[img=3x\'"2]uri[/img]'),
-		'<div><img width="3" height="&#39;&#34;2" src="uri" /></div>\n',
-		'Width attribute injection'
+		'<div><img width="3" src="uri" /></div>\n',
+		'Height attribute injection'
 	);
 });
 
