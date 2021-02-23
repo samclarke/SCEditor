@@ -20,7 +20,7 @@ labels:
     matcher:
       branch: ^ci[/-].*
       commits: ^ci(?:\([\w-]+\))?:.*
-      files: .github/**
+      files: .github/**/*
 
   - label: docs
     sync: true
@@ -84,9 +84,9 @@ labels:
     matcher:
       branch: ^test[/-].*
       commits: ^test(?:\([\w-]+\))?:.*
-      files: test/**
+      files: test/**/*
 
   - label: themes
     sync: true
     matcher:
-      files: src/themes/**
+      files: src/themes/**/*
