@@ -1,3 +1,4 @@
+/* eslint-env node */
 /*global module:false, require:false*/
 const libCoverage = require('istanbul-lib-coverage');
 const libReport = require('istanbul-lib-report');
@@ -15,9 +16,9 @@ module.exports = (grunt) => {
 
 		const coverageMap = libCoverage.createCoverageMap(data);
 		const context = libReport.createContext({
-		  dir: outputDir,
-		  defaultSummarizer: 'nested',
-		  coverageMap: coverageMap
+			dir: outputDir,
+			defaultSummarizer: 'nested',
+			coverageMap: coverageMap
 		});
 
 		console.log('\n\n\nCoverage:');
