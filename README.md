@@ -1,4 +1,4 @@
-# [SCEditor](http://www.sceditor.com/) v2.1.2
+# [SCEditor](http://www.sceditor.com/) v3.0.0
 
 [![Build Status](http://img.shields.io/travis/samclarke/SCEditor/master.svg?style=flat-square)](https://travis-ci.org/samclarke/SCEditor)
 [![Dependency Status](http://img.shields.io/gemnasium/samclarke/SCEditor.svg?style=flat-square)](https://gemnasium.com/samclarke/SCEditor)
