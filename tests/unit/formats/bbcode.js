@@ -1,12 +1,6 @@
 import defaultOptions from 'src/lib/defaultOptions.js';
 import * as utils from 'tests/unit/utils.js';
-import * as browser from 'src/lib/browser.js';
 import 'src/formats/bbcode.js';
-
-// In IE < 11 a BR at the end of a block level element
-// causes a line break. In all other browsers it's collapsed.
-var IE_BR_FIX = browser.ie && browser.ie < 11;
-var IE_BR_STR = IE_BR_FIX ? '' : '<br />';
 
 
 QUnit.module('plugins/bbcode', {
@@ -63,7 +57,7 @@ QUnit.test('BBcode to HTML trim', function (assert) {
 		this.format.toHtml(
 			'\n\n[quote]test[/quote]\n\n'
 		),
-		'<blockquote>test' + IE_BR_STR + '</blockquote>',
+		'<blockquote>test<br /></blockquote>',
 		'Block level'
 	);
 
@@ -124,7 +118,7 @@ QUnit.module('plugins/bbcode - HTML to BBCode', {
 
 QUnit.test('Remove empty', function (assert) {
 	assert.equal(
-		this.htmlToBBCode('<b>' + IE_BR_STR + '</b>'),
+		this.htmlToBBCode('<b><br /></b>'),
 		'',
 		'Empty tag with newline'
 	);
@@ -136,7 +130,7 @@ QUnit.test('Remove empty', function (assert) {
 	);
 
 	assert.equal(
-		this.htmlToBBCode('<b><span>' + IE_BR_STR + '</span></b>'),
+		this.htmlToBBCode('<b><span><br /></span></b>'),
 		'',
 		'Empty tag with only whitespace content'
 	);
@@ -202,7 +196,7 @@ QUnit.test('New line handling', function (assert) {
 	assert.equal(
 		this.htmlToBBCode(
 			'test<div>' +
-				'<strong><em>test' + IE_BR_STR + '</em></strong>' +
+				'<strong><em>test<br /></em></strong>' +
 			'</div>test'
 		),
 		'test\n[b][i]test[/i][/b]\ntest',
@@ -241,7 +235,7 @@ QUnit.test('New line handling', function (assert) {
 		this.htmlToBBCode(
 			'<div>' +
 				'<div>text</div>' +
-				'<div>' + IE_BR_STR + '</div>' +
+				'<div><br /></div>' +
 				'<div>text</div>' +
 			'</div>'
 		),
@@ -252,7 +246,7 @@ QUnit.test('New line handling', function (assert) {
 	assert.equal(
 		this.htmlToBBCode(
 			'<div>text</div>' +
-			'<div>' + IE_BR_STR + '</div>' +
+			'<div><br /></div>' +
 			'<ul><li>text</li></ul>'
 		),
 		'text\n\n[ul]\n[li]text[/li]\n[/ul]\n',
@@ -262,8 +256,8 @@ QUnit.test('New line handling', function (assert) {
 	assert.equal(
 		this.htmlToBBCode(
 			'<div>text</div>' +
-			'<div>' + IE_BR_STR + '</div>' +
-			'<div>' + IE_BR_STR + '</div>' +
+			'<div><br /></div>' +
+			'<div><br /></div>' +
 			'<ul><li>text</li></ul>'
 		),
 		'text\n\n\n[ul]\n[li]text[/li]\n[/ul]\n',
@@ -277,14 +271,14 @@ QUnit.test('New line handling', function (assert) {
 	);
 
 	assert.equal(
-		this.htmlToBBCode('<div>text<br />text' + IE_BR_STR + '</div>'),
+		this.htmlToBBCode('<div>text<br />text<br /></div>'),
 		'text\ntext',
 		'Collapsed end BR tag'
 	);
 
 	assert.equal(
 		this.htmlToBBCode(
-			'<ul><li>newline<br />' + IE_BR_STR + '</li></ul>'
+			'<ul><li>newline<br /><br /></li></ul>'
 		),
 		'[ul]\n[li]newline\n[/li]\n[/ul]\n',
 		'List item last child block level'
@@ -292,7 +286,7 @@ QUnit.test('New line handling', function (assert) {
 
 	assert.equal(
 		this.htmlToBBCode(
-			'<div><code>newline' + IE_BR_STR + '</code></div>' +
+			'<div><code>newline<br /></code></div>' +
 			'<div>newline</div>'
 		),
 		'[code]newline[/code]\nnewline',
@@ -558,26 +552,23 @@ QUnit.test('colour', function (assert) {
 		'Font tag color attribute normal'
 	);
 
-	// Edge 16 doesn't support rgb as color attribute value
-	if (!/Edge/.test(navigator.userAgent)) {
-		assert.equal(
-			this.htmlToBBCode('<font color="rgb(0,0,0)">test</font>'),
-			'[color=#000000]test[/color]',
-			'Font tag color attribute rgb'
-		);
-	}
+	assert.equal(
+		this.htmlToBBCode('<font color="rgb(0,0,0)">test</font>'),
+		'[color=#000000]test[/color]',
+		'Font tag color attribute rgb'
+	);
 });
 
 
 QUnit.test('List', function (assert) {
 	assert.equal(
-		this.htmlToBBCode('<ul><li>test' + IE_BR_STR + '</li></ul>'),
+		this.htmlToBBCode('<ul><li>test<br /></li></ul>'),
 		'[ul]\n[li]test[/li]\n[/ul]\n',
 		'UL tag'
 	);
 
 	assert.equal(
-		this.htmlToBBCode('<ol><li>test' + IE_BR_STR + '</li></ol>'),
+		this.htmlToBBCode('<ol><li>test<br /></li></ol>'),
 		'[ol]\n[li]test[/li]\n[/ol]\n',
 		'OL tag'
 	);
@@ -587,7 +578,7 @@ QUnit.test('List', function (assert) {
 			'<ul>' +
 				'<li>test' +
 					'<ul>' +
-						'<li>sub' + IE_BR_STR + '</li>' +
+						'<li>sub<br /></li>' +
 					'</ul>' +
 				'</li>' +
 			'</ul>'
@@ -784,20 +775,15 @@ QUnit.test('Code', function (assert) {
 
 
 QUnit.test('Left', function (assert) {
-	var isIeOrEdge = browser.ie || 'msImeAlign' in document.body.style;
-
-	// IE will return text-align when a parents direction is changed
-	// so will be skipped in IE unless the direction is different
-	// from the parent alignment
 	assert.equal(
 		this.htmlToBBCode('<div style="text-align: left">test</div>'),
-		isIeOrEdge ? 'test' : '[left]test[/left]\n',
+		'[left]test[/left]\n',
 		'CSS text-align'
 	);
 
 	assert.equal(
 		this.htmlToBBCode('<div align="left">test</div>'),
-		isIeOrEdge ? 'test' : '[left]test[/left]\n',
+		'[left]test[/left]\n',
 		'Align attribute'
 	);
 });

@@ -976,7 +976,7 @@ export function getOffset(node) {
  * @return {string}
  */
 export function getStyle(elm, property) {
-	var	direction, styleValue,
+	var	styleValue,
 		elmStyle = elm.style;
 
 	if (!cssPropertyNameCache[property]) {
@@ -988,18 +988,10 @@ export function getStyle(elm, property) {
 
 	// Add an exception for text-align
 	if ('textAlign' === property) {
-		direction  = elmStyle.direction;
 		styleValue = styleValue || css(elm, property);
 
 		if (css(elm.parentNode, property) === styleValue ||
 			css(elm, 'display') !== 'block' || is(elm, 'hr,th')) {
-			return '';
-		}
-
-		// IE changes text-align to the same as the current direction
-		// so skip unless its not the same
-		if ((/right/i.test(styleValue) && direction === 'rtl') ||
-			(/left/i.test(styleValue) && direction === 'ltr')) {
 			return '';
 		}
 	}

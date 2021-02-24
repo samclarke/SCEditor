@@ -13,12 +13,6 @@ import DOMPurify from 'dompurify';
 var globalWin  = window;
 var globalDoc  = document;
 
-var IE_VER = browser.ie;
-
-// In IE < 11 a BR at the end of a block level element
-// causes a line break. In all other browsers it's collapsed.
-var IE_BR_FIX = IE_VER && IE_VER < 11;
-
 var IMAGE_MIME_REGEX = /^image\/(p?jpe?g|gif|png|bmp)$/i;
 
 /**
@@ -139,14 +133,6 @@ export default function SCEditor(original, userOptions) {
 	 * @private
 	 */
 	var dropdown;
-
-	/**
-	 * Store the last cursor position. Needed for IE because it forgets
-	 *
-	 * @type {Range}
-	 * @private
-	 */
-	var lastRange;
 
 	/**
 	 * If the user is currently composing text via IME
@@ -325,7 +311,6 @@ export default function SCEditor(original, userOptions) {
 	var	init,
 		replaceEmoticons,
 		handleCommand,
-		saveRange,
 		initEditor,
 		initPlugins,
 		initLocale,
@@ -459,12 +444,6 @@ export default function SCEditor(original, userOptions) {
 		dom.insertBefore(editorContainer, original);
 		dom.css(editorContainer, 'z-index', options.zIndex);
 
-		// Add IE version to the container to allow IE specific CSS
-		// fixes without using CSS hacks or conditional comments
-		if (IE_VER) {
-			dom.addClass(editorContainer, 'ie ie' + IE_VER);
-		}
-
 		isRequired = original.required;
 		original.required = false;
 
@@ -584,11 +563,8 @@ export default function SCEditor(original, userOptions) {
 			options.height || dom.height(original)
 		);
 
-		// Add IE version class to the HTML element so can apply
-		// conditional styling without CSS hacks
-		var className = IE_VER ? 'ie ie' + IE_VER : '';
 		// Add ios to HTML so can apply CSS fix to only it
-		className += browser.ios ? ' ios' : '';
+		var className = browser.ios ? ' ios' : '';
 
 		wysiwygDocument = wysiwygEditor.contentDocument;
 		wysiwygDocument.open();
@@ -605,14 +581,10 @@ export default function SCEditor(original, userOptions) {
 
 		base.readOnly(!!options.readOnly);
 
-		// iframe overflow fix for iOS, also fixes an IE issue with the
-		// editor not getting focus when clicking inside
-		if (browser.ios || browser.edge || IE_VER) {
+		// iframe overflow fix for iOS
+		if (browser.ios) {
 			dom.height(wysiwygBody, '100%');
-
-			if (!IE_VER) {
-				dom.on(wysiwygBody, 'touchend', base.focus);
-			}
+			dom.on(wysiwygBody, 'touchend', base.focus);
 		}
 
 		var tabIndex = dom.attr(original, 'tabindex');
@@ -717,11 +689,7 @@ export default function SCEditor(original, userOptions) {
 
 		dom.on(wysiwygDocument, 'mousedown', handleMouseDown);
 		dom.on(wysiwygDocument, checkSelectionEvents, checkSelectionChanged);
-		dom.on(wysiwygDocument, 'beforedeactivate keyup mouseup', saveRange);
 		dom.on(wysiwygDocument, 'keyup', appendNewLine);
-		dom.on(wysiwygDocument, 'focus', function () {
-			lastRange = null;
-		});
 
 		dom.on(editorContainer, 'selectionchanged', checkNodeChanged);
 		dom.on(editorContainer, 'selectionchanged', updateActiveButtons);
@@ -1028,10 +996,8 @@ export default function SCEditor(original, userOptions) {
 			while (node.lastChild) {
 				node = node.lastChild;
 
-				// IE < 11 should place the cursor after the <br> as
-				// it will show it as a newline. IE >= 11 and all
-				// other browsers should place the cursor before.
-				if (!IE_BR_FIX && dom.is(node, 'br') && node.previousSibling) {
+				// Should place the cursor before the last <br>
+				if (dom.is(node, 'br') && node.previousSibling) {
 					node = node.previousSibling;
 				}
 			}
@@ -1419,7 +1385,6 @@ export default function SCEditor(original, userOptions) {
 		pluginManager.destroy();
 
 		rangeHelper   = null;
-		lastRange     = null;
 		pluginManager = null;
 
 		if (dropdown) {
@@ -1453,39 +1418,20 @@ export default function SCEditor(original, userOptions) {
 	 * @param  {string} name          Used for styling the dropdown, will be
 	 *                                a class sceditor-name
 	 * @param  {HTMLElement} content  The HTML content of the dropdown
-	 * @param  {boolean} ieFix           If to add the unselectable attribute
-	 *                                to all the contents elements. Stops
-	 *                                IE from deselecting the text in the
-	 *                                editor
 	 * @function
 	 * @name createDropDown
 	 * @memberOf SCEditor.prototype
 	 */
-	base.createDropDown = function (menuItem, name, content, ieFix) {
+	base.createDropDown = function (menuItem, name, content) {
 		// first click for create second click for close
 		var	dropDownCss,
 			dropDownClass = 'sceditor-' + name;
 
-		// Will re-focus the editor. This is needed for IE
-		// as it has special logic to save/restore the selection
-		base.closeDropDown(true);
+		base.closeDropDown();
 
 		// Only close the dropdown if it was already open
 		if (dropdown && dom.hasClass(dropdown, dropDownClass)) {
 			return;
-		}
-
-		// IE needs unselectable attr to stop it from
-		// unselecting the text in the editor.
-		// SCEditor can cope if IE does unselect the
-		// text it's just not nice.
-		if (ieFix !== false) {
-			utils.each(dom.find(content, ':not(input):not(textarea)'),
-				function (_, node) {
-					if (node.nodeType === dom.ELEMENT_NODE) {
-						dom.attr(node, 'unselectable', 'on');
-					}
-				});
 		}
 
 		dropDownCss = utils.extend({
@@ -1506,17 +1452,12 @@ export default function SCEditor(original, userOptions) {
 			e.stopPropagation();
 		});
 
-		// If try to focus the first input immediately IE will
-		// place the cursor at the start of the editor instead
-		// of focusing on the input.
-		setTimeout(function () {
-			if (dropdown) {
-				var first = dom.find(dropdown, 'input,textarea')[0];
-				if (first) {
-					first.focus();
-				}
+		if (dropdown) {
+			var first = dom.find(dropdown, 'input,textarea')[0];
+			if (first) {
+				first.focus();
 			}
-		});
+		}
 	};
 
 	/**
@@ -1537,7 +1478,6 @@ export default function SCEditor(original, userOptions) {
 	 * @private
 	 */
 	handlePasteEvt = function (e) {
-		var isIeOrEdge = IE_VER || browser.edge;
 		var editable = wysiwygBody;
 		var clipboard = e.clipboardData;
 		var loadImage = function (file) {
@@ -1553,7 +1493,7 @@ export default function SCEditor(original, userOptions) {
 		// Modern browsers with clipboard API - everything other than _very_
 		// old android web views and UC browser which doesn't support the
 		// paste event at all.
-		if (clipboard && !isIeOrEdge) {
+		if (clipboard) {
 			var data = {};
 			var types = clipboard.types;
 			var items = clipboard.items;
@@ -2091,7 +2031,7 @@ export default function SCEditor(original, userOptions) {
 	 */
 	base.setWysiwygEditorValue = function (value) {
 		if (!value) {
-			value = '<p>' + (IE_VER ? '' : '<br />') + '</p>';
+			value = '<p><br /></p>';
 		}
 
 		wysiwygBody.innerHTML = sanitize(value);
@@ -2213,7 +2153,6 @@ export default function SCEditor(original, userOptions) {
 			base.setSourceEditorValue(base.getWysiwygEditorValue());
 		}
 
-		lastRange = null;
 		dom.toggle(sourceEditor);
 		dom.toggle(wysiwygEditor);
 
@@ -2266,18 +2205,6 @@ export default function SCEditor(original, userOptions) {
 	};
 
 	/**
-	 * Saves the current range. Needed for IE because it forgets
-	 * where the cursor was and what was selected
-	 * @private
-	 */
-	saveRange = function () {
-		/* this is only needed for IE */
-		if (IE_VER) {
-			lastRange = rangeHelper.selectedRange();
-		}
-	};
-
-	/**
 	 * Executes a command on the WYSIWYG editor
 	 *
 	 * @param {string} command
@@ -2315,8 +2242,8 @@ export default function SCEditor(original, userOptions) {
 	 * Checks if the current selection has changed and triggers
 	 * the selectionchanged event if it has.
 	 *
-	 * In browsers other than IE, it will check at most once every 100ms.
-	 * This is because only IE has a selection changed event.
+	 * In browsers other that don't support selectionchange event it will check
+	 * at most once every 100ms.
 	 * @private
 	 */
 	checkSelectionChanged = function () {
@@ -2500,33 +2427,29 @@ export default function SCEditor(original, userOptions) {
 			// browsers when enter is pressed instead of inserting a newline
 			if (!dom.is(currentBlockNode, LIST_TAGS) &&
 				dom.hasStyling(currentBlockNode)) {
-				lastRange = null;
 
 				var br = dom.createElement('br', {}, wysiwygDocument);
 				rangeHelper.insertNode(br);
 
-				// Last <br> of a block will be collapsed unless it is
-				// IE < 11 so need to make sure the <br> that was inserted
-				// isn't the last node of a block.
-				if (!IE_BR_FIX) {
-					var parent  = br.parentNode;
-					var lastChild = parent.lastChild;
+				// Last <br> of a block will be collapsed  so need to make sure
+				// the <br> that was inserted isn't the last node of a block.
+				var parent  = br.parentNode;
+				var lastChild = parent.lastChild;
 
-					// Sometimes an empty next node is created after the <br>
-					if (lastChild && lastChild.nodeType === dom.TEXT_NODE &&
-						lastChild.nodeValue === '') {
-						dom.remove(lastChild);
-						lastChild = parent.lastChild;
-					}
+				// Sometimes an empty next node is created after the <br>
+				if (lastChild && lastChild.nodeType === dom.TEXT_NODE &&
+					lastChild.nodeValue === '') {
+					dom.remove(lastChild);
+					lastChild = parent.lastChild;
+				}
 
-					// If this is the last BR of a block and the previous
-					// sibling is inline then will need an extra BR. This
-					// is needed because the last BR of a block will be
-					// collapsed. Fixes issue #248
-					if (!dom.isInline(parent, true) && lastChild === br &&
-						dom.isInline(br.previousSibling)) {
-						rangeHelper.insertHTML('<br>');
-					}
+				// If this is the last BR of a block and the previous
+				// sibling is inline then will need an extra BR. This
+				// is needed because the last BR of a block will be
+				// collapsed. Fixes issue #248
+				if (!dom.isInline(parent, true) && lastChild === br &&
+					dom.isInline(br.previousSibling)) {
+					rangeHelper.insertHTML('<br>');
 				}
 
 				e.preventDefault();
@@ -2556,7 +2479,7 @@ export default function SCEditor(original, userOptions) {
 				if (!dom.is(node, '.sceditor-nlf') && dom.hasStyling(node)) {
 					var paragraph = dom.createElement('p', {}, wysiwygDocument);
 					paragraph.className = 'sceditor-nlf';
-					paragraph.innerHTML = !IE_BR_FIX ? '<br />' : '';
+					paragraph.innerHTML = '<br />';
 					dom.appendChild(wysiwygBody, paragraph);
 					return false;
 				}
@@ -2585,7 +2508,6 @@ export default function SCEditor(original, userOptions) {
 	 */
 	handleMouseDown = function () {
 		base.closeDropDown();
-		lastRange = null;
 	};
 
 	/**
@@ -2819,7 +2741,7 @@ export default function SCEditor(original, userOptions) {
 			// Check if cursor is set after a BR when the BR is the only
 			// child of the parent. In Firefox this causes a line break
 			// to occur when something is typed. See issue #321
-			if (!IE_BR_FIX && rng && rng.endOffset === 1 && rng.collapsed) {
+			if (rng && rng.endOffset === 1 && rng.collapsed) {
 				container = rng.endContainer;
 
 				if (container && container.childNodes.length === 1 &&
@@ -2832,15 +2754,6 @@ export default function SCEditor(original, userOptions) {
 
 			wysiwygWindow.focus();
 			wysiwygBody.focus();
-
-			// Needed for IE
-			if (lastRange) {
-				rangeHelper.selectRange(lastRange);
-
-				// Remove the stored range after being set.
-				// If the editor loses focus it should be saved again.
-				lastRange = null;
-			}
 		} else {
 			sourceEditor.focus();
 		}
@@ -3369,7 +3282,6 @@ export default function SCEditor(original, userOptions) {
 		rangeHelper.saveRange();
 
 		block.className = '';
-		lastRange       = null;
 
 		dom.attr(block, 'style', '');
 

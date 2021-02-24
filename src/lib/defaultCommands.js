@@ -1,12 +1,7 @@
 import * as dom from './dom.js';
 import * as utils from './utils.js';
 import * as escape from './escape.js';
-import { ie as IE_VER } from './browser.js';
 import _tmpl from './templates.js';
-
-// In IE < 11 a BR at the end of a block level element
-// causes a line break. In all other browsers it's collapsed.
-var IE_BR_FIX = IE_VER && IE_VER < 11;
 
 /**
  * Fixes a bug in FF where it sometimes wraps
@@ -414,7 +409,7 @@ var defaultCmds = {
 					html += Array(rows + 1).join(
 						'<tr>' +
 							Array(cols + 1).join(
-								'<td>' + (IE_BR_FIX ? '' : '<br />') + '</td>'
+								'<td><br /></td>'
 							) +
 						'</tr>'
 					);
@@ -445,7 +440,7 @@ var defaultCmds = {
 		exec: function () {
 			this.wysiwygEditorInsertHtml(
 				'<code>',
-				(IE_BR_FIX ? '' : '<br />') + '</code>'
+				'<br /></code>'
 			);
 		},
 		tooltip: 'Code'
@@ -545,9 +540,6 @@ var defaultCmds = {
 				editor,
 				caller,
 				function (email, text) {
-					// needed for IE to reset the last range
-					editor.focus();
-
 					if (!editor.getRangeHelper().selectedHtml() || text) {
 						editor.wysiwygEditorInsertHtml(
 							'<a href="' +
@@ -601,18 +593,10 @@ var defaultCmds = {
 			var editor = this;
 
 			defaultCmds.link._dropDown(editor, caller, function (url, text) {
-				// needed for IE to restore the last range
-				editor.focus();
-
-				// If there is no selected text then must set the URL as
-				// the text. Most browsers do this automatically, sadly
-				// IE doesn't.
 				if (text || !editor.getRangeHelper().selectedHtml()) {
-					text = text || url;
-
 					editor.wysiwygEditorInsertHtml(
 						'<a href="' + escape.entities(url) + '">' +
-							escape.entities(text) +
+							escape.entities(text || url) +
 						'</a>'
 					);
 				} else {
@@ -661,7 +645,7 @@ var defaultCmds = {
 				end    = null;
 			// if not add a newline to the end of the inserted quote
 			} else if (this.getRangeHelper().selectedHtml() === '') {
-				end = (IE_BR_FIX ? '' : '<br />') + end;
+				end = '<br />' + end;
 			}
 
 			this.wysiwygEditorInsertHtml(before, end);
