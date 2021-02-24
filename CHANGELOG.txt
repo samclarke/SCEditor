@@ -1,3 +1,20 @@
+Version 3.0.0:
+	Fixes XSS issues by using dompurify.
+		- Thanks to @mufeedvh for fixing.
+	Fixed missing user input escaping for default commands.
+		- Thanks to @dvz for fixing.
+	Fixed bug so nvda can read editor content.
+		- Thanks to @repl-shenoy-sukumaran for reporting and fixing.
+	Fixed bug with alignment removing line breaks in lists,
+		- Thanks to @lucaslg for reporting and @dclause for fixing.
+	Fixed BBCode bug with list commands in source mode not wrapping selected text.
+		- Thanks to @tomdav999 for reporting and @live627 for fixing.
+	Fixed issue with comment nodes sometimes causing an error.
+		- Thanks to @karolinaskiba for reporting
+	Fixed bug with BBCode attributes containing multiple quotes where only the first was being escaped.
+	Removed unselectable parameter from createDropDown method which was needed for IE
+	Removed ie property which used to give the current IE version
+	
 Version 2.1.3:
 	Fixed issue with monocons showing underline if text-decoration is set.
 		- Thanks to @q2apro for reporting.

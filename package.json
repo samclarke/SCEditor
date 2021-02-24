@@ -1,6 +1,6 @@
 {
   "name": "sceditor",
-  "version": "2.1.3",
+  "version": "3.0.0",
   "description": "A lightweight HTML and BBCode WYSIWYG editor.",
   "homepage": "http://www.sceditor.com/",
   "bugs": "https://github.com/samclarke/SCEditor/issues",
