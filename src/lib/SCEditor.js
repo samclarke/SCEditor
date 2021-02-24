@@ -320,6 +320,7 @@ export default function SCEditor(original, userOptions) {
 		initResize,
 		initEmoticons,
 		handlePasteEvt,
+		handleCopyEvt,
 		handlePasteData,
 		handleKeyDown,
 		handleBackSpace,
@@ -663,6 +664,7 @@ export default function SCEditor(original, userOptions) {
 		dom.on(wysiwygBody, 'blur', valueChangedBlur);
 		dom.on(wysiwygBody, 'keyup', valueChangedKeyUp);
 		dom.on(wysiwygBody, 'paste', handlePasteEvt);
+		dom.on(wysiwygBody, 'copy', handleCopyEvt);
 		dom.on(wysiwygBody, compositionEvents, handleComposition);
 		dom.on(wysiwygBody, checkSelectionEvents, checkSelectionChanged);
 		dom.on(wysiwygBody, eventsToForward, handleEvent);
@@ -1471,6 +1473,18 @@ export default function SCEditor(original, userOptions) {
 
 			base.closeDropDown();
 		}
+	};
+
+	/**
+	 * Handles the WYSIWYG editors copy event
+	 * @private
+	 */
+	handleCopyEvt = function (e) {
+		// By default browsers also copy the default styling which is
+		// unnecessary, make it only copy the actual styled HTML
+		e.clipboardData.setData('text/html', rangeHelper.selectedHtml());
+		e.clipboardData.setData('text/plain',
+			rangeHelper.selectedRange().toString());
 	};
 
 	/**
