@@ -215,6 +215,34 @@ QUnit.test('destroy()', function (assert) {
 	reloadEditor();
 });
 
+QUnit.test('destroy() - Unbind updateOriginal', function (assert) {
+	var textarea = document.createElement('textarea');
+	var submit = document.createElement('input');
+	submit.type = 'submit';
+
+	var form = document.createElement('form');
+	form.addEventListener('submit', function (e) {
+		e.preventDefault();
+	});
+	form.appendChild(submit);
+	form.appendChild(textarea);
+
+	$fixture.append(form);
+
+	var sceditor = new SCEditor(textarea, { format: 'bbcode' });
+	sceditor.val('testing');
+	submit.click();
+
+	assert.equal(textarea.value, 'testing');
+
+	sceditor.val('testing 123');
+	sceditor.destroy();
+	submit.click();
+
+	assert.equal(textarea.value, 'testing');
+	form.parentNode.removeChild(form);
+});
+
 
 QUnit.test('wysiwygEditorInsertHtml()', function (assert) {
 	if (IS_PHANTOMJS) {

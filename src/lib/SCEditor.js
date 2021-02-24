@@ -1397,7 +1397,7 @@ export default function SCEditor(original, userOptions) {
 		var form = original.form;
 		if (form) {
 			dom.off(form, 'reset', handleFormReset);
-			dom.off(form, 'submit', base.updateOriginal);
+			dom.off(form, 'submit', base.updateOriginal, dom.EVENT_CAPTURE);
 		}
 
 		dom.remove(sourceEditor);
