@@ -2,32 +2,6 @@
 	// Report QUnit results to SauceLabs
 	var log = [];
 
-	// dompurify PhantomJS support
-	// See: https://github.com/cure53/DOMPurify/issues/502#issuecomment-763651764
-	if ('_phantom' in window) {
-		const orig = Object.getOwnPropertyDescriptor;
-		Object.getOwnPropertyDescriptor = function (obj, prop) {
-			if (prop === 'cloneNode') {
-				return {
-					value: function () {
-						return this.cloneNode();
-					}
-				};
-			}
-			if (prop === 'nextSibling' ||
-				prop === 'childNodes' ||
-				prop === 'parentNode') {
-				return {
-					value: function () {
-						return this[prop];
-					}
-				};
-			}
-
-			return orig(obj, prop);
-		};
-	}
-
 	QUnit.done(function (testResults) {
 		var tests = [];
 
@@ -44,13 +18,9 @@
 
 		testResults.tests = tests;
 
-		// For SauceLabs
-		// eslint-disable-next-line dot-notation
-		window['global_test_results'] = testResults;
-
 		// Send istanbul coverage to grunt
-		if ('_phantom' in window && window.__coverage__) {
-			alert(JSON.stringify(['qunit.coverage', window.__coverage__]));
+		if (window.__grunt_contrib_qunit__) {
+			window.__grunt_contrib_qunit__('qunit.coverage', window.__coverage__);
 		}
 	});
 

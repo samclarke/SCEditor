@@ -12,7 +12,9 @@ QUnit.module('jquery.sceditor', {
 		textarea = document.createElement('textarea');
 		fixture.appendChild(textarea);
 
-		$(textarea).sceditor();
+		$(textarea).sceditor({
+			style: '../../src/themes/content/default.css'
+		});
 		sceditor = textarea._sceditor;
 	},
 	afterEach: function () {

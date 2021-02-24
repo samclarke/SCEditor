@@ -1,22 +1,30 @@
-/*global module:false, require:false, process:false*/
+/* eslint-env node */
+/*global module:false, require:false*/
+const libCoverage = require('istanbul-lib-coverage');
+const libReport = require('istanbul-lib-report');
+const reports = require('istanbul-reports');
+const nodeResolve = require('@rollup/plugin-node-resolve').default;
+const rimraf = require('rimraf');
+
 module.exports = (grunt) => {
 	require('time-grunt')(grunt);
-	const istanbul = require('istanbul');
-	const nodeResolve = require('rollup-plugin-node-resolve');
-
 
 	grunt.event.on('qunit.coverage', function (data) {
-		const Report = istanbul.Report;
-		const Collector = istanbul.Collector;
-		const collector = new Collector();
+		const outputDir = __dirname + '/coverage';
 
-		collector.add(data);
+		rimraf.sync(outputDir);
+
+		const coverageMap = libCoverage.createCoverageMap(data);
+		const context = libReport.createContext({
+			dir: outputDir,
+			defaultSummarizer: 'nested',
+			coverageMap: coverageMap
+		});
 
 		console.log('\n\n\nCoverage:');
-		Report.create('text').writeReport(collector, true);
-		Report.create('html', {
-			dir: './coverage/html'
-		}).writeReport(collector, true);
+		reports.create('text').execute(context);
+		reports.create('html').execute(context);
+		console.log('\n');
 	});
 
 	grunt.registerTask('dev-server', 'Dev server', function () {
@@ -28,41 +36,24 @@ module.exports = (grunt) => {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 
-		// Runs the QUnit unit tests in multiple browsers automatically.
-		'saucelabs-qunit': {
-			all: {
-				options: {
-					username: 'sceditor',
-					key: () => process.env.SCEDITOR_SAUCE_KEY,
-					urls: [
-						'http://localhost:9001/tests/unit/index.html?hidepassed'
-					],
-					tunnelTimeout: 10,
-					tunnelArgs: ['--direct-domains', 'www.sceditor.com'],
-					build: process.env.TRAVIS_JOB_ID ||
-						('Local ' + (new Date()).toISOString()),
-					concurrency: 5,
-					browsers: grunt.file.readJSON('browsers.json'),
-					'max-duration': 60,
-					sauceConfig: {
-						'video-upload-on-pass': false
-					},
-					testname: 'SCEditor QUnit tests'
-				}
-			}
-		},
-
 		// Runs the unit tests
 		qunit: {
 			all: {
 				options: {
-					urls: ['http://localhost:9001/tests/unit/index.html']
+					urls: ['http://localhost:9001/tests/unit/index.html'],
+					// Some tests rely on failing URLs so want to ignore them
+					console: false
 				}
 			}
 		},
 
 		// Style checking of JS code using ESLint
 		eslint: {
+			options: {
+				parserOptions: {
+					ecmaVersion: 2015
+				}
+			},
 			source: {
 				src: ['src/**/*.js']
 			},
@@ -300,16 +291,8 @@ module.exports = (grunt) => {
 			build: {
 				options: {
 					processors: [
-						require('autoprefixer')({
-							browsers: [
-								'last 4 versions',
-								'ie 10'
-							]
-						}),
-						require('postcss-clean')({
-							level: 2,
-							compatibility: 'ie9'
-						})
+						require('autoprefixer')(),
+						require('cssnano')()
 					]
 				},
 				files: [
@@ -340,12 +323,6 @@ module.exports = (grunt) => {
 			}
 		},
 
-		githooks: {
-			all: {
-				'pre-commit': 'test'
-			}
-		},
-
 		devUpdate: {
 			main: {
 				options: {
@@ -357,7 +334,7 @@ module.exports = (grunt) => {
 	});
 
 
-	grunt.loadNpmTasks('grunt-postcss');
+	grunt.loadNpmTasks('@lodder/grunt-postcss');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-compress');
 	grunt.loadNpmTasks('grunt-contrib-concat');
@@ -365,23 +342,17 @@ module.exports = (grunt) => {
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-contrib-qunit');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-saucelabs');
 	grunt.loadNpmTasks('grunt-rollup');
 	grunt.loadNpmTasks('grunt-eslint');
-	grunt.loadNpmTasks('grunt-githooks');
-	grunt.loadNpmTasks('grunt-dev-update');
 
 
 	grunt.registerTask('default', ['test']);
-
-	// Sauce Labs. Runs the QUnit tests in multiple browsers automatically.
-	grunt.registerTask('sauce', ['dev-server', 'saucelabs-qunit']);
 
 	// Lints the JS and runs the unit tests
 	grunt.registerTask('test', ['eslint', 'dev-server', 'qunit']);
 
 	// Lints JS, runs unit tests and then runs unit tests via Sauce Labs.
-	grunt.registerTask('full-test', ['test', 'sauce']);
+	grunt.registerTask('full-test', ['test']);
 
 	// Minifies the source
 	grunt.registerTask('build', [
@@ -391,19 +362,6 @@ module.exports = (grunt) => {
 		'uglify:build',
 		'less:build',
 		'postcss:build'
-	]);
-
-	// Creates the simplified distributable ZIP
-	grunt.registerTask('release', [
-		'test',
-		'build',
-		'clean:dist',
-		'rollup:dist',
-		'concat:dist',
-		'copy:dist',
-		'less:dist',
-		'compress:dist',
-		'clean:dist'
 	]);
 
 	// Creates a directory containing the contents of
@@ -418,6 +376,10 @@ module.exports = (grunt) => {
 		'less:dist'
 	]);
 
-	// Update dev dependencies
-	grunt.registerTask('dev-upd', ['devUpdate:main']);
+	// Creates the simplified distributable ZIP
+	grunt.registerTask('release', [
+		'dist',
+		'compress:dist',
+		'clean:dist'
+	]);
 };

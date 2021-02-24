@@ -27,10 +27,7 @@ exports.create = function (port, coverage) {
 					{
 						test: /\.js$/,
 						include: path.resolve('src/'),
-						loader: 'istanbul-instrumenter-loader',
-						options: {
-							esModules: true
-						}
+						loader: __dirname + '/loader.js'
 					}
 				]
 			},
@@ -52,7 +49,7 @@ exports.create = function (port, coverage) {
 				jquery: 'jQuery',
 				rangy: 'rangy'
 			},
-			devtool: 'cheap-module-inline-source-map'
+			devtool: 'inline-cheap-module-source-map'
 		};
 
 		if (!coverage) {
@@ -62,7 +59,9 @@ exports.create = function (port, coverage) {
 		const compiler = webpack(webpackOptions);
 
 		// Resolve promise when bundle generated
-		compiler.plugin('done', resolve);
+		compiler.hooks.done.tap('BuildStatsPlugin', () => {
+			resolve();
+		});
 
 		/* eslint no-new: off */
 		new WebpackDevServer(compiler, {
