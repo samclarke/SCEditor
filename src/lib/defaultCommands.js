@@ -490,11 +490,11 @@ var defaultCmds = {
 					var attrs  = '';
 
 					if (width) {
-						attrs += ' width="' + parseInt(width) + '"';
+						attrs += ' width="' + parseInt(width, 10) + '"';
 					}
 
 					if (height) {
-						attrs += ' height="' + parseInt(height) + '"';
+						attrs += ' height="' + parseInt(height, 10) + '"';
 					}
 
 					attrs += ' src="' + escape.entities(url) + '"';
