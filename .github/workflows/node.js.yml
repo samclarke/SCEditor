@@ -26,7 +26,7 @@ jobs:
       id: npm-cache
       with:
         path: ${{ steps.npm-cache-dir.outputs.dir }}
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: ${{ runner.os }}-node-
     - if: steps.npm-cache.outputs.cache-hit != 'true'
       run: npm ci
