@@ -28,6 +28,7 @@ jobs:
         path: ${{ steps.npm-cache-dir.outputs.dir }}
         key: ${{ runner.os }}-node15-${{ hashFiles('**/package-lock.json') }}
         restore-keys: ${{ runner.os }}-node15-
+    - run: npm -v
     - if: steps.npm-cache.outputs.cache-hit != 'true'
       run: npm ci
     - run: npm t
