@@ -345,14 +345,10 @@ module.exports = (grunt) => {
 	grunt.loadNpmTasks('grunt-rollup');
 	grunt.loadNpmTasks('grunt-eslint');
 
-
 	grunt.registerTask('default', ['test']);
 
 	// Lints the JS and runs the unit tests
 	grunt.registerTask('test', ['eslint', 'dev-server', 'qunit']);
-
-	// Lints JS, runs unit tests and then runs unit tests via Sauce Labs.
-	grunt.registerTask('full-test', ['test']);
 
 	// Minifies the source
 	grunt.registerTask('build', [
