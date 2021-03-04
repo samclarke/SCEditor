@@ -1,4 +1,4 @@
-﻿import * as dom from './dom.js';
+import * as dom from './dom.js';
 import * as utils from './utils.js';
 import defaultOptions from './defaultOptions.js';
 import defaultCommands from './defaultCommands.js';
@@ -1344,6 +1344,7 @@ export default function SCEditor(original, userOptions) {
 		}
 
 		autoExpand();
+		base.focus();
 
 		return base;
 	};
@@ -2222,6 +2223,7 @@ export default function SCEditor(original, userOptions) {
 
 		updateToolBar();
 		updateActiveButtons();
+		base.focus();
 	};
 
 	/**
