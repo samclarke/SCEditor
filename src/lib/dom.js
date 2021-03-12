@@ -1020,3 +1020,157 @@ export function hasStyle(elm, property, values) {
 	return !values || styleValue === values ||
 		(Array.isArray(values) && values.indexOf(styleValue) > -1);
 }
+
+/**
+ * Returns true if both nodes have the same number of inline styles and all the
+ * inline styles have matching values
+ *
+ * @param {HTMLElement} nodeA
+ * @param {HTMLElement} nodeB
+ * @returns {boolean}
+ */
+function stylesMatch(nodeA, nodeB) {
+	var i = nodeA.style.length;
+	if (i !== nodeB.style.length) {
+		return false;
+	}
+
+	while (i--) {
+		var prop = nodeA.style[i];
+		if (nodeA.style[prop] !== nodeB.style[prop]) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+/**
+ * Returns true if both nodes have the same number of attributes and all the
+ * attribute values match
+ *
+ * @param {HTMLElement} nodeA
+ * @param {HTMLElement} nodeB
+ * @returns {boolean}
+ */
+function attributesMatch(nodeA, nodeB) {
+	var i = nodeA.attributes.length;
+	if (i !== nodeB.attributes.length) {
+		return false;
+	}
+
+	while (i--) {
+		var prop = nodeA.attributes[i];
+		var notMatches = prop.name === 'style' ?
+			!stylesMatch(nodeA, nodeB) :
+			prop.value !== attr(nodeB, prop.name);
+
+		if (notMatches) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+/**
+ * Removes an element placing its children in its place
+ *
+ * @param {HTMLElement} node
+ */
+function removeKeepChildren(node) {
+	while (node.firstChild) {
+		insertBefore(node.firstChild, node);
+	}
+
+	remove(node);
+}
+
+/**
+ * Merges inline styles and tags with parents where possible
+ *
+ * @param {Node} node
+ * @since 3.1.0
+ */
+export function merge(node) {
+	if (node.nodeType !== ELEMENT_NODE) {
+		return;
+	}
+
+	var parent = node.parentNode;
+	var tagName = node.tagName;
+	var mergeTags = /B|STRONG|EM|SPAN|FONT/;
+
+	// Merge children (in reverse as children can be removed)
+	var i = node.childNodes.length;
+	while (i--) {
+		merge(node.childNodes[i]);
+	}
+
+	// Should only merge inline tags
+	if (!isInline(node)) {
+		return;
+	}
+
+	// Remove any inline styles that match the parent style
+	i = node.style.length;
+	while (i--) {
+		var prop = node.style[i];
+		if (css(parent, prop) === css(node, prop)) {
+			node.style.removeProperty(prop);
+		}
+	}
+
+	// Can only remove / merge tags if no inline styling left.
+	// If there is any inline style left then it means it at least partially
+	// doesn't match the parent style so must stay
+	if (!node.style.length) {
+		removeAttr(node, 'style');
+
+		// Remove font attributes if match parent
+		if (tagName === 'FONT') {
+			if (css(node, 'fontFamily').toLowerCase() ===
+				css(parent, 'fontFamily').toLowerCase()) {
+				removeAttr(node, 'face');
+			}
+
+			if (css(node, 'color') === css(parent, 'color')) {
+				removeAttr(node, 'color');
+			}
+
+			if (css(node, 'fontSize') === css(parent, 'fontSize')) {
+				removeAttr(node, 'size');
+			}
+		}
+
+		// Spans and font tags with no attributes can be safely removed
+		if (!node.attributes.length && /SPAN|FONT/.test(tagName)) {
+			removeKeepChildren(node);
+		} else if (mergeTags.test(tagName)) {
+			var isBold = /B|STRONG/.test(tagName);
+			var isItalic = tagName === 'EM';
+
+			while (parent && isInline(parent) &&
+				(!isBold || /bold|700/i.test(css(parent, 'fontWeight'))) &&
+				(!isItalic || css(parent, 'fontStyle') === 'italic')) {
+
+				// Remove if parent match
+				if ((parent.tagName === tagName ||
+					(isBold && /B|STRONG/.test(parent.tagName))) &&
+					attributesMatch(parent, node)) {
+					removeKeepChildren(node);
+					break;
+				}
+
+				parent = parent.parentNode;
+			}
+		}
+	}
+
+	// Merge siblings if attributes, including inline styles, match
+	var next = node.nextSibling;
+	if (next && next.tagName === tagName && attributesMatch(next, node)) {
+		appendChild(node, next);
+		removeKeepChildren(next);
+	}
+}

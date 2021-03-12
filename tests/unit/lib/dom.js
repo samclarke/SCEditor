@@ -1214,3 +1214,399 @@ QUnit.test('hasStyle() - No style attribute', function (assert) {
 
 	assert.ok(!dom.hasStyle(node, 'color'));
 });
+
+
+QUnit.test('merge() - parent matching style', function (assert) {
+	var node = utils.htmlToNode(
+		'<div>' +
+			'1' +
+			'<span style="font-weight: bold; font-size: 12px">' +
+				'2' +
+				'<span style="font-weight: bold;">' +
+					'3' +
+				'</span>' +
+				'4' +
+			'</span>' +
+			'5' +
+		'</div>'
+	);
+
+	dom.merge(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToNode(
+			'<div>' +
+				'1' +
+				'<span style="font-weight: bold; font-size: 12px">' +
+					'234' +
+				'</span>' +
+				'5' +
+			'</div>'
+		)
+	);
+});
+
+QUnit.test('merge() - nested parent matching style', function (assert) {
+	var node = utils.htmlToNode(
+		'<div>' +
+			'1' +
+			'<span style="font-weight: bold; font-size: 12px">' +
+				'2' +
+				'<b>' +
+					'<span style="font-size: 12px; font-style: italic">' +
+						'3' +
+					'</span>' +
+				'</b>' +
+				'4' +
+			'</span>' +
+			'5' +
+		'</div>'
+	);
+
+	dom.merge(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToNode(
+			'<div>' +
+				'1' +
+				'<span style="font-weight: bold; font-size: 12px">' +
+					'2' +
+					'<b>' +
+						'<span style="font-style: italic">' +
+							'3' +
+						'</span>' +
+					'</b>' +
+					'4' +
+				'</span>' +
+				'5' +
+			'</div>'
+		)
+	);
+});
+
+QUnit.test('merge() - nested span merge attribute', function (assert) {
+	var node = utils.htmlToNode(
+		'<div>' +
+			'1' +
+			'<span data-sce-test="2">' +
+				'2' +
+				'<span data-sce-test="2">3</span>' +
+				'4' +
+			'</span>' +
+			'5' +
+		'</div>'
+	);
+
+	dom.merge(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToNode(
+			'<div>' +
+				'1' +
+				'<span data-sce-test="2">' +
+					'234' +
+				'</span>' +
+				'5' +
+			'</div>'
+		)
+	);
+});
+
+QUnit.test('merge() - nested span merge multiple attributes', function (assert) {
+	var node = utils.htmlToNode(
+		'<div>' +
+			'1' +
+			'<span data-sce-a="1" data-sce-b="2">' +
+				'2' +
+				'<span data-sce-a="1" data-sce-b="2">3</span>' +
+				'4' +
+			'</span>' +
+			'5' +
+		'</div>'
+	);
+
+	dom.merge(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToNode(
+			'<div>' +
+				'1' +
+				'<span data-sce-a="1" data-sce-b="2">' +
+					'234' +
+				'</span>' +
+				'5' +
+			'</div>'
+		)
+	);
+});
+
+QUnit.test('merge() - nested span attribute different', function (assert) {
+	var node = utils.htmlToNode(
+		'<div>' +
+			'1' +
+			'<span data-sce-test>' +
+				'2' +
+				'<span data-sce-test="2">3</span>' +
+				'4' +
+			'</span>' +
+			'5' +
+		'</div>'
+	);
+
+	dom.merge(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToNode(
+			'<div>' +
+				'1' +
+				'<span data-sce-test>' +
+					'2' +
+					'<span data-sce-test="2">3</span>' +
+					'4' +
+				'</span>' +
+				'5' +
+			'</div>'
+		)
+	);
+});
+
+QUnit.test('merge() - nested span multiple attributes no match', function (assert) {
+	var node = utils.htmlToNode(
+		'<div>' +
+			'1' +
+			'<span data-sce-a="1" data-sce-b="1">' +
+				'2' +
+				'<span data-sce-a="1" data-sce-b="2">3</span>' +
+				'4' +
+			'</span>' +
+			'5' +
+		'</div>'
+	);
+
+	dom.merge(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToNode(
+			'<div>' +
+				'1' +
+				'<span data-sce-a="1" data-sce-b="1">' +
+					'2' +
+					'<span data-sce-a="1" data-sce-b="2">3</span>' +
+					'4' +
+				'</span>' +
+				'5' +
+			'</div>'
+		)
+	);
+});
+
+QUnit.test('merge() - nested strong can merge', function (assert) {
+	var node = utils.htmlToNode(
+		'<div>1<strong>2<strong>3</strong>4</strong>5</div>'
+	);
+
+	dom.merge(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToNode(
+			'<div>1<strong>234</strong>5</div>'
+		)
+	);
+});
+
+QUnit.test('merge() - nested strong cannot merge', function (assert) {
+	var node = utils.htmlToNode(
+		'<div>' +
+			'1' +
+			'<strong>' +
+				'<span style="font-weight: normal;">' +
+					'2<strong>3</strong>4' +
+				'</span>' +
+			'</strong>' +
+			'5' +
+		'</div>'
+	);
+
+	dom.merge(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToNode(
+			'<div>' +
+				'1' +
+				'<strong>' +
+					'<span style="font-weight: normal;">' +
+						'2<strong>3</strong>4' +
+					'</span>' +
+				'</strong>' +
+				'5' +
+			'</div>'
+		)
+	);
+});
+
+QUnit.test('merge() - siblings can merge', function (assert) {
+	var node = utils.htmlToNode(
+		'<div>' +
+			'<span style="font-weight: bold;">' +
+				'1' +
+			'</span>' +
+			'<span style="font-weight: bold;">' +
+				'2' +
+			'</span>' +
+		'</div>'
+	);
+
+	dom.merge(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToNode(
+			'<div>' +
+				'<span style="font-weight: bold;">' +
+					'12' +
+				'</span>' +
+			'</div>'
+		)
+	);
+});
+
+QUnit.test('merge() - siblings can merge mixed style', function (assert) {
+	var node = utils.htmlToNode(
+		'<div>' +
+			'<span style="font-size: 12px; font-weight: bold;">' +
+				'1' +
+			'</span>' +
+			'<span style="font-weight: bold;font-size: 12px;">' +
+				'2' +
+			'</span>' +
+		'</div>'
+	);
+
+	dom.merge(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToNode(
+			'<div>' +
+				'<span style="font-size: 12px; font-weight: bold;">' +
+					'12' +
+				'</span>' +
+			'</div>'
+		)
+	);
+});
+
+QUnit.test('merge() - siblings cannot merge', function (assert) {
+	var node = utils.htmlToNode(
+		'<div>' +
+			'<span style="font-weight: bold;">' +
+				'1' +
+			'</span>' +
+			'<span style="font-weight: 900;">' +
+				'2' +
+			'</span>' +
+		'</div>'
+	);
+
+	dom.merge(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToNode(
+			'<div>' +
+				'<span style="font-weight: bold;">' +
+					'1' +
+				'</span>' +
+				'<span style="font-weight: 900;">' +
+					'2' +
+				'</span>' +
+			'</div>'
+		)
+	);
+});
+
+QUnit.test('merge() - font tags', function (assert) {
+	var node = utils.htmlToNode(
+		'<div style="font-family: arial; color: #ffff00;">' +
+			'1' +
+			'<font face="Arial" color="#ffff00">' +
+				'2' +
+			'</font>' +
+			'3' +
+		'</div>'
+	);
+
+	dom.merge(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToNode(
+			'<div style="font-family: arial; color: #ffff00;">' +
+				'123' +
+			'</div>'
+		)
+	);
+});
+
+QUnit.test('merge() - font tags nested', function (assert) {
+	var node = utils.htmlToNode(
+		'<div style="font-family: arial; color: #ffff00;">' +
+			'1' +
+			'<font face="arial">' +
+				'2' +
+				'<font color="#ffff00">' +
+					'3' +
+				'</font>' +
+				'4' +
+			'</font>' +
+			'5' +
+		'</div>'
+	);
+
+	dom.merge(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToNode(
+			'<div style="font-family: arial; color: #ffff00;">' +
+				'12345' +
+			'</div>'
+		)
+	);
+});
+
+QUnit.test('merge() - deep with siblings', function (assert) {
+	var node = utils.htmlToNode(
+		'<div>' +
+			'<em><em><em>1</em></em></em>' +
+			'<strong>' +
+				'<em><em><em>2</em></em></em>' +
+				'<em><em><em>3</em></em></em>' +
+				'<em><em><strong>4</strong></em></em>' +
+				'<em><em><em>5</em></em></em>' +
+			'</strong>' +
+		'</div>'
+	);
+
+	dom.merge(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToNode(
+			'<div>' +
+				'<em>1</em>' +
+				'<strong>' +
+					'<em>2345</em>' +
+				'</strong>' +
+			'</div>'
+		)
+	);
+});

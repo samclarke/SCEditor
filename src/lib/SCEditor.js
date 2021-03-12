@@ -320,7 +320,7 @@ export default function SCEditor(original, userOptions) {
 		initResize,
 		initEmoticons,
 		handlePasteEvt,
-		handleCopyEvt,
+		handleCutCopyEvt,
 		handlePasteData,
 		handleKeyDown,
 		handleBackSpace,
@@ -664,7 +664,7 @@ export default function SCEditor(original, userOptions) {
 		dom.on(wysiwygBody, 'blur', valueChangedBlur);
 		dom.on(wysiwygBody, 'keyup', valueChangedKeyUp);
 		dom.on(wysiwygBody, 'paste', handlePasteEvt);
-		dom.on(wysiwygBody, 'copy', handleCopyEvt);
+		dom.on(wysiwygBody, 'cut copy', handleCutCopyEvt);
 		dom.on(wysiwygBody, compositionEvents, handleComposition);
 		dom.on(wysiwygBody, checkSelectionEvents, checkSelectionChanged);
 		dom.on(wysiwygBody, eventsToForward, handleEvent);
@@ -1476,15 +1476,44 @@ export default function SCEditor(original, userOptions) {
 	};
 
 	/**
-	 * Handles the WYSIWYG editors copy event
+	 * Handles the WYSIWYG editors cut & copy events
 	 * @private
 	 */
-	handleCopyEvt = function (e) {
+	handleCutCopyEvt = function (e) {
 		// By default browsers also copy the default styling which is
 		// unnecessary, make it only copy the actual styled HTML
-		e.clipboardData.setData('text/html', rangeHelper.selectedHtml());
-		e.clipboardData.setData('text/plain',
-			rangeHelper.selectedRange().toString());
+		var range = rangeHelper.selectedRange();
+		if (range) {
+			var container = dom.createElement('div', {}, wysiwygDocument);
+			var firstParent;
+
+			// Copy all inline parent nodes up to the first block parent so can
+			// copy inline styles
+			var parent = range.commonAncestorContainer;
+			while (parent && dom.isInline(parent)) {
+				if (parent.nodeType === dom.ELEMENT_NODE) {
+					var clone = parent.cloneNode();
+					if (container.firstChild) {
+						dom.appendChild(clone, container.firstChild);
+					}
+
+					dom.appendChild(container, clone);
+					firstParent = firstParent || clone;
+				}
+				parent = parent.parentNode;
+			}
+
+			dom.appendChild(firstParent || container, range.cloneContents());
+
+			e.clipboardData.setData('text/html', container.innerHTML);
+			e.clipboardData.setData('text/plain', range.toString());
+
+			if (e.type === 'cut') {
+				range.deleteContents();
+			}
+
+			e.preventDefault();
+		}
 	};
 
 	/**
@@ -1597,7 +1626,10 @@ export default function SCEditor(original, userOptions) {
 
 		pluginManager.call('pasteHtml', paste);
 
+		var parent = rangeHelper.getFirstBlockParent();
 		base.wysiwygEditorInsertHtml(paste.val, null, true);
+		dom.fixNesting(parent);
+		dom.merge(parent);
 	};
 
 	/**
