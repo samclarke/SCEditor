@@ -1,4 +1,4 @@
-import * as dom from './dom.js';
+﻿import * as dom from './dom.js';
 import * as utils from './utils.js';
 import defaultOptions from './defaultOptions.js';
 import defaultCommands from './defaultCommands.js';
@@ -1502,10 +1502,14 @@ export default function SCEditor(original, userOptions) {
 			e.preventDefault();
 
 			for (var i = 0; i < types.length; i++) {
-				// Normalise image pasting to paste as a data-uri
-				if (globalWin.FileReader && items &&
-					IMAGE_MIME_REGEX.test(items[i].type)) {
-					return loadImage(clipboard.items[i].getAsFile());
+				// Word sometimes adds copied text as an image so if HTML
+				// exists prefer that over images
+				if (types.indexOf('text/html') < 0) {
+					// Normalise image pasting to paste as a data-uri
+					if (globalWin.FileReader && items &&
+						IMAGE_MIME_REGEX.test(items[i].type)) {
+						return loadImage(clipboard.items[i].getAsFile());
+					}
 				}
 
 				data[types[i]] = clipboard.getData(types[i]);
