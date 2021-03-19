@@ -49,11 +49,6 @@ module.exports = (grunt) => {
 
 		// Style checking of JS code using ESLint
 		eslint: {
-			options: {
-				parserOptions: {
-					ecmaVersion: 2015
-				}
-			},
 			source: {
 				src: ['src/**/*.js']
 			},
