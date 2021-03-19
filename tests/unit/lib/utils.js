@@ -79,6 +79,14 @@ QUnit.test('extend() - Deep', function (assert) {
 	});
 });
 
+QUnit.test('extend() - __proto__ pollution', function (assert) {
+	utils.extend(true, {}, JSON.parse('{"__proto__":{"pollution":true}}'));
+	assert.notStrictEqual({}.pollution, true);
+
+	utils.extend(true, {}, JSON.parse('{"constructor":{"prototype":{"pollution":true}}}'));
+	assert.notStrictEqual({}.pollution, true);
+});
+
 QUnit.test('arrayRemove()', function (assert) {
 	var array = [1, 2, 3, 3, 4, 5];
 

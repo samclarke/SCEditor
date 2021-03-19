@@ -64,6 +64,8 @@ export function extend(targetArg, sourceArg) {
 		/* eslint guard-for-in: off */
 		for (var key in source) {
 			var value = source[key];
+			// Protect against prototype pollution
+			var isSpecialKey = key === '__proto__' || key === 'constructor';
 
 			// Skip undefined values to match jQuery and
 			// skip if target to prevent infinite loop
@@ -72,7 +74,7 @@ export function extend(targetArg, sourceArg) {
 					Object.getPrototypeOf(value) === Object.prototype;
 				var isArray = Array.isArray(value);
 
-				if (isDeep && (isObject || isArray)) {
+				if (!isSpecialKey && isDeep && (isObject || isArray)) {
 					target[key] = extend(
 						true,
 						target[key] || (isArray ? [] : {}),
