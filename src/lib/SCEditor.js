@@ -1477,11 +1477,14 @@ export default function SCEditor(original, userOptions) {
 
 	/**
 	 * Handles the WYSIWYG editors cut & copy events
+	 *
+	 * By default browsers also copy inherited styling from the stylesheet and
+	 * browser default styling which is unnecessary.
+	 *
+	 * This will ignore inherited styles and only copy inline styling.
 	 * @private
 	 */
 	handleCutCopyEvt = function (e) {
-		// By default browsers also copy the default styling which is
-		// unnecessary, make it only copy the actual styled HTML
 		var range = rangeHelper.selectedRange();
 		if (range) {
 			var container = dom.createElement('div', {}, wysiwygDocument);
