@@ -79,11 +79,8 @@
 			if (data.html || data.text) {
 				var html = document.createElement('div');
 
-				if (data.html) {
-					html.innerHTML = data.html;
-				} else {
-					html.textContent = data.text;
-				}
+				html.innerHTML = data.html ||
+					sceditor.escapeEntities(data.text);
 
 				convertYoutubeLinks(html);
 
