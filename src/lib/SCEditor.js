@@ -328,6 +328,7 @@ export default function SCEditor(original, userOptions) {
 		handleMouseDown,
 		handleComposition,
 		handleEvent,
+		positionDropdown,
 		handleDocumentClick,
 		updateToolBar,
 		updateActiveButtons,
@@ -650,6 +651,7 @@ export default function SCEditor(original, userOptions) {
 			'keyup focus blur contextmenu mouseup touchend click';
 
 		dom.on(globalDoc, 'click', handleDocumentClick);
+		dom.on(globalWin, 'resize orientationchange', positionDropdown);
 
 		if (form) {
 			dom.on(form, 'reset', handleFormReset);
@@ -1393,8 +1395,8 @@ export default function SCEditor(original, userOptions) {
 		}
 
 		dom.off(globalDoc, 'click', handleDocumentClick);
+		dom.off(globalWin, 'resize orientationchange', positionDropdown);
 
-		// TODO: make off support null nodes?
 		var form = original.form;
 		if (form) {
 			dom.off(form, 'reset', handleFormReset);
@@ -1409,6 +1411,55 @@ export default function SCEditor(original, userOptions) {
 		dom.show(original);
 
 		original.required = isRequired;
+	};
+
+	/**
+	 * Positions the dropdown in optimal position for space and sets the max
+	 * width and height so will scroll if too big.
+	 * @private
+	 */
+	positionDropdown = function () {
+		if (dropdown) {
+			var	menuItemRect = dropdown._menuItem.getBoundingClientRect(),
+				documentElement = globalDoc.documentElement,
+				dropdownHeight = dropdown._height,
+				dropdownWidth = dropdown._width,
+				spaceAbove = menuItemRect.top,
+				spaceBelow = documentElement.clientHeight - menuItemRect.bottom,
+				spaceLeft = menuItemRect.left,
+				spaceRight = documentElement.clientWidth - menuItemRect.left;
+
+			// If overflows, place above if more space or set max height if not
+			if (dropdownHeight > spaceBelow &&
+					(dropdownHeight <= spaceAbove || spaceAbove > spaceBelow)) {
+				dom.css(dropdown, {
+					top: '',
+					bottom: documentElement.clientHeight -
+						documentElement.scrollTop - menuItemRect.top,
+					maxHeight: spaceAbove
+				});
+			} else {
+				dom.css(dropdown, {
+					top: documentElement.scrollTop + menuItemRect.bottom,
+					bottom: '',
+					maxHeight: spaceBelow
+				});
+			}
+
+			if (dropdownWidth > spaceRight &&
+				(dropdownWidth <= spaceLeft || spaceLeft > spaceRight)) {
+				dom.css(dropdown, {
+					left: documentElement.scrollLeft + menuItemRect.right -
+						Math.min(spaceLeft, dropdownWidth),
+					maxWidth: spaceLeft
+				});
+			} else {
+				dom.css(dropdown, {
+					left: documentElement.scrollLeft + menuItemRect.left,
+					maxWidth: spaceRight
+				});
+			}
+		}
 	};
 
 
@@ -1426,7 +1477,9 @@ export default function SCEditor(original, userOptions) {
 	base.createDropDown = function (menuItem, name, content) {
 		// first click for create second click for close
 		var	dropDownCss,
-			dropDownClass = 'sceditor-' + name;
+			dropDownClass = 'sceditor-' + name,
+			menuItemRect = menuItem.getBoundingClientRect(),
+			documentElement = globalDoc.documentElement;
 
 		base.closeDropDown();
 
@@ -1436,9 +1489,9 @@ export default function SCEditor(original, userOptions) {
 		}
 
 		dropDownCss = utils.extend({
-			top: menuItem.offsetTop,
-			left: menuItem.offsetLeft,
-			marginTop: menuItem.clientHeight
+			overflow: 'auto',
+			top: documentElement.scrollTop + menuItemRect.bottom,
+			left: documentElement.scrollLeft + menuItemRect.left
 		}, options.dropDownCss);
 
 		dropdown = dom.createElement('div', {
@@ -1447,17 +1500,22 @@ export default function SCEditor(original, userOptions) {
 
 		dom.css(dropdown, dropDownCss);
 		dom.appendChild(dropdown, content);
-		dom.appendChild(editorContainer, dropdown);
+		dom.appendChild(globalDoc.body, dropdown);
 		dom.on(dropdown, 'click focusin', function (e) {
 			// stop clicks within the dropdown from being handled
 			e.stopPropagation();
 		});
 
-		if (dropdown) {
-			var first = dom.find(dropdown, 'input,textarea')[0];
-			if (first) {
-				first.focus();
-			}
+		dropdown._menuItem = menuItem;
+		dropdown._height = dropdown.offsetHeight;
+		dropdown._width = dropdown.offsetWidth;
+
+		// Smart position the dropdown
+		positionDropdown();
+
+		var first = dom.find(dropdown, 'input,textarea')[0];
+		if (first) {
+			first.focus();
 		}
 	};
 
