@@ -20,7 +20,7 @@ var moduleSetup = function () {
 };
 
 
-QUnit.module('plugins/xhtml', {
+QUnit.module('formats/xhtml', {
 	beforeEach: moduleSetup
 });
 
@@ -578,7 +578,7 @@ QUnit.test('Merge attributes', function (assert) {
 
 
 
-QUnit.module('plugins/xhtml - Converters', {
+QUnit.module('formats/xhtml - Converters', {
 	beforeEach: moduleSetup
 });
 

@@ -2,7 +2,7 @@ import * as utils from 'tests/unit/utils.js';
 import 'src/formats/bbcode.js';
 
 
-QUnit.module('plugins/bbcode#Parser', {
+QUnit.module('formats/bbcode#Parser', {
 	beforeEach: function () {
 		this.parser = new sceditor.BBCodeParser({});
 	}
@@ -628,7 +628,7 @@ QUnit.test('Attributes QuoteType custom', function (assert) {
 });
 
 
-QUnit.module('plugins/bbcode#Parser - To HTML', {
+QUnit.module('formats/bbcode#Parser - To HTML', {
 	beforeEach: function () {
 		this.parser = new sceditor.BBCodeParser({});
 	}
@@ -928,7 +928,7 @@ QUnit.test('YouTube', function (assert) {
 });
 
 
-QUnit.module('plugins/bbcode#Parser - XSS', {
+QUnit.module('formats/bbcode#Parser - XSS', {
 	beforeEach: function () {
 		this.parser = new sceditor.BBCodeParser({});
 	}

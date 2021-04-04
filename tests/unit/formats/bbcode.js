@@ -3,7 +3,7 @@ import * as utils from 'tests/unit/utils.js';
 import 'src/formats/bbcode.js';
 
 
-QUnit.module('plugins/bbcode', {
+QUnit.module('formats/bbcode', {
 	beforeEach: function () {
 		this.mockEditor = {
 			opts: $.extend({}, defaultOptions)
@@ -100,7 +100,7 @@ QUnit.test('HTML to BBCode trim', function (assert) {
 });
 
 
-QUnit.module('plugins/bbcode - HTML to BBCode', {
+QUnit.module('formats/bbcode - HTML to BBCode', {
 	beforeEach: function () {
 		this.mockEditor = {
 			opts: $.extend({}, defaultOptions)
