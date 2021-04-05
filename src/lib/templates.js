@@ -47,7 +47,7 @@ var _templates = {
 			' /></div>',
 
 	image:
-		'<div><label for="link">{url}</label> ' +
+		'<div><label for="image">{url}</label> ' +
 			'<input type="text" id="image" dir="ltr" placeholder="https://" /></div>' +
 		'<div><label for="width">{width}</label> ' +
 			'<input type="text" id="width" size="2" dir="ltr" /></div>' +
