@@ -779,6 +779,14 @@ export function fixNesting(node) {
 		return node;
 	};
 
+	function isEmpty(node) {
+		if (node.lastChild && isEmpty(node.lastChild)) {
+			remove(node.lastChild);
+		}
+
+		return node.nodeType === 3 ? !node.nodeValue : !node.childNodes.length;
+	}
+
 	traverse(node, function (node) {
 		var list = 'ul,ol',
 			isBlock = !isInline(node, true),
@@ -797,8 +805,13 @@ export function fixNesting(node) {
 			// it still has the same styling
 			copyCSS(parent, middle);
 
-			insertBefore(before, parent);
 			insertBefore(middle, parent);
+			if (!isEmpty(before)) {
+				insertBefore(before, middle);
+			}
+			if (isEmpty(parent)) {
+				remove(parent);
+			}
 		}
 
 		// Fix invalid nested lists which should be wrapped in an li tag

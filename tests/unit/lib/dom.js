@@ -644,7 +644,7 @@ QUnit.test('fixNesting() - With styling', function (assert) {
 
 QUnit.test('fixNesting() - Paragraph with blockquote', function (assert) {
 	var quote = document.createElement('blockquote');
-	quote.appendChild(document.createTextNode('1'));
+	quote.appendChild(document.createTextNode('2'));
 
 	var p = document.createElement('p');
 	p.appendChild(document.createTextNode('1'));
@@ -659,7 +659,37 @@ QUnit.test('fixNesting() - Paragraph with blockquote', function (assert) {
 	assert.nodesEqual(
 		root,
 		utils.htmlToDiv(
-			'<p>1</p><blockquote>1</blockquote><p>3</p>'
+			'<p>1</p><blockquote>2</blockquote><p>3</p>'
+		)
+	);
+});
+
+QUnit.test('fixNesting() - Do not create empty nodes', function (assert) {
+	var node = utils.htmlToDiv(
+		'<span><blockquote>test</blockquote></span>'
+	);
+
+	dom.fixNesting(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToDiv(
+			'<blockquote>test</blockquote>'
+		)
+	);
+});
+
+QUnit.test('fixNesting() - Do not create empty nodes when deeply nested', function (assert) {
+	var node = utils.htmlToDiv(
+		'<em><span><strong><blockquote>test</blockquote></strong></span></em>'
+	);
+
+	dom.fixNesting(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToDiv(
+			'<blockquote>test</blockquote>'
 		)
 	);
 });
