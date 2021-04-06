@@ -1701,6 +1701,10 @@ export default function SCEditor(original, userOptions) {
 		rangeHelper.saveRange();
 		replaceEmoticons();
 
+		// Fix any invalid nesting, e.g. if a quote or other block is inserted
+		// into a paragraph
+		dom.fixNesting(wysiwygBody);
+
 		// Scroll the editor after the end of the selection
 		marker   = dom.find(wysiwygBody, '#sceditor-end-marker')[0];
 		dom.show(marker);
