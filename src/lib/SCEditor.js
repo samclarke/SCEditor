@@ -644,7 +644,8 @@ export default function SCEditor(original, userOptions) {
 	initEvents = function () {
 		var form = original.form;
 		var compositionEvents = 'compositionstart compositionend';
-		var eventsToForward = 'keydown keyup keypress focus blur contextmenu';
+		var eventsToForward =
+			'keydown keyup keypress focus blur contextmenu input';
 		var checkSelectionEvents = 'onselectionchange' in wysiwygDocument ?
 			'selectionchange' :
 			'keyup focus blur contextmenu mouseup touchend click';
@@ -2577,6 +2578,7 @@ export default function SCEditor(original, userOptions) {
 	 * * Keypress
 	 * * blur
 	 * * focus
+	 * * input
 	 * * nodechanged - When the current node containing
 	 * 		the selection changes in WYSIWYG mode
 	 * * contextmenu
