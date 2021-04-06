@@ -642,6 +642,28 @@ QUnit.test('fixNesting() - With styling', function (assert) {
 	);
 });
 
+QUnit.test('fixNesting() - Paragraph with blockquote', function (assert) {
+	var quote = document.createElement('blockquote');
+	quote.appendChild(document.createTextNode('1'));
+
+	var p = document.createElement('p');
+	p.appendChild(document.createTextNode('1'));
+	p.appendChild(quote);
+	p.appendChild(document.createTextNode('3'));
+
+	var root = document.createElement('div');
+	root.appendChild(p);
+
+	dom.fixNesting(root);
+
+	assert.nodesEqual(
+		root,
+		utils.htmlToDiv(
+			'<p>1</p><blockquote>1</blockquote><p>3</p>'
+		)
+	);
+});
+
 QUnit.test('fixNesting() - Deeply nested', function (assert) {
 	var node = utils.htmlToDiv(
 		'<span>' +

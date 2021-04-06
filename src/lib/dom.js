@@ -757,7 +757,7 @@ export function isInline(elm, includeCodeAsBlock) {
  * @param {HTMLElement} to
  */
 export function copyCSS(from, to) {
-	if (to.style && from.style) {
+	if (to.style && from.style && from.style.cssText) {
 		to.style.cssText = from.style.cssText + to.style.cssText;
 	}
 }
@@ -781,13 +781,17 @@ export function fixNesting(node) {
 
 	traverse(node, function (node) {
 		var list = 'ul,ol',
-			isBlock = !isInline(node, true);
+			isBlock = !isInline(node, true),
+			isParentInline = isInline(node.parentNode, true);
 
 		// Any blocklevel element inside an inline element needs fixing.
-		if (isBlock && isInline(node.parentNode, true)) {
-			var	parent = getLastInlineParent(node),
-				before = extractContents(parent, node),
-				middle = node;
+		// Also fix <p> tags that contain blocks
+		if (isBlock && (isParentInline || node.parentNode.tagName === 'P')) {
+			var	parent = getLastInlineParent(
+				isParentInline ? node : node.parentNode
+			);
+			var before = extractContents(parent, node);
+			var middle = node;
 
 			// copy current styling so when moved out of the parent
 			// it still has the same styling
