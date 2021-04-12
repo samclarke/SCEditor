@@ -755,9 +755,10 @@ export function isInline(elm, includeCodeAsBlock) {
  *
  * @param {HTMLElement} from
  * @param {HTMLElement} to
+ * @deprecated since v3.1.0
  */
 export function copyCSS(from, to) {
-	if (to.style && from.style && from.style.cssText) {
+	if (to.style && from.style) {
 		to.style.cssText = from.style.cssText + to.style.cssText;
 	}
 }
@@ -771,14 +772,6 @@ export function copyCSS(from, to) {
  * @param {HTMLElement} node
  */
 export function fixNesting(node) {
-	var	getLastInlineParent = function (node) {
-		while (isInline(node.parentNode, true)) {
-			node = node.parentNode;
-		}
-
-		return node;
-	};
-
 	function isEmpty(node) {
 		if (node.lastChild && isEmpty(node.lastChild)) {
 			remove(node.lastChild);
@@ -789,28 +782,41 @@ export function fixNesting(node) {
 
 	traverse(node, function (node) {
 		var list = 'ul,ol',
-			isBlock = !isInline(node, true),
-			isParentInline = isInline(node.parentNode, true);
+			isBlock = !isInline(node, true) && node.nodeType !== COMMENT_NODE,
+			parent = node.parentNode;
 
 		// Any blocklevel element inside an inline element needs fixing.
-		// Also fix <p> tags that contain blocks
-		if (isBlock && (isParentInline || node.parentNode.tagName === 'P')) {
-			var	parent = getLastInlineParent(
-				isParentInline ? node : node.parentNode
-			);
-			var before = extractContents(parent, node);
+		// Also <p> tags that contain blocks should be fixed
+		if (isBlock && (isInline(parent, true) || parent.tagName === 'P')) {
+			// Find the last inline parent node
+			var	lastInlineParent = node;
+			while (isInline(lastInlineParent.parentNode, true) ||
+				lastInlineParent.parentNode.tagName === 'P') {
+				lastInlineParent = lastInlineParent.parentNode;
+			}
+
+			var before = extractContents(lastInlineParent, node);
 			var middle = node;
 
-			// copy current styling so when moved out of the parent
-			// it still has the same styling
-			copyCSS(parent, middle);
+			// Clone inline styling and apply it to the blocks children
+			while (parent && isInline(parent, true)) {
+				if (parent.nodeType === ELEMENT_NODE) {
+					var clone = parent.cloneNode();
+					while (middle.firstChild) {
+						appendChild(clone, middle.firstChild);
+					}
 
-			insertBefore(middle, parent);
+					appendChild(middle, clone);
+				}
+				parent = parent.parentNode;
+			}
+
+			insertBefore(middle, lastInlineParent);
 			if (!isEmpty(before)) {
 				insertBefore(before, middle);
 			}
-			if (isEmpty(parent)) {
-				remove(parent);
+			if (isEmpty(lastInlineParent)) {
+				remove(lastInlineParent);
 			}
 		}
 
