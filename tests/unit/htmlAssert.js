@@ -21,7 +21,8 @@ var normalize = function (parentNode) {
 };
 
 var compareNodes = function (nodeA, nodeB) {
-	if (nodeA.nodeName.toLowerCase() !== nodeB.nodeName.toLowerCase() ||
+	if (nodeA.nodeName && nodeB.nodeName &&
+		nodeA.nodeName.toLowerCase() !== nodeB.nodeName.toLowerCase() ||
 		nodeA.nodeValue !== nodeB.nodeValue ||
 		nodeA.nodeType  !== nodeB.nodeType ||
 		nodeA.className !== nodeB.className) {

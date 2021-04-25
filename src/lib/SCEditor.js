@@ -320,6 +320,7 @@ export default function SCEditor(original, userOptions) {
 		initResize,
 		initEmoticons,
 		handlePasteEvt,
+		handleCutCopyEvt,
 		handlePasteData,
 		handleKeyDown,
 		handleBackSpace,
@@ -664,6 +665,7 @@ export default function SCEditor(original, userOptions) {
 		dom.on(wysiwygBody, 'blur', valueChangedBlur);
 		dom.on(wysiwygBody, 'keyup', valueChangedKeyUp);
 		dom.on(wysiwygBody, 'paste', handlePasteEvt);
+		dom.on(wysiwygBody, 'cut copy', handleCutCopyEvt);
 		dom.on(wysiwygBody, compositionEvents, handleComposition);
 		dom.on(wysiwygBody, checkSelectionEvents, checkSelectionChanged);
 		dom.on(wysiwygBody, eventsToForward, handleEvent);
@@ -1476,6 +1478,50 @@ export default function SCEditor(original, userOptions) {
 	};
 
 	/**
+	 * Handles the WYSIWYG editors cut & copy events
+	 *
+	 * By default browsers also copy inherited styling from the stylesheet and
+	 * browser default styling which is unnecessary.
+	 *
+	 * This will ignore inherited styles and only copy inline styling.
+	 * @private
+	 */
+	handleCutCopyEvt = function (e) {
+		var range = rangeHelper.selectedRange();
+		if (range) {
+			var container = dom.createElement('div', {}, wysiwygDocument);
+			var firstParent;
+
+			// Copy all inline parent nodes up to the first block parent so can
+			// copy inline styles
+			var parent = range.commonAncestorContainer;
+			while (parent && dom.isInline(parent, true)) {
+				if (parent.nodeType === dom.ELEMENT_NODE) {
+					var clone = parent.cloneNode();
+					if (container.firstChild) {
+						dom.appendChild(clone, container.firstChild);
+					}
+
+					dom.appendChild(container, clone);
+					firstParent = firstParent || clone;
+				}
+				parent = parent.parentNode;
+			}
+
+			dom.appendChild(firstParent || container, range.cloneContents());
+
+			e.clipboardData.setData('text/html', container.innerHTML);
+			e.clipboardData.setData('text/plain', range.toString());
+
+			if (e.type === 'cut') {
+				range.deleteContents();
+			}
+
+			e.preventDefault();
+		}
+	};
+
+	/**
 	 * Handles the WYSIWYG editors paste event
 	 * @private
 	 */
@@ -1589,7 +1635,10 @@ export default function SCEditor(original, userOptions) {
 
 		pluginManager.call('pasteHtml', paste);
 
+		var parent = rangeHelper.getFirstBlockParent();
 		base.wysiwygEditorInsertHtml(paste.val, null, true);
+		dom.fixNesting(parent);
+		dom.merge(parent);
 	};
 
 	/**
