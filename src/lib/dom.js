@@ -777,7 +777,8 @@ export function fixNesting(node) {
 			remove(node.lastChild);
 		}
 
-		return node.nodeType === 3 ? !node.nodeValue : !node.childNodes.length;
+		return node.nodeType === 3 ? !node.nodeValue :
+			(canHaveChildren(node) && !node.childNodes.length);
 	}
 
 	traverse(node, function (node) {

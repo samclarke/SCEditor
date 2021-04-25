@@ -680,6 +680,20 @@ QUnit.test('fixNesting() - Do not create empty nodes', function (assert) {
 		)
 	);
 });
+QUnit.test('fixNesting() - Create nodes with a child that cannot have children', function (assert) {
+	var node = utils.htmlToDiv(
+		'<span><blockquote>test</blockquote><br></span>'
+	);
+
+	dom.fixNesting(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToDiv(
+			'<blockquote><span>test</span></blockquote><span><br /></span>'
+		)
+	);
+});
 
 QUnit.test('fixNesting() - Do not create empty nodes when deeply nested', function (assert) {
 	var node = utils.htmlToDiv(
