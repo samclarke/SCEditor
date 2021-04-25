@@ -1493,7 +1493,7 @@ export default function SCEditor(original, userOptions) {
 			// Copy all inline parent nodes up to the first block parent so can
 			// copy inline styles
 			var parent = range.commonAncestorContainer;
-			while (parent && dom.isInline(parent)) {
+			while (parent && dom.isInline(parent, true)) {
 				if (parent.nodeType === dom.ELEMENT_NODE) {
 					var clone = parent.cloneNode();
 					if (container.firstChild) {
