@@ -788,6 +788,47 @@ QUnit.test('fixNesting() - With comments', function (assert) {
 	);
 });
 
+QUnit.test('fixNesting() - <details> block', function (assert) {
+	var node = utils.htmlToDiv(
+		'<details>' +
+			'<summary>test</summary>' +
+			'<div>test</div>' +
+		'</details>'
+	);
+
+	dom.fixNesting(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToDiv(
+			'<details>' +
+				'<summary>test</summary>' +
+				'<div>test</div>' +
+			'</details>'
+		)
+	);
+});
+
+QUnit.test('fixNesting() - <section/article/aside> block', function (assert) {
+	var node = utils.htmlToDiv(
+		'<section><article><aside>' +
+			'<div>test</div>' +
+		'</aside></section></section>'
+	);
+
+	dom.fixNesting(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToDiv(
+			'<section><article><aside>' +
+				'<div>test</div>' +
+			'</aside></section></section>'
+		)
+	);
+});
+
+
 QUnit.test('removeWhiteSpace() - Preserve line breaks', function (assert) {
 	var node = utils.htmlToDiv(
 		'<div style="white-space: pre-line">    ' +

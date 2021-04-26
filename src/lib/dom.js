@@ -699,7 +699,9 @@ export function convertElement(element, toTagName) {
  * @type {string}
  */
 export var blockLevelList = '|body|hr|p|div|h1|h2|h3|h4|h5|h6|address|pre|' +
-	'form|table|tbody|thead|tfoot|th|tr|td|li|ol|ul|blockquote|center|';
+	'form|table|tbody|thead|tfoot|th|tr|td|li|ol|ul|blockquote|center|' +
+	'details|section|article|aside|nav|main|header|hgroup|footer|fieldset|' +
+	'dl|dt|dd|figure|figcaption|';
 
 /**
  * List of elements that do not allow children separated by bars (|)
