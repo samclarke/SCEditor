@@ -21,6 +21,7 @@
 	sceditor.plugins.autosave = function () {
 		var base = this;
 		var editor;
+		var isLoading = false;
 		var storageKey = defaultKey;
 		// 86400000 = 24 hrs (24 * 60 * 60 * 1000)
 		var expires = 86400000;
@@ -72,6 +73,7 @@
 
 			var state = loadHandler();
 			if (state) {
+				isLoading = true;
 				editor.sourceMode(state.sourceMode);
 				editor.val(state.value, false);
 				editor.focus();
@@ -81,23 +83,26 @@
 				} else {
 					editor.getRangeHelper().restoreRange();
 				}
+				isLoading = false;
+			} else {
+				saveHandler({
+					caret: this.sourceEditorCaret(),
+					sourceMode: this.sourceMode(),
+					value: editor.val(null, false),
+					time: Date.now()
+				});
 			}
-
-			saveHandler({
-				caret: this.sourceEditorCaret(),
-				sourceMode: this.sourceMode(),
-				value: editor.val(null, false),
-				time: Date.now()
-			});
 		};
 
 		base.signalValuechangedEvent = function (e) {
-			saveHandler({
-				caret: this.sourceEditorCaret(),
-				sourceMode: this.sourceMode(),
-				value: e.detail.rawValue,
-				time: Date.now()
-			});
+			if (!isLoading) {
+				saveHandler({
+					caret: this.sourceEditorCaret(),
+					sourceMode: this.sourceMode(),
+					value: e.detail.rawValue,
+					time: Date.now()
+				});
+			}
 		};
 	};
 
