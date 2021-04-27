@@ -649,33 +649,6 @@ QUnit.test('Image', function (assert) {
 	);
 });
 
-// QUnit.test('Image dimensions when loaded', function (assert) {
-// 	var done = assert.async();
-// 	var plugin = this.format;
-// 	var div = utils.htmlToDiv(
-// 		'<img src="http://www.sceditor.com/emoticons/smile.png" ' +
-// 			'width="200" />'
-// 	);
-
-// 	var checkLoaded = function () {
-// 		if (!div.firstChild.complete || div.firstChild.naturalWidth === 0) {
-// 			setTimeout(checkLoaded, 100);
-// 			return;
-// 		}
-
-// 		assert.equal(
-// 			plugin.toSource(
-// 				'<img src="http://www.sceditor.com/emoticons/smile.png" ' +
-// 				'width="200" />', document),
-// 			'[img=200x200]http://www.sceditor.com/emoticons/smile.png[/img]'
-// 		);
-
-// 		done();
-// 	};
-
-// 	checkLoaded();
-// });
-
 
 QUnit.test('URL', function (assert) {
 	assert.equal(
@@ -836,7 +809,13 @@ QUnit.test('Justify', function (assert) {
 
 QUnit.test('YouTube', function (assert) {
 	assert.equal(
-		this.htmlToBBCode('<iframe data-youtube-id="xyz"></iframe>'),
-		'[youtube]xyz[/youtube]'
+		this.mockEditor.fromBBCode('[youtube]xyz[/youtube]'),
+		'<div data-youtube-id="xyz"><iframe frameborder="0" src="https://www.youtube-nocookie.com/embed/xyz?wmode=opaque" allowfullscreen></iframe></div>',
+		'fromBBCode'
+	);
+	assert.equal(
+		this.mockEditor.toBBCode('<div data-youtube-id="xyz"><iframe frameborder="0" src="https://www.youtube-nocookie.com/embed/xyz?wmode=opaque"allowfullscreen></iframe></div>'),
+		'[youtube]xyz[/youtube]\n',
+		'toBBCode'
 	);
 });

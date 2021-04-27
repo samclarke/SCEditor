@@ -30,11 +30,15 @@ export var isFunction = isTypeof.bind(null, 'function');
  */
 export var isNumber = isTypeof.bind(null, 'number');
 
+/**
+ * @type {function(*): boolean}
+ */
+export var isDigit = x => /^\d+$/.test(x);
 
 /**
  * Returns true if an object has no keys
  *
- * @param {!Object} obj
+ * @param {!object} obj
  * @returns {boolean}
  */
 export function isEmptyObject(obj) {
@@ -47,9 +51,10 @@ export function isEmptyObject(obj) {
  * If the first argument is boolean and set to true
  * it will extend child arrays and objects recursively.
  *
- * @param {!Object|boolean} targetArg
- * @param {...Object} source
- * @return {Object}
+ * @param {!object | boolean} targetArg
+ * @param {...object} source
+ * @param sourceArg
+ * @returns {object}
  */
 export function extend(targetArg, sourceArg) {
 	var isTargetBoolean = targetArg === !!targetArg;
@@ -107,7 +112,7 @@ export function arrayRemove(arr, item) {
 /**
  * Iterates over an array or object
  *
- * @param {!Object|Array} obj
+ * @param {!object | Array} obj
  * @param {function(*, *)} fn
  */
 export function each(obj, fn) {
@@ -121,3 +126,76 @@ export function each(obj, fn) {
 		});
 	}
 }
+/**
+ * Replaces any {0}, {1}, {2}, ect. with the params provided.
+ *
+ * @param {string} format
+ * @param {...string} args
+ * @returns {string}
+ * @function
+ */
+export var format = (format, ...args) => format.replace(
+	/\{(\d+)\}/g,
+	(match, number) => args[number] || match
+);
+
+/**
+ * Formats a string replacing {name} with the values of
+ * vars.name properties.
+ *
+ * If there is no property for the specified {name} then
+ * it will be left intact.
+ *
+ * @param  {string} format
+ * @param  {object} vars
+ * @returns {string}
+ * @function
+ */
+export var replaceVars = (format, vars) => format.replace(
+	/{\s*?([a-zA-Z0-9\-_\.]+)\s*?}/g,
+	(match, name) => vars[name] || match
+);
+
+/**
+ * Converts a number 0-255 to hex.
+ *
+ * Will return 0 if number is not a valid number.
+ *
+ * @param  {any} d
+ * @returns {string}
+ * @function
+ */
+//eslint-disable-next-line no-bitwise
+export var toHex = d => (d >>> 0).toString(16);
+
+/**
+ * Normalises a CSS colour to hex #xxxxxx format
+ *
+ * @param  {string} x
+ * @returns {string}
+ * @private
+ */
+export var normaliseColour = x => x.replace(
+	/^#[0-f]{3}$/i,
+	(match) =>  '#' +
+			match.charAt(1).repeat(2) +
+			match.charAt(2).repeat(2) +
+			match.charAt(3).repeat(2)
+).replace(
+	/rgb\((\d{1,3}),\s*?(\d{1,3}),\s*?(\d{1,3})\)/i,
+	//eslint-disable-next-line no-bitwise
+	(match, r, g, b) => '#' + (r << 16 | g << 8 | b)
+		.toString(16)
+		.padStart(6, '0')
+);
+
+/**
+ * Removes any leading or trailing quotes ('")
+ *
+ * @param str
+ * @returns string
+ */
+export var stripQuotes = str => str
+	.replace(/\\(.)/g, '$1')
+	.replace(/^(["'])(.*?)\1$/, '$2');
+
