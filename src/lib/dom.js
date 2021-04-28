@@ -764,6 +764,21 @@ export function copyCSS(from, to) {
 }
 
 /**
+ * Checks if a DOM node is empty
+ *
+ * @param {Node} node
+ * @returns {boolean}
+ */
+export function isEmpty(node) {
+	if (node.lastChild && isEmpty(node.lastChild)) {
+		remove(node.lastChild);
+	}
+
+	return node.nodeType === 3 ? !node.nodeValue :
+		(canHaveChildren(node) && !node.childNodes.length);
+}
+
+/**
  * Fixes block level elements inside in inline elements.
  *
  * Also fixes invalid list nesting by placing nested lists
@@ -772,15 +787,6 @@ export function copyCSS(from, to) {
  * @param {HTMLElement} node
  */
 export function fixNesting(node) {
-	function isEmpty(node) {
-		if (node.lastChild && isEmpty(node.lastChild)) {
-			remove(node.lastChild);
-		}
-
-		return node.nodeType === 3 ? !node.nodeValue :
-			(canHaveChildren(node) && !node.childNodes.length);
-	}
-
 	traverse(node, function (node) {
 		var list = 'ul,ol',
 			isBlock = !isInline(node, true) && node.nodeType !== COMMENT_NODE,
