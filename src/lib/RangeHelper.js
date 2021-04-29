@@ -217,12 +217,6 @@ export default function RangeHelper(win, d, sanitize) {
 		}
 
 		if (range.startContainer !== range.endContainer) {
-			// emptyNodes = Array.from(parent.childNodes).filter(dom.isEmpty);
-			// for (var i = 0; i < parent.childNodes.length; i++) {
-			// 	if (dom.isEmpty(parent.childNodes[i])) {
-			// 		emptyNodes.push(parent.childNodes[i]);
-			// 	}
-			// }
 			utils.each(parent.childNodes, function (_, node) {
 				if (dom.isEmpty(node)) {
 					emptyNodes.push(node);
