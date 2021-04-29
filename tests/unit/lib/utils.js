@@ -87,6 +87,28 @@ QUnit.test('extend() - __proto__ pollution', function (assert) {
 	assert.notStrictEqual({}.pollution, true);
 });
 
+QUnit.test('extend() - deep string', function (assert) {
+	var a = { a: {foo: 'bar' } };
+	var b = { a: {foo: { 'bar': 'baz' } } };
+
+	assert.deepEqual(utils.extend(true, {}, a, b), { a: {foo: { 'bar': 'baz' } } });
+});
+
+QUnit.test('extend() - deep number', function (assert) {
+	var a = { a: {foo: 123 } };
+	var b = { a: {foo: { 'bar': 'baz' } } };
+
+	assert.deepEqual(utils.extend(true, {}, a, b), { a: {foo: { 'bar': 'baz' } } });
+});
+
+QUnit.test('extend() - deep false', function (assert) {
+	var a = { a: {foo: false } };
+	var b = { a: {foo: { 'bar': 'baz' } } };
+
+	assert.deepEqual(utils.extend(true, {}, a, b), { a: {foo: { 'bar': 'baz' } } });
+});
+
+
 QUnit.test('arrayRemove()', function (assert) {
 	var array = [1, 2, 3, 3, 4, 5];
 

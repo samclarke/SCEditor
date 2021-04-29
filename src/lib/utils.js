@@ -57,27 +57,37 @@ export function extend(targetArg, sourceArg) {
 	var target = isTargetBoolean ? sourceArg : targetArg;
 	var isDeep = isTargetBoolean ? targetArg : false;
 
+	function isObject(value) {
+		return value !== null && typeof value === 'object' &&
+			Object.getPrototypeOf(value) === Object.prototype;
+	}
+
 	for (; i < arguments.length; i++) {
 		var source = arguments[i];
 
 		// Copy all properties for jQuery compatibility
 		/* eslint guard-for-in: off */
 		for (var key in source) {
+			var targetValue = target[key];
 			var value = source[key];
 			// Protect against prototype pollution
 			var isSpecialKey = key === '__proto__' || key === 'constructor';
 
-			// Skip undefined values to match jQuery and
-			// skip if target to prevent infinite loop
-			if (!isUndefined(value)) {
-				var isObject = value !== null && typeof value === 'object' &&
-					Object.getPrototypeOf(value) === Object.prototype;
-				var isArray = Array.isArray(value);
+			// Skip undefined values to match jQuery
+			// Skip special keys to prevent prototype pollution
+			if (!isUndefined(value) && !isSpecialKey) {
+				var isValueObject = isObject(value);
+				var isValueArray = Array.isArray(value);
 
-				if (!isSpecialKey && isDeep && (isObject || isArray)) {
+				if (isDeep && (isValueObject || isValueArray)) {
+					// Can only merge if target type matches otherwise create
+					// new target to merge into
+					var isSameType = isObject(targetValue) === isValueObject &&
+						Array.isArray(targetValue) === isValueArray;
+
 					target[key] = extend(
 						true,
-						target[key] || (isArray ? [] : {}),
+						isSameType ? targetValue : (isValueArray ? [] : {}),
 						value
 					);
 				} else {
