@@ -779,7 +779,7 @@
 			var ret = {};
 
 			if (filtersA) {
-				extend(ret, filtersA);
+				ret = extend({}, ret, filtersA);
 			}
 
 			if (!filtersB) {

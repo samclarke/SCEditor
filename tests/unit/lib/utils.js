@@ -11,7 +11,52 @@ QUnit.test('isEmptyObject()', function (assert) {
 	assert.notOk(utils.isEmptyObject([1]));
 });
 
-QUnit.test('extend()', function (assert) {
+QUnit.test('extend() - merge', function (assert) {
+	var a = { a: 'foo' };
+	var b = { b: 'bar' };
+
+	assert.deepEqual(utils.extend(a, b), { a: 'foo', b: 'bar' });
+});
+
+QUnit.test('extend() - replace', function (assert) {
+	var a = { a: 'foo' };
+	var b = { a: 'bar' };
+
+	assert.deepEqual(utils.extend(a, b), { a: 'bar' });
+});
+
+QUnit.test('extend() - null', function (assert) {
+	var a = { a: null };
+	var b = { b: null, c: null };
+
+	assert.deepEqual(utils.extend(a, a), { a: null });
+	assert.deepEqual(utils.extend(a, b), { a: null, b: null, c: null });
+	assert.deepEqual(utils.extend(b, a), { a: null, b: null, c: null });
+});
+
+QUnit.test('extend() - is immutable', function (assert) {
+	var record = {};
+
+	utils.extend({}, record, { foo: 'bar' });
+	assert.equal(record.foo, undefined);
+});
+
+QUnit.test('extend() - is mutable', function (assert) {
+	var record = {};
+
+	utils.extend(record, { foo: 'bar' });
+	assert.equal(record.foo, 'bar');
+});
+
+QUnit.test('extend() - null as argument', function (assert) {
+	var a = { foo: 'bar' };
+	var b = null;
+	var c = void 0;
+
+	assert.deepEqual(utils.extend({}, b, a, c), { foo: 'bar' });
+});
+
+QUnit.test('extend() - mixed types', function (assert) {
 	var target = {};
 	var child = {};
 	var childOverriden = {};
@@ -42,7 +87,7 @@ QUnit.test('extend()', function (assert) {
 	});
 });
 
-QUnit.test('extend() - Deep', function (assert) {
+QUnit.test('extend() - deep with mixed types', function (assert) {
 	var target = {};
 	var child = {};
 
@@ -79,7 +124,14 @@ QUnit.test('extend() - Deep', function (assert) {
 	});
 });
 
-QUnit.test('extend() - __proto__ pollution', function (assert) {
+QUnit.test('extend() - prototype pollution', function (assert) {
+	var a = {};
+	var maliciousPayload = '{"__proto__":{"oops":"It works!"}}';
+
+	assert.strictEqual(a.oops, undefined);
+	utils.extend({}, maliciousPayload);
+	assert.strictEqual(a.oops, undefined);
+
 	utils.extend(true, {}, JSON.parse('{"__proto__":{"pollution":true}}'));
 	assert.notStrictEqual({}.pollution, true);
 
