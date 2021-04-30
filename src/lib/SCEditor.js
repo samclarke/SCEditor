@@ -474,7 +474,7 @@ export default function SCEditor(original, userOptions) {
 			dom.off(globalWin, 'load', loaded);
 
 			if (options.autofocus) {
-				autofocus();
+				autofocus(!!options.autofocusEnd);
 			}
 
 			autoExpand();
@@ -970,10 +970,9 @@ export default function SCEditor(original, userOptions) {
 	 * Autofocus the editor
 	 * @private
 	 */
-	autofocus = function () {
+	autofocus = function (focusEnd) {
 		var	range, txtPos,
-			node     = wysiwygBody.firstChild,
-			focusEnd = !!options.autofocusEnd;
+			node = wysiwygBody.firstChild;
 
 		// Can't focus invisible elements
 		if (!dom.isVisible(editorContainer)) {
@@ -2200,6 +2199,7 @@ export default function SCEditor(original, userOptions) {
 			rangeHelper.clear();
 		}
 
+		currentSelection = null;
 		base.blur();
 
 		if (isInSourceMode) {
@@ -2792,7 +2792,7 @@ export default function SCEditor(original, userOptions) {
 			// Fix FF bug where it shows the cursor in the wrong place
 			// if the editor hasn't had focus before. See issue #393
 			if (!currentSelection) {
-				autofocus();
+				autofocus(true);
 			}
 
 			// Check if cursor is set after a BR when the BR is the only
