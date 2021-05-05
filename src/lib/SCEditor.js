@@ -1,4 +1,4 @@
-﻿import * as dom from './dom.js';
+import * as dom from './dom.js';
 import * as utils from './utils.js';
 import defaultOptions from './defaultOptions.js';
 import defaultCommands from './defaultCommands.js';
@@ -709,10 +709,11 @@ export default function SCEditor(original, userOptions) {
 	 * @private
 	 */
 	initToolBar = function () {
-		var	group,
+		var
+			group,
 			commands = base.commands,
 			exclude  = (options.toolbarExclude || '').split(','),
-			groups   = options.toolbar.split('|');
+			rows     = options.toolbar.split('||');
 
 		toolbar = dom.createElement('div', {
 			className: 'sceditor-toolbar',
@@ -723,84 +724,96 @@ export default function SCEditor(original, userOptions) {
 			icons = new SCEditor.icons[options.icons]();
 		}
 
-		utils.each(groups, function (_, menuItems) {
-			group = dom.createElement('div', {
-				className: 'sceditor-group'
+		utils.each(rows, function (_, rowItems) {
+			var row = dom.createElement('div', {
+				className: 'sceditor-row'
 			});
 
-			utils.each(menuItems.split(','), function (_, commandName) {
-				var	button, shortcut,
-					command  = commands[commandName];
-
-				// The commandName must be a valid command and not excluded
-				if (!command || exclude.indexOf(commandName) > -1) {
-					return;
-				}
-
-				shortcut = command.shortcut;
-				button   = _tmpl('toolbarButton', {
-					name: commandName,
-					dispName: base._(command.name ||
-							command.tooltip || commandName)
-				}, true).firstChild;
-
-				if (icons && icons.create) {
-					var icon = icons.create(commandName);
-					if (icon) {
-						dom.insertBefore(icons.create(commandName),
-							button.firstChild);
-						dom.addClass(button, 'has-icon');
-					}
-				}
-
-				button._sceTxtMode = !!command.txtExec;
-				button._sceWysiwygMode = !!command.exec;
-				dom.toggleClass(button, 'disabled', !command.exec);
-				dom.on(button, 'click', function (e) {
-					if (!dom.hasClass(button, 'disabled')) {
-						handleCommand(button, command);
-					}
-
-					updateActiveButtons();
-					e.preventDefault();
-				});
-				// Prevent editor losing focus when button clicked
-				dom.on(button, 'mousedown', function (e) {
-					base.closeDropDown();
-					e.preventDefault();
+			utils.each(rowItems.split('|'), function (_, menuItems) {
+				group = dom.createElement('div', {
+					className: 'sceditor-group'
 				});
 
-				if (command.tooltip) {
-					dom.attr(button, 'title',
-						base._(command.tooltip) +
-							(shortcut ? ' (' + shortcut + ')' : '')
-					);
-				}
+				utils.each(menuItems.split(','), function (_, commandName) {
+					var
+						button, shortcut,
+						command  = commands[commandName];
 
-				if (shortcut) {
-					base.addShortcut(shortcut, commandName);
-				}
+					// The commandName must be a valid command and not excluded
+					if (!command || exclude.indexOf(commandName) > -1) {
+						return;
+					}
 
-				if (command.state) {
-					btnStateHandlers.push({
+					shortcut = command.shortcut;
+					button   = _tmpl('toolbarButton', {
 						name: commandName,
-						state: command.state
-					});
-				// exec string commands can be passed to queryCommandState
-				} else if (utils.isString(command.exec)) {
-					btnStateHandlers.push({
-						name: commandName,
-						state: command.exec
-					});
-				}
+						dispName: base._(command.name ||
+								command.tooltip || commandName)
+					}, true).firstChild;
 
-				dom.appendChild(group, button);
-				toolbarButtons[commandName] = button;
+					if (icons && icons.create) {
+						var icon = icons.create(commandName);
+						if (icon) {
+							dom.insertBefore(icons.create(commandName),
+								button.firstChild);
+							dom.addClass(button, 'has-icon');
+						}
+					}
+
+					button._sceTxtMode = !!command.txtExec;
+					button._sceWysiwygMode = !!command.exec;
+					dom.toggleClass(button, 'disabled', !command.exec);
+					dom.on(button, 'click', function (e) {
+						if (!dom.hasClass(button, 'disabled')) {
+							handleCommand(button, command);
+						}
+
+						updateActiveButtons();
+						e.preventDefault();
+					});
+					// Prevent editor losing focus when button clicked
+					dom.on(button, 'mousedown', function (e) {
+						base.closeDropDown();
+						e.preventDefault();
+					});
+
+					if (command.tooltip) {
+						dom.attr(button, 'title',
+							base._(command.tooltip) +
+								(shortcut ? ' (' + shortcut + ')' : '')
+						);
+					}
+
+					if (shortcut) {
+						base.addShortcut(shortcut, commandName);
+					}
+
+					if (command.state) {
+						btnStateHandlers.push({
+							name: commandName,
+							state: command.state
+						});
+					// exec string commands can be passed to queryCommandState
+					} else if (utils.isString(command.exec)) {
+						btnStateHandlers.push({
+							name: commandName,
+							state: command.exec
+						});
+					}
+
+					dom.appendChild(group, button);
+					toolbarButtons[commandName] = button;
+				});
+
+				// Exclude empty groups
+				if (group.firstChild) {
+					dom.appendChild(row, group);
+				}
 			});
 
-			// Exclude empty groups
-			if (group.firstChild) {
-				dom.appendChild(toolbar, group);
+			// Exclude empty rows
+			if (row.firstChild) {
+				dom.appendChild(toolbar, row);
 			}
 		});
 

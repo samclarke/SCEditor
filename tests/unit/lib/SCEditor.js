@@ -503,6 +503,35 @@ QUnit.test('emoticons() - Longest first', function (assert) {
 	assert.equal($body.find('img[data-sceditor-emoticon=":("]').length, 1);
 });
 
+QUnit.test('toolbar', function (assert) {
+	reloadEditor({
+		toolbar: 'bold,,italic,underline|scribble,strike||subscript,superscript'
+	});
+	var $container = $fixture.children('.sceditor-container');
+	assert.equal($container.find('.sceditor-row').length, 2);
+	assert.equal($container.find('.sceditor-group').length, 3);
+	assert.equal($container.find('.sceditor-toolbar a').length, 6);
+});
+
+QUnit.test('toolbarExclude', function (assert) {
+	reloadEditor({
+		toolbar: 'bold,italic',
+		toolbarExclude: 'italic'
+	});
+	var $container = $fixture.children('.sceditor-container');
+	assert.equal($container.find('.sceditor-toolbar a').length, 1);
+});
+
+QUnit.test('toolbarContainer', function (assert) {
+	reloadEditor({
+		toolbar: 'bold,italic',
+		toolbarContainer: $fixture.get(0)
+	});
+	var $container = $fixture.children('.sceditor-container');
+	assert.equal($container.find('.sceditor-toolbar').length, 0);
+	assert.equal($fixture.find('.sceditor-toolbar').length, 1);
+});
+
 QUnit.test('Insert image XSS', function (assert) {
 	var done = assert.async();
 
