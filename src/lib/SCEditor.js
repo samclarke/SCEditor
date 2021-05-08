@@ -1313,7 +1313,6 @@ export default function SCEditor(original, userOptions) {
 		}
 
 		autoExpand();
-		base.focus();
 
 		return base;
 	};
@@ -2216,7 +2215,6 @@ export default function SCEditor(original, userOptions) {
 
 		updateToolBar();
 		updateActiveButtons();
-		base.focus();
 	};
 
 	/**
