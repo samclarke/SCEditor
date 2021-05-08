@@ -574,3 +574,28 @@ QUnit.test('Allow target=blank links', function (assert) {
 		'<img src=\"removed.jpg\" />\n' +
 	'</p>');
 });
+
+
+QUnit.test('Do not wrap whitespace text nodes', function (assert) {
+	var body = sceditor.getBody();
+	var rangeHelper = sceditor.getRangeHelper();
+	var testHtml = '<p>test</p>     ';
+
+	sceditor.focus();
+
+	body.innerHTML = testHtml;
+
+	var range = rangeHelper.cloneSelected();
+	range.setStartAfter(body.firstChild.firstChild);
+	range.collapse(true);
+	rangeHelper.selectRange(range);
+	body.dispatchEvent(new Event('selectionchange'));
+
+	var range = rangeHelper.cloneSelected();
+	range.setStart(body.lastChild, 1);
+	range.collapse(true);
+	rangeHelper.selectRange(range);
+	body.dispatchEvent(new Event('selectionchange'));
+
+	assert.htmlEqual(body.innerHTML, testHtml);
+});
