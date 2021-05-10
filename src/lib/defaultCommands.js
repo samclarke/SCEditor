@@ -922,9 +922,11 @@ var defaultCmds = {
 		},
 		exec: function () {
 			this.maximize(!this.maximize());
+			this.focus();
 		},
 		txtExec: function () {
 			this.maximize(!this.maximize());
+			this.focus();
 		},
 		tooltip: 'Maximize',
 		shortcut: 'Ctrl+Shift+M'
@@ -938,9 +940,11 @@ var defaultCmds = {
 		},
 		exec: function () {
 			this.toggleSourceMode();
+			this.focus();
 		},
 		txtExec: function () {
 			this.toggleSourceMode();
+			this.focus();
 		},
 		tooltip: 'View source',
 		shortcut: 'Ctrl+Shift+S'
