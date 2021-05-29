@@ -66,9 +66,10 @@
 		'Enter the YouTube video URL or ID:': 'Vložte URL adresu YouTube videa alebo jeho ID:',
 		'Insert a Quote': 'Vložiť citát',
 		'Invalid YouTube video': 'Neplatné YouTube video',
+		'Left-to-Right': 'Zľava doprava',
+		'Right-to-Left': 'Zprava doľava',
 		'Drop files here': 'Presuňte súbory sem',
-    'Add indent': 'Posunúť na dalšiu úroveň',
-		'Remove one indent': 'Posunúť na predchádzajúcu úroveň',
+		
 		'Maximize': 'Maximalizovať',
 
 		// month format, replace - with the date format separator and order in the
