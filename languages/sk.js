@@ -4,12 +4,7 @@
  */
 (function () {
 	'use strict';
-
-	// Replace <code> with the language code, e.g. no, fr, en, ect.
 	sceditor.locale['sk'] = {
-
-		// Original string is on the left, place the translation between
-		// the quotes on the right
 		'Bold': 'Tučné',
 		'Italic': 'Kurzíva',
 		'Underline': 'Podčiarknuté',
@@ -69,11 +64,7 @@
 		'Left-to-Right': 'Zľava doprava',
 		'Right-to-Left': 'Zprava doľava',
 		'Drop files here': 'Presuňte súbory sem',
-		
 		'Maximize': 'Maximalizovať',
-
-		// month format, replace - with the date format separator and order in the
-		// order used
 		dateFormat: 'day. month. year'
 	};
 })();
