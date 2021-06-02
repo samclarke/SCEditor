@@ -511,12 +511,10 @@
 			tags: {
 				img: {
 					src: null,
-					'data-sceditor-emoticon': null
+					[EMOTICON_DATA_ATTR]: null
 				}
 			},
-			format: function (element, content) {
-				return attr(element, EMOTICON_DATA_ATTR) + content;
-			},
+			format: element => attr(element, EMOTICON_DATA_ATTR),
 			html: '{0}'
 		},
 		// END_COMMAND
@@ -539,22 +537,19 @@
 			allowsEmpty: true,
 			tags: {
 				img: {
-					src: null
+					src: null,
+					[EMOTICON_DATA_ATTR]: false
 				}
 			},
 			allowedChildren: ['#'],
 			quoteType: QuoteType.never,
-			format: function (element, content) {
-				var	width, height,
+			format: function (element) {
+				var
+					width, height,
 					attribs   = '',
 					style     = function (name) {
 						return element.style ? element.style[name] : null;
 					};
-
-				// check if this is an emoticon image
-				if (attr(element, EMOTICON_DATA_ATTR)) {
-					return content;
-				}
 
 				width = attr(element, 'width') || style('width');
 				height = attr(element, 'height') || style('height');
@@ -570,7 +565,8 @@
 				return '[img' + attribs + ']' + attr(element, 'src') + '[/img]';
 			},
 			html: function (token, attrs, content) {
-				var	undef, width, height, match,
+				var
+					undef, width, height, match,
 					attribs = '';
 
 				// handle [img width=340 height=240]url[/img]
@@ -2397,16 +2393,15 @@
 		 * @private
 		 */
 		function handleTags(element, content, blockLevel) {
-			var	convertBBCode, format,
-				tag     = element.nodeName.toLowerCase();
-
-			// convert blockLevel to boolean
 			blockLevel = !!blockLevel;
+			var
+				convertBBCode, format,
+				tag     = element.nodeName.toLowerCase(),
+				thisTag = tagsToBBCodes[tag];
 
-			if (tagsToBBCodes[tag] && tagsToBBCodes[tag][blockLevel]) {
+			if (thisTag && thisTag[blockLevel]) {
 				// loop all bbcodes for this tag
-				each(tagsToBBCodes[tag][blockLevel], function (
-					bbcode, bbcodeAttribs) {
+				each(thisTag[blockLevel], function (bbcode, bbcodeAttribs) {
 					// if the bbcode requires any attributes then check this has
 					// all needed
 					if (bbcodeAttribs) {
@@ -2414,11 +2409,16 @@
 
 						// loop all the bbcode attribs
 						each(bbcodeAttribs, function (attrib, values) {
-							// Skip if the element doesn't have the attibue or
-							// the attribute doesn't match one of the require
+							// Skip if the element doesn't have the attribute or
+							// the attribute doesn't match one of the required
 							// values
 							if (!attr(element, attrib) || (values &&
 								values.indexOf(attr(element, attrib)) < 0)) {
+								return;
+							}
+
+							if (attr(element, attrib) && values === false) {
+								convertBBCode = false;
 								return;
 							}
 
