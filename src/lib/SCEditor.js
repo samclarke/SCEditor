@@ -27,12 +27,17 @@ function wrapInlines(body, doc) {
 
 	dom.traverse(body, function (node) {
 		if (dom.isInline(node, true)) {
-			if (!wrapper) {
-				wrapper = dom.createElement('p', {}, doc);
-				dom.insertBefore(wrapper, node);
-			}
+			// Ignore text nodes unless they contain non-whitespace chars as
+			// whitespace will be collapsed.
+			// Ignore sceditor-ignore elements unless wrapping siblings
+			// Should still wrap both if wrapping siblings.
+			if (wrapper || node.nodeType === dom.TEXT_NODE ?
+				/\S/.test(node.nodeValue) : !dom.is(node, '.sceditor-ignore')) {
+				if (!wrapper) {
+					wrapper = dom.createElement('p', {}, doc);
+					dom.insertBefore(wrapper, node);
+				}
 
-			if (node.nodeType !== dom.TEXT_NODE || node.nodeValue !== '') {
 				dom.appendChild(wrapper, node);
 			}
 		} else {
