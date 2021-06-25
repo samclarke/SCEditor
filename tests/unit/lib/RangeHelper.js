@@ -154,6 +154,56 @@ QUnit.test('insertNode() - Before and after', function (assert) {
 	));
 });
 
+QUnit.test('insertNode() - Remove created empty tags', function (assert) {
+	var range = rangy.createRangyRange();
+	var sel   = rangy.getSelection();
+
+	editableDiv.innerHTML = '<p>text</p><p>text</p>';
+
+	var p1 = editableDiv.firstChild;
+	var p2 = editableDiv.lastChild;
+	range.setStart(p1.firstChild, 0);
+	range.setEnd(p2.firstChild, 4);
+
+	sel.setSingleRange(range);
+
+	rangeHelper.insertNode(utils.htmlToFragment('<b>foo</b>'));
+
+	assert.nodesEqual(editableDiv.firstChild, utils.htmlToNode(
+		'<b>foo</b>'
+	));
+});
+
+QUnit.test('insertNode() - Do not remove existing empty tags', function (assert) {
+	var range = rangy.createRangyRange();
+	var sel   = rangy.getSelection();
+
+	editableDiv.innerHTML = '<p></p>test<p></p>';
+
+	range.setStart(editableDiv, 1);
+	range.setEnd(editableDiv, 2);
+	sel.setSingleRange(range);
+
+	rangeHelper.insertNode(utils.htmlToFragment('<b>foo</b>'));
+
+	assert.htmlEqual(editableDiv.innerHTML, '<p></p><b>foo</b><p></p>');
+});
+
+QUnit.test('insertNode() - Do not remove existing empty tags', function (assert) {
+	var range = rangy.createRangyRange();
+	var sel   = rangy.getSelection();
+
+	editableDiv.innerHTML = '<p></p>test<p></p><p></p>';
+
+	range.setStart(editableDiv, 1);
+	range.setEnd(editableDiv.lastChild, 0);
+	sel.setSingleRange(range);
+
+	rangeHelper.insertNode(utils.htmlToFragment('<b>foo</b>'));
+
+	assert.htmlEqual(editableDiv.innerHTML, '<p></p><b>foo</b><p></p>');
+});
+
 
 QUnit.test('hasSelection() - With selection', function (assert) {
 	var range = rangy.createRangyRange();

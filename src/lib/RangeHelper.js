@@ -1,5 +1,6 @@
 import * as dom from './dom.js';
 import * as escape from './escape.js';
+import * as utils from './utils.js';
 
 
 /**
@@ -198,12 +199,32 @@ export default function RangeHelper(win, d, sanitize) {
 	 * @memberOf RangeHelper.prototype
 	 */
 	base.insertNode = function (node, endNode) {
-		var	input  = _prepareInput(node, endNode),
+		var	first, last,
+			input  = _prepareInput(node, endNode),
 			range  = base.selectedRange(),
-			parent = range.commonAncestorContainer;
+			parent = range.commonAncestorContainer,
+			emptyNodes = [];
 
 		if (!input) {
 			return false;
+		}
+
+		function removeIfEmpty(node) {
+			// Only remove empty node if it wasn't already empty
+			if (node && dom.isEmpty(node) && emptyNodes.indexOf(node) < 0) {
+				dom.remove(node);
+			}
+		}
+
+		if (range.startContainer !== range.endContainer) {
+			utils.each(parent.childNodes, function (_, node) {
+				if (dom.isEmpty(node)) {
+					emptyNodes.push(node);
+				}
+			});
+
+			first = input.firstChild;
+			last = input.lastChild;
 		}
 
 		range.deleteContents();
@@ -216,6 +237,15 @@ export default function RangeHelper(win, d, sanitize) {
 			dom.insertBefore(input, parent);
 		} else {
 			range.insertNode(input);
+
+			// If a node was split or its contents deleted, remove any resulting
+			// empty tags. For example:
+			// <p>|test</p><div>test|</div>
+			// When deleteContents could become:
+			// <p></p>|<div></div>
+			// So remove the empty ones
+			removeIfEmpty(first && first.previousSibling);
+			removeIfEmpty(last && last.nextSibling);
 		}
 
 		base.restoreRange();

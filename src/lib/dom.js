@@ -757,11 +757,27 @@ export function isInline(elm, includeCodeAsBlock) {
  *
  * @param {HTMLElement} from
  * @param {HTMLElement} to
+ * @deprecated since v3.1.0
  */
 export function copyCSS(from, to) {
 	if (to.style && from.style) {
 		to.style.cssText = from.style.cssText + to.style.cssText;
 	}
+}
+
+/**
+ * Checks if a DOM node is empty
+ *
+ * @param {Node} node
+ * @returns {boolean}
+ */
+export function isEmpty(node) {
+	if (node.lastChild && isEmpty(node.lastChild)) {
+		remove(node.lastChild);
+	}
+
+	return node.nodeType === 3 ? !node.nodeValue :
+		(canHaveChildren(node) && !node.childNodes.length);
 }
 
 /**
@@ -773,30 +789,44 @@ export function copyCSS(from, to) {
  * @param {HTMLElement} node
  */
 export function fixNesting(node) {
-	var	getLastInlineParent = function (node) {
-		while (isInline(node.parentNode, true)) {
-			node = node.parentNode;
-		}
-
-		return node;
-	};
-
 	traverse(node, function (node) {
 		var list = 'ul,ol',
-			isBlock = !isInline(node, true);
+			isBlock = !isInline(node, true) && node.nodeType !== COMMENT_NODE,
+			parent = node.parentNode;
 
 		// Any blocklevel element inside an inline element needs fixing.
-		if (isBlock && isInline(node.parentNode, true)) {
-			var	parent = getLastInlineParent(node),
-				before = extractContents(parent, node),
-				middle = node;
+		// Also <p> tags that contain blocks should be fixed
+		if (isBlock && (isInline(parent, true) || parent.tagName === 'P')) {
+			// Find the last inline parent node
+			var	lastInlineParent = node;
+			while (isInline(lastInlineParent.parentNode, true) ||
+				lastInlineParent.parentNode.tagName === 'P') {
+				lastInlineParent = lastInlineParent.parentNode;
+			}
 
-			// copy current styling so when moved out of the parent
-			// it still has the same styling
-			copyCSS(parent, middle);
+			var before = extractContents(lastInlineParent, node);
+			var middle = node;
 
-			insertBefore(before, parent);
-			insertBefore(middle, parent);
+			// Clone inline styling and apply it to the blocks children
+			while (parent && isInline(parent, true)) {
+				if (parent.nodeType === ELEMENT_NODE) {
+					var clone = parent.cloneNode();
+					while (middle.firstChild) {
+						appendChild(clone, middle.firstChild);
+					}
+
+					appendChild(middle, clone);
+				}
+				parent = parent.parentNode;
+			}
+
+			insertBefore(middle, lastInlineParent);
+			if (!isEmpty(before)) {
+				insertBefore(before, middle);
+			}
+			if (isEmpty(lastInlineParent)) {
+				remove(lastInlineParent);
+			}
 		}
 
 		// Fix invalid nested lists which should be wrapped in an li tag

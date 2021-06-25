@@ -632,12 +632,182 @@ QUnit.test('fixNesting() - With styling', function (assert) {
 			'<span style="font-weight: bold;">' +
 				'span' +
 			'</span>' +
-			'<div style="font-weight: bold;">' +
-				'div' +
+			'<div>' +
+				'<span style="font-weight: bold;">' +
+					'div' +
+				'</span>' +
 			'</div>' +
 			'<span style="font-weight: bold;">' +
 				'span' +
 			'</span>'
+		)
+	);
+});
+
+QUnit.test('fixNesting() - Paragraph with blockquote', function (assert) {
+	var quote = document.createElement('blockquote');
+	quote.appendChild(document.createTextNode('2'));
+
+	var p = document.createElement('p');
+	p.appendChild(document.createTextNode('1'));
+	p.appendChild(quote);
+	p.appendChild(document.createTextNode('3'));
+
+	var root = document.createElement('div');
+	root.appendChild(p);
+
+	dom.fixNesting(root);
+
+	assert.nodesEqual(
+		root,
+		utils.htmlToDiv(
+			'<p>1</p><blockquote>2</blockquote><p>3</p>'
+		)
+	);
+});
+
+QUnit.test('fixNesting() - Do not create empty nodes', function (assert) {
+	var node = utils.htmlToDiv(
+		'<span><blockquote>test</blockquote></span>'
+	);
+
+	dom.fixNesting(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToDiv(
+			'<blockquote><span>test</span></blockquote>'
+		)
+	);
+});
+QUnit.test('fixNesting() - Create nodes with a child that cannot have children', function (assert) {
+	var node = utils.htmlToDiv(
+		'<span><blockquote>test</blockquote><br></span>'
+	);
+
+	dom.fixNesting(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToDiv(
+			'<blockquote><span>test</span></blockquote><span><br /></span>'
+		)
+	);
+});
+
+QUnit.test('fixNesting() - Do not create empty nodes when deeply nested', function (assert) {
+	var node = utils.htmlToDiv(
+		'<em><span><strong><blockquote>test</blockquote></strong></span></em>'
+	);
+
+	dom.fixNesting(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToDiv(
+			'<blockquote><em><span><strong>test</strong></span></em></blockquote>'
+		)
+	);
+});
+
+QUnit.test('fixNesting() - Do not create empty nodes when inline styling nested', function (assert) {
+	var node = utils.htmlToDiv(
+		'<em><div><strong><blockquote>4</blockquote></strong></div></em>'
+	);
+
+	dom.fixNesting(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToDiv(
+			'<div><blockquote><em><strong>4</strong></em></blockquote></div>'
+		)
+	);
+});
+
+QUnit.test('fixNesting() - Preserve inline styling', function (assert) {
+	// Below is the following HTML (have to do it manually due to <p> being
+	// closed by the <blockquote> when using innerHTML):
+	//  <p>1</p><strong><p>2</p><p><blockquote>3</blockquote>4</p></strong><p>5</p>
+	var p1 = document.createElement('p');
+	p1.appendChild(document.createTextNode('1'));
+
+	var p2 = document.createElement('p');
+	p2.appendChild(document.createTextNode('2'));
+
+	var quote = document.createElement('blockquote');
+	quote.appendChild(document.createTextNode('3'));
+
+	var p3 = document.createElement('p');
+	p3.appendChild(quote);
+	p3.appendChild(document.createTextNode('4'));
+
+	var strong = document.createElement('strong');
+	strong.appendChild(p2);
+	strong.appendChild(p3);
+
+	var p5 = document.createElement('p');
+	p5.appendChild(document.createTextNode('5'));
+
+	var node = document.createElement('div');
+	node.appendChild(p1);
+	node.appendChild(strong);
+	node.appendChild(p5);
+
+	dom.fixNesting(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToDiv(
+			'<p>1</p>' +
+			'<p><strong>2</strong></p>' +
+			'<blockquote><strong>3</strong></blockquote>' +
+			'<p><strong>4</strong></p>' +
+			'<p>5</p>'
+		)
+	);
+});
+
+QUnit.test('fixNesting() - Preserve inline styling', function (assert) {
+	var node = utils.htmlToDiv(
+		'<em><span><strong>1<blockquote><p>2</p></blockquote>3</strong></span></em>'
+	);
+
+	dom.fixNesting(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToDiv(
+			'<em><span><strong>1</strong></span></em>' +
+			'<blockquote><p><em><span><strong>2</strong></span></em></p></blockquote>' +
+			'<em><span><strong>3</strong></span></em>'
+		)
+	);
+});
+
+QUnit.test('fixNesting() - Preserve inline styling nested', function (assert) {
+	var node = utils.htmlToDiv(
+		'<em>1<div>2<strong>3<blockquote>4</blockquote>5</strong>6</div>7</em>'
+	);
+
+	dom.fixNesting(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToDiv(
+			'<em>1</em>' +
+			'<div>' +
+				'<em>' +
+					'2' +
+					'<strong>3</strong>' +
+				'</em>' +
+				'<blockquote><em><strong>4</strong></em></blockquote>' +
+				'<em>' +
+					'<strong>5</strong>' +
+					'6' +
+				'</em>' +
+			'</div>' +
+			'<em>7</em>'
 		)
 	);
 });
@@ -669,7 +839,11 @@ QUnit.test('fixNesting() - Deeply nested', function (assert) {
 				'</span>' +
 			'</span>' +
 			'<div style="font-weight: bold;">' +
-				'div' +
+				'<span>' +
+					'<span>' +
+						'div' +
+					'</span>' +
+				'</span>' +
 			'</div>' +
 			'<span>' +
 				'<span>' +
@@ -777,11 +951,7 @@ QUnit.test('fixNesting() - With comments', function (assert) {
 		utils.htmlToDiv(
 			'<p>' +
 				'<strong>' +
-					'a' +
-				'</strong>' +
-				'<!-- test -->' +
-				'<strong>' +
-					'b' +
+					'a<!-- test -->b' +
 				'</strong>' +
 			'</p>'
 		)
