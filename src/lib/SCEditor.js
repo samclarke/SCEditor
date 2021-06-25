@@ -312,7 +312,6 @@ export default function SCEditor(original, userOptions) {
 		replaceEmoticons,
 		handleCommand,
 		initEditor,
-		initPlugins,
 		initLocale,
 		initToolBar,
 		initOptions,
@@ -450,12 +449,21 @@ export default function SCEditor(original, userOptions) {
 
 		var FormatCtor = SCEditor.formats[options.format];
 		format = FormatCtor ? new FormatCtor() : {};
+		/*
+		 * Plugins should be initialized before the formatters since
+		 * they may wish to add or change formatting handlers and
+		 * since the bbcode format caches its handlers,
+		 * such changes must be done first.
+		 */
+		pluginManager = new PluginManager(base);
+		(options.plugins || '').split(',').forEach(function (plugin) {
+			pluginManager.register(plugin.trim());
+		});
 		if ('init' in format) {
 			format.init.call(base);
 		}
 
 		// create the editor
-		initPlugins();
 		initEmoticons();
 		initToolBar();
 		initEditor();
@@ -491,17 +499,6 @@ export default function SCEditor(original, userOptions) {
 		}
 	};
 
-	initPlugins = function () {
-		var plugins   = options.plugins;
-
-		plugins       = plugins ? plugins.toString().split(',') : [];
-		pluginManager = new PluginManager(base);
-
-		plugins.forEach(function (plugin) {
-			pluginManager.register(plugin.trim());
-		});
-	};
-
 	/**
 	 * Init the locale variable with the specified locale if possible
 	 * @private
@@ -534,7 +531,8 @@ export default function SCEditor(original, userOptions) {
 			allowfullscreen: true
 		});
 
-		/* This needs to be done right after they are created because,
+		/*
+		 * This needs to be done right after they are created because,
 		 * for any reason, the user may not want the value to be tinkered
 		 * by any filters.
 		 */
