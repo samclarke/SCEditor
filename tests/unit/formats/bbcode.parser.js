@@ -161,6 +161,11 @@ QUnit.test('BBCode closed outside block - No children fix', function (assert) {
 		'[quote][b]something[/b][/quote]\n[b][b]something[/b][/b]',
 		'Quote with tag closed outside'
 	);
+
+	// Put it back the way you found it
+	this.parser = new sceditor.BBCodeParser({
+		fixInvalidChildren: true
+	});
 });
 
 
