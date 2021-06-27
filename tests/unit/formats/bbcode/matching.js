@@ -11,7 +11,7 @@ sceditor.formats.bbcode.set(
 				test: null
 			}
 		},
-		matchAttrs: sceditor.BBCodeParser.MatchingMode.all,
+		matchAttrs: 'all',
 		format: function (element, content) {
 			return '[abbr=' + element.getAttribute('title') + ']' + content + '[/abbr]';
 		},
@@ -26,7 +26,7 @@ sceditor.formats.bbcode.set(
 				test: null
 			}
 		},
-		matchAttrs: sceditor.BBCodeParser.MatchingMode.any,
+		matchAttrs: 'any',
 		format: function (element, content) {
 			return '[bird=' + element.getAttribute('type') + ']' + content + '[/bird]';
 		},

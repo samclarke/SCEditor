@@ -50,21 +50,6 @@
 		auto: 3
 	};
 
-	var MatchingMode = {
-		/** @lends BBCodeParser.MatchingMode */
-		/**
-		 * Match all values.
-		 * @type {Number}
-		 */
-		all: 1,
-
-		/**
-		 * Match any value. This is the default if unspecified.
-		 * @type {Number}
-		 */
-		any: 2
-	};
-
 	var defaultCommandsOverrides = {
 		bold: {
 			txtExec: ['[b]', '[/b]']
@@ -2104,19 +2089,6 @@
 	BBCodeParser.QuoteType = QuoteType;
 
 	/**
-	 * Method to use when matching attributes.
-	 *
-	 * - MatchingMode.all roughly equates to Array.every().
-	 * - MatchingMode.any roughly equates to Array.some().
-	 *
-	 * @type {Object}
-	 * @class MatchingMode
-	 * @name BBCodeParser.MatchingMode
-	 * @since 3.1.0
-	 */
-	BBCodeParser.MatchingMode = MatchingMode;
-
-	/**
 	 * Default BBCode parser options
 	 * @type {Object}
 	 */
@@ -2193,7 +2165,7 @@
 		 * @type {BBCodeParser.MatchingMode}
 		 * @since 3.1.0
 		 */
-		matchAttrs: MatchingMode.any
+		matchAttrs: 'any'
 	};
 
 	/**
@@ -2448,7 +2420,7 @@
 					}
 					// Skip if the element doesn't have the attribute or the
 					// attribute doesn't match one of the required values
-					fn = Array.prototype[attrMatch === MatchingMode.all
+					fn = Array.prototype[attrMatch === 'all'
 						? 'every' : 'some'];
 					if (bbcodeAttribs && !fn.call(bbcodeAttribs, matchAttrs)) {
 						continue;
