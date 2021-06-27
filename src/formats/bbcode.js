@@ -2275,7 +2275,7 @@
 						tagsToBBCodes[tag] = tagsToBBCodes[tag] || [];
 						tagsToBBCodes[tag].push([
 							isObject(values) ? Object.entries(values) : values,
-							handler.matchAttrs || base.opts.matchAttrs || 2,
+							handler.matchAttrs || base.opts.matchAttrs || 'any',
 							handler.format,
 							handler.isInline === false
 						]);
