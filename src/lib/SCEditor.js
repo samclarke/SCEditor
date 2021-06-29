@@ -1511,9 +1511,29 @@ export default function SCEditor(original, userOptions) {
 			}
 
 			dom.appendChild(firstParent || container, range.cloneContents());
+			dom.removeWhiteSpace(container);
 
 			e.clipboardData.setData('text/html', container.innerHTML);
-			e.clipboardData.setData('text/plain', range.toString());
+
+			// TODO: Refactor into private shared module with plaintext plugin
+			// innerText adds two newlines after <p> tags so convert them to
+			// <div> tags
+			utils.each(dom.find(container, 'p'), function (_, elm) {
+				dom.convertElement(elm, 'div');
+			});
+			// Remove collapsed <br> tags as innerText converts them to newlines
+			utils.each(dom.find(container, 'br'), function (_, elm) {
+				if (!elm.nextSibling || !dom.isInline(elm.nextSibling, true)) {
+					dom.remove(elm);
+				}
+			});
+
+			// range.toString() doesn't include newlines so can't use that.
+			// selection.toString() seems to use the same method as innerText
+			// but needs to be normalised first so using container.innerText
+			dom.appendChild(wysiwygBody, container);
+			e.clipboardData.setData('text/plain', container.innerText);
+			dom.remove(container);
 
 			if (e.type === 'cut') {
 				range.deleteContents();
@@ -1639,7 +1659,6 @@ export default function SCEditor(original, userOptions) {
 
 		var parent = rangeHelper.getFirstBlockParent();
 		base.wysiwygEditorInsertHtml(paste.val, null, true);
-		dom.fixNesting(parent);
 		dom.merge(parent);
 	};
 

@@ -12,7 +12,8 @@
 (function (sceditor) {
 	'use strict';
 
-	var extend = sceditor.utils.extend;
+	var utils = sceditor.utils;
+	var dom = sceditor.dom;
 
 	/**
 	 * Options:
@@ -33,7 +34,7 @@
 			if (opts && opts.plaintext && opts.plaintext.addButton) {
 				plainTextEnabled = opts.plaintext.enabled;
 
-				commands.pastetext = extend(commands.pastetext || {}, {
+				commands.pastetext = utils.extend(commands.pastetext || {}, {
 					state: function () {
 						return plainTextEnabled ? 1 : 0;
 					},
@@ -49,7 +50,25 @@
 				if (data.html && !data.text) {
 					var div = document.createElement('div');
 					div.innerHTML = data.html;
+
+					// TODO: Refactor into private shared module with editor
+					// innerText adds two newlines after <p> tags so convert
+					// them to <div> tags
+					utils.each(div.querySelectorAll('p'), function (_, elm) {
+						dom.convertElement(elm, 'div');
+					});
+					// Remove collapsed <br> tags as innerText converts them to
+					// newlines
+					utils.each(div.querySelectorAll('br'), function (_, elm) {
+						if (!elm.nextSibling ||
+						!dom.isInline(elm.nextSibling, true)) {
+							elm.parentNode.removeChild(elm);
+						}
+					});
+
+					document.body.appendChild(div);
 					data.text = div.innerText;
+					document.body.removeChild(div);
 				}
 
 				data.html = null;
