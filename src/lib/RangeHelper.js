@@ -125,7 +125,7 @@ export default function RangeHelper(win, d, sanitize) {
 	 * @param  {Node|string} node
 	 * @param  {Node|string} [endNode]
 	 * @param  {boolean} [returnHtml]
-	 * @return {Node|string}
+	 * @return {DocumentFragment|string}
 	 * @private
 	 */
 	_prepareInput = function (node, endNode, returnHtml) {
@@ -191,52 +191,91 @@ export default function RangeHelper(win, d, sanitize) {
 	 *
 	 * Returns boolean false on fail
 	 *
-	 * @param {Node} node
+	 * @param {Node} startNode
 	 * @param {Node} endNode
 	 * @return {false|undefined}
 	 * @function
 	 * @name insertNode
 	 * @memberOf RangeHelper.prototype
 	 */
-	base.insertNode = function (node, endNode) {
-		var	first, last,
-			input  = _prepareInput(node, endNode),
-			range  = base.selectedRange(),
+	base.insertNode = function (startNode, endNode) {
+		var	selStartNode, selEndNode, node,
+			input = _prepareInput(startNode, endNode),
+			range = base.selectedRange(),
 			parent = range.commonAncestorContainer,
-			emptyNodes = [];
+			checkNodes = [],
+			startInlines = [],
+			endInlines = [];
 
 		if (!input) {
 			return false;
 		}
 
-		function removeIfEmpty(node) {
-			// Only remove empty node if it wasn't already empty
-			if (node && dom.isEmpty(node) && emptyNodes.indexOf(node) < 0) {
-				dom.remove(node);
+		function addCheckNodes(container) {
+			while (parent.contains(container)) {
+				if (!dom.isEmpty(container)) {
+					checkNodes.push(container);
+				}
+				container = container.parentNode;
 			}
 		}
-
-		if (range.startContainer !== range.endContainer) {
-			utils.each(parent.childNodes, function (_, node) {
-				if (dom.isEmpty(node)) {
-					emptyNodes.push(node);
-				}
-			});
-
-			first = input.firstChild;
-			last = input.lastChild;
-		}
-
-		range.deleteContents();
 
 		// FF allows <br /> to be selected but inserting a node
 		// into <br /> will cause it not to be displayed so must
 		// insert before the <br /> in FF.
 		// 3 = TextNode
 		if (parent && parent.nodeType !== 3 && !dom.canHaveChildren(parent)) {
+			range.deleteContents();
 			dom.insertBefore(input, parent);
 		} else {
+			if (range.startContainer !== range.endContainer) {
+				// Store non-empty nodes at start and end up to the parent to
+				// check if deleteContents() has emptied them.
+				// If it has, they should be removed.
+				addCheckNodes(range.startContainer);
+				addCheckNodes(range.endContainer);
+
+				// Store inlines at the start or end of the input
+				node = input.firstChild;
+				while (node && dom.isInline(node, true)) {
+					startInlines.unshift(node);
+					node = node.nextSibling;
+				}
+
+				node = input.lastChild;
+				while (node && dom.isInline(node, true)) {
+					endInlines.push(node);
+					node = node.previousSibling;
+				}
+			}
+
+			base.saveRange();
+			selStartNode = base.getMarker(startMarker);
+			selEndNode = base.getMarker(endMarker);
+			range.setStartAfter(selStartNode);
+			range.setEndBefore(selEndNode);
+
+			range.deleteContents();
 			range.insertNode(input);
+
+			// Move any inlines from start / end of input into start or end of
+			// of the selection, for example, inserting "a<div>b</div>c":
+			// <p>x|</p><div>y</div><p>|z</p>
+			// After deleteContents will become:
+			// <p>x</p>|<p>z</p>
+			// After insert becomes
+			// <p>x</p>a<div>b</div>c|<p>z</p>
+			// And after moving them below, will become:
+			// <p>xa</p><div>b</div><p>c|z</p>
+			while (endInlines.length) {
+				dom.insertBefore(endInlines.pop(), selEndNode);
+			}
+			while (startInlines.length) {
+				dom.insertBefore(startInlines.pop(), selStartNode);
+			}
+
+			dom.remove(selStartNode);
+			dom.remove(selEndNode);
 
 			// If a node was split or its contents deleted, remove any resulting
 			// empty tags. For example:
@@ -244,8 +283,11 @@ export default function RangeHelper(win, d, sanitize) {
 			// When deleteContents could become:
 			// <p></p>|<div></div>
 			// So remove the empty ones
-			removeIfEmpty(first && first.previousSibling);
-			removeIfEmpty(last && last.nextSibling);
+			utils.each(checkNodes, function (_, node) {
+				if (dom.isEmpty(node)) {
+					dom.remove(node);
+				}
+			});
 		}
 
 		base.restoreRange();

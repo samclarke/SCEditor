@@ -773,11 +773,11 @@ export function copyCSS(from, to) {
  */
 export function isEmpty(node) {
 	if (node.lastChild && isEmpty(node.lastChild)) {
-		remove(node.lastChild);
+		return node.firstChild === node.lastChild;
 	}
 
 	return node.nodeType === 3 ? !node.nodeValue :
-		(canHaveChildren(node) && !node.childNodes.length);
+		(canHaveChildren(node) && !node.firstChild);
 }
 
 /**
