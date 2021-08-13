@@ -27,7 +27,7 @@ QUnit.test('Fix invalid nesting', function (assert) {
 			this.parser.toBBCode('[b][i][s]test[code]test[/code]test[/s][/i][/b]')
 		),
 		'[b][i][s]test[/s][/i][/b][code]test[/code]' +
-			'[b][i][s]test[/s][/i][/b]',
+		'[b][i][s]test[/s][/i][/b]',
 		'Deeply nested block in inline tags'
 	);
 
@@ -42,17 +42,17 @@ QUnit.test('Fix invalid nesting', function (assert) {
 	assert.equal(
 		this.parser.toBBCode(
 			'[ul]' +
-				'[color=#444444]' +
-					'[li]test[/li]\n' +
-					'[li]test[/li]\n' +
-					'[li]test[/li]\n' +
-				'[/color]' +
+			'[color=#444444]' +
+			'[li]test[/li]\n' +
+			'[li]test[/li]\n' +
+			'[li]test[/li]\n' +
+			'[/color]' +
 			'[/ul]'
 		),
 		'[ul]\n' +
-			'[li][color=#444444]test[/color][/li]\n' +
-			'[li][color=#444444]test[/color][/li]\n' +
-			'[li][color=#444444]test[/color][/li]\n' +
+		'[li][color=#444444]test[/color][/li]\n' +
+		'[li][color=#444444]test[/color][/li]\n' +
+		'[li][color=#444444]test[/color][/li]\n' +
 		'[/ul]\n',
 		'Move newlines'
 	);
@@ -197,7 +197,7 @@ QUnit.test('Closing parent tag from child', function (assert) {
 	assert.equal(
 		this.parser.toBBCode('[left][list][*]xyz[/left][list][*]abc[/list]'),
 		'[left][list]\n[*]xyz[/*]\n[/list]\n[/left]\n[list]\n[*][list]\n' +
-			'[*]abc[/*]\n[/list]\n[/*]\n[/list]\n',
+		'[*]abc[/*]\n[/list]\n[/*]\n[/list]\n',
 		'Closing parent tag from list item'
 	);
 });
@@ -268,8 +268,8 @@ QUnit.test('New Line Handling', function (assert) {
 		this.parser.toHTML('[list][*]test\n[*]test2\nline\n[/list]'),
 
 		'<ul>' +
-			'<li>test<br /></li>' +
-			'<li>test2<br />line<br /></li>' +
+		'<li>test<br /></li>' +
+		'<li>test2<br />line<br /></li>' +
 		'</ul>',
 
 		'List with non-closed [*]'
@@ -291,7 +291,7 @@ QUnit.test('New Line Handling', function (assert) {
 		this.parser.toHTML('[quote][center]test[/center][/quote]'),
 
 		'<blockquote>' +
-			'<div align="center">test<br /></div>' +
+		'<div align="center">test<br /></div>' +
 		'</blockquote>',
 
 		'Two block-level elements together'
@@ -313,10 +313,10 @@ QUnit.test('Attributes QuoteType.auto', function (assert) {
 	assert.equal(
 		this.parser.toBBCode(
 			'[quote author=poster date=1353794172 ' +
-				'link=topic=2.msg4#msg4]hi[/quote]'
+			'link=topic=2.msg4#msg4]hi[/quote]'
 		),
 		'[quote author=poster date=1353794172 ' +
-				'link="topic=2.msg4#msg4"]hi[/quote]\n',
+		'link="topic=2.msg4#msg4"]hi[/quote]\n',
 		'Attribute with value that contains an equals'
 	);
 
@@ -355,19 +355,19 @@ QUnit.test('Attributes QuoteType.auto', function (assert) {
 	assert.equal(
 		this.parser.toBBCode(
 			'[quote ' +
-				'quoted=\'words word=word\\\' link=lala=lalala\' ' +
-				'author=anything that does not have an equals after it ' +
-				'date=1353794172 ' +
-				'link=anythingEvenEquals=no space up to the equals ' +
-				'test=la' +
+			'quoted=\'words word=word\\\' link=lala=lalala\' ' +
+			'author=anything that does not have an equals after it ' +
+			'date=1353794172 ' +
+			'link=anythingEvenEquals=no space up to the equals ' +
+			'test=la' +
 			']asd[/quote]'
 		),
 		'[quote ' +
-			'quoted="words word=word\' link=lala=lalala" ' +
-			'author="anything that does not have an equals after it" ' +
-			'date=1353794172 ' +
-			'link="anythingEvenEquals=no space up to the equals" ' +
-			'test=la' +
+		'quoted="words word=word\' link=lala=lalala" ' +
+		'author="anything that does not have an equals after it" ' +
+		'date=1353794172 ' +
+		'link="anythingEvenEquals=no space up to the equals" ' +
+		'test=la' +
 		']asd[/quote]\n',
 		'Multi-Attribute test'
 	);
@@ -393,10 +393,10 @@ QUnit.test('Attributes QuoteType.never', function (assert) {
 	assert.equal(
 		this.parser.toBBCode(
 			'[quote author=poster date=1353794172 ' +
-				'link=topic=2.msg4#msg4]hi[/quote]'
+			'link=topic=2.msg4#msg4]hi[/quote]'
 		),
 		'[quote author=poster date=1353794172 ' +
-				'link=topic=2.msg4#msg4]hi[/quote]\n',
+		'link=topic=2.msg4#msg4]hi[/quote]\n',
 		'Attribute with value that contains an equals'
 	);
 
@@ -435,19 +435,19 @@ QUnit.test('Attributes QuoteType.never', function (assert) {
 	assert.equal(
 		this.parser.toBBCode(
 			'[quote ' +
-				'quoted=\'words word=word\\\' link=lala=lalala\' ' +
-				'author=anything that does not have an equals after it ' +
-				'date=1353794172 ' +
-				'link=anythingEvenEquals=no space up to the equals ' +
-				'test=la' +
-			']asd[/quote]'
-		),
-		'[quote ' +
-			'quoted=words word=word\' link=lala=lalala ' +
+			'quoted=\'words word=word\\\' link=lala=lalala\' ' +
 			'author=anything that does not have an equals after it ' +
 			'date=1353794172 ' +
 			'link=anythingEvenEquals=no space up to the equals ' +
 			'test=la' +
+			']asd[/quote]'
+		),
+		'[quote ' +
+		'quoted=words word=word\' link=lala=lalala ' +
+		'author=anything that does not have an equals after it ' +
+		'date=1353794172 ' +
+		'link=anythingEvenEquals=no space up to the equals ' +
+		'test=la' +
 		']asd[/quote]\n',
 		'Multi-Attribute test'
 	);
@@ -473,10 +473,10 @@ QUnit.test('Attributes QuoteType.always', function (assert) {
 	assert.equal(
 		this.parser.toBBCode(
 			'[quote author=poster date=1353794172 ' +
-				'link=topic=2.msg4#msg4]hi[/quote]'
+			'link=topic=2.msg4#msg4]hi[/quote]'
 		),
 		'[quote author="poster" date="1353794172" ' +
-				'link="topic=2.msg4#msg4"]hi[/quote]\n',
+		'link="topic=2.msg4#msg4"]hi[/quote]\n',
 		'Attribute with value that contains an equals'
 	);
 
@@ -501,7 +501,7 @@ QUnit.test('Attributes QuoteType.always', function (assert) {
 			'[quote author=This is all the author date=12345679]hi[/quote]'
 		),
 		'[quote author="This is all the author" ' +
-			'date="12345679"]hi[/quote]\n',
+		'date="12345679"]hi[/quote]\n',
 		'Attribute with spaces'
 	);
 
@@ -524,19 +524,19 @@ QUnit.test('Attributes QuoteType.always', function (assert) {
 	assert.equal(
 		this.parser.toBBCode(
 			'[quote ' +
-				'quoted=\'words word=word\\\' link=lala=lalala\' ' +
-				'author=anything that does not have an equals after it ' +
-				'date=1353794172 ' +
-				'link=anythingEvenEquals=no space up to the equals ' +
-				'test=la' +
+			'quoted=\'words word=word\\\' link=lala=lalala\' ' +
+			'author=anything that does not have an equals after it ' +
+			'date=1353794172 ' +
+			'link=anythingEvenEquals=no space up to the equals ' +
+			'test=la' +
 			']asd[/quote]'
 		),
 		'[quote ' +
-			'quoted="words word=word\' link=lala=lalala" ' +
-			'author="anything that does not have an equals after it" ' +
-			'date="1353794172" ' +
-			'link="anythingEvenEquals=no space up to the equals" ' +
-			'test="la"' +
+		'quoted="words word=word\' link=lala=lalala" ' +
+		'author="anything that does not have an equals after it" ' +
+		'date="1353794172" ' +
+		'link="anythingEvenEquals=no space up to the equals" ' +
+		'test="la"' +
 		']asd[/quote]\n',
 		'Multi-Attribute test'
 	);
@@ -566,10 +566,10 @@ QUnit.test('Attributes QuoteType custom', function (assert) {
 	assert.equal(
 		this.parser.toBBCode(
 			'[quote author=poster date=1353794172 ' +
-				'link=topic=2.msg4#msg4]hi[/quote]'
+			'link=topic=2.msg4#msg4]hi[/quote]'
 		),
 		'[quote author=\'poster\' date=\'1353794172\' ' +
-				'link=\'topic=2.msg4#msg4\']hi[/quote]\n',
+		'link=\'topic=2.msg4#msg4\']hi[/quote]\n',
 		'Attribute with value that contains an equals'
 	);
 
@@ -594,7 +594,7 @@ QUnit.test('Attributes QuoteType custom', function (assert) {
 			'[quote author=This is all the author date=12345679]hi[/quote]'
 		),
 		'[quote author=\'This is all the author\' ' +
-			'date=\'12345679\']hi[/quote]\n',
+		'date=\'12345679\']hi[/quote]\n',
 		'Attribute with spaces'
 	);
 
@@ -609,19 +609,19 @@ QUnit.test('Attributes QuoteType custom', function (assert) {
 	assert.equal(
 		this.parser.toBBCode(
 			'[quote ' +
-				'quoted=\'words word=word\\\' link=lala=lalala\' ' +
-				'author=anything that does not have an equals after it ' +
-				'date=1353794172 ' +
-				'link=anythingEvenEquals=no space up to the equals ' +
-				'test=la' +
+			'quoted=\'words word=word\\\' link=lala=lalala\' ' +
+			'author=anything that does not have an equals after it ' +
+			'date=1353794172 ' +
+			'link=anythingEvenEquals=no space up to the equals ' +
+			'test=la' +
 			']asd[/quote]'
 		),
 		'[quote ' +
-			'quoted=\'words word=word\\\' link=lala=lalala\' ' +
-			'author=\'anything that does not have an equals after it\' ' +
-			'date=\'1353794172\' ' +
-			'link=\'anythingEvenEquals=no space up to the equals\' ' +
-			'test=\'la\'' +
+		'quoted=\'words word=word\\\' link=lala=lalala\' ' +
+		'author=\'anything that does not have an equals after it\' ' +
+		'date=\'1353794172\' ' +
+		'link=\'anythingEvenEquals=no space up to the equals\' ' +
+		'test=\'la\'' +
 		']asd[/quote]\n',
 		'Multi-Attribute test'
 	);
@@ -759,7 +759,7 @@ QUnit.test('Table', function (assert) {
 		this.parser.toHTML('[table][tr][th]test[/th][/tr]' +
 			'[tr][td]data1[/td][/tr][/table]'),
 		'<div><table><tr><th>test<br /></th></tr>' +
-			'<tr><td>data1<br /></td></tr></table></div>\n',
+		'<tr><td>data1<br /></td></tr></table></div>\n',
 		'Normal'
 	);
 });
@@ -778,7 +778,7 @@ QUnit.test('Image', function (assert) {
 	assert.htmlEqual(
 		this.parser.toHTML('[img=10x10]http://test.com/test.png[/img]'),
 		'<div><img width="10" height="10" ' +
-			'src="http://test.com/test.png" /></div>\n',
+		'src="http://test.com/test.png" /></div>\n',
 		'Normal'
 	);
 
@@ -805,7 +805,7 @@ QUnit.test('Image', function (assert) {
 			'[img]http://test.com/test.png?test&&test[/img]'
 		),
 		'<div><img src="http://test.com/test.png?test&amp;&amp;test" ' +
-			'/></div>\n',
+		'/></div>\n',
 		'Ampersands in URL'
 	);
 });
@@ -827,15 +827,21 @@ QUnit.test('URL', function (assert) {
 	assert.htmlEqual(
 		this.parser.toHTML('[url=http://test.com/?test&&test]test[/url]'),
 		'<div><a href="http://test.com/?test&amp;&amp;test">' +
-			'test</a></div>\n',
+		'test</a></div>\n',
 		'Ampersands in URL'
 	);
 
 	assert.htmlEqual(
 		this.parser.toHTML('[url]http://test.com/?test&&test[/url]'),
 		'<div><a href="http://test.com/?test&amp;&amp;test">' +
-			'http://test.com/?test&amp;&amp;test</a></div>\n',
+		'http://test.com/?test&amp;&amp;test</a></div>\n',
 		'Ampersands in URL'
+	);
+
+	assert.htmlEqual(
+		this.parser.toHTML('[url=http://test.com/ target=_self]test[/url]'),
+		'<div><a target="_self" href="http://test.com/">test</a></div>\n',
+		'Target type'
 	);
 });
 
@@ -925,9 +931,9 @@ QUnit.test('YouTube', function (assert) {
 	assert.htmlEqual(
 		this.parser.toHTML('[youtube]xyz[/youtube]'),
 		'<div><iframe width="560" height="315" ' +
-			'src="https://www.youtube-nocookie.com/embed/xyz?wmode=opaque" ' +
-			'data-youtube-id="xyz" frameborder="0" allowfullscreen>' +
-			'</iframe></div>\n',
+		'src="https://www.youtube-nocookie.com/embed/xyz?wmode=opaque" ' +
+		'data-youtube-id="xyz" frameborder="0" allowfullscreen>' +
+		'</iframe></div>\n',
 		'Normal'
 	);
 });
@@ -945,7 +951,7 @@ QUnit.test('[img]', function (assert) {
 		this.parser.toHTML('[img]fake.png" onerror="alert(' +
 			'String.fromCharCode(88,83,83))[/img]'),
 		'<div><img src="fake.png&#34; onerror=&#34;alert(' +
-			'String.fromCharCode(88,83,83))" /></div>\n',
+		'String.fromCharCode(88,83,83))" /></div>\n',
 		'Inject attribute'
 	);
 
@@ -985,7 +991,7 @@ QUnit.test('[img]', function (assert) {
 	assert.equal(
 		this.parser.toHTML('[img=\'"2]uri[/img]'),
 		'<div><img width="&#39;&#34;2" height="&#39;&#34;2" src="uri" />' +
-			'</div>\n',
+		'</div>\n',
 		'Dimension attribute injection'
 	);
 
@@ -1007,15 +1013,15 @@ QUnit.test('[url]', function (assert) {
 	assert.equal(
 		this.parser.toHTML(
 			'[url]fake.png" ' +
-				'onmouseover="alert(String.fromCharCode(88,83,83))[/url]'
+			'onmouseover="alert(String.fromCharCode(88,83,83))[/url]'
 		),
 
 		'<div>' +
-			'<a href="fake.png&#34; onmouseover=&#34;' +
-				'alert(String.fromCharCode(88,83,83))">' +
-					'fake.png&#34; onmouseover=&#34;alert(' +
-					'String.fromCharCode(88,83,83))' +
-			'</a>' +
+		'<a href="fake.png&#34; onmouseover=&#34;' +
+		'alert(String.fromCharCode(88,83,83))">' +
+		'fake.png&#34; onmouseover=&#34;alert(' +
+		'String.fromCharCode(88,83,83))' +
+		'</a>' +
 		'</div>\n',
 
 		'Inject attribute'
@@ -1055,7 +1061,7 @@ QUnit.test('[url]', function (assert) {
 	assert.equal(
 		this.parser.toHTML('[url]test@test.test<b>tet</b>[/url]'),
 		'<div><a href="test@test.test&lt;b&gt;tet&lt;/b&gt;">' +
-			'test@test.test&lt;b&gt;tet&lt;/b&gt;</a></div>\n',
+		'test@test.test&lt;b&gt;tet&lt;/b&gt;</a></div>\n',
 		'Inject HTML'
 	);
 
@@ -1065,10 +1071,10 @@ QUnit.test('[url]', function (assert) {
 			'&#39;&#88;&#83;&#83;&#39;&#41;]XSS[/url]'),
 
 		'<div><a href="&amp;#106;&amp;#97;&amp;#118;&amp;#97;&amp;#115;' +
-			'&amp;#99;&amp;#114;&amp;#105;&amp;#112;&amp;#116;&amp;#58;' +
-			'&amp;#97;&amp;#108;&amp;#101;&amp;#114;&amp;#116;&amp;#40;' +
-			'&amp;#39;&amp;#88;&amp;#83;&amp;#83;&amp;#39;&amp;#41;">' +
-			'XSS</a></div>\n',
+		'&amp;#99;&amp;#114;&amp;#105;&amp;#112;&amp;#116;&amp;#58;' +
+		'&amp;#97;&amp;#108;&amp;#101;&amp;#114;&amp;#116;&amp;#40;' +
+		'&amp;#39;&amp;#88;&amp;#83;&amp;#83;&amp;#39;&amp;#41;">' +
+		'XSS</a></div>\n',
 
 		'Inject HTML'
 	);
@@ -1079,15 +1085,15 @@ QUnit.test('[email]', function (assert) {
 	assert.equal(
 		this.parser.toHTML(
 			'[email]' +
-				'fake@fake.com" onmouseover="alert(' +
-					'String.fromCharCode(88,83,83))' +
+			'fake@fake.com" onmouseover="alert(' +
+			'String.fromCharCode(88,83,83))' +
 			'[/email]'
 		),
 
 		'<div><a href="mailto:fake@fake.com&#34; ' +
-			'onmouseover=&#34;alert(String.fromCharCode(88,83,83))">' +
-			'fake@fake.com&#34; onmouseover=&#34;alert(' +
-			'String.fromCharCode(88,83,83))</a></div>\n',
+		'onmouseover=&#34;alert(String.fromCharCode(88,83,83))">' +
+		'fake@fake.com&#34; onmouseover=&#34;alert(' +
+		'String.fromCharCode(88,83,83))</a></div>\n',
 
 		'Inject attribute'
 	);
@@ -1095,7 +1101,7 @@ QUnit.test('[email]', function (assert) {
 	assert.equal(
 		this.parser.toHTML('[email]test@test.test<b>tet</b>[/email]'),
 		'<div><a href="mailto:test@test.test&lt;b&gt;tet&lt;/b&gt;">' +
-			'test@test.test&lt;b&gt;tet&lt;/b&gt;</a></div>\n',
+		'test@test.test&lt;b&gt;tet&lt;/b&gt;</a></div>\n',
 		'Inject HTML'
 	);
 });
@@ -1106,7 +1112,7 @@ QUnit.test('CSS injection', function (assert) {
 		this.parser.toHTML('[color=#ff0000;xss:expression(' +
 			'alert(String.fromCharCode(88,83,83)))]XSS[/color]'),
 		'<div><font color="#ff0000;xss:expression(' +
-			'alert(String.fromCharCode(88,83,83)))">XSS</font></div>\n',
+		'alert(String.fromCharCode(88,83,83)))">XSS</font></div>\n',
 		'Inject CSS expression'
 	);
 
@@ -1114,7 +1120,7 @@ QUnit.test('CSS injection', function (assert) {
 		this.parser.toHTML('[font=Impact, sans-serif;xss:expression(' +
 			'alert(String.fromCharCode(88,83,83)))]XSS[/font]'),
 		'<div><font face="Impact, sans-serif;xss:expression(' +
-			'alert(String.fromCharCode(88,83,83)))">XSS</font></div>\n',
+		'alert(String.fromCharCode(88,83,83)))">XSS</font></div>\n',
 		'Inject CSS expression'
 	);
 });
@@ -1138,7 +1144,7 @@ QUnit.test('HTML injection', function (assert) {
 	assert.equal(
 		this.parser.toHTML('[quote=test<b>test</b>test]test[/quote]'),
 		'<blockquote><cite>test&lt;b&gt;test&lt;/b&gt;test</cite>' +
-			'test<br /></blockquote>',
+		'test<br /></blockquote>',
 		'Inject HTML script'
 	);
 });

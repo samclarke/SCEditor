@@ -564,7 +564,7 @@ var defaultCmds = {
 			dom.appendChild(content, _tmpl('link', {
 				url: editor._('URL:'),
 				desc: editor._('Description (optional):'),
-				target: editor._('Target Type:'),
+				target: editor._('Target Type (default: _blank):'),
 				ins: editor._('Insert')
 			}, true));
 

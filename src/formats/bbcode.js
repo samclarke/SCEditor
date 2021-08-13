@@ -14,16 +14,16 @@
 	/*eslint max-depth: off*/
 	'use strict';
 
-	var escapeEntities  = sceditor.escapeEntities;
+	var escapeEntities = sceditor.escapeEntities;
 	var escapeUriScheme = sceditor.escapeUriScheme;
-	var dom             = sceditor.dom;
-	var utils           = sceditor.utils;
+	var dom = sceditor.dom;
+	var utils = sceditor.utils;
 
-	var css    = dom.css;
-	var attr   = dom.attr;
-	var is     = dom.is;
+	var css = dom.css;
+	var attr = dom.attr;
+	var is = dom.is;
 	var extend = utils.extend;
-	var each   = utils.each;
+	var each = utils.each;
 
 	var EMOTICON_DATA_ATTR = 'data-sceditor-emoticon';
 
@@ -173,14 +173,14 @@
 		},
 		image: {
 			txtExec: function (caller, selected) {
-				var	editor  = this;
+				var editor = this;
 
 				getEditorCommand('image')._dropDown(
 					editor,
 					caller,
 					selected,
 					function (url, width, height) {
-						var attrs  = '';
+						var attrs = '';
 
 						if (width) {
 							attrs += ' width=' + width;
@@ -199,7 +199,7 @@
 		},
 		email: {
 			txtExec: function (caller, selected) {
-				var	editor  = this;
+				var editor = this;
 
 				getEditorCommand('email')._dropDown(
 					editor,
@@ -207,7 +207,7 @@
 					function (url, text) {
 						editor.insertText(
 							'[email=' + url + ']' +
-								(text || selected || url) +
+							(text || selected || url) +
 							'[/email]'
 						);
 					}
@@ -216,15 +216,20 @@
 		},
 		link: {
 			txtExec: function (caller, selected) {
-				var	editor  = this;
+				var editor = this;
 
 				getEditorCommand('link')._dropDown(
 					editor,
 					caller,
-					function (url, text) {
+					function (url, text, target) {
+						var attrs = '';
+						if (target) {
+							attrs += ' target="' +
+								escapeEntities(target, true) + '"';
+						}
 						editor.insertText(
-							'[url=' + url + ']' +
-								(text || selected || url) +
+							'[url=' + url + attrs + ']' +
+							(text || selected || url) +
 							'[/url]'
 						);
 					}
@@ -368,8 +373,8 @@
 				'font-size': null
 			},
 			format: function (element, content) {
-				var	fontSize = attr(element, 'size'),
-					size     = 2;
+				var fontSize = attr(element, 'size'),
+					size = 2;
 
 				if (!fontSize) {
 					fontSize = css(element, 'fontSize');
@@ -420,7 +425,7 @@
 			},
 			quoteType: QuoteType.never,
 			format: function (elm, content) {
-				var	color;
+				var color;
 
 				if (!is(elm, 'font') || !(color = attr(elm, 'color'))) {
 					color = elm.style.color || css(elm, 'color');
@@ -560,9 +565,9 @@
 			allowedChildren: ['#'],
 			quoteType: QuoteType.never,
 			format: function (element, content) {
-				var	width, height,
-					attribs   = '',
-					style     = function (name) {
+				var width, height,
+					attribs = '',
+					style = function (name) {
 						return element.style ? element.style[name] : null;
 					};
 
@@ -585,18 +590,18 @@
 				return '[img' + attribs + ']' + attr(element, 'src') + '[/img]';
 			},
 			html: function (token, attrs, content) {
-				var	undef, width, height, match,
+				var undef, width, height, match,
 					attribs = '';
 
 				// handle [img width=340 height=240]url[/img]
-				width  = attrs.width;
+				width = attrs.width;
 				height = attrs.height;
 
 				// handle [img=340x240]url[/img]
 				if (attrs.defaultattr) {
 					match = attrs.defaultattr.split(/x/i);
 
-					width  = match[0];
+					width = match[0];
 					height = (match.length === 2 ? match[1] : match[0]);
 				}
 
@@ -622,9 +627,11 @@
 					href: null
 				}
 			},
-			quoteType: QuoteType.never,
+			quoteType: QuoteType.auto,
 			format: function (element, content) {
-				var url = attr(element, 'href');
+				var target = attr(element, 'data-sce-target'),
+					attribs = '',
+					url = attr(element, 'href');
 
 				// make sure this link is not an e-mail,
 				// if it is return e-mail BBCode
@@ -633,13 +640,27 @@
 						content + '[/email]';
 				}
 
-				return '[url=' + url + ']' + content + '[/url]';
+				if (target) {
+					attribs += ' target="' +
+						escapeEntities(target, true) + '"';
+				}
+
+				return '[url=' + url + ' ' + attribs + ']' + content + '[/url]';
 			},
 			html: function (token, attrs, content) {
+				var undef, target, attribs = '';
+				target = attrs.target;
 				attrs.defaultattr =
 					escapeEntities(attrs.defaultattr, true) || content;
+				if (target !== undef) {
+					attribs += ' target="' + escapeEntities(target, true) + '"';
+				}
 
-				return '<a href="' + escapeUriScheme(attrs.defaultattr) + '">' +
+				console.log('<a' + attribs + ' href="'
+					+ escapeUriScheme(attrs.defaultattr) + '">' +
+					content + '</a>');
+				return '<a' + attribs + ' href="'
+					+ escapeUriScheme(attrs.defaultattr) + '">' +
 					content + '</a>';
 			}
 		},
@@ -665,7 +686,7 @@
 			quoteType: QuoteType.never,
 			format: function (element, content) {
 				var authorAttr = 'data-author';
-				var	author = '';
+				var author = '';
 				var cite;
 				var children = element.children;
 
@@ -685,8 +706,8 @@
 						element.removeChild(cite);
 					}
 
-					content	= this.elementToBbcode(element);
-					author  = '=' + author.replace(/(^\s+|\s+$)/g, '');
+					content = this.elementToBbcode(element);
+					author = '=' + author.replace(/(^\s+|\s+$)/g, '');
 
 					if (cite) {
 						element.insertBefore(cite, element.firstChild);
@@ -849,7 +870,7 @@
 	 */
 	function formatBBCodeString(str, obj) {
 		return str.replace(/\{([^}]+)\}/g, function (match, group) {
-			var	undef,
+			var undef,
 				escape = true;
 
 			if (group.charAt(0) === '!') {
@@ -878,7 +899,7 @@
 	 * @private
 	 */
 	function removeFirstLastDiv(html) {
-		var	node, next, removeDiv,
+		var node, next, removeDiv,
 			output = document.createElement('div');
 
 		removeDiv = function (node, isFirst) {
@@ -945,7 +966,7 @@
 	 * @since v1.4.0
 	 */
 	function _formatString(str) {
-		var	undef;
+		var undef;
 		var args = arguments;
 
 		return str.replace(/\{(\d+)\}/g, function (_, matchNum) {
@@ -989,14 +1010,14 @@
 	 */
 	// eslint-disable-next-line max-params
 	function TokenizeToken(type, name, val, attrs, children, closing) {
-		var base      = this;
+		var base = this;
 
-		base.type     = type;
-		base.name     = name;
-		base.val      = val;
-		base.attrs    = attrs || {};
+		base.type = type;
+		base.name = name;
+		base.val = val;
+		base.attrs = attrs || {};
 		base.children = children || [];
-		base.closing  = closing || null;
+		base.closing = closing || null;
 	};
 
 	TokenizeToken.prototype = {
@@ -1027,14 +1048,14 @@
 		 */
 		splitAt: function (splitAt) {
 			var offsetLength;
-			var base         = this;
-			var	clone        = base.clone();
-			var offset       = base.children.indexOf(splitAt);
+			var base = this;
+			var clone = base.clone();
+			var offset = base.children.indexOf(splitAt);
 
 			if (offset > -1) {
 				// Work out how many items are on the right side of the split
 				// to pass to splice()
-				offsetLength   = base.children.length - offset;
+				offsetLength = base.children.length - offset;
 				clone.children = base.children.splice(offset, offsetLength);
 			}
 
@@ -1070,7 +1091,7 @@
 		 * @memberOf BBCodeParser.prototype
 		 */
 		base.tokenize = function (str) {
-			var	matches, type, i;
+			var matches, type, i;
 			var tokens = [];
 			// The token types in reverse order of precedence
 			// (they're looped in reverse)
@@ -1139,7 +1160,7 @@
 		 */
 		function tokenizeTag(type, val) {
 			var matches, attrs, name,
-				openRegex  = /\[([^\]\s=]+)(?:([^\]]+))?\]/,
+				openRegex = /\[([^\]\s=]+)(?:([^\]]+))?\]/,
 				closeRegex = /\[\/([^\[\]]+)\]/;
 
 			// Extract the name and attributes from opening tags and
@@ -1182,7 +1203,7 @@
 		 * @private
 		 */
 		function tokenizeAttrs(attrs) {
-			var	matches,
+			var matches,
 				/*
 				([^\s=]+)				Anything that's not a space or equals
 				=						Equals sign =
@@ -1205,7 +1226,7 @@
 				)
 				*/
 				attrRegex = /([^\s=]+)=(?:(?:(["'])((?:\\\2|[^\2])*?)\2)|((?:.(?!\s\S+=))*.))/g,
-				ret       = {};
+				ret = {};
 
 			// if only one attribute then remove the = from the start and
 			// strip any quotes
@@ -1237,7 +1258,7 @@
 		 * @memberOf BBCodeParser.prototype
 		 */
 		base.parse = function (str, preserveNewLines) {
-			var ret  = parseTokens(base.tokenize(str));
+			var ret = parseTokens(base.tokenize(str));
 			var opts = base.opts;
 
 			if (opts.fixInvalidNesting) {
@@ -1288,7 +1309,7 @@
 		 * @private
 		 */
 		function isChildAllowed(parent, child) {
-			var	parentBBCode    = parent ? bbcodeHandlers[parent.name] : {},
+			var parentBBCode = parent ? bbcodeHandlers[parent.name] : {},
 				allowedChildren = parentBBCode.allowedChildren;
 
 			if (base.opts.fixInvalidChildren && allowedChildren) {
@@ -1308,10 +1329,10 @@
 		 * @private
 		 */
 		function parseTokens(toks) {
-			var	token, bbcode, curTok, clone, i, next,
-				cloned     = [],
-				output     = [],
-				openTags   = [],
+			var token, bbcode, curTok, clone, i, next,
+				cloned = [],
+				output = [],
+				openTags = [],
 				/**
 				 * Returns the currently open tag or undefined
 				 * @return {TokenizeToken}
@@ -1364,7 +1385,7 @@
 
 					// exclude closing tags of current tag
 					if (token.type !== TOKEN_CLOSE || !currentTag() ||
-							token.name !== currentTag().name) {
+						token.name !== currentTag().name) {
 						token.name = '#';
 						token.type = TOKEN_CONTENT;
 					}
@@ -1410,11 +1431,11 @@
 							currentTag().closing = token;
 							openTags.pop();
 
-						// If this is closing an open tag that is the parent of
-						// the current tag then clone all the tags including the
-						// current one until reaching the parent that is being
-						// closed. Close the parent and then add the clones back
-						// in.
+							// If this is closing an open tag that is the parent of
+							// the current tag then clone all the tags including the
+							// current one until reaching the parent that is being
+							// closed. Close the parent and then add the clones back
+							// in.
 						} else if (hasTag(token.name, TOKEN_OPEN, openTags)) {
 
 							// Remove the tag from the open tags
@@ -1459,7 +1480,7 @@
 
 							cloned.length = 0;
 
-						// This tag is closing nothing so treat it as content
+							// This tag is closing nothing so treat it as content
 						} else {
 							token.type = TOKEN_CONTENT;
 							addTag(token);
@@ -1533,7 +1554,7 @@
 		 * @return {void}
 		 */
 		function normaliseNewLines(children, parent, onlyRemoveBreakAfter) {
-			var	token, left, right, parentBBCode, bbcode,
+			var token, left, right, parentBBCode, bbcode,
 				removedBreakEnd, removedBreakBefore, remove;
 			var childrenLength = children.length;
 			// TODO: this function really needs tidying up
@@ -1548,8 +1569,8 @@
 				}
 
 				if (token.type === TOKEN_NEWLINE) {
-					left   = i > 0 ? children[i - 1] : null;
-					right  = i < childrenLength - 1 ? children[i + 1] : null;
+					left = i > 0 ? children[i - 1] : null;
+					right = i < childrenLength - 1 ? children[i + 1] : null;
 					remove = false;
 
 					// Handle the start and end new lines
@@ -1568,10 +1589,10 @@
 							if (parentBBCode.breakStart) {
 								remove = true;
 							}
-						// Last child of parent so must be end line break
-						// (breakEndBlock, breakEnd)
-						// e.g. \n[/tag]
-						// remove last line break (breakEndBlock, breakEnd)
+							// Last child of parent so must be end line break
+							// (breakEndBlock, breakEnd)
+							// e.g. \n[/tag]
+							// remove last line break (breakEndBlock, breakEnd)
 						} else if (!removedBreakEnd && !right) {
 							if (parentBBCode.isInline === false &&
 								base.opts.breakEndBlock &&
@@ -1663,7 +1684,7 @@
 		 * @private
 		 */
 		function fixNesting(children, parents, insideInline, rootArr) {
-			var	token, i, parent, parentIndex, parentParentChildren, right;
+			var token, i, parent, parentIndex, parentParentChildren, right;
 
 			var isInline = function (token) {
 				var bbcode = bbcodeHandlers[token.name];
@@ -1685,7 +1706,7 @@
 					// if this is a blocklevel element inside an inline one then
 					// split the parent at the block level element
 					parent = last(parents);
-					right  = parent.splitAt(token);
+					right = parent.splitAt(token);
 
 					parentParentChildren = parents.length > 1 ?
 						parents[parents.length - 2].children : rootArr;
@@ -1749,7 +1770,7 @@
 		 * @private
 		 */
 		function removeEmpty(tokens) {
-			var	token, bbcode;
+			var token, bbcode;
 
 			/**
 			 * Checks if all children are whitespace or not
@@ -1813,7 +1834,7 @@
 		 * @private
 		 */
 		function convertToHTML(tokens, isRoot) {
-			var	undef, token, bbcode, content, html, needsBlockWrap,
+			var undef, token, bbcode, content, html, needsBlockWrap,
 				blockWrapOpen, isInline, lastChild,
 				ret = '';
 
@@ -1887,10 +1908,10 @@
 					ret += '</div>\n';
 					blockWrapOpen = false;
 					continue;
-				// content
+					// content
 				} else {
 					needsBlockWrap = isRoot;
-					html           = escapeEntities(token.val, true);
+					html = escapeEntities(token.val, true);
 				}
 
 				if (needsBlockWrap && !blockWrapOpen) {
@@ -1938,7 +1959,7 @@
 		 * @private
 		 */
 		function convertToBBCode(toks) {
-			var	token, attr, bbcode, isBlock, isSelfClosing, quoteType,
+			var token, attr, bbcode, isBlock, isSelfClosing, quoteType,
 				breakBefore, breakStart, breakEnd, breakAfter,
 				ret = '';
 
@@ -1947,25 +1968,25 @@
 					continue;
 				}
 				// TODO: tidy this
-				bbcode        = bbcodeHandlers[token.name];
-				isBlock       = !(!bbcode || bbcode.isInline !== false);
+				bbcode = bbcodeHandlers[token.name];
+				isBlock = !(!bbcode || bbcode.isInline !== false);
 				isSelfClosing = bbcode && bbcode.isSelfClosing;
 
 				breakBefore = (isBlock && base.opts.breakBeforeBlock &&
-						bbcode.breakBefore !== false) ||
+					bbcode.breakBefore !== false) ||
 					(bbcode && bbcode.breakBefore);
 
 				breakStart = (isBlock && !isSelfClosing &&
-						base.opts.breakStartBlock &&
-						bbcode.breakStart !== false) ||
+					base.opts.breakStartBlock &&
+					bbcode.breakStart !== false) ||
 					(bbcode && bbcode.breakStart);
 
 				breakEnd = (isBlock && base.opts.breakEndBlock &&
-						bbcode.breakEnd !== false) ||
+					bbcode.breakEnd !== false) ||
 					(bbcode && bbcode.breakEnd);
 
 				breakAfter = (isBlock && base.opts.breakAfterBlock &&
-						bbcode.breakAfter !== false) ||
+					bbcode.breakAfter !== false) ||
 					(bbcode && bbcode.breakAfter);
 
 				quoteType = (bbcode ? bbcode.quoteType : null) ||
@@ -2053,7 +2074,7 @@
 		 * @private
 		 */
 		function quote(str, quoteType, name) {
-			var	needsQuotes = /\s|=/.test(str);
+			var needsQuotes = /\s|=/.test(str);
 
 			if (isFunction(quoteType)) {
 				return quoteType(str, name);
@@ -2291,7 +2312,7 @@
 		function buildBbcodeCache() {
 			each(bbcodeHandlers, function (bbcode, handler) {
 				var
-					tags   = bbcodeHandlers[bbcode].tags,
+					tags = bbcodeHandlers[bbcode].tags,
 					styles = bbcodeHandlers[bbcode].styles,
 					// TODO: Move this to utils
 					isObject = function (o) {
@@ -2368,19 +2389,19 @@
 		 * @private
 		 */
 		function handleBlockNewlines(element, content) {
-			var	tag = element.nodeName.toLowerCase();
+			var tag = element.nodeName.toLowerCase();
 			var isInline = dom.isInline;
 			if (!isInline(element, true) || tag === 'br') {
-				var	isLastBlockChild, parent, parentLastChild,
+				var isLastBlockChild, parent, parentLastChild,
 					previousSibling = element.previousSibling;
 
 				// Skips selection makers and ignored elements
 				// Skip empty inline elements
 				while (previousSibling &&
-						previousSibling.nodeType === 1 &&
-						!is(previousSibling, 'br') &&
-						isInline(previousSibling, true) &&
-						!previousSibling.firstChild) {
+					previousSibling.nodeType === 1 &&
+					!is(previousSibling, 'br') &&
+					isInline(previousSibling, true) &&
+					!previousSibling.firstChild) {
 					previousSibling = previousSibling.previousSibling;
 				}
 
@@ -2388,7 +2409,7 @@
 				// child of a block then it shouldn't cause a line break
 				// <block><inline><br></inline></block>
 				do {
-					parent          = element.parentNode;
+					parent = element.parentNode;
 					parentLastChild = parent && parent.lastChild;
 
 					isLastBlockChild = parentLastChild === element;
@@ -2430,8 +2451,8 @@
 		function handleTags(element, content, blockLevel) {
 			var
 				fn, i, bbcodeAttribs, attrMatch, format,
-				tag        = element.nodeName.toLowerCase(),
-				thisTag    = tagsToBBCodes[tag],
+				tag = element.nodeName.toLowerCase(),
+				thisTag = tagsToBBCodes[tag],
 				matchAttrs = function (attrib) {
 					var a = attr(element, attrib[0]);
 					return a && (!attrib[1] || attrib[1].includes(a));
@@ -2479,11 +2500,11 @@
 				var ret = '';
 
 				dom.traverse(node, function (node) {
-					var	curTag       = '',
-						nodeType     = node.nodeType,
-						tag          = node.nodeName.toLowerCase(),
-						vChild       = validChildren[tag],
-						firstChild   = node.firstChild,
+					var curTag = '',
+						nodeType = node.nodeType,
+						tag = node.nodeName.toLowerCase(),
+						vChild = validChildren[tag],
+						firstChild = node.firstChild,
 						isValidChild = true;
 
 					if (typeof vChildren === 'object') {
@@ -2566,7 +2587,7 @@
 			);
 
 			// Add BBCode helper methods
-			this.toBBCode   = base.toSource;
+			this.toBBCode = base.toSource;
 			this.fromBBCode = base.toHtml;
 		};
 
@@ -2578,7 +2599,7 @@
 		 * @param {boolean} [legacyAsFragment] Used by fromBBCode() method
 		 */
 		function toHtml(asFragment, source, legacyAsFragment) {
-			var	parser = new BBCodeParser(base.opts.parserOptions);
+			var parser = new BBCodeParser(base.opts.parserOptions);
 			var html = parser.toHTML(
 				base.opts.bbcodeTrim ? source.trim() : source
 			);
@@ -2600,7 +2621,7 @@
 		function toSource(asFragment, html, context, parent) {
 			context = context || document;
 
-			var	bbcode, elements;
+			var bbcode, elements;
 			var containerParent = context.createElement('div');
 			var container = context.createElement('div');
 			var parser = new BBCodeParser(base.opts.parserOptions);

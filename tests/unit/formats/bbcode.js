@@ -196,7 +196,7 @@ QUnit.test('New line handling', function (assert) {
 	assert.equal(
 		this.htmlToBBCode(
 			'test<div>' +
-				'<strong><em>test<br /></em></strong>' +
+			'<strong><em>test<br /></em></strong>' +
 			'</div>test'
 		),
 		'test\n[b][i]test[/i][/b]\ntest',
@@ -222,9 +222,9 @@ QUnit.test('New line handling', function (assert) {
 	assert.equal(
 		this.htmlToBBCode(
 			'<div>' +
-				'<div>text</div>' +
-				'<div>text</div>' +
-				'<div>text</div>' +
+			'<div>text</div>' +
+			'<div>text</div>' +
+			'<div>text</div>' +
 			'</div>'
 		),
 		'text\ntext\ntext',
@@ -234,9 +234,9 @@ QUnit.test('New line handling', function (assert) {
 	assert.equal(
 		this.htmlToBBCode(
 			'<div>' +
-				'<div>text</div>' +
-				'<div><br /></div>' +
-				'<div>text</div>' +
+			'<div>text</div>' +
+			'<div><br /></div>' +
+			'<div>text</div>' +
 			'</div>'
 		),
 		'text\n\ntext',
@@ -576,11 +576,11 @@ QUnit.test('List', function (assert) {
 	assert.equal(
 		this.htmlToBBCode(
 			'<ul>' +
-				'<li>test' +
-					'<ul>' +
-						'<li>sub<br /></li>' +
-					'</ul>' +
-				'</li>' +
+			'<li>test' +
+			'<ul>' +
+			'<li>sub<br /></li>' +
+			'</ul>' +
+			'</li>' +
 			'</ul>'
 		),
 		'[ul]\n[li]test\n[ul]\n[li]sub[/li]\n[/ul]\n[/li]\n[/ul]\n',
@@ -593,13 +593,13 @@ QUnit.test('Table', function (assert) {
 	assert.equal(
 		this.htmlToBBCode(
 			'<table>' +
-				'<tr><th>test</th></tr>' +
-				'<tr><td>data1</td></tr>' +
+			'<tr><th>test</th></tr>' +
+			'<tr><td>data1</td></tr>' +
 			'</table>'
 		),
 		'[table]' +
-			'[tr][th]test[/th]\n[/tr]\n' +
-			'[tr][td]data1[/td]\n[/tr]\n' +
+		'[tr][th]test[/th]\n[/tr]\n' +
+		'[tr][td]data1[/td]\n[/tr]\n' +
 		'[/table]\n'
 	);
 });
@@ -689,6 +689,12 @@ QUnit.test('URL', function (assert) {
 		'[url=http://test.com/][/url]',
 		'Empty anchor tag'
 	);
+
+	assert.equal(
+		this.htmlToBBCode('<a data-sce-target="_blank" href="https://test.com/">Test</a>'),
+		'[url=\"https://test.com/ "\ target=_blank]Test[/url]',
+		'Target type'
+	);
 });
 
 
@@ -733,22 +739,22 @@ QUnit.test('Quote', function (assert) {
 	assert.equal(
 		this.htmlToBBCode(
 			'<blockquote>' +
-				'<cite>admin</cite>Testing 1.2.3....' +
-				'<blockquote>' +
-					'<cite>admin</cite>Testing 1.2.3....' +
-				'</blockquote>' +
+			'<cite>admin</cite>Testing 1.2.3....' +
+			'<blockquote>' +
+			'<cite>admin</cite>Testing 1.2.3....' +
+			'</blockquote>' +
 			'</blockquote>'
 		),
 		'[quote=admin]Testing 1.2.3....\n[quote=admin]Testing 1.2.3....' +
-			'[/quote]\n[/quote]\n',
+		'[/quote]\n[/quote]\n',
 		'Nested quote with cite (author)'
 	);
 
 	assert.equal(
 		this.htmlToBBCode(
 			'<blockquote>' +
-				'<cite>admin</cite>' +
-				'<cite>this should be ignored</cite> Testing 1.2.3....' +
+			'<cite>admin</cite>' +
+			'<cite>this should be ignored</cite> Testing 1.2.3....' +
 			'</blockquote>'
 		),
 		'[quote=admin]this should be ignored Testing 1.2.3....[/quote]\n',

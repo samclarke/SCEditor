@@ -160,13 +160,16 @@
 		link: {
 			txtExec: function (caller, selected) {
 				var editor = this;
-
 				getEditorCommand('link')._dropDown(
 					editor,
 					caller,
 					function (url, text, target) {
+						var attrs = '';
+						if (target) {
+							attrs += ' target="' + target + '"';
+						}
 						editor.insertText(
-							'<a target="' + target + '" href="' + url + '">' +
+							'<a' + attrs + '" href="' + url + '">' +
 							(text || selected || url) +
 							'</a>'
 						);
