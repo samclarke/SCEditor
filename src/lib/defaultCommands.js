@@ -142,7 +142,7 @@ var defaultCmds = {
 	// START_COMMAND: Font
 	font: {
 		_dropDown: function (editor, caller, callback) {
-			var	content = dom.createElement('div');
+			var content = dom.createElement('div');
 
 			dom.on(content, 'click', 'a', function (e) {
 				callback(dom.data(this, 'font'));
@@ -171,7 +171,7 @@ var defaultCmds = {
 	// START_COMMAND: Size
 	size: {
 		_dropDown: function (editor, caller, callback) {
-			var	content = dom.createElement('div');
+			var content = dom.createElement('div');
 
 			dom.on(content, 'click', 'a', function (e) {
 				callback(dom.data(this, 'size'));
@@ -200,9 +200,9 @@ var defaultCmds = {
 	// START_COMMAND: Colour
 	color: {
 		_dropDown: function (editor, caller, callback) {
-			var	content = dom.createElement('div'),
-				html    = '',
-				cmd     = defaultCmds.color;
+			var content = dom.createElement('div'),
+				html = '',
+				cmd = defaultCmds.color;
 
 			if (!cmd._htmlCache) {
 				editor.opts.colors.split('|').forEach(function (column) {
@@ -275,9 +275,9 @@ var defaultCmds = {
 	// START_COMMAND: Paste Text
 	pastetext: {
 		exec: function (caller) {
-			var	val,
+			var val,
 				content = dom.createElement('div'),
-				editor  = this;
+				editor = this;
 
 			dom.appendChild(content, _tmpl('pastetext', {
 				label: editor._(
@@ -324,7 +324,7 @@ var defaultCmds = {
 	indent: {
 		state: function (parent, firstBlock) {
 			// Only works with lists, for now
-			var	range, startParent, endParent;
+			var range, startParent, endParent;
 
 			if (dom.is(firstBlock, 'li')) {
 				return 0;
@@ -337,7 +337,7 @@ var defaultCmds = {
 				range = this.getRangeHelper().selectedRange();
 
 				startParent = range.startContainer.parentNode;
-				endParent   = range.endContainer.parentNode;
+				endParent = range.endContainer.parentNode;
 
 				// TODO: could use nodeType for this?
 				// Maybe just check the firstBlock contains both the start
@@ -379,7 +379,7 @@ var defaultCmds = {
 			return dom.closest(firstBlock, 'ul,ol,menu') ? 0 : -1;
 		},
 		exec: function () {
-			var	block = this.getRangeHelper().getFirstBlockParent();
+			var block = this.getRangeHelper().getFirstBlockParent();
 			if (dom.closest(block, 'ul,ol,menu')) {
 				this.execCommand('outdent');
 			}
@@ -391,7 +391,7 @@ var defaultCmds = {
 	// START_COMMAND: Table
 	table: {
 		exec: function (caller) {
-			var	editor  = this,
+			var editor = this,
 				content = dom.createElement('div');
 
 			dom.appendChild(content, _tmpl('table', {
@@ -401,16 +401,16 @@ var defaultCmds = {
 			}, true));
 
 			dom.on(content, 'click', '.button', function (e) {
-				var	rows = Number(dom.find(content, '#rows')[0].value),
+				var rows = Number(dom.find(content, '#rows')[0].value),
 					cols = Number(dom.find(content, '#cols')[0].value),
 					html = '<table>';
 
 				if (rows > 0 && cols > 0) {
 					html += Array(rows + 1).join(
 						'<tr>' +
-							Array(cols + 1).join(
-								'<td><br /></td>'
-							) +
+						Array(cols + 1).join(
+							'<td><br /></td>'
+						) +
 						'</tr>'
 					);
 
@@ -450,7 +450,7 @@ var defaultCmds = {
 	// START_COMMAND: Image
 	image: {
 		_dropDown: function (editor, caller, selected, cb) {
-			var	content = dom.createElement('div');
+			var content = dom.createElement('div');
 
 			dom.appendChild(content, _tmpl('image', {
 				url: editor._('URL:'),
@@ -460,7 +460,7 @@ var defaultCmds = {
 			}, true));
 
 
-			var	urlInput = dom.find(content, '#image')[0];
+			var urlInput = dom.find(content, '#image')[0];
 
 			urlInput.value = selected;
 
@@ -480,14 +480,14 @@ var defaultCmds = {
 			editor.createDropDown(caller, 'insertimage', content);
 		},
 		exec: function (caller) {
-			var	editor  = this;
+			var editor = this;
 
 			defaultCmds.image._dropDown(
 				editor,
 				caller,
 				'',
 				function (url, width, height) {
-					var attrs  = '';
+					var attrs = '';
 
 					if (width) {
 						attrs += ' width="' + parseInt(width, 10) + '"';
@@ -512,7 +512,7 @@ var defaultCmds = {
 	// START_COMMAND: E-mail
 	email: {
 		_dropDown: function (editor, caller, cb) {
-			var	content = dom.createElement('div');
+			var content = dom.createElement('div');
 
 			dom.appendChild(content, _tmpl('email', {
 				label: editor._('E-mail:'),
@@ -534,7 +534,7 @@ var defaultCmds = {
 			editor.createDropDown(caller, 'insertemail', content);
 		},
 		exec: function (caller) {
-			var	editor  = this;
+			var editor = this;
 
 			defaultCmds.email._dropDown(
 				editor,
@@ -544,7 +544,7 @@ var defaultCmds = {
 						editor.wysiwygEditorInsertHtml(
 							'<a href="' +
 							'mailto:' + escape.entities(email) + '">' +
-								escape.entities((text || email)) +
+							escape.entities((text || email)) +
 							'</a>'
 						);
 					} else {
@@ -561,10 +561,10 @@ var defaultCmds = {
 	link: {
 		_dropDown: function (editor, caller, cb) {
 			var content = dom.createElement('div');
-
 			dom.appendChild(content, _tmpl('link', {
 				url: editor._('URL:'),
 				desc: editor._('Description (optional):'),
+				target: editor._('Target Type:'),
 				ins: editor._('Insert')
 			}, true));
 
@@ -572,7 +572,8 @@ var defaultCmds = {
 
 			function insertUrl(e) {
 				if (linkInput.value) {
-					cb(linkInput.value, dom.find(content, '#des')[0].value);
+					cb(linkInput.value, dom.find(content, '#des')[0].value,
+						dom.find(content, '#linkTarget')[0].value);
 				}
 
 				editor.closeDropDown(true);
@@ -592,17 +593,21 @@ var defaultCmds = {
 		exec: function (caller) {
 			var editor = this;
 
-			defaultCmds.link._dropDown(editor, caller, function (url, text) {
-				if (text || !editor.getRangeHelper().selectedHtml()) {
-					editor.wysiwygEditorInsertHtml(
-						'<a href="' + escape.entities(url) + '">' +
+			defaultCmds.link._dropDown(
+				editor,
+				caller,
+				function (url, text, target) {
+					if (text || !editor.getRangeHelper().selectedHtml()) {
+						editor.wysiwygEditorInsertHtml(
+							'<a target="' + escape.entities(target) +
+							'" href="' + escape.entities(url) + '">' +
 							escape.entities(text || url) +
-						'</a>'
-					);
-				} else {
-					editor.execCommand('createlink', url);
-				}
-			});
+							'</a>'
+						);
+					} else {
+						editor.execCommand('createlink', url);
+					}
+				});
 		},
 		tooltip: 'Insert a link'
 	},
@@ -632,18 +637,18 @@ var defaultCmds = {
 	// START_COMMAND: Quote
 	quote: {
 		exec: function (caller, html, author) {
-			var	before = '<blockquote>',
-				end    = '</blockquote>';
+			var before = '<blockquote>',
+				end = '</blockquote>';
 
 			// if there is HTML passed set end to null so any selected
 			// text is replaced
 			if (html) {
 				author = (author ? '<cite>' +
 					escape.entities(author) +
-				'</cite>' : '');
+					'</cite>' : '');
 				before = before + author + html + end;
-				end    = null;
-			// if not add a newline to the end of the inserted quote
+				end = null;
+				// if not add a newline to the end of the inserted quote
 			} else if (this.getRangeHelper().selectedHtml() === '') {
 				end = '<br />' + end;
 			}
@@ -660,19 +665,19 @@ var defaultCmds = {
 			var editor = this;
 
 			var createContent = function (includeMore) {
-				var	moreLink,
-					opts            = editor.opts,
-					emoticonsRoot   = opts.emoticonsRoot || '',
+				var moreLink,
+					opts = editor.opts,
+					emoticonsRoot = opts.emoticonsRoot || '',
 					emoticonsCompat = opts.emoticonsCompat,
-					rangeHelper     = editor.getRangeHelper(),
-					startSpace      = emoticonsCompat &&
+					rangeHelper = editor.getRangeHelper(),
+					startSpace = emoticonsCompat &&
 						rangeHelper.getOuterText(true, 1) !== ' ' ? ' ' : '',
-					endSpace        = emoticonsCompat &&
+					endSpace = emoticonsCompat &&
 						rangeHelper.getOuterText(false, 1) !== ' ' ? ' ' : '',
-					content         = dom.createElement('div'),
-					line            = dom.createElement('div'),
-					perLine         = 0,
-					emoticons       = utils.extend(
+					content = dom.createElement('div'),
+					line = dom.createElement('div'),
+					perLine = 0,
+					emoticons = utils.extend(
 						{},
 						opts.emoticons.dropdown,
 						includeMore ? opts.emoticons.more : {}
@@ -736,7 +741,7 @@ var defaultCmds = {
 	// START_COMMAND: YouTube
 	youtube: {
 		_dropDown: function (editor, caller, callback) {
-			var	content = dom.createElement('div');
+			var content = dom.createElement('div');
 
 			dom.appendChild(content, _tmpl('youtubeMenu', {
 				label: editor._('Video URL:'),
@@ -784,10 +789,10 @@ var defaultCmds = {
 	// START_COMMAND: Date
 	date: {
 		_date: function (editor) {
-			var	now   = new Date(),
-				year  = now.getYear(),
+			var now = new Date(),
+				year = now.getYear(),
 				month = now.getMonth() + 1,
-				day   = now.getDate();
+				day = now.getDate();
 
 			if (year < 2000) {
 				year = 1900 + year;
@@ -819,10 +824,10 @@ var defaultCmds = {
 	// START_COMMAND: Time
 	time: {
 		_time: function () {
-			var	now   = new Date(),
+			var now = new Date(),
 				hours = now.getHours(),
-				mins  = now.getMinutes(),
-				secs  = now.getSeconds();
+				mins = now.getMinutes(),
+				secs = now.getSeconds();
 
 			if (hours < 10) {
 				hours = '0' + hours;
@@ -855,7 +860,7 @@ var defaultCmds = {
 			return firstBlock && firstBlock.style.direction === 'ltr';
 		},
 		exec: function () {
-			var	editor = this,
+			var editor = this,
 				rangeHelper = editor.getRangeHelper(),
 				node = rangeHelper.getFirstBlockParent();
 
@@ -864,7 +869,7 @@ var defaultCmds = {
 			if (!node || dom.is(node, 'body')) {
 				editor.execCommand('formatBlock', 'p');
 
-				node  = rangeHelper.getFirstBlockParent();
+				node = rangeHelper.getFirstBlockParent();
 
 				if (!node || dom.is(node, 'body')) {
 					return;
@@ -884,7 +889,7 @@ var defaultCmds = {
 			return firstBlock && firstBlock.style.direction === 'rtl';
 		},
 		exec: function () {
-			var	editor = this,
+			var editor = this,
 				rangeHelper = editor.getRangeHelper(),
 				node = rangeHelper.getFirstBlockParent();
 

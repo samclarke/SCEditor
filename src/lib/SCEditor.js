@@ -10,8 +10,8 @@ import * as browser from './browser.js';
 import * as emoticons from './emoticons.js';
 import DOMPurify from 'dompurify';
 
-var globalWin  = window;
-var globalDoc  = document;
+var globalWin = window;
+var globalDoc = document;
 
 var IMAGE_MIME_REGEX = /^image\/(p?jpe?g|gif|png|bmp)$/i;
 
@@ -313,7 +313,7 @@ export default function SCEditor(original, userOptions) {
 	 * Private functions
 	 * @private
 	 */
-	var	init,
+	var init,
 		replaceEmoticons,
 		handleCommand,
 		initEditor,
@@ -515,7 +515,7 @@ export default function SCEditor(original, userOptions) {
 		locale = SCEditor.locale[options.locale];
 
 		if (!locale) {
-			lang   = options.locale.split('-');
+			lang = options.locale.split('-');
 			locale = SCEditor.locale[lang[0]];
 		}
 
@@ -530,7 +530,7 @@ export default function SCEditor(original, userOptions) {
 	 * @private
 	 */
 	initEditor = function () {
-		sourceEditor  = dom.createElement('textarea');
+		sourceEditor = dom.createElement('textarea');
 		wysiwygEditor = dom.createElement('iframe', {
 			frameborder: 0,
 			allowfullscreen: true
@@ -712,10 +712,10 @@ export default function SCEditor(original, userOptions) {
 	 * @private
 	 */
 	initToolBar = function () {
-		var	group,
+		var group,
 			commands = base.commands,
-			exclude  = (options.toolbarExclude || '').split(','),
-			groups   = options.toolbar.split('|');
+			exclude = (options.toolbarExclude || '').split(','),
+			groups = options.toolbar.split('|');
 
 		toolbar = dom.createElement('div', {
 			className: 'sceditor-toolbar',
@@ -732,8 +732,8 @@ export default function SCEditor(original, userOptions) {
 			});
 
 			utils.each(menuItems.split(','), function (_, commandName) {
-				var	button, shortcut,
-					command  = commands[commandName];
+				var button, shortcut,
+					command = commands[commandName];
 
 				// The commandName must be a valid command and not excluded
 				if (!command || exclude.indexOf(commandName) > -1) {
@@ -741,10 +741,10 @@ export default function SCEditor(original, userOptions) {
 				}
 
 				shortcut = command.shortcut;
-				button   = _tmpl('toolbarButton', {
+				button = _tmpl('toolbarButton', {
 					name: commandName,
 					dispName: base._(command.name ||
-							command.tooltip || commandName)
+						command.tooltip || commandName)
 				}, true).firstChild;
 
 				if (icons && icons.create) {
@@ -776,7 +776,7 @@ export default function SCEditor(original, userOptions) {
 				if (command.tooltip) {
 					dom.attr(button, 'title',
 						base._(command.tooltip) +
-							(shortcut ? ' (' + shortcut + ')' : '')
+						(shortcut ? ' (' + shortcut + ')' : '')
 					);
 				}
 
@@ -789,7 +789,7 @@ export default function SCEditor(original, userOptions) {
 						name: commandName,
 						state: command.state
 					});
-				// exec string commands can be passed to queryCommandState
+					// exec string commands can be passed to queryCommandState
 				} else if (utils.isString(command.exec)) {
 					btnStateHandlers.push({
 						name: commandName,
@@ -816,38 +816,38 @@ export default function SCEditor(original, userOptions) {
 	 * @private
 	 */
 	initResize = function () {
-		var	minHeight, maxHeight, minWidth, maxWidth,
+		var minHeight, maxHeight, minWidth, maxWidth,
 			mouseMoveFunc, mouseUpFunc,
-			grip        = dom.createElement('div', {
+			grip = dom.createElement('div', {
 				className: 'sceditor-grip'
 			}),
 			// Cover is used to cover the editor iframe so document
 			// still gets mouse move events
-			cover       = dom.createElement('div', {
+			cover = dom.createElement('div', {
 				className: 'sceditor-resize-cover'
 			}),
-			moveEvents  = 'touchmove mousemove',
-			endEvents   = 'touchcancel touchend mouseup',
-			startX      = 0,
-			startY      = 0,
-			newX        = 0,
-			newY        = 0,
-			startWidth  = 0,
+			moveEvents = 'touchmove mousemove',
+			endEvents = 'touchcancel touchend mouseup',
+			startX = 0,
+			startY = 0,
+			newX = 0,
+			newY = 0,
+			startWidth = 0,
 			startHeight = 0,
-			origWidth   = dom.width(editorContainer),
-			origHeight  = dom.height(editorContainer),
-			isDragging  = false,
-			rtl         = base.rtl();
+			origWidth = dom.width(editorContainer),
+			origHeight = dom.height(editorContainer),
+			isDragging = false,
+			rtl = base.rtl();
 
 		minHeight = options.resizeMinHeight || origHeight / 1.5;
 		maxHeight = options.resizeMaxHeight || origHeight * 2.5;
-		minWidth  = options.resizeMinWidth  || origWidth  / 1.25;
-		maxWidth  = options.resizeMaxWidth  || origWidth  * 1.25;
+		minWidth = options.resizeMinWidth || origWidth / 1.25;
+		maxWidth = options.resizeMaxWidth || origWidth * 1.25;
 
 		mouseMoveFunc = function (e) {
 			// iOS uses window.event
 			if (e.type === 'touchmove') {
-				e    = globalWin.event;
+				e = globalWin.event;
 				newX = e.changedTouches[0].pageX;
 				newY = e.changedTouches[0].pageY;
 			} else {
@@ -855,8 +855,8 @@ export default function SCEditor(original, userOptions) {
 				newY = e.pageY;
 			}
 
-			var	newHeight = startHeight + (newY - startY),
-				newWidth  = rtl ?
+			var newHeight = startHeight + (newY - startY),
+				newWidth = rtl ?
 					startWidth - (newX - startX) :
 					startWidth + (newX - startX);
 
@@ -917,7 +917,7 @@ export default function SCEditor(original, userOptions) {
 		dom.on(grip, 'touchstart mousedown', function (e) {
 			// iOS uses window.event
 			if (e.type === 'touchstart') {
-				e      = globalWin.event;
+				e = globalWin.event;
 				startX = e.touches[0].pageX;
 				startY = e.touches[0].pageY;
 			} else {
@@ -925,9 +925,9 @@ export default function SCEditor(original, userOptions) {
 				startY = e.pageY;
 			}
 
-			startWidth  = dom.width(editorContainer);
+			startWidth = dom.width(editorContainer);
 			startHeight = dom.height(editorContainer);
-			isDragging  = true;
+			isDragging = true;
 
 			dom.addClass(editorContainer, 'resizing');
 			dom.show(cover);
@@ -943,8 +943,8 @@ export default function SCEditor(original, userOptions) {
 	 * @private
 	 */
 	initEmoticons = function () {
-		var	emoticons = options.emoticons;
-		var root      = options.emoticonsRoot || '';
+		var emoticons = options.emoticons;
+		var root = options.emoticonsRoot || '';
 
 		if (emoticons) {
 			allEmoticons = utils.extend(
@@ -974,8 +974,8 @@ export default function SCEditor(original, userOptions) {
 	 * @private
 	 */
 	autofocus = function () {
-		var	range, txtPos,
-			node     = wysiwygBody.firstChild,
+		var range, txtPos,
+			node = wysiwygBody.firstChild,
 			focusEnd = !!options.autofocusEnd;
 
 		// Can't focus invisible elements
@@ -1202,7 +1202,7 @@ export default function SCEditor(original, userOptions) {
 	 */
 	base.dimensions = function (width, height, save) {
 		// set undefined width/height to boolean false
-		width  = (!width && width !== 0) ? false : width;
+		width = (!width && width !== 0) ? false : width;
 		height = (!height && height !== 0) ? false : height;
 
 		if (width === false && height === false) {
@@ -1390,7 +1390,7 @@ export default function SCEditor(original, userOptions) {
 
 		pluginManager.destroy();
 
-		rangeHelper   = null;
+		rangeHelper = null;
 		pluginManager = null;
 
 		if (dropdown) {
@@ -1430,7 +1430,7 @@ export default function SCEditor(original, userOptions) {
 	 */
 	base.createDropDown = function (menuItem, name, content) {
 		// first click for create second click for close
-		var	dropDownCss,
+		var dropDownCss,
 			dropDownClass = 'sceditor-' + name;
 
 		base.closeDropDown();
@@ -1568,8 +1568,8 @@ export default function SCEditor(original, userOptions) {
 			data.html = sanitize(data['text/html']);
 
 			handlePasteData(data);
-		// If contentsFragment exists then we are already waiting for a
-		// previous paste so let the handler for that handle this one too
+			// If contentsFragment exists then we are already waiting for a
+			// previous paste so let the handler for that handle this one too
 		} else if (!pasteContentFragment) {
 			// Save the scroll position so can be restored
 			// when contents is restored
@@ -1684,7 +1684,7 @@ export default function SCEditor(original, userOptions) {
 	base.wysiwygEditorInsertHtml = function (
 		html, endHtml, overrideCodeBlocking
 	) {
-		var	marker, scrollTop, scrollTo,
+		var marker, scrollTop, scrollTo,
 			editorHeight = dom.height(wysiwygEditor);
 
 		base.focus();
@@ -1708,10 +1708,10 @@ export default function SCEditor(original, userOptions) {
 		dom.fixNesting(wysiwygBody);
 
 		// Scroll the editor after the end of the selection
-		marker   = dom.find(wysiwygBody, '#sceditor-end-marker')[0];
+		marker = dom.find(wysiwygBody, '#sceditor-end-marker')[0];
 		dom.show(marker);
 		scrollTop = wysiwygBody.scrollTop;
-		scrollTo  = (dom.getOffset(marker).top +
+		scrollTo = (dom.getOffset(marker).top +
 			(marker.offsetHeight * 1.5)) - editorHeight;
 		dom.hide(marker);
 
@@ -1796,7 +1796,7 @@ export default function SCEditor(original, userOptions) {
 	base.sourceEditorInsertText = function (text, endText) {
 		var scrollTop, currentValue,
 			startPos = sourceEditor.selectionStart,
-			endPos   = sourceEditor.selectionEnd;
+			endPos = sourceEditor.selectionEnd;
 
 		scrollTop = sourceEditor.scrollTop;
 		sourceEditor.focus();
@@ -1966,7 +1966,7 @@ export default function SCEditor(original, userOptions) {
 
 		// Add the selection between start and end
 		if (end) {
-			var	html = rangeHelper.selectedHtml();
+			var html = rangeHelper.selectedHtml();
 
 			if (filter !== false && 'fragmentToSource' in format) {
 				html = format
@@ -2006,7 +2006,7 @@ export default function SCEditor(original, userOptions) {
 	 * @memberOf SCEditor.prototype
 	 */
 	base.getWysiwygEditorValue = function (filter) {
-		var	html;
+		var html;
 		// Create a tmp node to store contents so it can be modified
 		// without affecting anything else.
 		var tmp = dom.createElement('div', {}, wysiwygDocument);
@@ -2275,8 +2275,8 @@ export default function SCEditor(original, userOptions) {
 	 * @memberOf SCEditor.prototype
 	 */
 	base.execCommand = function (command, param) {
-		var	executed    = false,
-			commandObj  = base.commands[command];
+		var executed = false,
+			commandObj = base.commands[command];
 
 		base.focus();
 
@@ -2314,8 +2314,8 @@ export default function SCEditor(original, userOptions) {
 			if (wysiwygWindow.getSelection() &&
 				wysiwygWindow.getSelection().rangeCount <= 0) {
 				currentSelection = null;
-			// rangeHelper could be null if editor was destroyed
-			// before the timeout had finished
+				// rangeHelper could be null if editor was destroyed
+				// before the timeout had finished
 			} else if (rangeHelper && !rangeHelper.compare(currentSelection)) {
 				currentSelection = rangeHelper.cloneSelected();
 
@@ -2368,12 +2368,12 @@ export default function SCEditor(original, userOptions) {
 	 */
 	checkNodeChanged = function () {
 		// check if node has changed
-		var	oldNode,
+		var oldNode,
 			node = rangeHelper.parentNode();
 
 		if (currentNode !== node) {
-			oldNode          = currentNode;
-			currentNode      = node;
+			oldNode = currentNode;
+			currentNode = node;
 			currentBlockNode = rangeHelper.getFirstBlockParent(node);
 
 			dom.trigger(editorContainer, 'nodechanged', {
@@ -2421,8 +2421,8 @@ export default function SCEditor(original, userOptions) {
 	updateActiveButtons = function () {
 		var firstBlock, parent;
 		var activeClass = 'active';
-		var doc         = wysiwygDocument;
-		var isSource    = base.sourceMode();
+		var doc = wysiwygDocument;
+		var isSource = base.sourceMode();
 
 		if (base.readOnly()) {
 			utils.each(dom.find(toolbar, activeClass), function (_, menuItem) {
@@ -2432,16 +2432,16 @@ export default function SCEditor(original, userOptions) {
 		}
 
 		if (!isSource) {
-			parent     = rangeHelper.parentNode();
+			parent = rangeHelper.parentNode();
 			firstBlock = rangeHelper.getFirstBlockParent(parent);
 		}
 
 		for (var j = 0; j < btnStateHandlers.length; j++) {
-			var state      = 0;
-			var btn        = toolbarButtons[btnStateHandlers[j].name];
-			var stateFn    = btnStateHandlers[j].state;
+			var state = 0;
+			var btn = toolbarButtons[btnStateHandlers[j].name];
+			var stateFn = btnStateHandlers[j].state;
 			var isDisabled = (isSource && !btn._sceTxtMode) ||
-						(!isSource && !btn._sceWysiwygMode);
+				(!isSource && !btn._sceWysiwygMode);
 
 			if (utils.isString(stateFn)) {
 				if (!isSource) {
@@ -2452,7 +2452,7 @@ export default function SCEditor(original, userOptions) {
 						if (state > -1) {
 							state = doc.queryCommandState(stateFn) ? 1 : 0;
 						}
-					} catch (ex) {}
+					} catch (ex) { }
 				}
 			} else if (!isDisabled) {
 				state = stateFn.call(base, parent, firstBlock);
@@ -2494,7 +2494,7 @@ export default function SCEditor(original, userOptions) {
 
 				// Last <br> of a block will be collapsed  so need to make sure
 				// the <br> that was inserted isn't the last node of a block.
-				var parent  = br.parentNode;
+				var parent = br.parentNode;
 				var lastChild = parent.lastChild;
 
 				// Sometimes an empty next node is created after the <br>
@@ -2584,7 +2584,7 @@ export default function SCEditor(original, userOptions) {
 	 * @memberOf SCEditor.prototype
 	 */
 	base._ = function () {
-		var	undef,
+		var undef,
 			args = arguments;
 
 		if (locale && locale[args[0]]) {
@@ -2659,7 +2659,7 @@ export default function SCEditor(original, userOptions) {
 	base.bind = function (events, handler, excludeWysiwyg, excludeSource) {
 		events = events.split(' ');
 
-		var i  = events.length;
+		var i = events.length;
 		while (i--) {
 			if (utils.isFunction(handler)) {
 				var wysEvent = 'scewys' + events[i];
@@ -2707,7 +2707,7 @@ export default function SCEditor(original, userOptions) {
 	base.unbind = function (events, handler, excludeWysiwyg, excludeSource) {
 		events = events.split(' ');
 
-		var i  = events.length;
+		var i = events.length;
 		while (i--) {
 			if (utils.isFunction(handler)) {
 				if (!excludeWysiwyg) {
@@ -2944,10 +2944,10 @@ export default function SCEditor(original, userOptions) {
 	 * @private
 	 */
 	emoticonsKeyPress = function (e) {
-		var	replacedEmoticon,
-			cachePos       = 0,
+		var replacedEmoticon,
+			cachePos = 0,
 			emoticonsCache = base.emoticonsCache,
-			curChar        = String.fromCharCode(e.which);
+			curChar = String.fromCharCode(e.which);
 
 		// TODO: Make configurable
 		if (dom.closest(currentBlockNode, 'code')) {
@@ -3095,7 +3095,7 @@ export default function SCEditor(original, userOptions) {
 	 * @private
 	 */
 	handleKeyDown = function (e) {
-		var	shortcut   = [],
+		var shortcut = [],
 			SHIFT_KEYS = {
 				'`': '~',
 				'1': '!',
@@ -3196,7 +3196,7 @@ export default function SCEditor(original, userOptions) {
 				104: '8',
 				105: '9'
 			},
-			which     = e.which,
+			which = e.which,
 			character = SPECIAL_KEYS[which] ||
 				String.fromCharCode(which).toLowerCase();
 
@@ -3272,7 +3272,7 @@ export default function SCEditor(original, userOptions) {
 	 * @private
 	 */
 	handleBackSpace = function (e) {
-		var	node, offset, range, parent;
+		var node, offset, range, parent;
 
 		// 8 is the backspace key
 		if (options.disableBlockRemove || e.which !== 8 ||
@@ -3280,7 +3280,7 @@ export default function SCEditor(original, userOptions) {
 			return;
 		}
 
-		node   = range.startContainer;
+		node = range.startContainer;
 		offset = range.startOffset;
 
 		if (offset !== 0 || !(parent = currentStyledBlockNode()) ||
@@ -3374,8 +3374,8 @@ export default function SCEditor(original, userOptions) {
 			return;
 		}
 
-		var	currentHtml,
-			sourceMode   = base.sourceMode(),
+		var currentHtml,
+			sourceMode = base.sourceMode(),
 			hasSelection = !sourceMode && rangeHelper.hasSelection();
 
 		// Composition end isn't guaranteed to fire but must have
@@ -3429,9 +3429,9 @@ export default function SCEditor(original, userOptions) {
 	 * @private
 	 */
 	valueChangedKeyUp = function (e) {
-		var which         = e.which,
-			lastChar      = valueChangedKeyUp.lastChar,
-			lastWasSpace  = (lastChar === 13 || lastChar === 32),
+		var which = e.which,
+			lastChar = valueChangedKeyUp.lastChar,
+			lastWasSpace = (lastChar === 13 || lastChar === 32),
 			lastWasDelete = (lastChar === 8 || lastChar === 46);
 
 		valueChangedKeyUp.lastChar = which;
@@ -3447,7 +3447,7 @@ export default function SCEditor(original, userOptions) {
 			} else {
 				valueChangedKeyUp.triggerNext = true;
 			}
-		// 8 = backspace & 46 = del
+			// 8 = backspace & 46 = del
 		} else if (which === 8 || which === 46) {
 			if (!lastWasDelete) {
 				triggerValueChanged();

@@ -11,12 +11,12 @@ var _templates = {
 	html:
 		'<!DOCTYPE html>' +
 		'<html{attrs}>' +
-			'<head>' +
-				'<meta http-equiv="Content-Type" ' +
-					'content="text/html;charset={charset}" />' +
-				'<link rel="stylesheet" type="text/css" href="{style}" />' +
-			'</head>' +
-			'<body contenteditable="true" {spellcheck}><p></p></body>' +
+		'<head>' +
+		'<meta http-equiv="Content-Type" ' +
+		'content="text/html;charset={charset}" />' +
+		'<link rel="stylesheet" type="text/css" href="{style}" />' +
+		'</head>' +
+		'<body contenteditable="true" {spellcheck}><p></p></body>' +
 		'</html>',
 
 	toolbarButton: '<a class="sceditor-button sceditor-button-{name}" ' +
@@ -34,48 +34,55 @@ var _templates = {
 
 	pastetext:
 		'<div><label for="txt">{label}</label> ' +
-			'<textarea cols="20" rows="7" id="txt"></textarea></div>' +
-			'<div><input type="button" class="button" value="{insert}" />' +
+		'<textarea cols="20" rows="7" id="txt"></textarea></div>' +
+		'<div><input type="button" class="button" value="{insert}" />' +
 		'</div>',
 
 	table:
 		'<div><label for="rows">{rows}</label><input type="text" ' +
-			'id="rows" value="2" /></div>' +
+		'id="rows" value="2" /></div>' +
 		'<div><label for="cols">{cols}</label><input type="text" ' +
-			'id="cols" value="2" /></div>' +
+		'id="cols" value="2" /></div>' +
 		'<div><input type="button" class="button" value="{insert}"' +
-			' /></div>',
+		' /></div>',
 
 	image:
 		'<div><label for="image">{url}</label> ' +
-			'<input type="text" id="image" dir="ltr" placeholder="https://" /></div>' +
+		'<input type="text" id="image" dir="ltr" placeholder="https://" /></div>' +
 		'<div><label for="width">{width}</label> ' +
-			'<input type="text" id="width" size="2" dir="ltr" /></div>' +
+		'<input type="text" id="width" size="2" dir="ltr" /></div>' +
 		'<div><label for="height">{height}</label> ' +
-			'<input type="text" id="height" size="2" dir="ltr" /></div>' +
+		'<input type="text" id="height" size="2" dir="ltr" /></div>' +
 		'<div><input type="button" class="button" value="{insert}" />' +
-			'</div>',
+		'</div>',
 
 	email:
 		'<div><label for="email">{label}</label> ' +
-			'<input type="text" id="email" dir="ltr" /></div>' +
+		'<input type="text" id="email" dir="ltr" /></div>' +
 		'<div><label for="des">{desc}</label> ' +
-			'<input type="text" id="des" /></div>' +
+		'<input type="text" id="des" /></div>' +
 		'<div><input type="button" class="button" value="{insert}" />' +
-			'</div>',
+		'</div>',
 
 	link:
 		'<div><label for="link">{url}</label> ' +
-			'<input type="text" id="link" dir="ltr" placeholder="https://" /></div>' +
+		'<input type="text" id="link" dir="ltr" placeholder="https://" /></div>' +
 		'<div><label for="des">{desc}</label> ' +
-			'<input type="text" id="des" /></div>' +
+		'<input type="text" id="des" /></div>' +
+		'<div><label for="linkTarget">{target}</label> ' +
+		`<select name="cars" id="linkTarget">
+			<option value="_blank">_blank</option>
+			<option value="_parent">_parent</option>
+			<option value="_self">_self</option>
+			<option value="_top">_top</option>
+		</select>` +
 		'<div><input type="button" class="button" value="{ins}" /></div>',
 
 	youtubeMenu:
 		'<div><label for="link">{label}</label> ' +
-			'<input type="text" id="link" dir="ltr" placeholder="https://" /></div>' +
+		'<input type="text" id="link" dir="ltr" placeholder="https://" /></div>' +
 		'<div><input type="button" class="button" value="{insert}" />' +
-			'</div>',
+		'</div>',
 
 	youtube:
 		'<iframe width="560" height="315" frameborder="0" allowfullscreen ' +
