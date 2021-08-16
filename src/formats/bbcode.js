@@ -656,9 +656,6 @@
 					attribs += ' target="' + escapeEntities(target, true) + '"';
 				}
 
-				console.log('<a' + attribs + ' href="'
-					+ escapeUriScheme(attrs.defaultattr) + '">' +
-					content + '</a>');
 				return '<a' + attribs + ' href="'
 					+ escapeUriScheme(attrs.defaultattr) + '">' +
 					content + '</a>';
