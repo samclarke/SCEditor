@@ -118,6 +118,9 @@
 						childElement = document.createElement(val.type);
 						childElement.type = 'text';
 						childElement.id = val.id;
+						if (val.id === 'url') {
+							childElement.setAttribute('placeholder', 'https://');
+						}
 						wrapperElement.appendChild(parentElement);
 						wrapperElement.appendChild(childElement);
 						content.appendChild(wrapperElement);
@@ -174,7 +177,7 @@
 				}
 			});
 
-			editor.createDropDown(caller, 'anchorTag', content);
+			editor.createDropDown(caller, 'link-target', content);
 		};
 	};
 })(sceditor);
