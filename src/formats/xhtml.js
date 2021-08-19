@@ -1195,6 +1195,11 @@
 					attr(node, 'target', target);
 				}
 
+				if (target === '_self' ||
+					target === '_top' || target === '_parent') {
+					attr(node, 'target', target);
+				}
+
 
 				removeAttr(node, 'data-sce-target');
 			}
