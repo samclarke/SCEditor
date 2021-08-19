@@ -87,7 +87,7 @@
 			attrs += ' href="' + href + '"';
 
 			if (editor.getRangeHelper().selectedHtml().trim('').length > 0) {
-				text = editor.getRangeHelper().selectedHtml();
+				text = description || editor.getRangeHelper().selectedHtml();
 			} else {
 				text = description.trim('').length > 0 ? description : href;
 			}
@@ -126,7 +126,6 @@
 						parentElement = document.createElement('label');
 						parentElement.setAttribute('for', val.id);
 						parentElement.innerText = val.name;
-
 						childElement = document.createElement(val.type);
 						childElement.setAttribute('for', val.id);
 						childElement.innerText = val.name;
