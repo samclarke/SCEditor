@@ -2263,20 +2263,17 @@
 		function buildBbcodeCache() {
 			each(bbcodeHandlers, function (bbcode, handler) {
 				var
+					isBlock = handler.isInline === false,
 					tags   = bbcodeHandlers[bbcode].tags,
 					styles = bbcodeHandlers[bbcode].styles;
 
 				if (tags) {
 					each(tags, function (tag, values) {
-						tagsToBBCodes[tag] = tagsToBBCodes[tag] || [];
-						// tagsToBBCodes[tag][handler.isInline] =
-						// 	tagsToBBCodes[tag][handler.isInline] || [];
-						tagsToBBCodes[tag].push([
-							values && Object.entries(values),
-							handler.matchAttrs || base.opts.matchAttrs,
-							handler.format,
-							handler.isInline === false
-						]);
+						tagsToBBCodes[tag] = tagsToBBCodes[tag] || {};
+						tagsToBBCodes[tag][isBlock] =
+							tagsToBBCodes[tag][isBlock] || {};
+						tagsToBBCodes[tag][isBlock][bbcode] =
+							values && Object.entries(values);
 					});
 				}
 
@@ -2399,36 +2396,33 @@
 		 */
 		function handleTags(element, content, blockLevel) {
 			var
-				fn, i, bbcodeAttribs, attrMatch, format,
+				fn, attrMatch, format,
 				tag        = element.nodeName.toLowerCase(),
-				thisTag    = tagsToBBCodes[tag],
 				matchAttrs = function (attrib) {
-					var a = attr(element, attrib[0]);
-					return a && (!attrib[1] || attrib[1].includes(a));
+					var val = attr(element, attrib[0]);
+					return val && (!attrib[1] || attrib[1].includes(val));
 				};
 
-			if (thisTag) {
+			if (tagsToBBCodes[tag] && tagsToBBCodes[tag][blockLevel]) {
 				// loop all bbcodes for this tag
-				for (i = 0; i < thisTag.length; i++) {
-					bbcodeAttribs = thisTag[i][0];
-					attrMatch = thisTag[i][1];
-					format = thisTag[i][2];
-					if (thisTag[i][3] !== blockLevel) {
-						continue;
-					}
+				each(tagsToBBCodes[tag][blockLevel], function (bbcode, attrs) {
+					attrMatch = bbcodeHandlers[bbcode].matchAttrs
+						|| base.opts.matchAttrs;
 					// Skip if the element doesn't have the attribute or the
 					// attribute doesn't match one of the required values
 					fn = attrMatch === 'all' ? 'every' : 'some';
-					if (bbcodeAttribs && !bbcodeAttribs[fn](matchAttrs)) {
-						continue;
+					if (attrs && !attrs[fn](matchAttrs)) {
+						return;
 					}
 
+					format = bbcodeHandlers[bbcode].format;
 					if (isFunction(format)) {
 						content = format.call(base, element, content);
 					} else {
 						content = _formatString(format, content);
 					}
-				}
+					return false;
+				});
 			}
 
 			return content;
