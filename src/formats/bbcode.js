@@ -2264,18 +2264,16 @@
 			each(bbcodeHandlers, function (bbcode, handler) {
 				var
 					tags   = bbcodeHandlers[bbcode].tags,
-					styles = bbcodeHandlers[bbcode].styles,
-					// TODO: Move this to utils
-					isObject = function (o) {
-						return o instanceof Object && o.constructor === Object;
-					};
+					styles = bbcodeHandlers[bbcode].styles;
 
 				if (tags) {
 					each(tags, function (tag, values) {
 						tagsToBBCodes[tag] = tagsToBBCodes[tag] || [];
+						// tagsToBBCodes[tag][handler.isInline] =
+						// 	tagsToBBCodes[tag][handler.isInline] || [];
 						tagsToBBCodes[tag].push([
-							isObject(values) ? Object.entries(values) : values,
-							handler.matchAttrs || base.opts.matchAttrs || 'any',
+							values && Object.entries(values),
+							handler.matchAttrs || base.opts.matchAttrs,
 							handler.format,
 							handler.isInline === false
 						]);
@@ -2420,9 +2418,8 @@
 					}
 					// Skip if the element doesn't have the attribute or the
 					// attribute doesn't match one of the required values
-					fn = Array.prototype[attrMatch === 'all'
-						? 'every' : 'some'];
-					if (bbcodeAttribs && !fn.call(bbcodeAttribs, matchAttrs)) {
+					fn = attrMatch === 'all' ? 'every' : 'some';
+					if (bbcodeAttribs && !bbcodeAttribs[fn](matchAttrs)) {
 						continue;
 					}
 
