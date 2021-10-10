@@ -1198,6 +1198,18 @@
 
 				removeAttr(node, 'data-sce-target');
 			}
+		},
+		{
+			tags: {
+				code: null
+			},
+			conv: function (node) {
+				var node, nodes = node.getElementsByTagName('div');
+				while ((node = nodes[0])) {
+					node.style.display = 'block';
+					convertElement(node, 'span');
+				}
+			}
 		}
 	];
 
