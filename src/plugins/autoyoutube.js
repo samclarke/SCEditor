@@ -35,22 +35,37 @@
 			'data-youtube-id="' + id + '" allowfullscreen></iframe>';
 	}
 
-	function convertYoutubeLinks(root) {
-		var node = root.firstChild;
+	function convertYoutubeLinks(parent, isRoot) {
+		var node = parent.firstChild;
+		var wholeContent = (parent.textContent || '');
+
+		// Don't care about whitespace if is the root node
+		if (isRoot) {
+			wholeContent = wholeContent.trim();
+		}
+
+		var match = wholeContent.match(ytUrlRegex);
+		// Whole content match so only return URL embed
+		if (wholeContent === wholeContent.trim() && match &&
+			match[0].length === wholeContent.length) {
+			dom.removeAttr(parent, 'style');
+			dom.removeAttr(parent, 'class');
+			parent.innerHTML = youtubeEmbedCode(match[2]);
+			return;
+		}
 
 		while (node) {
 			// 3 is TextNodes
 			if (node.nodeType === 3) {
 				var text   = node.nodeValue;
-				var parent = node.parentNode;
-				var match  = text.match(ytUrlRegex);
+				var nodeParent = node.parentNode;
 
-				if (match) {
-					parent.insertBefore(document.createTextNode(
+				if ((match = text.match(ytUrlRegex))) {
+					nodeParent.insertBefore(document.createTextNode(
 						text.substr(0, match.index) + match[1]
 					), node);
 
-					parent.insertBefore(
+					nodeParent.insertBefore(
 						dom.parseHTML(youtubeEmbedCode(match[2])), node
 					);
 
@@ -77,14 +92,14 @@
 			}
 
 			if (data.html || data.text) {
-				var html = document.createElement('div');
+				var node = document.createElement('div');
 
-				html.innerHTML = data.html ||
+				node.innerHTML = data.html ||
 					sceditor.escapeEntities(data.text);
 
-				convertYoutubeLinks(html);
+				convertYoutubeLinks(node, true);
 
-				data.html = html.innerHTML;
+				data.html = node.innerHTML;
 			}
 		};
 	};
