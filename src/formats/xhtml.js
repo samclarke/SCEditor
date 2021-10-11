@@ -256,15 +256,15 @@
 		};
 
 		/**
+		 * Replace spaces including newlines with a single
+		 * space except for non-breaking spaces
+		 *
 		 * @param  {string} str
 		 * @return {string}
 		 * @private
 		 */
 		function trim(str) {
-			return str
-				// New lines will be shown as spaces so just convert to spaces.
-				.replace(/[\r\n]/, ' ')
-				.replace(/[^\S|\u00A0]+/g, ' ');
+			return str.replace(/[^\S\u00A0]+/g, ' ');
 		};
 
 		/**
