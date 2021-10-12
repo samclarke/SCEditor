@@ -840,3 +840,32 @@ QUnit.test('YouTube', function (assert) {
 		'[youtube]xyz[/youtube]'
 	);
 });
+
+
+QUnit.test('Allow changing BBCode properties after creation', function (assert) {
+	// This is for backwards compatibility and will change in the next breaking
+	// release
+
+	this.parser = new $.sceditor.BBCodeParser({
+		quoteType: function (str) {
+			return '\'' +
+				str.replace(/\\/g, '\\\\').replace(/'/g, '\\\'') +
+				'\'';
+		}
+	});
+
+	var oldFormat = sceditor.formats.bbcode.get('quote').format;
+	sceditor.formats.bbcode.set('quote', {
+		format: 'new format'
+	});
+
+	assert.equal(
+		this.htmlToBBCode('<blockquote>Testing 1.2.3....</blockquote>'),
+		'new format'
+	);
+
+	// Reset [quote]'s default format
+	sceditor.formats.bbcode.set('quote', {
+		format: oldFormat
+	});
+});
