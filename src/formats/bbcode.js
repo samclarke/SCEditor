@@ -2154,18 +2154,18 @@
 		quoteType: QuoteType.auto,
 
 		/**
-		 * Method to use when matching attributes.
+		 * If to use strict matching on attributes.
 		 *
-		 * - MatchingMode.all roughly equates to Array.every().
-		 * - MatchingMode.any roughly equates to Array.some().
+		 * When true this will perform AND matching requiring all tag
+		 * attributes to match.
 		 *
-		 * This will be used as a fallback on tags that do not
-		 * specify a matching mode.
+		 * When false will perform OR matching and will match if any of
+		 * a tags attributes match.
 		 *
-		 * @type {BBCodeParser.MatchingMode}
+		 * @type {Boolean}
 		 * @since 3.1.0
 		 */
-		matchAttrs: 'any'
+		strictMatch: false
 	};
 
 	/**
@@ -2237,12 +2237,6 @@
 		var tagsToBBCodes = {};
 
 		/**
-		 * Same as tagsToBBCodes but instead of HTML tags it's styles
-		 * @private
-		 */
-		var stylesToBBCodes = [];
-
-		/**
 		 * Allowed children of specific HTML tags. Empty array if no
 		 * children other than text nodes are allowed
 		 * @private
@@ -2267,8 +2261,21 @@
 					tags   = bbcodeHandlers[bbcode].tags,
 					styles = bbcodeHandlers[bbcode].styles;
 
+				if (styles) {
+					tagsToBBCodes['*'] = tagsToBBCodes['*'] || {};
+					tagsToBBCodes['*'][isBlock] =
+						tagsToBBCodes['*'][isBlock] || {};
+					tagsToBBCodes['*'][isBlock][bbcode] = [
+						['style', Object.entries(styles)]
+					];
+				}
+
 				if (tags) {
 					each(tags, function (tag, values) {
+						if (values && values.style) {
+							values.style = Object.entries(values.style);
+						}
+
 						tagsToBBCodes[tag] = tagsToBBCodes[tag] || {};
 						tagsToBBCodes[tag][isBlock] =
 							tagsToBBCodes[tag][isBlock] || {};
@@ -2276,55 +2283,8 @@
 							values && Object.entries(values);
 					});
 				}
-
-				if (styles) {
-					each(styles, function (style, values) {
-						stylesToBBCodes.push([style, values, handler]);
-					});
-				}
 			});
 		};
-
-		/**
-		 * Checks if any bbcode styles match the elements styles
-		 *
-		 * @param {!HTMLElement} element
-		 * @param {string} content
-		 * @param {boolean} blockLevel
-		 * @return {string} Content with any matching
-		 *                bbcode tags wrapped around it.
-		 * @private
-		 */
-		function handleStyles(element, content, blockLevel) {
-			var i, property, values, handler, styleValue;
-			for (i = 0; i < stylesToBBCodes.length; i++) {
-				property = stylesToBBCodes[i][0];
-				values = stylesToBBCodes[i][1];
-				handler = stylesToBBCodes[i][2];
-				if ((handler.isInline === false) !== blockLevel) {
-					continue;
-				}
-				styleValue = dom.getStyle(element, property);
-
-				// if the parent has the same style use that instead of this one
-				// so you don't end up with [i]parent[i]child[/i][/i]
-				if (!styleValue || element.parentNode &&
-					dom.hasStyle(element.parentNode, property, styleValue)) {
-					continue;
-				}
-				if (values && !values.includes(styleValue)) {
-					continue;
-				}
-
-				if (isFunction(handler.format)) {
-					content = handler.format.call(base, element, content);
-				} else {
-					content = _formatString(handler.format, content);
-				}
-			}
-
-			return content;
-		}
 
 		/**
 		 * Handles adding newlines after block level elements
@@ -2385,33 +2345,64 @@
 		}
 
 		/**
-		 * Handles a HTML tag and finds any matching bbcodes
+		 * Handles a HTML tag and finds any matching BBCodes
 		 *
 		 * @param {HTMLElement} element The element to convert
 		 * @param {string} content  The Tags text content
 		 * @param {boolean} blockLevel
-		 * @return {string} Content with any matching bbcode tags
+		 * @return {string} Content with any matching BBCode tags
 		 *                  wrapped around it.
 		 * @private
 		 */
 		function handleTags(element, content, blockLevel) {
-			var
-				fn, attrMatch, format,
-				tag        = element.nodeName.toLowerCase(),
-				matchAttrs = function (attrib) {
-					var val = attr(element, attrib[0]);
-					return val && (!attrib[1] || attrib[1].includes(val));
-				};
+			function isStyleMatch(style) {
+				var property = style[0];
+				var values = style[1];
+				var val = dom.getStyle(element, property);
+				var parent = element.parentNode;
 
-			if (tagsToBBCodes[tag] && tagsToBBCodes[tag][blockLevel]) {
+				// if the parent has the same style use that instead of this one
+				// so you don't end up with [i]parent[i]child[/i][/i]
+				if (!val || parent && dom.hasStyle(parent, property, val)) {
+					return false;
+				}
+
+				return !values || values.includes(val);
+			}
+
+			function createAttributeMatch(isStrict) {
+				return function (attribute) {
+					var name = attribute[0];
+					var value = attribute[1];
+
+					if (name === 'style' && value) {
+						return value[isStrict ? 'every' : 'some'](isStyleMatch);
+					} else {
+						var val = attr(element, name);
+
+						return val && (!value || value.includes(val));
+					}
+				};
+			}
+
+			function handleTag(tag) {
+				if (!tagsToBBCodes[tag] || !tagsToBBCodes[tag][blockLevel]) {
+					return;
+				}
+
 				// loop all bbcodes for this tag
 				each(tagsToBBCodes[tag][blockLevel], function (bbcode, attrs) {
-					attrMatch = bbcodeHandlers[bbcode].matchAttrs
-						|| base.opts.matchAttrs;
+					var fn, format,
+						isStrict = bbcodeHandlers[bbcode].strictMatch;
+
+					if (typeof isStrict === 'undefined') {
+						isStrict = base.opts.strictMatch;
+					}
+
 					// Skip if the element doesn't have the attribute or the
 					// attribute doesn't match one of the required values
-					fn = attrMatch === 'all' ? 'every' : 'some';
-					if (attrs && !attrs[fn](matchAttrs)) {
+					fn = isStrict ? 'every' : 'some';
+					if (attrs && !attrs[fn](createAttributeMatch(isStrict))) {
 						return;
 					}
 
@@ -2425,6 +2416,8 @@
 				});
 			}
 
+			handleTag('*');
+			handleTag(element.nodeName.toLowerCase());
 			return content;
 		}
 
@@ -2488,13 +2481,8 @@
 						if (isValidChild) {
 							// code tags should skip most styles
 							if (tag !== 'code') {
-								// First parse inline codes.
-								curTag = handleStyles(node, curTag, false);
+								// First parse inline codes
 								curTag = handleTags(node, curTag, false);
-								// Then do blocklevel ones. Seperating the codes
-								// out like this ensures that blocklevel bbcodes
-								// do not get nested within inline ones.
-								curTag = handleStyles(node, curTag, true);
 							}
 
 							curTag = handleTags(node, curTag, true);
