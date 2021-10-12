@@ -70,29 +70,33 @@ export function extend(targetArg, sourceArg) {
 		for (var key in source) {
 			var targetValue = target[key];
 			var value = source[key];
-			// Protect against prototype pollution
-			var isSpecialKey = key === '__proto__' || key === 'constructor';
 
 			// Skip undefined values to match jQuery
+			if (isUndefined(value)) {
+				continue;
+			}
+
 			// Skip special keys to prevent prototype pollution
-			if (!isUndefined(value) && !isSpecialKey) {
-				var isValueObject = isObject(value);
-				var isValueArray = Array.isArray(value);
+			if (key === '__proto__' || key === 'constructor') {
+				continue;
+			}
 
-				if (isDeep && (isValueObject || isValueArray)) {
-					// Can only merge if target type matches otherwise create
-					// new target to merge into
-					var isSameType = isObject(targetValue) === isValueObject &&
-						Array.isArray(targetValue) === isValueArray;
+			var isValueObject = isObject(value);
+			var isValueArray = Array.isArray(value);
 
-					target[key] = extend(
-						true,
-						isSameType ? targetValue : (isValueArray ? [] : {}),
-						value
-					);
-				} else {
-					target[key] = value;
-				}
+			if (isDeep && (isValueObject || isValueArray)) {
+				// Can only merge if target type matches otherwise create
+				// new target to merge into
+				var isSameType = isObject(targetValue) === isValueObject &&
+					Array.isArray(targetValue) === isValueArray;
+
+				target[key] = extend(
+					true,
+					isSameType ? targetValue : (isValueArray ? [] : {}),
+					value
+				);
+			} else {
+				target[key] = value;
 			}
 		}
 	}
