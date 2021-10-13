@@ -659,7 +659,8 @@ export default function SCEditor(original, userOptions) {
 		if (form) {
 			dom.on(form, 'reset', handleFormReset);
 			dom.on(form, 'submit', base.updateOriginal, dom.EVENT_CAPTURE);
-			dom.on(window, 'unload', base.updateOriginal, dom.EVENT_CAPTURE);
+			dom.on(window, 'pagehide', base.updateOriginal);
+			dom.on(window, 'pageshow', handleFormReset);
 		}
 
 		dom.on(wysiwygBody, 'keypress', handleKeyPress);
@@ -1400,12 +1401,12 @@ export default function SCEditor(original, userOptions) {
 
 		dom.off(globalDoc, 'click', handleDocumentClick);
 
-		// TODO: make off support null nodes?
 		var form = original.form;
 		if (form) {
 			dom.off(form, 'reset', handleFormReset);
 			dom.off(form, 'submit', base.updateOriginal, dom.EVENT_CAPTURE);
-			dom.off(window, 'unload', base.updateOriginal);
+			dom.off(window, 'pagehide', base.updateOriginal);
+			dom.off(window, 'pageshow', handleFormReset);
 		}
 
 		dom.remove(sourceEditor);
