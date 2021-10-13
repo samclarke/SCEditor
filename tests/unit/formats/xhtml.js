@@ -980,3 +980,19 @@ QUnit.test('Should remove the nlf class from none empty nlf tags', function (ass
 	);
 });
 
+QUnit.test('Should convert divs inside code blocks to spans', function (assert) {
+	assert.htmlEqual(
+		this.filterStripWhiteSpace(
+			'<div><code>' +
+				'<div style="font-weight: bold">test</div>' +
+				'<div>test</div>' +
+			'</code></div>'
+		),
+		utils.stripWhiteSpace(
+			'<div><code>' +
+				'<span style="font-weight: bold; display: block;">test</span>' +
+				'<span style="display: block;">test</span>' +
+			'</code></div>'
+		)
+	);
+});
