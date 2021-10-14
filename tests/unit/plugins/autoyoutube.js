@@ -99,3 +99,94 @@ QUnit.test('Should leave short YouTube URLs with time', function (assert) {
 
 	assert.strictEqual(data.html, 'line 1<br>before https://youtu.be/dQw4w9WgXcQ?10 after<br>line 2');
 });
+
+QUnit.test('Should clear all styling if only contents is URL', function (assert) {
+	var autoYoutube = new sceditor.plugins.autoyoutube();
+	var data = {
+		html:
+			'<div class="some-style">' +
+				'<u>' +
+					'<b>' +
+						'<span style="color:red">' +
+							' https://youtu.be/dQw4w9WgXcQ  \n' +
+						'</span>' +
+					'</b>' +
+				'</u>' +
+			'</div>'
+	};
+	var mockEditor = {
+		currentNode: function () { }
+	};
+
+	autoYoutube.signalPasteRaw.call(mockEditor, data);
+
+	assert.strictEqual(data.html,
+		'<iframe width="560" height="315" frameborder="0" ' +
+			'src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ" ' +
+			'data-youtube-id="dQw4w9WgXcQ" allowfullscreen=""></iframe>'
+	);
+});
+
+QUnit.test('Should clear styling if only child', function (assert) {
+	var autoYoutube = new sceditor.plugins.autoyoutube();
+	var data = {
+		html:
+			'tests<div class="some-style">' +
+				'<u>' +
+					'<b>' +
+						'<span style="color:red">' +
+							'https://youtu.be/dQw4w9WgXcQ' +
+						'</span>' +
+					'</b>' +
+				'</u>' +
+			'</div>test'
+	};
+	var mockEditor = {
+		currentNode: function () { }
+	};
+
+	autoYoutube.signalPasteRaw.call(mockEditor, data);
+
+	assert.strictEqual(data.html,
+		'tests<div>' +
+			'<iframe width="560" height="315" frameborder="0" ' +
+				'src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ" ' +
+				'data-youtube-id="dQw4w9WgXcQ" allowfullscreen=""></iframe>' +
+		'</div>test'
+	);
+});
+
+QUnit.test('Should not clear styling if has whitespace', function (assert) {
+	var autoYoutube = new sceditor.plugins.autoyoutube();
+	var data = {
+		html:
+			'tests<div class="some-style">' +
+				'<u>' +
+					'<b>' +
+						'<span style="color:red">' +
+							' https://youtu.be/dQw4w9WgXcQ ' +
+						'</span>' +
+					'</b>' +
+				'</u>' +
+			'</div>test'
+	};
+	var mockEditor = {
+		currentNode: function () { }
+	};
+
+	autoYoutube.signalPasteRaw.call(mockEditor, data);
+
+	assert.strictEqual(data.html,
+		'tests<div class="some-style">' +
+			'<u>' +
+				'<b>' +
+					'<span style="color:red">' +
+						' <iframe width="560" height="315" frameborder="0" ' +
+							'src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ" ' +
+							'data-youtube-id="dQw4w9WgXcQ" allowfullscreen=""></iframe> ' +
+					'</span>' +
+				'</b>' +
+			'</u>' +
+		'</div>test'
+	);
+});
