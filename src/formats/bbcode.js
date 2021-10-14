@@ -2154,13 +2154,13 @@
 		quoteType: QuoteType.auto,
 
 		/**
-		 * If to use strict matching on attributes.
+		 * If to use strict matching on attributes and styles.
 		 *
 		 * When true this will perform AND matching requiring all tag
-		 * attributes to match.
+		 * attributes and styles to match.
 		 *
 		 * When false will perform OR matching and will match if any of
-		 * a tags attributes match.
+		 * a tags attributes or styles match.
 		 *
 		 * @type {Boolean}
 		 * @since 3.1.0
