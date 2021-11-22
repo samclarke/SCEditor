@@ -2154,7 +2154,7 @@
 		quoteType: QuoteType.auto,
 
 		/**
-		 * If to use strict matching on attributes and styles.
+		 * Whether to use strict matching on attributes and styles.
 		 *
 		 * When true this will perform AND matching requiring all tag
 		 * attributes and styles to match.
