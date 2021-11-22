@@ -1,121 +1,465 @@
 import defaultOptions from 'src/lib/defaultOptions.js';
 import 'src/formats/bbcode.js';
 
-QUnit.module('plugins/bbcode - Matching', {
-	before: () => {
-		sceditor.formats.bbcode.set(
-			'thisoldbbcode', {
-				tags: {
-					abbr: {
-						title: ['test'],
-						test: null
-					}
-				},
-				matchAttrs: 'all',
-				format: function (element, content) {
-					return '[abbr=' + element.getAttribute('title') + ']' + content + '[/abbr]';
-				},
-				html: '<abbr title="{defaultattr}">{0}</abbr>'
+QUnit.module('plugins/bbcode - Matching');
+
+QUnit.test('Should match only if all attributes match when strict matching', function (assert) {
+	sceditor.formats.bbcode.set('test', {
+		tags: {
+			div: {
+				title: ['test'],
+				test: null
 			}
-		);
-		sceditor.formats.bbcode.set(
-			'springchicken', {
-				tags: {
-					bird: {
-						type: ['duck'],
-						test: null
-					}
-				},
-				matchAttrs: 'any',
-				format: function (element, content) {
-					return '[bird=' + element.getAttribute('type') + ']' + content + '[/bird]';
-				},
-				html: '<bird type="{defaultattr}">{0}</bird>'
-			}
-		);
-		sceditor.formats.bbcode.set(
-			'insertnamehere', {
-				tags: {
-					species: {
-						classification: ['mammal'],
-						test: null
-					}
-				},
-				format: function (element, content) {
-					return '[species=' + element.getAttribute('classification') + ']' + content + '[/species]';
-				},
-				html: '<species classification="{defaultattr}">{0}</species>'
-			}
-		);
-		sceditor.formats.bbcode.set('margin', {
-			tags: {
-				'p': null
-			},
-			styles: {
-				'margin': null
-			},
-			format: function (element, content) {
-				return '[margin=' + element.style.margin + ']' +
-					content + '[/margin]';
-			},
-			html: '<p style="margin:{defaultattr}">{0}</p>'
-		});
-	},
-	beforeEach: function () {
-		this.mockEditor = {
-			opts: defaultOptions
-		};
-		this.format = new sceditor.formats.bbcode();
-		this.format.init.call(this.mockEditor);
-	},
-	after: () => {
-		sceditor.formats.bbcode.remove('thisoldbbcode');
-		sceditor.formats.bbcode.remove('springchicken');
-		sceditor.formats.bbcode.remove('insertnamehere');
-		sceditor.formats.bbcode.remove('margin');
-	}
+		},
+		strictMatch: true,
+		format: 'match'
+	});
+
+	var mockEditor = {
+		opts: defaultOptions
+	};
+	(new sceditor.formats.bbcode()).init.call(mockEditor);
+
+	assert.equal(
+		mockEditor.toBBCode(
+			'<div title="not test" test="value"></div>'
+		),
+		'',
+		'Non-matching title'
+	);
+
+	assert.equal(
+		mockEditor.toBBCode(
+			'<div title="not test" test="value"></div>'
+		),
+		'',
+		'Missing title'
+	);
+
+	assert.equal(
+		mockEditor.toBBCode('<div title="test" test="value"></div>'),
+		'match',
+		'All attributes match'
+	);
+
+	sceditor.formats.bbcode.remove('test');
 });
 
-QUnit.test('match all attrs', function (assert) {
+QUnit.test('Should match if any attributes match when not strict matching', function (assert) {
+	sceditor.formats.bbcode.set('test', {
+		tags: {
+			div: {
+				title: ['test'],
+				test: null
+			}
+		},
+		strictMatch: false,
+		format: 'match'
+	});
+
+	var mockEditor = {
+		opts: defaultOptions
+	};
+	(new sceditor.formats.bbcode()).init.call(mockEditor);
+
 	assert.equal(
-		this.mockEditor.toBBCode(
-			'<abbr title="attrs.defaultattr" test="value">content</abbr>'
+		mockEditor.toBBCode(
+			'<div title="not test" test="value"></div>'
 		),
-		'content'
+		'match',
+		'Non-matching title'
 	);
+
 	assert.equal(
-		this.mockEditor.toBBCode('<abbr title="test" test="value">content</abbr>'),
-		'[abbr=test]content[/abbr]'
-	);
-});
-QUnit.test('match any attr', function (assert) {
-	assert.equal(
-		this.mockEditor.toBBCode(
-			'<bird type="attrs.defaultattr" test="value">content</bird>'
+		mockEditor.toBBCode(
+			'<div title="not test" test="value"></div>'
 		),
-		'[bird=attrs.defaultattr]content[/bird]'
+		'match',
+		'Missing title'
 	);
+
 	assert.equal(
-		this.mockEditor.toBBCode('<bird type="duck" test="value">content</bird>'),
-		'[bird=duck]content[/bird]'
+		mockEditor.toBBCode('<div title="test" test="value"></div>'),
+		'match',
+		'All attributes match'
 	);
-});
-QUnit.test('match not specified', function (assert) {
-	assert.equal(
-		this.mockEditor.toBBCode(
-			'<species classification="attrs.defaultattr" test="value">content</species>'
-		),
-		'[species=attrs.defaultattr]content[/species]'
-	);
-	assert.equal(
-		this.mockEditor.toBBCode('<species classification="mammal" test="value">content</species>'),
-		'[species=mammal]content[/species]'
-	);
-});
-QUnit.test('unexpected double match', function (assert) {
-	assert.equal(
-		this.mockEditor.toBBCode('<p style="margin: 1em;">content</p>'),
-		'[margin=1em][margin=1em]content[/margin][/margin]'
-	);
+
+	sceditor.formats.bbcode.remove('test');
 });
 
+QUnit.test('Should default to matching if any attributes match', function (assert) {
+	sceditor.formats.bbcode.set('test', {
+		tags: {
+			div: {
+				title: ['test'],
+				test: null
+			}
+		},
+		strictMatch: false,
+		format: 'match'
+	});
+
+	var mockEditor = {
+		opts: defaultOptions
+	};
+	(new sceditor.formats.bbcode()).init.call(mockEditor);
+
+	assert.equal(
+		mockEditor.toBBCode(
+			'<div title="not test" test="value"></div>'
+		),
+		'match',
+		'Non-matching title'
+	);
+
+	assert.equal(
+		mockEditor.toBBCode(
+			'<div title="not test" test="value"></div>'
+		),
+		'match',
+		'Missing title'
+	);
+
+	assert.equal(
+		mockEditor.toBBCode('<div title="test" test="value"></div>'),
+		'match',
+		'All attributes match'
+	);
+
+	sceditor.formats.bbcode.remove('test');
+});
+
+
+QUnit.test('Should match twice if tag and styles match', function (assert) {
+	sceditor.formats.bbcode.set('test', {
+		tags: {
+			div: {
+				title: null
+			}
+		},
+		styles: {
+			'padding': null
+		},
+		format: 'match{0}'
+	});
+
+	var mockEditor = {
+		opts: defaultOptions
+	};
+	(new sceditor.formats.bbcode()).init.call(mockEditor);
+
+	assert.equal(
+		mockEditor.toBBCode(
+			'<div title="test" style="padding:1em"></div>'
+		),
+		'matchmatch'
+	);
+
+	sceditor.formats.bbcode.remove('test');
+});
+
+QUnit.test('Should only match if all styles match when strict matching', function (assert) {
+	sceditor.formats.bbcode.set('test', {
+		styles: {
+			'padding': null,
+			'margin': null
+		},
+		format: 'passed',
+		strictMatch: true
+	});
+
+	var mockEditor = {
+		opts: defaultOptions
+	};
+	(new sceditor.formats.bbcode()).init.call(mockEditor);
+
+	assert.equal(
+		mockEditor.toBBCode('<div style="padding:1em;margin:1em;"></div>'),
+		'passed'
+	);
+
+	assert.equal(
+		mockEditor.toBBCode('<div style="margin:1em;"></div>'),
+		''
+	);
+
+	sceditor.formats.bbcode.remove('test');
+});
+
+QUnit.test('Should match if any styles match when not strict matching', function (assert) {
+	sceditor.formats.bbcode.set('test', {
+		styles: {
+			'padding': null,
+			'margin': null
+		},
+		format: 'passed',
+		strictMatch: false
+	});
+
+	var mockEditor = {
+		opts: defaultOptions
+	};
+	(new sceditor.formats.bbcode()).init.call(mockEditor);
+
+	assert.equal(
+		mockEditor.toBBCode('<div style="padding:1em;margin:1em;"></div>'),
+		'passed'
+	);
+
+	assert.equal(
+		mockEditor.toBBCode('<div style="margin:1em;"></div>'),
+		'passed'
+	);
+
+	assert.equal(
+		mockEditor.toBBCode('<div style="padding:1em;"></div>'),
+		'passed'
+	);
+
+	sceditor.formats.bbcode.remove('test');
+});
+
+QUnit.test('Should default to matching if any styles match', function (assert) {
+	sceditor.formats.bbcode.set('test', {
+		styles: {
+			'padding': null,
+			'margin': null
+		},
+		format: 'passed',
+		strictMatch: false
+	});
+
+	var mockEditor = {
+		opts: defaultOptions
+	};
+	(new sceditor.formats.bbcode()).init.call(mockEditor);
+
+	assert.equal(
+		mockEditor.toBBCode('<div style="padding:1em;margin:1em;"></div>'),
+		'passed'
+	);
+
+	assert.equal(
+		mockEditor.toBBCode('<div style="margin:1em;"></div>'),
+		'passed'
+	);
+
+	assert.equal(
+		mockEditor.toBBCode('<div style="padding:1em;"></div>'),
+		'passed'
+	);
+
+	sceditor.formats.bbcode.remove('test');
+});
+
+QUnit.test('Should support matching wildcard tags', function (assert) {
+	sceditor.formats.bbcode.set('test', {
+		tags: {
+			'*': null
+		},
+		format: 'x{0}',
+		strictMatch: false
+	});
+
+	var mockEditor = {
+		opts: defaultOptions
+	};
+	(new sceditor.formats.bbcode()).init.call(mockEditor);
+
+	assert.equal(
+		mockEditor.toBBCode('<div><span></span></div>'),
+		'xx'
+	);
+
+	sceditor.formats.bbcode.remove('test');
+});
+
+QUnit.test('Should wildcard matching styles or attributes', function (assert) {
+	sceditor.formats.bbcode.set('test', {
+		tags: {
+			'*': {
+				title: null,
+				style: {
+					padding: null
+				}
+			}
+		},
+		format: 'x{0}',
+		strictMatch: false
+	});
+
+	var mockEditor = {
+		opts: defaultOptions
+	};
+	(new sceditor.formats.bbcode()).init.call(mockEditor);
+
+	assert.equal(
+		mockEditor.toBBCode(
+			'<div title="test"><span style="padding:1em;"</span></div>'
+		),
+		'xx'
+	);
+
+	sceditor.formats.bbcode.remove('test');
+});
+
+QUnit.test('Should only match when styles and attributes match if strict matching', function (assert) {
+	sceditor.formats.bbcode.set('test', {
+		tags: {
+			'*': {
+				title: null,
+				style: {
+					padding: null
+				}
+			}
+		},
+		format: 'match',
+		strictMatch: true
+	});
+
+	var mockEditor = {
+		opts: defaultOptions
+	};
+	(new sceditor.formats.bbcode()).init.call(mockEditor);
+
+	assert.equal(
+		mockEditor.toBBCode(
+			'<div title="test"><span style="padding:1em;"</span></div>'
+		),
+		'',
+		'Missing attribute or style'
+	);
+
+	assert.equal(
+		mockEditor.toBBCode(
+			'<div title="test" style="padding:1em;"></div>'
+		),
+		'match',
+		'Has attributes and styles'
+	);
+
+	sceditor.formats.bbcode.remove('test');
+});
+
+QUnit.test('Should match when any style or attribute matches if not strict matching', function (assert) {
+	sceditor.formats.bbcode.set('test', {
+		tags: {
+			'*': {
+				title: null,
+				style: {
+					padding: null
+				}
+			}
+		},
+		format: 'match{0}'
+	});
+
+	var mockEditor = {
+		opts: defaultOptions
+	};
+	(new sceditor.formats.bbcode()).init.call(mockEditor);
+
+	assert.equal(
+		mockEditor.toBBCode(
+			'<div title="test"><span style="padding:1em;"</span></div>'
+		),
+		'matchmatch',
+		'Missing attribute or style'
+	);
+
+	assert.equal(
+		mockEditor.toBBCode(
+			'<div title="test" style="padding:1em;"></div>'
+		),
+		'match',
+		'Has attributes and styles'
+	);
+
+	sceditor.formats.bbcode.remove('test');
+});
+
+QUnit.test('Should support style attribute', function (assert) {
+	sceditor.formats.bbcode.set('test', {
+		tags: {
+			div: {
+				style: { fontWeight: 'bold' }
+			}
+		},
+		format: 'matched',
+		strictMatch: false
+	});
+
+	var mockEditor = {
+		opts: defaultOptions
+	};
+	(new sceditor.formats.bbcode()).init.call(mockEditor);
+
+	assert.equal(
+		mockEditor.toBBCode('<div style="font-weight: bold"></div>'),
+		'matched'
+	);
+
+	sceditor.formats.bbcode.remove('test');
+});
+
+QUnit.test('Should match null style only if style attribute is specified', function (assert) {
+	sceditor.formats.bbcode.set('test', {
+		tags: {
+			div: {
+				style: null
+			}
+		},
+		format: 'matched',
+		strictMatch: false
+	});
+
+	var mockEditor = {
+		opts: defaultOptions
+	};
+	(new sceditor.formats.bbcode()).init.call(mockEditor);
+
+	assert.equal(
+		mockEditor.toBBCode('<div></div>'),
+		'',
+		'No style attribute'
+	);
+
+	assert.equal(
+		mockEditor.toBBCode('<div style="padding: 1em"></div>'),
+		'matched',
+		'Has style attribute'
+	);
+
+	sceditor.formats.bbcode.remove('test');
+});
+
+QUnit.test('Should match styles first', function (assert) {
+	// This is for backwards compatibility purposes only
+	sceditor.formats.bbcode.set('style', {
+		styles: {
+			padding: null
+		},
+		format: 'style'
+	});
+	sceditor.formats.bbcode.set('tag', {
+		tags: {
+			div: null
+		},
+		format: 'tag({0})'
+	});
+
+	var mockEditor = {
+		opts: defaultOptions
+	};
+	(new sceditor.formats.bbcode()).init.call(mockEditor);
+
+	assert.equal(
+		mockEditor.toBBCode(
+			'<div style="padding:1em"></div>'
+		),
+		'tag(style)'
+	);
+
+	sceditor.formats.bbcode.remove('style');
+	sceditor.formats.bbcode.remove('tag');
+});
