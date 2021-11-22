@@ -101,7 +101,9 @@ var defaultCmds = {
 				var isLtr = dom.css(node, 'direction') === 'ltr';
 				var align = dom.css(node, 'textAlign');
 
-				return align === 'left' || align === (isLtr ? 'start' : 'end');
+				// Can be -moz-left
+				return /left/.test(align) ||
+					align === (isLtr ? 'start' : 'end');
 			}
 		},
 		exec: 'justifyleft',
@@ -125,7 +127,9 @@ var defaultCmds = {
 				var isLtr = dom.css(node, 'direction') === 'ltr';
 				var align = dom.css(node, 'textAlign');
 
-				return align === 'right' || align === (isLtr ? 'end' : 'start');
+				// Can be -moz-right
+				return /right/.test(align) ||
+					align === (isLtr ? 'end' : 'start');
 			}
 		},
 		exec: 'justifyright',
