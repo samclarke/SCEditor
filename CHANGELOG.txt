@@ -1,3 +1,45 @@
+Version 3.1.0:
+	Fixed issue with destroy() not correctly unbinding from form submit event.
+		- Thanks to @BurninLeo for reporting and fixing
+	Fixed issue with image width and height not always using base-10.
+		- Thanks to @euantorano for reporting and fixing
+	Fixed label for image drop-down having wrong ID for input.
+	Fixed issue with pasting from Word sometimes pasting an image.
+	Fixed issue with focus being lost after maximizing and switching between
+		WYSIWYG and source modes.
+		- Thanks to @live627 for reporting and fixing
+	Added input event to events that can be bound to.
+	Fixed issue with pasting copying browser and style sheet styles.
+		- Thanks to @abetis and @paullaffitte for reporting
+	Fixed autosave plugin losing caret position on page refresh.
+		- Thanks to Lars for reporting
+	Fixed issue some block elements like <details> being treated as inline elements.
+	Fixed issues with fixNesting() where <hr> would split sometimes split
+		quotes, <code> tags were sometimes split and <p> tags containing
+		<blockquotes> were not fixed correctly.
+		- Thanks to @timint and MyBB users for reporting.
+	Fixed issue with content being lost when back button pressed or tab suspended.
+		- Thanks to @johnaweiss for reporting and @ for fixing
+	Updated XHTML format to convert div tags pasted into code blocks to spans to
+		prevent them being split.
+	Updated undo plugin to be much more reliable.
+		- Thanks to @q2apro for reporting issues.
+	Updated editor to set selection to end if focus() is called when there is no
+		current selection.
+	Added alternative lists BBCode plugin which adds phpBB format BBCode lists.
+		- Thanks to @abetis for creating.
+	Fixed bug with editor losing content when back button pressed.
+		- Thanks to @johnaweiss for reporting and @jdarwood007 for initial fix.
+	Fixed bug with Firefox alignment status not always being correct.
+		- Thanks to @RezaRamezanpour for reporting.
+	Added strict matching mode option which requires all attributes or styles
+		to match.
+		- Thanks to @live627 for implementing
+	Updated YouTube plugin to strip unnecessary styles when converting a link
+		to an embed.
+		- Thanks to @Sesquipedalian for reporting
+	Added support for matching styles like an attribute.
+
 Version 3.0.0:
 	Fixes XSS issues by using dompurify.
 		- Thanks to @mufeedvh for fixing.
