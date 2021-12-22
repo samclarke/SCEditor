@@ -1,3 +1,8 @@
+Version 3.1.1:
+	Fixed bug with [code] tags matching block styles resulting in output like
+		[code][left] instead of just [code].
+		- Thanks to @berkut1 for reporting.
+
 Version 3.1.0:
 	Fixed issue with destroy() not correctly unbinding from form submit event.
 		- Thanks to @BurninLeo for reporting and fixing
