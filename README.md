@@ -1,8 +1,9 @@
-# [SCEditor](http://www.sceditor.com/) v3.1.1
+# [SCEditor](http://www.sceditor.com/)
 
-[![Build Status](https://github.com/samclarke/SCEditor/workflows/Node.js%20CI/badge.svg)](https://travis-ci.org/samclarke/SCEditor)
+[![Build Status](https://github.com/samclarke/SCEditor/workflows/Node.js%20CI/badge.svg)](https://github.com/samclarke/SCEditor/actions/workflows/node.js.yml)
 [![SemVer](http://img.shields.io/:semver-✓-brightgreen.svg)](http://semver.org)
 [![License](http://img.shields.io/npm/l/sceditor.svg)](https://github.com/samclarke/SCEditor/blob/master/LICENSE.md)
+[![](https://data.jsdelivr.com/v1/package/npm/sceditor/badge)](https://www.jsdelivr.com/package/npm/sceditor)
 
 A lightweight WYSIWYG BBCode and XHTML editor.
 
