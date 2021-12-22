@@ -552,6 +552,23 @@ QUnit.test('Insert HTML filter JS', function (assert) {
 });
 
 
+
+QUnit.test('Code tags should ignore block styling', function (assert) {
+	var done = assert.async();
+
+	reloadEditor({
+		format: 'bbcode'
+	});
+	sceditor.css('code {text-align: left}');
+	sceditor.val('[code]test[/code]');
+
+	setTimeout(() => {
+		assert.equal(sceditor.val(), '[code]test[/code]\n');
+		done();
+	}, 100);
+});
+
+
 QUnit.test('Allow target=blank links', function (assert) {
 	reloadEditor({
 		format: 'xhtml'
