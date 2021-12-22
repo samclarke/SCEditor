@@ -64,11 +64,16 @@ exports.create = function (port, coverage) {
 		});
 
 		/* eslint no-new: off */
-		new WebpackDevServer(compiler, {
-			contentBase: path.join(__dirname, '..'),
+		new WebpackDevServer({
+			port: port,
+			static: {
+				directory: path.join(__dirname, '..')
+			},
 			compress: true,
-			publicPath: '/webpack-build/'
-		}).listen(port, '', function (err) {
+			devMiddleware: {
+				publicPath: '/webpack-build/'
+			}
+		}, compiler).startCallback(function (err) {
 			if (err) {
 				reject(err);
 			}
