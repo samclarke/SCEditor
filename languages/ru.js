@@ -54,7 +54,7 @@
 		'Maximize': 'Развернуть',
 		'Left-to-Right': 'Слева направо',
 		'Right-to-Left': 'Справа налево',
-		'Description (optional):': 'Описание (необязательно):',		
+		'Description (optional):': 'Описание (необязательно):',
 		dateFormat: 'day.month.year'
 	};
 })();
