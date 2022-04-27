@@ -53,7 +53,7 @@
     "@rollup/plugin-node-resolve": "^13.1.1",
     "autoprefixer": "^10.4.0",
     "cssnano": "^5.0.14",
-    "grunt": "~1.4.1",
+    "grunt": "~1.5.2",
     "grunt-contrib-clean": "^2.0.0",
     "grunt-contrib-compress": "^2.0.0",
     "grunt-contrib-concat": "~2.0.0",
