@@ -563,13 +563,14 @@ var defaultCmds = {
 
 	// START_COMMAND: Link
 	link: {
-		_dropDown: function (editor, caller, cb) {
+		_dropDown: function (editor, caller, selected, cb) {
 			var content = dom.createElement('div');
 
 			dom.appendChild(content, _tmpl('link', {
 				url: editor._('URL:'),
 				desc: editor._('Description (optional):'),
-				ins: editor._('Insert')
+				ins: editor._('Insert'),
+				content: selected
 			}, true));
 
 			var linkInput = dom.find(content, '#link')[0];
