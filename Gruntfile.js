@@ -44,7 +44,7 @@ module.exports = (grunt) => {
 					urls: ['http://localhost:9001/tests/unit/index.html'],
 					// Some tests rely on failing URLs so want to ignore them
 					console: false,
-					inject: path.join(__dirname, './tests/libs/bridge.js'),
+					inject: path.join(__dirname, './tests/test-bridge.js'),
 					// Sandbox doesn't always work well on Linux so just disable
 					puppeteer: { args: ['--no-sandbox'] }
 				}
@@ -57,7 +57,7 @@ module.exports = (grunt) => {
 				src: ['src/**/*.js']
 			},
 			tests: {
-				src: ['tests/**/*.js', '!tests/libs/**/*.js']
+				src: ['tests/**/*.js']
 			},
 			translations: {
 				src: 'languages/**/*.js'
