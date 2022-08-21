@@ -4,7 +4,6 @@ const WebpackDevServer = require('webpack-dev-server');
 const webpack = require('webpack');
 const path = require('path');
 
-// TODO: make coverage optional and accept port
 exports.create = function (port, coverage) {
 	return new Promise(function (resolve, reject) {
 		const webpackOptions = {
@@ -67,7 +66,10 @@ exports.create = function (port, coverage) {
 		new WebpackDevServer({
 			port: port,
 			static: {
-				directory: path.join(__dirname, '..')
+				directory: path.join(__dirname, '..'),
+				// Don't watch when running with coverage as coverage generation
+				// will trigger second run
+				watch: !coverage
 			},
 			compress: true,
 			devMiddleware: {
