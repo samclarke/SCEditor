@@ -13,6 +13,9 @@ QUnit.module('lib/PluginManager', {
 		pluginManager = new PluginManager(fakeEditor);
 		PluginManager.plugins.fakePlugin = fakePlugin;
 		PluginManager.plugins.fakePluginTwo = fakePluginTwo;
+	},
+	afterEach: function () {
+		sinon.restore();
 	}
 });
 

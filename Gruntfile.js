@@ -5,6 +5,7 @@ const libReport = require('istanbul-lib-report');
 const reports = require('istanbul-reports');
 const nodeResolve = require('@rollup/plugin-node-resolve').default;
 const rimraf = require('rimraf');
+const path = require('path');
 
 module.exports = (grunt) => {
 	require('time-grunt')(grunt);
@@ -42,7 +43,10 @@ module.exports = (grunt) => {
 				options: {
 					urls: ['http://localhost:9001/tests/unit/index.html'],
 					// Some tests rely on failing URLs so want to ignore them
-					console: false
+					console: false,
+					inject: path.join(__dirname, './tests/test-bridge.js'),
+					// Sandbox doesn't always work well on Linux so just disable
+					puppeteer: { args: ['--no-sandbox'] }
 				}
 			}
 		},
@@ -53,7 +57,7 @@ module.exports = (grunt) => {
 				src: ['src/**/*.js']
 			},
 			tests: {
-				src: ['tests/**/*.js', '!tests/libs/**/*.js']
+				src: ['tests/**/*.js']
 			},
 			translations: {
 				src: 'languages/**/*.js'
