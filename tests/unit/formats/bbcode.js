@@ -541,20 +541,33 @@ QUnit.test('colour', function (assert) {
 	);
 
 	assert.equal(
-		this.htmlToBBCode('<font color="#000">test</font>'),
-		'[color=#000000]test[/color]',
+		this.htmlToBBCode('<font color="#0af">test</font>'),
+		'[color=#00aaff]test[/color]',
 		'Font tag color attribute short'
 	);
 
+
 	assert.equal(
-		this.htmlToBBCode('<font color="#000000">test</font>'),
-		'[color=#000000]test[/color]',
+		this.htmlToBBCode('<font color="#0AF">test</font>'),
+		'[color=#00AAFF]test[/color]',
+		'Font tag color attribute short uppercase'
+	);
+
+	assert.equal(
+		this.htmlToBBCode('<font color="#00aaff">test</font>'),
+		'[color=#00aaff]test[/color]',
 		'Font tag color attribute normal'
 	);
 
 	assert.equal(
-		this.htmlToBBCode('<font color="rgb(0,0,0)">test</font>'),
-		'[color=#000000]test[/color]',
+		this.htmlToBBCode('<font color="#0<>">test</font>'),
+		'[color=#0<>]test[/color]',
+		'Font tag color attribute non-hex characters'
+	);
+
+	assert.equal(
+		this.htmlToBBCode('<font color="rgb(0,170,255)">test</font>'),
+		'[color=#00aaff]test[/color]',
 		'Font tag color attribute rgb'
 	);
 });

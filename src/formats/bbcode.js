@@ -2188,6 +2188,7 @@
 
 		return number.length < 2 ? '0' + number : number;
 	}
+
 	/**
 	 * Normalises a CSS colour to hex #xxxxxx format
 	 *
@@ -2210,7 +2211,7 @@
 		}
 
 		// expand shorthand
-		if ((match = colorStr.match(/#([0-f])([0-f])([0-f])\s*?$/i))) {
+		if ((match = colorStr.match(/#([0-9a-f])([0-9a-f])([0-9a-f])\s*?$/i))) {
 			return '#' +
 				match[1] + match[1] +
 				match[2] + match[2] +
