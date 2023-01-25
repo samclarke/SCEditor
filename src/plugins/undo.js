@@ -39,9 +39,12 @@
 			} else {
 				editor.getBody().innerHTML = state.value;
 
-				var range = editor.getRangeHelper().selectedRange();
-				setRangePositions(range, state.caret);
-				editor.getRangeHelper().selectRange(range);
+				// Caret may not exist for the first state in Firefox
+				if (state.caret) {
+					var range = editor.getRangeHelper().selectedRange();
+					setRangePositions(range, state.caret);
+					editor.getRangeHelper().selectRange(range);
+				}
 			}
 
 			editor.focus();
@@ -282,6 +285,13 @@
 		 * @return {Object<string, Array<number>}
 		 */
 		function getRangePositions(range) {
+			// In Firefox, range may not exist when the editor is first created
+			// due to Firefox returning null from getSelection() when the
+			// editors iframe is first created. See issue #910
+			if (!range) {
+				return;
+			}
+
 			// Merge any adjacent text nodes as it will be done by innerHTML
 			// which would cause positions to be off if not done
 			body.normalize();
