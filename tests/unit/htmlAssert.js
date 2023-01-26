@@ -1,5 +1,16 @@
 import * as utils from 'tests/unit/utils.js';
 
+function nodeHtml(node) {
+	if (node.parentNode) {
+		return node.parentNode.innerHTML;
+	}
+
+	var div = node.ownerDocument.createElement('div');
+	div.appendChild(node);
+
+	return div.innerHTML;
+}
+
 var normalize = function (parentNode) {
 	var nextSibling,
 		node = parentNode.firstChild;
@@ -28,6 +39,9 @@ var compareNodes = function (nodeA, nodeB) {
 		nodeA.className !== nodeB.className) {
 		return false;
 	}
+
+	nodeA.normalize();
+	nodeB.normalize();
 
 	if (nodeA.nodeType === 1) {
 		if (nodeA.attributes.length !== nodeB.attributes.length ||
@@ -102,20 +116,20 @@ QUnit.assert.nodesEqual = function (actual, expected, message) {
 
 	this.pushResult({
 		result: compareNodes(actual, expected),
-		actual: actual,
-		expected: expected,
+		actual: nodeHtml(actual),
+		expected: nodeHtml(expected),
 		message: message || 'Expected nodes to be equal'
 	});
 };
 
-QUnit.assert.nodesNodeEqual = function (actual, expected, message) {
+QUnit.assert.nodesNoteEqual = function (actual, expected, message) {
 	normalize(actual);
 	normalize(expected);
 
 	this.pushResult({
 		result: !compareNodes(actual, expected),
-		actual: actual,
-		expected: expected,
+		actual: nodeHtml(actual),
+		expected: nodeHtml(expected),
 		message: message || 'Expected nodes to not be equal'
 	});
 };

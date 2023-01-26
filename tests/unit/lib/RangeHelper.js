@@ -167,11 +167,145 @@ QUnit.test('insertNode() - Remove created empty tags', function (assert) {
 
 	sel.setSingleRange(range);
 
+	rangeHelper.insertNode(utils.htmlToFragment('<div><b>foo</b></div>'));
+
+	assert.nodesEqual(editableDiv.firstChild, utils.htmlToNode(
+		'<div><b>foo</b></div>'
+	));
+	assert.strictEqual(editableDiv.childNodes.length, 1);
+});
+
+QUnit.test('insertNode() - Remove created empty inline tags', function (assert) {
+	var range = rangy.createRangyRange();
+	var sel   = rangy.getSelection();
+
+	editableDiv.innerHTML = '<b>text</b><b>text</b>';
+
+	var p1 = editableDiv.firstChild;
+	var p2 = editableDiv.lastChild;
+	range.setStart(p1.firstChild, 0);
+	range.setEnd(p2.firstChild, 4);
+
+	sel.setSingleRange(range);
+
+	rangeHelper.insertNode(utils.htmlToFragment('<em>foo</em>'));
+
+	assert.nodesEqual(editableDiv.firstChild, utils.htmlToNode(
+		'<b><em>foo</em></b>'
+	));
+	assert.strictEqual(editableDiv.childNodes.length, 1);
+});
+
+QUnit.test('insertNode() - Remove created empty tags nested right', function (assert) {
+	var range = rangy.createRangyRange();
+	var sel   = rangy.getSelection();
+
+	editableDiv.innerHTML =
+		'<p>outer</p>' +
+		'<div>' +
+			'<div>' +
+				'test' +
+				'<div>' +
+					'<em id="inner">inner</em>' +
+				'</div>' +
+			'</div>' +
+		'</div>';
+
+	var outerText = editableDiv.firstChild;
+	var innerText = editableDiv.ownerDocument.getElementById('inner').firstChild;
+
+	range.setStart(outerText, 0);
+	range.setEnd(innerText, innerText.nodeValue.length);
+
+	sel.setSingleRange(range);
+
 	rangeHelper.insertNode(utils.htmlToFragment('<b>foo</b>'));
 
 	assert.nodesEqual(editableDiv.firstChild, utils.htmlToNode(
-		'<b>foo</b>'
+		'<p><b>foo</b></p>'
 	));
+	assert.strictEqual(editableDiv.childNodes.length, 1);
+});
+
+QUnit.test('insertNode() - Remove created empty tags nested left', function (assert) {
+	var range = rangy.createRangyRange();
+	var sel   = rangy.getSelection();
+
+	editableDiv.innerHTML =
+		'<div>' +
+			'<div>' +
+				'keep' +
+				'<div>' +
+					'<em id="inner">inner</em>' +
+				'</div>' +
+			'</div>' +
+		'</div>' +
+		'<p>outer</p>';
+
+	var outerText = editableDiv.lastChild.firstChild;
+	var innerText = editableDiv.ownerDocument.getElementById('inner').firstChild;
+
+	range.setStart(innerText, 0);
+	range.setEnd(outerText, outerText.nodeValue.length);
+
+	sel.setSingleRange(range);
+
+	rangeHelper.insertNode(utils.htmlToFragment('<b>foo</b>'));
+
+	assert.nodesEqual(editableDiv.firstChild, utils.htmlToNode(
+		'<div>' +
+			'<div>' +
+				'keep' +
+				'<div>' +
+					'<em id="inner"><b>foo</b></em>' +
+				'</div>' +
+			'</div>' +
+		'</div>'
+	));
+	assert.strictEqual(editableDiv.childNodes.length, 1);
+});
+
+QUnit.test('insertNode() - Remove created empty tags nested both', function (assert) {
+	var range = rangy.createRangyRange();
+	var sel   = rangy.getSelection();
+
+	editableDiv.innerHTML =
+		'<div>' +
+			'keep' +
+			'<div>' +
+				'<em id="start">start</em>' +
+			'</div>' +
+		'</div>' +
+		'<div>' +
+			'remove' +
+			'<div>' +
+				'<em id="end">end</em>' +
+			'</div>' +
+			'keep' +
+		'</div>';
+
+	var startText = editableDiv.ownerDocument.getElementById('start').firstChild;
+	var endText = editableDiv.ownerDocument.getElementById('end').firstChild;
+
+	range.setStart(startText, 0);
+	range.setEnd(endText, endText.nodeValue.length);
+
+	sel.setSingleRange(range);
+
+	rangeHelper.insertNode(utils.htmlToFragment('<b>foo</b>'));
+
+	assert.htmlEqual(editableDiv.innerHTML,
+		'<div>' +
+			'keep' +
+			'<div>' +
+				'<em id="start"><b>foo</b></em>' +
+			'</div>' +
+		'</div>' +
+		'<div>' +
+			'keep' +
+		'</div>'
+	);
+	assert.strictEqual(editableDiv.childNodes.length, 2);
 });
 
 QUnit.test('insertNode() - Do not remove existing empty tags', function (assert) {
