@@ -2437,7 +2437,7 @@
 		 * @memberOf SCEditor.plugins.bbcode.prototype
 		 */
 		function elementToBbcode(element) {
-			var toBBCode = function (node, vChildren) {
+			var toBBCode = function (node, vChildren, hasCodeParent) {
 				var ret = '';
 
 				dom.traverse(node, function (node) {
@@ -2478,20 +2478,23 @@
 
 						// don't convert iframe contents
 						if (tag !== 'iframe') {
-							content = toBBCode(node, vChild);
+							content = toBBCode(node, vChild,
+								hasCodeParent || tag === 'code');
 						}
 
 						// TODO: isValidChild is no longer needed. Should use
 						// valid children bbcodes instead by creating BBCode
 						// tokens like the parser.
 						if (isValidChild) {
-							// code tags should skip most styles
-							if (tag !== 'code') {
-								// First parse inline codes
-								content = handleTags(node, content, false);
-							}
+							if (!hasCodeParent) {
+								if (tag !== 'code') {
+									// Parse inline codes first so they don't
+									// contain block level codes
+									content = handleTags(node, content, false);
+								}
 
-							content = handleTags(node, content, true);
+								content = handleTags(node, content, true);
+							}
 							ret += handleBlockNewlines(node, content);
 						} else {
 							ret += content;

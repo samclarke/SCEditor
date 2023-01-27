@@ -784,6 +784,47 @@ QUnit.test('Code', function (assert) {
 		'[code]ignore this Testing 1.2.3....[/code]\n',
 		'Code with styling'
 	);
+
+	assert.equal(
+		this.htmlToBBCode(
+			'<code><span style="color:#ff0000">test</span></code>'
+		),
+		'[code]test[/code]\n',
+		'Code with inline styling'
+	);
+
+	assert.equal(
+		this.htmlToBBCode(
+			'<code><div style="color:#ff0000">test</div></code>'
+		),
+		'[code]test[/code]\n',
+		'Code with block styling'
+	);
+
+
+	assert.equal(
+		this.htmlToBBCode(
+			'<code><div><div style="color:#ff0000">test</div></div></code>'
+		),
+		'[code]test[/code]\n',
+		'Code with nested block styling'
+	);
+
+	assert.equal(
+		this.htmlToBBCode(
+			'<code><div>line 1</div><div>line 2</div></code>'
+		),
+		'[code]line 1\nline 2[/code]\n',
+		'Code with block lines'
+	);
+
+	assert.equal(
+		this.htmlToBBCode(
+			'<code style="font-weight:bold">test</code>'
+		),
+		'[code]test[/code]\n',
+		'Code with styling'
+	);
 });
 
 
