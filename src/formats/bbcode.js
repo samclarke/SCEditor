@@ -2433,10 +2433,11 @@
 		 *
 		 * @private
 		 * @param {HTMLElement}	element
+		 * @param {boolean}	hasCodeParent
 		 * @return {string} BBCode
 		 * @memberOf SCEditor.plugins.bbcode.prototype
 		 */
-		function elementToBbcode(element) {
+		function elementToBbcode(element, hasCodeParent) {
 			var toBBCode = function (node, vChildren, hasCodeParent) {
 				var ret = '';
 
@@ -2507,7 +2508,7 @@
 				return ret;
 			};
 
-			return toBBCode(element);
+			return toBBCode(element, undefined, hasCodeParent);
 		};
 
 		/**
@@ -2561,6 +2562,7 @@
 			context = context || document;
 
 			var	bbcode, elements;
+			var hasCodeParent = !!dom.closest(parent, 'code');
 			var containerParent = context.createElement('div');
 			var container = context.createElement('div');
 			var parser = new BBCodeParser(base.opts.parserOptions);
@@ -2593,7 +2595,7 @@
 
 			dom.removeWhiteSpace(containerParent);
 
-			bbcode = elementToBbcode(container);
+			bbcode = elementToBbcode(container, hasCodeParent);
 
 			context.body.removeChild(containerParent);
 
