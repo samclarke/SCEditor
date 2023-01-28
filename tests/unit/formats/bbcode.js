@@ -825,6 +825,14 @@ QUnit.test('Code', function (assert) {
 		'[code]test[/code]\n',
 		'Code with styling'
 	);
+
+	assert.equal(
+		this.htmlToBBCode(
+			'<code><img data-sceditor-emoticon=":)" /></code>'
+		),
+		'[code]:)[/code]\n',
+		'Code with emoticon'
+	);
 });
 
 

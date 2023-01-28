@@ -2438,22 +2438,25 @@
 		 * @memberOf SCEditor.plugins.bbcode.prototype
 		 */
 		function elementToBbcode(element, hasCodeParent) {
-			var toBBCode = function (node, vChildren, hasCodeParent) {
+			var toBBCode = function (node, hasCodeParent, vChildren) {
 				var ret = '';
 
 				dom.traverse(node, function (node) {
 					var	content      = '',
 						nodeType     = node.nodeType,
 						tag          = node.nodeName.toLowerCase(),
+						isCodeTag    = tag === 'code',
+						isEmoticon   = tag === 'img' &&
+							!!attr(node, EMOTICON_DATA_ATTR),
 						vChild       = validChildren[tag],
 						firstChild   = node.firstChild,
 						isValidChild = true;
 
-					if (typeof vChildren === 'object') {
+					if (vChildren) {
 						isValidChild = vChildren.indexOf(tag) > -1;
 
 						// Emoticons should always be converted
-						if (is(node, 'img') && attr(node, EMOTICON_DATA_ATTR)) {
+						if (isEmoticon) {
 							isValidChild = true;
 						}
 
@@ -2465,11 +2468,7 @@
 						}
 					}
 
-					// 3 = text and 1 = element
-					if (nodeType !== 3 && nodeType !== 1) {
-						return;
-					}
-
+					// 1 = element
 					if (nodeType === 1) {
 						// skip empty nlf elements (new lines automatically
 						// added after block level elements like quotes)
@@ -2479,16 +2478,18 @@
 
 						// don't convert iframe contents
 						if (tag !== 'iframe') {
-							content = toBBCode(node, vChild,
-								hasCodeParent || tag === 'code');
+							content = toBBCode(node, hasCodeParent || isCodeTag,
+								vChild);
 						}
 
 						// TODO: isValidChild is no longer needed. Should use
 						// valid children bbcodes instead by creating BBCode
 						// tokens like the parser.
 						if (isValidChild) {
-							if (!hasCodeParent) {
-								if (tag !== 'code') {
+							// Emoticons should be converted if they have found
+							// their way into a code tag
+							if (!hasCodeParent || isEmoticon) {
+								if (!isCodeTag) {
 									// Parse inline codes first so they don't
 									// contain block level codes
 									content = handleTags(node, content, false);
@@ -2500,7 +2501,8 @@
 						} else {
 							ret += content;
 						}
-					} else {
+					// 3 = text
+					} else if (nodeType === 3) {
 						ret += node.nodeValue;
 					}
 				}, false, true);
@@ -2508,7 +2510,7 @@
 				return ret;
 			};
 
-			return toBBCode(element, undefined, hasCodeParent);
+			return toBBCode(element, hasCodeParent);
 		};
 
 		/**
