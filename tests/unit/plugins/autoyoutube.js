@@ -28,7 +28,7 @@ QUnit.test('Should convert YouTube URLs', function (assert) {
 
 	autoYoutube.signalPasteRaw.call(mockEditor, data);
 
-	assert.strictEqual(data.html, '<p>before ' +
+	assert.htmlEqual(data.html, '<p>before ' +
 		'<iframe width="560" height="315" frameborder="0" ' +
 		'src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ" ' +
 		'data-youtube-id="dQw4w9WgXcQ" allowfullscreen=""></iframe> ' +
@@ -60,7 +60,7 @@ QUnit.test('Should convert short YouTube URLs', function (assert) {
 
 	autoYoutube.signalPasteRaw.call(mockEditor, data);
 
-	assert.strictEqual(data.html, 'line 1<br>before ' +
+	assert.htmlEqual(data.html, 'line 1<br>before ' +
 		'<iframe width="560" height="315" frameborder="0" ' +
 		'src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ" ' +
 		'data-youtube-id="dQw4w9WgXcQ" allowfullscreen=""></iframe> ' +
@@ -120,7 +120,7 @@ QUnit.test('Should clear all styling if only contents is URL', function (assert)
 
 	autoYoutube.signalPasteRaw.call(mockEditor, data);
 
-	assert.strictEqual(data.html,
+	assert.htmlEqual(data.html,
 		'<iframe width="560" height="315" frameborder="0" ' +
 			'src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ" ' +
 			'data-youtube-id="dQw4w9WgXcQ" allowfullscreen=""></iframe>'
@@ -147,7 +147,7 @@ QUnit.test('Should clear styling if only child', function (assert) {
 
 	autoYoutube.signalPasteRaw.call(mockEditor, data);
 
-	assert.strictEqual(data.html,
+	assert.htmlEqual(data.html,
 		'tests<div>' +
 			'<iframe width="560" height="315" frameborder="0" ' +
 				'src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ" ' +
@@ -176,7 +176,7 @@ QUnit.test('Should not clear styling if has whitespace', function (assert) {
 
 	autoYoutube.signalPasteRaw.call(mockEditor, data);
 
-	assert.strictEqual(data.html,
+	assert.htmlEqual(data.html,
 		'tests<div class="some-style">' +
 			'<u>' +
 				'<b>' +
