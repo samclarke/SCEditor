@@ -78,6 +78,21 @@ var compareHtml = function (actual, expected) {
 	return compareNodes(nodeA, nodeB);
 };
 
+function nodeToString(node) {
+	if (node.nodeType === Node.TEXT_NODE) {
+		return node.nodeValue;
+	}
+
+	if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+		const template = document.createElement('template');
+		template.append(node.cloneNode(true));
+
+		return template.innerHTML;
+	}
+
+	return node.outerHTML;
+}
+
 QUnit.assert.htmlEqual = function (actual, expected, message) {
 	this.pushResult({
 		result: compareHtml(actual, expected),
@@ -102,8 +117,8 @@ QUnit.assert.nodesEqual = function (actual, expected, message) {
 
 	this.pushResult({
 		result: compareNodes(actual, expected),
-		actual: actual,
-		expected: expected,
+		actual: nodeToString(actual),
+		expected: nodeToString(expected),
 		message: message || 'Expected nodes to be equal'
 	});
 };
@@ -114,8 +129,8 @@ QUnit.assert.nodesNodeEqual = function (actual, expected, message) {
 
 	this.pushResult({
 		result: !compareNodes(actual, expected),
-		actual: actual,
-		expected: expected,
+		actual: nodeToString(actual),
+		expected: nodeToString(expected),
 		message: message || 'Expected nodes to not be equal'
 	});
 };
