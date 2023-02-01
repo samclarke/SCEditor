@@ -10,7 +10,8 @@
     "rangy": true,
     "sinon": true,
     "runner": true,
-    "patchConsole": true
+    "patchConsole": true,
+    "less": true
   },
   "rules": {
     "new-cap": "off",

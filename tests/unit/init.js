@@ -2,6 +2,8 @@
 	// Report QUnit results to SauceLabs
 	var log = [];
 
+	QUnit.config.autostart = false;
+
 	QUnit.on('runEnd', function (testResults) {
 		var tests = [];
 
@@ -61,5 +63,9 @@
 				log.push(details);
 			}
 		};
+	});
+
+	less.pageLoadFinished.then(() => {
+		QUnit.start();
 	});
 }());
