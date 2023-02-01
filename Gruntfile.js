@@ -4,7 +4,7 @@ const libCoverage = require('istanbul-lib-coverage');
 const libReport = require('istanbul-lib-report');
 const reports = require('istanbul-reports');
 const nodeResolve = require('@rollup/plugin-node-resolve').default;
-const rimraf = require('rimraf');
+const fs = require('fs');
 const path = require('path');
 
 module.exports = (grunt) => {
@@ -13,7 +13,7 @@ module.exports = (grunt) => {
 	grunt.event.on('qunit.coverage', function (data) {
 		const outputDir = __dirname + '/coverage';
 
-		rimraf.sync(outputDir);
+		fs.rmSync(outputDir, { recursive: true, force: true });
 
 		const coverageMap = libCoverage.createCoverageMap(data);
 		const context = libReport.createContext({
