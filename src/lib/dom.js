@@ -1139,8 +1139,8 @@ export function merge(node) {
 		merge(node.childNodes[i]);
 	}
 
-	// Should only merge inline tags
-	if (!isInline(node)) {
+	// Should only merge inline tags and should not merge <br> tags
+	if (!isInline(node) || tagName === 'BR') {
 		return;
 	}
 

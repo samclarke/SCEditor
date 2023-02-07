@@ -1821,3 +1821,22 @@ QUnit.test('merge() - deep with siblings', function (assert) {
 		)
 	);
 });
+
+QUnit.test('merge() - <br> tags should not merge', function (assert) {
+	var node = utils.htmlToNode(
+		'<div>' +
+			'<br><br><br>' +
+		'</div>'
+	);
+
+	dom.merge(node);
+
+	assert.nodesEqual(
+		node,
+		utils.htmlToNode(
+			'<div>' +
+				'<br><br><br>' +
+			'</div>'
+		)
+	);
+});
