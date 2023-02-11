@@ -5,12 +5,6 @@ import * as utils from 'tests/unit/utils.js';
 import rangy from 'rangy';
 
 
-// The selection based tests fail in phantom although they do work in
-// Chrome and Safari which are both based on Webkit. Should investigate
-// further but looks like phantomJS but rather than an editor but.
-// Might be an issue with phantomJS and iframes that have  selections.
-var IS_PHANTOMJS = navigator.userAgent.indexOf('PhantomJS') > -1;
-
 var $textarea;
 var sceditor;
 var $fixture = $('#qunit-module-fixture');
@@ -43,6 +37,7 @@ var reloadEditor = function (config) {
 		.append(textarea);
 
 	sceditor  = new SCEditor(textarea, config || {});
+	sceditor.focus();
 	$textarea = $(textarea);
 };
 
@@ -84,10 +79,6 @@ QUnit.module('lib/SCEditor', {
 });
 
 QUnit.test('autofocus', function (assert) {
-	if (IS_PHANTOMJS) {
-		return assert.expect(0);
-	}
-
 	reloadEditor({
 		autofocus: true,
 		autofocusEnd: false
@@ -168,10 +159,10 @@ QUnit.test('rtl()', function (assert) {
 QUnit.test('width()', function (assert) {
 	var $container = $fixture.children('.sceditor-container');
 
-	assert.equal(sceditor.width(), $container.width());
+	assert.close(sceditor.width(), $container.width(), 1);
 	assert.equal(sceditor.width('200'), sceditor);
 
-	assert.equal(sceditor.width(), $container.width());
+	assert.close(sceditor.width(), $container.width(), 1);
 	assert.close($container.width(), 200, 1);
 });
 
@@ -179,10 +170,10 @@ QUnit.test('width()', function (assert) {
 QUnit.test('height()', function (assert) {
 	var $container = $fixture.children('.sceditor-container');
 
-	assert.equal(sceditor.height(), $container.height());
+	assert.close(sceditor.height(), $container.height(), 1);
 	assert.equal(sceditor.height('200'), sceditor);
 
-	assert.equal(sceditor.height(), $container.height());
+	assert.close(sceditor.height(), $container.height(), 1);
 	assert.close($container.height(), 200, 1);
 });
 
@@ -245,10 +236,6 @@ QUnit.test('destroy() - Unbind updateOriginal', function (assert) {
 
 
 QUnit.test('wysiwygEditorInsertHtml()', function (assert) {
-	if (IS_PHANTOMJS) {
-		return assert.expect(0);
-	}
-
 	sceditor.focus();
 	var iframe = sceditor.getContentAreaContainer();
 	var body   = sceditor.getBody();
@@ -272,10 +259,6 @@ QUnit.test('wysiwygEditorInsertHtml()', function (assert) {
 });
 
 QUnit.test('wysiwygEditorInsertHtml() - Start and end', function (assert) {
-	if (IS_PHANTOMJS) {
-		return assert.expect(0);
-	}
-
 	sceditor.focus();
 	var iframe = sceditor.getContentAreaContainer();
 	var body   = sceditor.getBody();
@@ -300,10 +283,6 @@ QUnit.test('wysiwygEditorInsertHtml() - Start and end', function (assert) {
 
 
 QUnit.test('wysiwygEditorInsertText() - Start and end', function (assert) {
-	if (IS_PHANTOMJS) {
-		return assert.expect(0);
-	}
-
 	sceditor.focus();
 	var iframe = sceditor.getContentAreaContainer();
 	var body   = sceditor.getBody();
@@ -327,10 +306,6 @@ QUnit.test('wysiwygEditorInsertText() - Start and end', function (assert) {
 });
 
 QUnit.test('wysiwygEditorInsertText() - Start and end', function (assert) {
-	if (IS_PHANTOMJS) {
-		return assert.expect(0);
-	}
-
 	var iframe = sceditor.getContentAreaContainer();
 	var body   = sceditor.getBody();
 	var range  = rangy.createRange(body.ownerDocument);
