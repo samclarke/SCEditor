@@ -34,6 +34,8 @@
 		'Paste Text': '',
 		'Bullet list': '',
 		'Numbered list': '',
+		'Add indent': '',
+		'Remove one indent': '',
 		'Undo': '',
 		'Redo': '',
 		'Rows:': '',
@@ -57,6 +59,7 @@
 		'Insert current date': '',
 		'Insert current time': '',
 		'Print': '',
+		'Maximize': '',
 		'View source': '',
 		'Description (optional):': '',
 		'Enter the image URL:': '',
@@ -67,6 +70,8 @@
 		'Insert a Quote': '',
 		'Invalid YouTube video': '',
 		'Drop files here': '',
+		'Left-to-Right': '',
+		'Right-to-Left': '',
 
 		// month format, replace - with the date format separator and order in the
 		// order used

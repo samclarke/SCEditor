@@ -26,6 +26,8 @@
 		'Paste Text': 'Text einfügen',
 		'Bullet list': 'Aufzählungsliste',
 		'Numbered list': 'Nummerierte Liste',
+		'Add indent': 'Ebene hinzufügen',
+		'Remove one indent': 'Eine Ebene entfernen',
 		'Undo': 'Rückgängig machen',
 		'Redo': 'Wiederherstellen',
 		'Rows:': 'Zeilen',
