@@ -425,12 +425,12 @@ export default function SCEditor(original, userOptions) {
 	 */
 	function sanitize(html) {
 		const allowedTags = ['iframe'].concat(options.allowedTags);
-		const allowedAttr = ['allowfullscreen', 'frameborder', 'target']
+		const allowedAttrs = ['allowfullscreen', 'frameborder', 'target']
 			.concat(options.allowedAttributes);
 
 		return domPurify.sanitize(html, {
 			ADD_TAGS: allowedTags,
-			ADD_ATTR: allowedAttr
+			ADD_ATTR: allowedAttrs
 		});
 	};
 

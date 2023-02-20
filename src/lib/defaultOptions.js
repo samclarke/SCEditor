@@ -391,5 +391,5 @@ export default {
 	 * 
 	 * @type {Array}
 	 */
-	allowedAttrs: []
+	allowedAttributes: []
 };
