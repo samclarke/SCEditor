@@ -370,5 +370,26 @@ export default {
 	 *
 	 * @type {Object}
 	 */
-	dropDownCss: { }
+	dropDownCss: { },
+
+	/**
+	 * An array of tags that are allowed in the editor content. 
+	 * If a tag is not listed here, it will be removed when the content is sanitized.
+	 * 
+	 * 1 Tag is already added by default: ['iframe']. No need to add this further.
+	 * 
+	 * @type {Array}
+	 */
+	allowedTags: [],
+
+	/**
+	 * An array of attributes that are allowed on tags in the editor content. 
+	 * If an attribute is not listed here, it will be removed when the content is sanitized.
+	 * 
+	 * 3 Attributes are already added by default: ['allowfullscreen', 'frameborder', 'target']. 
+	 * No need to add these further.
+	 * 
+	 * @type {Array}
+	 */
+	allowedAttrs: []
 };
