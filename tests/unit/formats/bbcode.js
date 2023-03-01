@@ -39,7 +39,56 @@ QUnit.test('From BBCode method as fragment', function (assert) {
 	assert.htmlEqual(
 		this.mockEditor.fromBBCode('[b]test[/b]', true),
 		'<strong>test</strong>',
-		'As fragment'
+		'Should not wrap fragments in blocks'
+	);
+
+	assert.htmlEqual(
+		this.mockEditor.fromBBCode(
+			'line1[b]test[/b][center]line2[/center]line3[b]test[/b]',
+			true
+		),
+		'line1<strong>test</strong>' +
+		'<div align="center">line2<br /></div>' +
+		'line3<strong>test</strong>',
+		'Should not wrap inlines with a block in between'
+	);
+
+	assert.htmlEqual(
+		this.mockEditor.fromBBCode(
+			'\n\n',
+			true
+		),
+		'<br /><br />',
+		'Should preserve newlines'
+	);
+
+	assert.htmlEqual(
+		this.mockEditor.fromBBCode(
+			'[none]test[/none]',
+			true
+		),
+		'[none]test[/none]',
+		'Should not alter nonexistent BBCodes'
+	);
+
+	assert.htmlEqual(
+		this.mockEditor.fromBBCode(
+			'[center]line1[/center][center]line2[/center][center]line3[/center]',
+			true
+		),
+		'<div align="center">line1<br /></div>' +
+		'<div align="center">line2<br /></div>' +
+		'<div align="center">line3<br /></div>',
+		'Should keep all styled blocks created by a BBCode'
+	);
+
+	assert.htmlEqual(
+		this.mockEditor.fromBBCode(
+			'\nline2\n',
+			true
+		),
+		'<br />line2<br />',
+		'Should not wrap newlines'
 	);
 });
 
