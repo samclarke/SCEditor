@@ -854,57 +854,6 @@
 		});
 	}
 
-	/**
-	 * Removes the first and last divs from the HTML.
-	 *
-	 * This is needed for pasting
-	 * @param  {string} html
-	 * @return {string}
-	 * @private
-	 */
-	function removeFirstLastDiv(html) {
-		var	node, next, removeDiv,
-			output = document.createElement('div');
-
-		removeDiv = function (node, isFirst) {
-			// Don't remove divs that have styling
-			if (dom.hasStyling(node)) {
-				return;
-			}
-
-			if ((node.childNodes.length !== 1 ||
-				!is(node.firstChild, 'br'))) {
-				while ((next = node.firstChild)) {
-					output.insertBefore(next, node);
-				}
-			}
-
-			if (isFirst) {
-				var lastChild = output.lastChild;
-
-				if (node !== lastChild && is(lastChild, 'div') &&
-					node.nextSibling === lastChild) {
-					output.insertBefore(document.createElement('br'), node);
-				}
-			}
-
-			output.removeChild(node);
-		};
-
-		css(output, 'display', 'none');
-		output.innerHTML = html.replace(/<\/div>\n/g, '</div>');
-
-		if ((node = output.firstChild) && is(node, 'div')) {
-			removeDiv(node, true);
-		}
-
-		if ((node = output.lastChild) && is(node, 'div')) {
-			removeDiv(node);
-		}
-
-		return output.innerHTML;
-	}
-
 	function isFunction(fn) {
 		return typeof fn === 'function';
 	}
@@ -1794,6 +1743,10 @@
 			return convertToHTML(base.parse(str, preserveNewLines), true);
 		};
 
+		base.toHTMLFragment = function (str, preserveNewLines) {
+			return convertToHTML(base.parse(str, preserveNewLines), false);
+		};
+
 		/**
 		 * @private
 		 */
@@ -2542,12 +2495,11 @@
 		 */
 		function toHtml(asFragment, source, legacyAsFragment) {
 			var	parser = new BBCodeParser(base.opts.parserOptions);
-			var html = parser.toHTML(
-				base.opts.bbcodeTrim ? source.trim() : source
-			);
+			var toHTML = (asFragment || legacyAsFragment) ?
+				parser.toHTMLFragment :
+				parser.toHTML;
 
-			return (asFragment || legacyAsFragment) ?
-				removeFirstLastDiv(html) : html;
+			return toHTML(base.opts.bbcodeTrim ? source.trim() : source);
 		}
 
 		/**
