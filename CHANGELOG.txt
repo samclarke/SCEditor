@@ -1,3 +1,24 @@
+Version 3.2.0:
+	Fixed bug with pasting removing styling from fist/last block when using
+		BBCode format.
+	Added `allowedTags` and `allowedAttributes` options to allow custom
+		elements and attributes.
+		- Thanks to @fedot199614 and @codertushar for reporting and fixing.
+	Added missing strings to German translation.
+		- Thanks to @wintstar for translating.
+	Fixed bug with merge() merging consecutive <br /> tags.
+		- Thanks to Lars for reporting.
+	Fixed bug with pasting into code blocks sometimes retaining styles.
+		- Thanks to @live627 for reporting
+	Fixed bug with undo plugin in Firefox if editor is hidden when created.
+		- Thanks to @huanacaraz for reporting.
+	Improved Dutch translation.
+		- Thanks to @NekoJonez for translating.
+	Added Finnish translation.
+		- Thanks to @RJuho for translating.
+	Added some missing phrases in Russian translation.
+		- Thanks to @zebroid for translating.
+
 Version 3.1.1:
 	Fixed bug with [code] tags matching block styles resulting in output like
 		[code][left] instead of just [code].
