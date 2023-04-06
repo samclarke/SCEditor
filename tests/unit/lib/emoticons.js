@@ -254,6 +254,34 @@ QUnit.test('checkWhitespace() - Remove cursor placed after', function (assert) {
 	assert.ok(mockRangeHelper.selectRangeCalled);
 });
 
+QUnit.test('checkWhitespace() - Remove with no previous node', function (assert) {
+	var root = utils.htmlToDiv('<img data-sceditor-emoticon=":)" />test');
+
+	var mockRange = {
+		startContainer: root,
+		startOffset: 1,
+		setStart: function (container, offset) {
+			this.startContainer = container;
+			this.startOffset = offset;
+		},
+		collapse: function () {}
+	};
+
+	var mockRangeHelper = {
+		selectedRange: mockRange,
+		cloneSelected: function () {
+			return mockRange;
+		},
+		selectRange: function (range) {
+			this.selectedRange = range;
+		}
+	};
+
+	emoticons.checkWhitespace(root, mockRangeHelper);
+
+	assert.nodesEqual(root, utils.htmlToDiv(':)test'));
+});
+
 QUnit.test('checkWhitespace() - no emoticons', function (assert) {
 	assert.expect(0);
 

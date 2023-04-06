@@ -32,7 +32,7 @@ export function checkWhitespace(node, rangeHelper) {
 		var range = rangeHelper.cloneSelected();
 		var rangeStart = -1;
 		var rangeStartContainer = range.startContainer;
-		var previousText = prev.nodeValue || '';
+		var previousText = (prev && prev.nodeValue) || '';
 
 		previousText += dom.data(emoticon, 'sceditor-emoticon');
 
@@ -62,8 +62,10 @@ export function checkWhitespace(node, rangeHelper) {
 		}
 
 		next.insertData(0, previousText);
-		dom.remove(prev);
 		dom.remove(emoticon);
+		if (prev) {
+			dom.remove(prev);
+		}
 
 		// Need to update the range starting position if it's been modified
 		if (rangeStart > -1) {
