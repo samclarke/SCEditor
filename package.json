@@ -52,7 +52,7 @@
     "@lodder/grunt-postcss": "^3.1.1",
     "@rollup/plugin-node-resolve": "^15.0.1",
     "autoprefixer": "^10.4.13",
-    "cssnano": "^5.1.14",
+    "cssnano": "^6.0.0",
     "grunt": "~1.6.1",
     "grunt-contrib-clean": "^2.0.1",
     "grunt-contrib-compress": "^2.0.0",
