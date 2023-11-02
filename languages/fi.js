@@ -48,6 +48,7 @@
 		'Unlink': 'Poista linkitys',
 		'More': 'Lisää',
 		'Insert an emoticon': 'Lisää hymiö',
+		'Insert emoji': 'Lisää hymiö',
 		'Video URL:': 'Videon osoite:',
 		'Insert': 'Lisää',
 		'Insert a YouTube video': 'Lisää YouTube-video',

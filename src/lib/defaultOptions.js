@@ -144,6 +144,13 @@ export default {
 	},
 
 	/**
+	 * Array of emojies available.
+	 *
+	 * @type {Array}
+	 */
+	emojies: [],
+
+	/**
 	 * Width of the editor. Set to null for automatic with
 	 *
 	 * @type {?number}

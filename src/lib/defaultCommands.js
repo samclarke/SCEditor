@@ -737,6 +737,49 @@ var defaultCmds = {
 	},
 	// END_COMMAND
 
+	// START_COMMAND: Emojies
+	emojies: {
+		exec: function (caller) {
+			let editor = this;
+
+			var createContent = function () {
+				var content = dom.createElement('div'),
+					line = dom.createElement('div'),
+					perLine = 0,
+					emojies = editor.opts.emojies || []
+
+				dom.appendChild(content, line);
+
+				perLine = Math.sqrt(Object.keys(emojies).length);
+
+				dom.on(content, 'click', 'span', function (e) {
+					console.log(e.target);
+					editor.insert(e.target.innerHTML).closeDropDown(true);
+
+					e.preventDefault();
+				});
+
+				utils.each(emojies, function (_, emoji) {
+					let emojiElem = dom.createElement('span')
+					emojiElem.appendChild(document.createTextNode(emoji))
+					dom.appendChild(line, emojiElem);
+
+					if (line.children.length >= perLine) {
+						line = dom.createElement('div');
+						dom.appendChild(content, line);
+					}
+				});
+
+				return content;
+			};
+
+			editor.createDropDown(caller, 'emojies', createContent());
+		},
+		tooltip: 'Insert emoji',
+		shortcut: 'Ctrl+E'
+	},
+	// END_COMMAND
+
 	// START_COMMAND: YouTube
 	youtube: {
 		_dropDown: function (editor, caller, callback) {
