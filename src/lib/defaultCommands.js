@@ -746,7 +746,7 @@ var defaultCmds = {
 				var content = dom.createElement('div'),
 					line = dom.createElement('div'),
 					perLine = 0,
-					emojies = editor.opts.emojies || []
+					emojies = editor.opts.emojies || [];
 
 				dom.appendChild(content, line);
 
@@ -760,8 +760,8 @@ var defaultCmds = {
 				});
 
 				utils.each(emojies, function (_, emoji) {
-					let emojiElem = dom.createElement('span')
-					emojiElem.appendChild(document.createTextNode(emoji))
+					let emojiElem = dom.createElement('span');
+					emojiElem.appendChild(document.createTextNode(emoji));
 					dom.appendChild(line, emojiElem);
 
 					if (line.children.length >= perLine) {
