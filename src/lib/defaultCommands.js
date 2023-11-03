@@ -753,7 +753,6 @@ var defaultCmds = {
 				perLine = Math.sqrt(Object.keys(emojies).length);
 
 				dom.on(content, 'click', 'span', function (e) {
-					console.log(e.target);
 					editor.insert(e.target.innerHTML).closeDropDown(true);
 
 					e.preventDefault();
