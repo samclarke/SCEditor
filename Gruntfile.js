@@ -46,7 +46,7 @@ module.exports = (grunt) => {
 					console: false,
 					inject: path.join(__dirname, './tests/test-bridge.js'),
 					// Sandbox doesn't always work well on Linux so just disable
-					puppeteer: { args: ['--no-sandbox'] }
+					puppeteer: { args: ['--no-sandbox'], headless: 'new' }
 				}
 			}
 		},
