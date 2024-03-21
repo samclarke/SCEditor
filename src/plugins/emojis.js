@@ -29,46 +29,52 @@
                 emojis = editor.opts.emojis || [],
                 perLine = Math.sqrt(Object.keys(emojis).length);
 
-            var line = document.createElement('div');
+            if (!emojis.length) {
+                const pickerOptions = { onEmojiSelect: handleSelect };
+                const picker = new EmojiMart.Picker(pickerOptions);
 
-            sceditor.utils.each(emojis,
-                function (_, emoji) {
-                    const emojiElem = document.createElement('span');
+                content.appendChild(picker);
+            } else {
+                var line = document.createElement('div');
 
-                    emojiElem.className = 'sceditor-option';
-                    emojiElem.style = 'cursor:pointer';
+                sceditor.utils.each(emojis,
+                    function (_, emoji) {
+                        const emojiElem = document.createElement('span');
 
-                    emojiElem.appendChild(document.createTextNode(emoji));
+                        emojiElem.className = 'sceditor-option';
+                        emojiElem.style = 'cursor:pointer';
 
-                    emojiElem.addEventListener('click',
-                        function (e) {
-                            editor.closeDropDown(true);
+                        emojiElem.appendChild(document.createTextNode(emoji));
 
-                            editor.insert(e.target.innerHTML);
+                        emojiElem.addEventListener('click',
+                            function (e) {
+                                editor.closeDropDown(true);
 
-                            e.preventDefault();
-                        });
+                                editor.insert(e.target.innerHTML);
 
-                    if (line.children.length >= perLine) {
-                        line = document.createElement('div');
-                    }
+                                e.preventDefault();
+                            });
 
-                    content.appendChild(line);
+                        if (line.children.length >= perLine) {
+                            line = document.createElement('div');
+                        }
 
-                    line.appendChild(emojiElem);
-                });
+                        content.appendChild(line);
+
+                        line.appendChild(emojiElem);
+                    });
+            }
 
             editor.createDropDown(caller, 'emojis', content);
+
+            function handleSelect(emoji) {
+                editor.insert(emoji.native);
+
+                editor.closeDropDown(true);
+            }
         };
 
         base.init = function () {
-            const opts = this.opts;
-            const emojis = opts.emojis;
-
-            if (!emojis) {
-                return;
-            }
-
             this.commands.emojis = {
                 exec: emojisCmd,
                 txtExec: emojisCmd,
