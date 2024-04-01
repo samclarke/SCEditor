@@ -462,8 +462,9 @@ export default function SCEditor(original, userOptions) {
 
 		// load plugins scripts
 		(options.plugins || '').split(',').forEach(function (plugin) {
+			var src = `../${options.basePath}/plugins/${plugin.trim()}.js`;
 			promises.push(
-				loadScript(`../${options.basePath}/plugins/${plugin.trim()}.js`));
+				loadScript(src));
 		});
 
 		// load icons script
