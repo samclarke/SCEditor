@@ -461,11 +461,13 @@ export default function SCEditor(original, userOptions) {
 			loadScript(`../${options.basePath}/formats/${options.format}.js`));
 
 		// load plugins scripts
-		(options.plugins || '').split(',').forEach(function (plugin) {
-			var src = `../${options.basePath}/plugins/${plugin.trim()}.js`;
-			promises.push(
-				loadScript(src));
-		});
+		if (options.plugins) {
+			(options.plugins || '').split(',').forEach(function (plugin) {
+				var src = `../${options.basePath}/plugins/${plugin.trim()}.js`;
+				promises.push(
+					loadScript(src));
+			});
+		}
 
 		// load icons script
 		if (options.icons) {
