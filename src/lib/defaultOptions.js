@@ -402,5 +402,11 @@ export default {
     *
     * @type {string}
     */
-	basePath: 'minified'
+	basePath: 'minified',
+	/**
+    * The input format
+    *
+    * @type {string}
+    */
+	format: 'bbcode'
 };

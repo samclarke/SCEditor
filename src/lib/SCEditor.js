@@ -789,7 +789,6 @@ export default function SCEditor(original, userOptions) {
 
 				// The commandName must be a valid command and not excluded
 				if (!command || exclude.indexOf(commandName) > -1) {
-					console.log(command);
 					return;
 				}
 
