@@ -351,6 +351,17 @@ export default function SCEditor(original, userOptions) {
 		autoExpand;
 
 	/**
+	 * @param  {string} oldFnName
+	 * @param  {string} newFnName
+	 */
+	var logDeprecated = function  (oldFnName, newFnName) {
+		console.warn('WARNING! Obsolete function called. Function `'
+			+ oldFnName + '` has been deprecated, use `'
+			+ newFnName + '` instead!');
+		console.trace();
+	};
+
+	/**
 	 * All the commands supported by the editor
 	 * @name commands
 	 * @memberOf SCEditor.prototype
@@ -2775,9 +2786,13 @@ export default function SCEditor(original, userOptions) {
 	 * @name blur^2
 	 * @memberOf SCEditor.prototype
 	 * @since 1.4.1
+	 * @deprecated since v3.1.0 and will be removed in v4.0.0
 	 */
 	base.blur = function (handler, excludeWysiwyg, excludeSource) {
 		if (utils.isFunction(handler)) {
+			logDeprecated(
+				'instance.blur(handler)',
+				'instance.bind("blur", handler)');
 			base.bind('blur', handler, excludeWysiwyg, excludeSource);
 		} else if (!base.sourceMode()) {
 			wysiwygBody.blur();
@@ -2809,9 +2824,13 @@ export default function SCEditor(original, userOptions) {
 	 * @name focus^2
 	 * @memberOf SCEditor.prototype
 	 * @since 1.4.1
+	 * @deprecated since v3.1.0 and will be removed in v4.0.0
 	 */
 	base.focus = function (handler, excludeWysiwyg, excludeSource) {
 		if (utils.isFunction(handler)) {
+			logDeprecated(
+				'instance.focus(handler)',
+				'instance.bind("focus", handler)');
 			base.bind('focus', handler, excludeWysiwyg, excludeSource);
 		} else if (!base.inSourceMode()) {
 			// Already has focus so do nothing
@@ -2866,8 +2885,12 @@ export default function SCEditor(original, userOptions) {
 	 * @name keyDown
 	 * @memberOf SCEditor.prototype
 	 * @since 1.4.1
+	 * @deprecated since v3.1.0 and will be removed in v4.0.0
 	 */
 	base.keyDown = function (handler, excludeWysiwyg, excludeSource) {
+		logDeprecated(
+			'instance.keyDown(handler)',
+			'instance.bind("keydown", handler)');
 		return base.bind('keydown', handler, excludeWysiwyg, excludeSource);
 	};
 
@@ -2884,8 +2907,12 @@ export default function SCEditor(original, userOptions) {
 	 * @name keyPress
 	 * @memberOf SCEditor.prototype
 	 * @since 1.4.1
+	 * @deprecated since v3.1.0 and will be removed in v4.0.0
 	 */
 	base.keyPress = function (handler, excludeWysiwyg, excludeSource) {
+		logDeprecated(
+			'instance.keyPress(handler)',
+			'instance.bind("keypress", handler)');
 		return base
 			.bind('keypress', handler, excludeWysiwyg, excludeSource);
 	};
@@ -2903,8 +2930,12 @@ export default function SCEditor(original, userOptions) {
 	 * @name keyUp
 	 * @memberOf SCEditor.prototype
 	 * @since 1.4.1
+	 * @deprecated since v3.1.0 and will be removed in v4.0.0
 	 */
 	base.keyUp = function (handler, excludeWysiwyg, excludeSource) {
+		logDeprecated(
+			'instance.keyUp(handler)',
+			'instance.bind("keyup", handler)');
 		return base.bind('keyup', handler, excludeWysiwyg, excludeSource);
 	};
 
@@ -2920,8 +2951,12 @@ export default function SCEditor(original, userOptions) {
 	 * @name nodeChanged
 	 * @memberOf SCEditor.prototype
 	 * @since 1.4.1
+	 * @deprecated since v3.1.0 and will be removed in v4.0.0
 	 */
 	base.nodeChanged = function (handler) {
+		logDeprecated(
+			'instance.nodeChanged(handler)',
+			'instance.bind("nodechanged", handler)');
 		return base.bind('nodechanged', handler, false, true);
 	};
 
@@ -2936,8 +2971,12 @@ export default function SCEditor(original, userOptions) {
 	 * @name selectionChanged
 	 * @memberOf SCEditor.prototype
 	 * @since 1.4.1
+	 * @deprecated since v3.1.0 and will be removed in v4.0.0
 	 */
 	base.selectionChanged = function (handler) {
+		logDeprecated(
+			'instance.selectionChanged(handler)',
+			'instance.bind("selectionchanged", handler)');
 		return base.bind('selectionchanged', handler, false, true);
 	};
 
@@ -2961,8 +3000,12 @@ export default function SCEditor(original, userOptions) {
 	 * @name valueChanged
 	 * @memberOf SCEditor.prototype
 	 * @since 1.4.5
+	 * @deprecated since v3.1.0 and will be removed in v4.0.0
 	 */
 	base.valueChanged = function (handler, excludeWysiwyg, excludeSource) {
+		logDeprecated(
+			'instance.valueChanged(handler)',
+			'instance.bind("valuechanged", handler)');
 		return base
 			.bind('valuechanged', handler, excludeWysiwyg, excludeSource);
 	};
