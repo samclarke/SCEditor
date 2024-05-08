@@ -1,4 +1,4 @@
-﻿import * as dom from './dom.js';
+import * as dom from './dom.js';
 import * as utils from './utils.js';
 import defaultOptions from './defaultOptions.js';
 import defaultCommands from './defaultCommands.js';
@@ -707,12 +707,6 @@ export default function SCEditor(original, userOptions) {
 
 		dom.on(editorContainer, 'selectionchanged', checkNodeChanged);
 		dom.on(editorContainer, 'selectionchanged', updateActiveButtons);
-		// Custom events to forward
-		dom.on(
-			editorContainer,
-			'selectionchanged valuechanged nodechanged pasteraw paste',
-			handleEvent
-		);
 	};
 
 	/**
@@ -1635,7 +1629,6 @@ export default function SCEditor(original, userOptions) {
 
 		pluginManager.call('pasteRaw', data);
 		handleManualEvent('pasteraw', data);
-		dom.trigger(editorContainer, 'pasteraw', data);
 
 		if (data.html) {
 			// Sanitize again in case plugins modified the HTML
@@ -1658,7 +1651,6 @@ export default function SCEditor(original, userOptions) {
 
 		pluginManager.call('paste', paste);
 		handleManualEvent('paste', paste);
-		dom.trigger(editorContainer, 'paste', paste);
 
 		if ('fragmentToHtml' in format) {
 			paste.val = format
@@ -2374,7 +2366,8 @@ export default function SCEditor(original, userOptions) {
 					}
 				}
 
-				dom.trigger(editorContainer, 'selectionchanged');
+				pluginManager.call('selectionchanged');
+				handleManualEvent('selectionchanged');
 			}
 
 			isSelectionCheckPending = false;
@@ -2409,7 +2402,11 @@ export default function SCEditor(original, userOptions) {
 			currentNode      = node;
 			currentBlockNode = rangeHelper.getFirstBlockParent(node);
 
-			dom.trigger(editorContainer, 'nodechanged', {
+			pluginManager.call('nodechanged', {
+				oldNode: oldNode,
+				newNode: currentNode
+			});
+			handleManualEvent('nodechanged', {
 				oldNode: oldNode,
 				newNode: currentNode
 			});
@@ -3444,7 +3441,10 @@ export default function SCEditor(original, userOptions) {
 		if (currentHtml !== triggerValueChanged.lastVal) {
 			triggerValueChanged.lastVal = currentHtml;
 
-			dom.trigger(editorContainer, 'valuechanged', {
+			pluginManager.call('valuechanged', {
+				rawValue: sourceMode ? base.val() : currentHtml
+			});
+			handleManualEvent('valuechanged', {
 				rawValue: sourceMode ? base.val() : currentHtml
 			});
 		}
