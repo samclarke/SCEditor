@@ -333,6 +333,7 @@ export default function SCEditor(original, userOptions) {
 		handleMouseDown,
 		handleComposition,
 		handleEvent,
+		handleManualEvent,
 		handleDocumentClick,
 		updateToolBar,
 		updateActiveButtons,
@@ -498,6 +499,7 @@ export default function SCEditor(original, userOptions) {
 			appendNewLine();
 			// TODO: use editor doc and window?
 			pluginManager.call('ready');
+			handleManualEvent('ready');
 			if ('onReady' in format) {
 				format.onReady.call(base);
 			}
@@ -1632,6 +1634,7 @@ export default function SCEditor(original, userOptions) {
 		var pasteArea = dom.createElement('div', {}, wysiwygDocument);
 
 		pluginManager.call('pasteRaw', data);
+		handleManualEvent('pasteraw', data);
 		dom.trigger(editorContainer, 'pasteraw', data);
 
 		if (data.html) {
@@ -1654,6 +1657,7 @@ export default function SCEditor(original, userOptions) {
 		}
 
 		pluginManager.call('paste', paste);
+		handleManualEvent('paste', paste);
 		dom.trigger(editorContainer, 'paste', paste);
 
 		if ('fragmentToHtml' in format) {
@@ -1662,6 +1666,7 @@ export default function SCEditor(original, userOptions) {
 		}
 
 		pluginManager.call('pasteHtml', paste);
+		handleManualEvent('pastehtml', paste);
 
 		var parent = rangeHelper.getFirstBlockParent();
 		base.wysiwygEditorInsertHtml(paste.val, null, true);
@@ -2639,7 +2644,15 @@ export default function SCEditor(original, userOptions) {
 
 		// convert the event into a custom event to send
 		var name = (e.target === sourceEditor ? 'scesrc' : 'scewys') + e.type;
+		handleManualEvent(name, e);
+	};
 
+	/**
+	 * Passes events on to any handlers
+	 * @private
+	 * @return void
+	 */
+	handleManualEvent = function(name, e) {
 		if (eventHandlers[name]) {
 			eventHandlers[name].forEach(function (fn) {
 				fn.call(base, e);
