@@ -21,7 +21,7 @@
 		 * @type {Object}
 		 * @private
 		 */
-		var tags = {
+		var xhtmlTags = {
 			p: 'Paragraph',
 			h1: 'Heading 1',
 			h2: 'Heading 2',
@@ -32,6 +32,24 @@
 			address: 'Address',
 			pre: 'Preformatted Text'
 		};
+
+		// BBCode should not implement <p> tag, otherwise all the lines will be
+		// wrapped with [p][/p] tags
+		var bbcodeTags = {
+			h1: 'Heading 1',
+			h2: 'Heading 2',
+			h3: 'Heading 3',
+			h4: 'Heading 4',
+			h5: 'Heading 5',
+			h6: 'Heading 6',
+			address: 'Address',
+			pre: 'Preformatted Text'
+		};
+
+		// tags variable is assigned with the list from bbcodeTags or
+		// xhtmlTags according to the used formatter engine. The rest
+		// of the plugin logic uses that variable
+		var tags;
 
 		/**
 		 * Private functions
@@ -45,9 +63,16 @@
 			var	opts  = this.opts,
 				pOpts = opts.paragraphformat;
 
-			// Don't enable if the BBCode plugin is enabled.
-			if (opts.format && opts.format === 'bbcode') {
+			// Enable only for supported formats
+			if (!opts.format ||
+				(opts.format !== 'bbcode' && opts.format !== 'xhtml')) {
 				return;
+			}
+
+			if (opts.format === 'xhtml') {
+				tags = xhtmlTags;
+			} else if (opts.format === 'bbcode') {
+				tags = bbcodeTags;
 			}
 
 			if (pOpts) {
@@ -62,12 +87,27 @@
 				}
 			}
 
-			if (!this.commands.format) {
-				this.commands.format = {
-					exec: formatCmd,
-					txtExec: formatCmd,
-					tooltip: 'Format Paragraph'
-				};
+			sceditor.command.set('format', {
+				exec: formatCmd,
+				txtExec: formatCmd,
+				tooltip: 'Format Paragraph'
+			});
+
+			// Initialize BBCode handlers
+			if (opts.format === 'bbcode') {
+				sceditor.utils.each(tags, function (tag) {
+					var handler = {
+						tags: {},
+						isInline: false,
+						allowedChildren: ['#'],
+						format: '[' + tag + ']{0}[/' + tag + ']',
+						html: '<' + tag + '>{0}</' + tag + '>'
+					};
+
+					handler.tags[tag] = null;
+
+					sceditor.formats.bbcode.set(tag, handler);
+				});
 			}
 
 			if (opts.toolbar === sceditor.defaultOptions.toolbar) {
@@ -84,8 +124,14 @@
 		 * @private
 		 */
 		insertTag = function (editor, tag) {
+			var	opts = editor.opts;
+
 			if (editor.sourceMode()) {
-				editor.insert('<' + tag + '>', '</' + tag + '>');
+				if (opts.format === 'bbcode') {
+					editor.insert('[' + tag + ']', '[/' + tag + ']');
+				} else {
+					editor.insert('<' + tag + '>', '</' + tag + '>');
+				}
 			} else {
 				editor.execCommand('formatblock', '<' + tag + '>');
 			}
