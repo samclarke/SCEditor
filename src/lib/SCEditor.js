@@ -336,7 +336,6 @@ export default function SCEditor(original, userOptions) {
 		handleDocumentClick,
 		updateToolBar,
 		updateActiveButtons,
-		sourceEditorSelectedText,
 		appendNewLine,
 		checkSelectionChanged,
 		checkNodeChanged,
@@ -455,6 +454,15 @@ export default function SCEditor(original, userOptions) {
 
 		isRequired = original.required;
 		original.required = false;
+
+		// Plugins should be initiated before the formatters since plugin
+		// may add/change the handlers and format init should create cache
+		// with those changes
+		initPlugins();
+
+		// Plugins might change the commands, should re-build it
+		base.commands = utils
+			.extend(true, {}, (userOptions.commands || defaultCommands));
 
 		var FormatCtor = SCEditor.formats[options.format];
 		format = FormatCtor ? new FormatCtor() : {};
@@ -2255,9 +2263,8 @@ export default function SCEditor(original, userOptions) {
 	/**
 	 * Gets the selected text of the source editor
 	 * @return {string}
-	 * @private
 	 */
-	sourceEditorSelectedText = function () {
+	base.sourceEditorSelectedText = function () {
 		sourceEditor.focus();
 
 		return sourceEditor.value.substring(
@@ -2277,7 +2284,8 @@ export default function SCEditor(original, userOptions) {
 				if (Array.isArray(cmd.txtExec)) {
 					base.sourceEditorInsertText.apply(base, cmd.txtExec);
 				} else {
-					cmd.txtExec.call(base, caller, sourceEditorSelectedText());
+					cmd.txtExec.call(base, caller,
+						base.sourceEditorSelectedText());
 				}
 			}
 		} else if (cmd.exec) {
