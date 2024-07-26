@@ -9,7 +9,7 @@
  *
  * @author Sam Clarke
  */
-(function (sceditor) {
+(function(sceditor) {
 	'use strict';
 
 	/**
@@ -50,12 +50,12 @@
 
 	function base64DataUriToBlob(url) {
 		// 5 is length of "data:" prefix
-		var mime = url.substr(5, url.indexOf(';') - 5);
-		var data = atob(url.substr(url.indexOf(',') + 1));
+		const mime = url.substr(5, url.indexOf(';') - 5);
+		const data = atob(url.substr(url.indexOf(',') + 1));
 		/* global Uint8Array */
-		var binary = new Uint8Array(data.length);
+		const binary = new Uint8Array(data.length);
 
-		for (var i = 0; i < data.length; i++) {
+		for (let i = 0; i < data.length; i++) {
 			binary[i] = data[i].charCodeAt(0);
 		}
 
@@ -66,13 +66,13 @@
 		}
 	}
 
-	sceditor.plugins.dragdrop = function () {
+	sceditor.plugins.dragdrop = function() {
 		if (!isSupported) {
 			return;
 		}
 
-		var base = this;
-		var	opts;
+		const base = this;
+		var opts;
 		var editor;
 		var handleFile;
 		var container;
@@ -92,24 +92,26 @@
 			}
 		}
 
-		function isAllowed(file) {
+		function isAllowed() {
 			// FF sets type to application/x-moz-file until it has been dropped
-			if (file.type !== 'application/x-moz-file' && opts.allowedTypes &&
+			/*if (file.type !== 'application/x-moz-file' && opts.allowedTypes &&
 				opts.allowedTypes.indexOf(file.type) < 0) {
 				return false;
 			}
 
-			return opts.isAllowed ? opts.isAllowed(file) : true;
+			return opts.isAllowed ? opts.isAllowed(file) : true;*/
+
+			return true;
 		};
 
 		function createHolder(toReplace) {
 			var placeholder = document.createElement('img');
 			placeholder.src = loadingGif;
 			placeholder.className = 'sceditor-ignore';
-			placeholder.id = 'sce-dragdrop-' + placeholderId++;
+			placeholder.id = `sce-dragdrop-${placeholderId++}`;
 
 			function replace(html) {
-				var node = editor
+				const node = editor
 					.getBody()
 					.ownerDocument
 					.getElementById(placeholder.id);
@@ -123,7 +125,7 @@
 				}
 			}
 
-			return function () {
+			return function() {
 				if (toReplace) {
 					toReplace.parentNode.replaceChild(placeholder, toReplace);
 				} else {
@@ -131,7 +133,7 @@
 				}
 
 				return {
-					insert: function (html) {
+					insert: function(html) {
 						replace(html);
 					},
 					cancel: replace
@@ -140,10 +142,10 @@
 		}
 
 		function handleDragOver(e) {
-			var dt    = e.dataTransfer;
-			var files = dt.files.length || !dt.items ? dt.files : dt.items;
+			const dt = e.dataTransfer;
+			const files = dt.files.length || !dt.items ? dt.files : dt.items;
 
-			for (var i = 0; i < files.length; i++) {
+			for (let i = 0; i < files.length; i++) {
 				// Dragging a string should be left to default
 				if (files[i].kind === 'string') {
 					return;
@@ -155,12 +157,12 @@
 		}
 
 		function handleDrop(e) {
-			var dt    = e.dataTransfer;
-			var files = dt.files.length || !dt.items ? dt.files : dt.items;
+			const dt = e.dataTransfer;
+			const files = dt.files.length || !dt.items ? dt.files : dt.items;
 
 			hideCover();
 
-			for (var i = 0; i < files.length; i++) {
+			for (let i = 0; i < files.length; i++) {
 				// Dragging a string should be left to default
 				if (files[i].kind === 'string') {
 					return;
@@ -174,7 +176,7 @@
 			e.preventDefault();
 		}
 
-		base.signalReady = function () {
+		base.signalReady = function() {
 			editor = this;
 			opts = editor.opts.dragdrop || {};
 			handleFile = opts.handleFile;
@@ -182,9 +184,8 @@
 			container = editor.getContentAreaContainer().parentNode;
 
 			cover = container.appendChild(sceditor.dom.parseHTML(
-				'<div class="sceditor-dnd-cover" style="display: none">' +
-					'<p>' + editor._('Drop files here') + '</p>' +
-				'</div>'
+				// eslint-disable-next-line quotes
+				`<div class="sceditor-dnd-cover" style="display: none"></div>`
 			).firstChild);
 
 			container.addEventListener('dragover', handleDragOver);
@@ -196,17 +197,17 @@
 			editor.getBody().addEventListener('drop', hideCover);
 		};
 
-		base.signalPasteHtml = function (paste) {
+		base.signalPasteHtml = function(paste) {
 			if (!('handlePaste' in opts) || opts.handlePaste) {
-				var div = document.createElement('div');
+				const div = document.createElement('div');
 				div.innerHTML = paste.val;
 
-				var images = div.querySelectorAll('img');
-				for (var i = 0; i < images.length; i++) {
-					var image = images[i];
+				const images = div.querySelectorAll('img');
+				for (let i = 0; i < images.length; i++) {
+					const image = images[i];
 
 					if (base64DataUri.test(image.src)) {
-						var file = base64DataUriToBlob(image.src);
+						const file = base64DataUriToBlob(image.src);
 						if (file && isAllowed(file)) {
 							handleFile(file, createHolder(image));
 						} else {

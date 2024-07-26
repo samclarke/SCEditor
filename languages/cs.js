@@ -10,8 +10,6 @@
 		'Italic': 'Kurzíva',
 		'Underline': 'Podtržené',
 		'Strikethrough': 'Přeškrtnuté',
-		'Subscript': 'Dolní index',
-		'Superscript': 'Horní index',
 		'Align left': 'Zarovnat vlevo',
 		'Center': 'Zarovnat na střed',
 		'Align right': 'Zarovnat vpravo',
@@ -37,8 +35,6 @@
 		'Insert a table': 'Vložit tabulku',
 		'Insert a horizontal rule': 'Vložit vodorovnou čáru',
 		'Code': 'Vložit kód',
-		'Width (optional):': 'Šířka (volitelné)',
-		'Height (optional):': 'Výška (volitelné)',
 		'Insert an image': 'Vložit obrázek',
 		'E-mail:': 'E-mailová adresa',
 		'Insert an email': 'Vložit e-mail',
@@ -50,9 +46,6 @@
 		'Video URL:': 'Adresa videa',
 		'Insert': 'Vložit',
 		'Insert a YouTube video': 'Vložte video z YouTube',
-		'Insert current date': 'Vložte aktuální datum',
-		'Insert current time': 'Vložte aktuální čas',
-		'Print': 'Vytisknout',
 		'View source': 'Zobrazit zdroj',
 		'Description (optional):': 'Popis (volitelné)',
 		'Enter the image URL:': 'Vložte adresu obrázku',
@@ -64,7 +57,6 @@
 		'Invalid YouTube video': 'Neplatné YouTube video',
 		'Add indent': 'Posunout na další úroveň',
 		'Remove one indent': 'Posunout na předchozí úroveň',
-		'Maximize': 'Zobrazit přes celou obrazovku',
 
 		dateFormat: 'day-month-year'
 	};

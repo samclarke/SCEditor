@@ -653,14 +653,14 @@ QUnit.test('fixNesting() - Paragraph with blockquote', function (assert) {
 	assert.nodesEqual(
 		root,
 		utils.htmlToDiv(
-			'<p>1</p><blockquote>2</blockquote><p>3</p>'
+			'<p>1</p><div class="border rounded mx-3 mb-3 p-3 border-secondary shadow-sm"><span contenteditable="false"><i class="fa fa-quote-left text-primary fs-4 me-2"></i></span>2</div><p>3</p>'
 		)
 	);
 });
 
 QUnit.test('fixNesting() - Do not create empty nodes', function (assert) {
 	var node = utils.htmlToDiv(
-		'<span><blockquote>test</blockquote></span>'
+		'<span><div class="border rounded mx-3 mb-3 p-3 border-secondary shadow-sm"><span contenteditable="false"><i class="fa fa-quote-left text-primary fs-4 me-2"></i></span>test</div></span>'
 	);
 
 	dom.fixNesting(node);
@@ -668,13 +668,13 @@ QUnit.test('fixNesting() - Do not create empty nodes', function (assert) {
 	assert.nodesEqual(
 		node,
 		utils.htmlToDiv(
-			'<blockquote><span>test</span></blockquote>'
+			'<div class="border rounded mx-3 mb-3 p-3 border-secondary shadow-sm"><span contenteditable="false"><i class="fa fa-quote-left text-primary fs-4 me-2"></i></span><span>test</span></div>'
 		)
 	);
 });
 QUnit.test('fixNesting() - Create nodes with a child that cannot have children', function (assert) {
 	var node = utils.htmlToDiv(
-		'<span><blockquote>test</blockquote><br></span>'
+		'<span><div class="border rounded mx-3 mb-3 p-3 border-secondary shadow-sm"><span contenteditable="false"><i class="fa fa-quote-left text-primary fs-4 me-2"></i></span>test</div><br></span>'
 	);
 
 	dom.fixNesting(node);
@@ -682,14 +682,14 @@ QUnit.test('fixNesting() - Create nodes with a child that cannot have children',
 	assert.nodesEqual(
 		node,
 		utils.htmlToDiv(
-			'<blockquote><span>test</span></blockquote><span><br /></span>'
+			'<div class="border rounded mx-3 mb-3 p-3 border-secondary shadow-sm"><span contenteditable="false"><i class="fa fa-quote-left text-primary fs-4 me-2"></i></span><span>test</span></div><span><br /></span>'
 		)
 	);
 });
 
 QUnit.test('fixNesting() - Do not create empty nodes when deeply nested', function (assert) {
 	var node = utils.htmlToDiv(
-		'<em><span><strong><blockquote>test</blockquote></strong></span></em>'
+		'<em><span><strong><div class="border rounded mx-3 mb-3 p-3 border-secondary shadow-sm"><span contenteditable="false"><i class="fa fa-quote-left text-primary fs-4 me-2"></i></span>test</div></strong></span></em>'
 	);
 
 	dom.fixNesting(node);
@@ -697,14 +697,14 @@ QUnit.test('fixNesting() - Do not create empty nodes when deeply nested', functi
 	assert.nodesEqual(
 		node,
 		utils.htmlToDiv(
-			'<blockquote><em><span><strong>test</strong></span></em></blockquote>'
+			'<div class="border rounded mx-3 mb-3 p-3 border-secondary shadow-sm"><span contenteditable="false"><i class="fa fa-quote-left text-primary fs-4 me-2"></i></span><em><span><strong>test</strong></span></em></div>'
 		)
 	);
 });
 
 QUnit.test('fixNesting() - Do not create empty nodes when inline styling nested', function (assert) {
 	var node = utils.htmlToDiv(
-		'<em><div><strong><blockquote>4</blockquote></strong></div></em>'
+		'<em><div><strong><div class="border rounded mx-3 mb-3 p-3 border-secondary shadow-sm"><span contenteditable="false"><i class="fa fa-quote-left text-primary fs-4 me-2"></i></span>4</div></strong></div></em>'
 	);
 
 	dom.fixNesting(node);
@@ -712,7 +712,7 @@ QUnit.test('fixNesting() - Do not create empty nodes when inline styling nested'
 	assert.nodesEqual(
 		node,
 		utils.htmlToDiv(
-			'<div><blockquote><em><strong>4</strong></em></blockquote></div>'
+			'<div><div class="border rounded mx-3 mb-3 p-3 border-secondary shadow-sm"><span contenteditable="false"><i class="fa fa-quote-left text-primary fs-4 me-2"></i></span><em><strong>4</strong></em></div></div>'
 		)
 	);
 });
@@ -720,7 +720,7 @@ QUnit.test('fixNesting() - Do not create empty nodes when inline styling nested'
 QUnit.test('fixNesting() - Preserve inline styling', function (assert) {
 	// Below is the following HTML (have to do it manually due to <p> being
 	// closed by the <blockquote> when using innerHTML):
-	//  <p>1</p><strong><p>2</p><p><blockquote>3</blockquote>4</p></strong><p>5</p>
+	//  <p>1</p><strong><p>2</p><p><div class="border rounded mx-3 mb-3 p-3 border-secondary shadow-sm"><span contenteditable="false"><i class="fa fa-quote-left text-primary fs-4 me-2"></i></span>3</div>4</p></strong><p>5</p>
 	var p1 = document.createElement('p');
 	p1.appendChild(document.createTextNode('1'));
 
@@ -753,7 +753,7 @@ QUnit.test('fixNesting() - Preserve inline styling', function (assert) {
 		utils.htmlToDiv(
 			'<p>1</p>' +
 			'<p><strong>2</strong></p>' +
-			'<blockquote><strong>3</strong></blockquote>' +
+			'<div class="border rounded mx-3 mb-3 p-3 border-secondary shadow-sm"><span contenteditable="false"><i class="fa fa-quote-left text-primary fs-4 me-2"></i></span><strong>3</strong></div>' +
 			'<p><strong>4</strong></p>' +
 			'<p>5</p>'
 		)
@@ -762,7 +762,7 @@ QUnit.test('fixNesting() - Preserve inline styling', function (assert) {
 
 QUnit.test('fixNesting() - Preserve inline styling', function (assert) {
 	var node = utils.htmlToDiv(
-		'<em><span><strong>1<blockquote><p>2</p></blockquote>3</strong></span></em>'
+		'<em><span><strong>1<div class="border rounded mx-3 mb-3 p-3 border-secondary shadow-sm"><span contenteditable="false"><i class="fa fa-quote-left text-primary fs-4 me-2"></i></span><p>2</p></div>3</strong></span></em>'
 	);
 
 	dom.fixNesting(node);
@@ -771,7 +771,7 @@ QUnit.test('fixNesting() - Preserve inline styling', function (assert) {
 		node,
 		utils.htmlToDiv(
 			'<em><span><strong>1</strong></span></em>' +
-			'<blockquote><p><em><span><strong>2</strong></span></em></p></blockquote>' +
+			'<div class="border rounded mx-3 mb-3 p-3 border-secondary shadow-sm"><span contenteditable="false"><i class="fa fa-quote-left text-primary fs-4 me-2"></i></span><p><em><span><strong>2</strong></span></em></p></div>' +
 			'<em><span><strong>3</strong></span></em>'
 		)
 	);
@@ -779,7 +779,7 @@ QUnit.test('fixNesting() - Preserve inline styling', function (assert) {
 
 QUnit.test('fixNesting() - Preserve inline styling nested', function (assert) {
 	var node = utils.htmlToDiv(
-		'<em>1<div>2<strong>3<blockquote>4</blockquote>5</strong>6</div>7</em>'
+		'<em>1<div>2<strong>3<div class="border rounded mx-3 mb-3 p-3 border-secondary shadow-sm"><span contenteditable="false"><i class="fa fa-quote-left text-primary fs-4 me-2"></i></span>4</div>5</strong>6</div>7</em>'
 	);
 
 	dom.fixNesting(node);
@@ -793,7 +793,7 @@ QUnit.test('fixNesting() - Preserve inline styling nested', function (assert) {
 					'2' +
 					'<strong>3</strong>' +
 				'</em>' +
-				'<blockquote><em><strong>4</strong></em></blockquote>' +
+				'<div class="border rounded mx-3 mb-3 p-3 border-secondary shadow-sm"><span contenteditable="false"><i class="fa fa-quote-left text-primary fs-4 me-2"></i></span><em><strong>4</strong></em></div>' +
 				'<em>' +
 					'<strong>5</strong>' +
 					'6' +

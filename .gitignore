@@ -9,3 +9,5 @@ sceditor.sublime-workspace
 /coverage
 .DS_Store
 /codetests
+package-lock.json
+/.vs

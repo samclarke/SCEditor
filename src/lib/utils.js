@@ -52,24 +52,25 @@ export function isEmptyObject(obj) {
  * @return {Object}
  */
 export function extend(targetArg, sourceArg) {
-	var isTargetBoolean = targetArg === !!targetArg;
-	var i      = isTargetBoolean ? 2 : 1;
-	var target = isTargetBoolean ? sourceArg : targetArg;
-	var isDeep = isTargetBoolean ? targetArg : false;
+	const isTargetBoolean = targetArg === !!targetArg;
+	var i = isTargetBoolean ? 2 : 1;
+	const target = isTargetBoolean ? sourceArg : targetArg;
+	const isDeep = isTargetBoolean ? targetArg : false;
 
 	function isObject(value) {
-		return value !== null && typeof value === 'object' &&
+		return value !== null &&
+			typeof value === 'object' &&
 			Object.getPrototypeOf(value) === Object.prototype;
 	}
 
 	for (; i < arguments.length; i++) {
-		var source = arguments[i];
+		const source = arguments[i];
 
 		// Copy all properties for jQuery compatibility
 		/* eslint guard-for-in: off */
-		for (var key in source) {
-			var targetValue = target[key];
-			var value = source[key];
+		for (let key in source) {
+			const targetValue = target[key];
+			const value = source[key];
 
 			// Skip undefined values to match jQuery
 			if (isUndefined(value)) {
@@ -81,13 +82,13 @@ export function extend(targetArg, sourceArg) {
 				continue;
 			}
 
-			var isValueObject = isObject(value);
-			var isValueArray = Array.isArray(value);
+			const isValueObject = isObject(value);
+			const isValueArray = Array.isArray(value);
 
 			if (isDeep && (isValueObject || isValueArray)) {
 				// Can only merge if target type matches otherwise create
 				// new target to merge into
-				var isSameType = isObject(targetValue) === isValueObject &&
+				const isSameType = isObject(targetValue) === isValueObject &&
 					Array.isArray(targetValue) === isValueArray;
 
 				target[key] = extend(
@@ -111,7 +112,7 @@ export function extend(targetArg, sourceArg) {
  * @param {*} item
  */
 export function arrayRemove(arr, item) {
-	var i = arr.indexOf(item);
+	const i = arr.indexOf(item);
 
 	if (i > -1) {
 		arr.splice(i, 1);
@@ -126,11 +127,11 @@ export function arrayRemove(arr, item) {
  */
 export function each(obj, fn) {
 	if (Array.isArray(obj) || 'length' in obj && isNumber(obj.length)) {
-		for (var i = 0; i < obj.length; i++) {
+		for (let i = 0; i < obj.length; i++) {
 			fn(i, obj[i]);
 		}
 	} else {
-		Object.keys(obj).forEach(function (key) {
+		Object.keys(obj).forEach(function(key) {
 			fn(key, obj[key]);
 		});
 	}

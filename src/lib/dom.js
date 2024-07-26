@@ -64,6 +64,7 @@ export function createElement(tag, attributes, context) {
 	utils.each(attributes || {}, function (key, value) {
 		if (key === 'style') {
 			node.style.cssText = value;
+
 		} else if (key in node) {
 			node[key] = value;
 		} else {
@@ -192,7 +193,7 @@ export function on(node, events, selector, fn, capture) {
 		var handler;
 
 		if (utils.isString(selector)) {
-			handler = fn['_sce-event-' + event + selector] || function (e) {
+			handler = fn[`_sce-event-${event}${selector}`] || function (e) {
 				var target = e.target;
 				while (target && target !== node) {
 					if (is(target, selector)) {
@@ -204,7 +205,7 @@ export function on(node, events, selector, fn, capture) {
 				}
 			};
 
-			fn['_sce-event-' + event + selector] = handler;
+			fn[`_sce-event-${event}${selector}`] = handler;
 		} else {
 			handler = selector;
 			capture = fn;
@@ -230,7 +231,7 @@ export function off(node, events, selector, fn, capture) {
 		var handler;
 
 		if (utils.isString(selector)) {
-			handler = fn['_sce-event-' + event + selector];
+			handler = fn[`_sce-event-${event}${selector}`];
 		} else {
 			handler = selector;
 			capture = fn;
@@ -323,13 +324,14 @@ export function css(node, rule, value) {
 			return node.nodeType === 1 ? getComputedStyle(node)[rule] : null;
 		}
 
-		utils.each(rule, function (key, value) {
-			css(node, key, value);
-		});
+		utils.each(rule,
+			function(key, value) {
+				css(node, key, value);
+			});
 	} else {
 		// isNaN returns false for null, false and empty strings
 		// so need to check it's truthy or 0
-		var isNumeric = (value || value === 0) && !isNaN(value);
+		const isNumeric = (value || value === 0) && !isNaN(value);
 		node.style[rule] = isNumeric ? value + 'px' : value;
 	}
 }
@@ -348,25 +350,26 @@ export function css(node, rule, value) {
  * @return {Object|undefined}
  */
 export function data(node, key, value) {
-	var argsLength = arguments.length;
+	const argsLength = arguments.length;
 	var data = {};
 
 	if (node.nodeType === ELEMENT_NODE) {
 		if (argsLength === 1) {
-			utils.each(node.attributes, function (_, attr) {
-				if (/^data\-/i.test(attr.name)) {
-					data[attr.name.substr(5)] = attr.value;
-				}
-			});
+			utils.each(node.attributes,
+				function(_, attr) {
+					if (/^data\-/i.test(attr.name)) {
+						data[attr.name.substr(5)] = attr.value;
+					}
+				});
 
 			return data;
 		}
 
 		if (argsLength === 2) {
-			return attr(node, 'data-' + key);
+			return attr(node, `data-${key}`);
 		}
 
-		attr(node, 'data-' + key, String(value));
+		attr(node, `data-${key}`, String(value));
 	}
 }
 
@@ -381,7 +384,8 @@ export function is(node, selector) {
 	var result = false;
 
 	if (node && node.nodeType === ELEMENT_NODE) {
-		result = (node.matches || node.msMatchesSelector ||
+		result = (node.matches ||
+			node.msMatchesSelector ||
 			node.webkitMatchesSelector).call(node, selector);
 	}
 
@@ -409,7 +413,7 @@ export function contains(node, child) {
  * @returns {?HTMLElement}
  */
 export function previousElementSibling(node, selector) {
-	var prev = node.previousElementSibling;
+	const prev = node.previousElementSibling;
 
 	if (selector && prev) {
 		return is(prev, selector) ? prev : null;
@@ -441,7 +445,7 @@ function classes(node) {
  * @returns {boolean}
  */
 export function hasClass(node, className) {
-	return is(node, '.' + className);
+	return is(node, `.${className}`);
 }
 
 /**
@@ -449,7 +453,7 @@ export function hasClass(node, className) {
  * @param {string} className
  */
 export function addClass(node, className) {
-	var classList = classes(node);
+	const classList = classes(node);
 
 	if (classList.indexOf(className) < 0) {
 		classList.push(className);
@@ -463,7 +467,7 @@ export function addClass(node, className) {
  * @param {string} className
  */
 export function removeClass(node, className) {
-	var classList = classes(node);
+	const classList = classes(node);
 
 	utils.arrayRemove(classList, className);
 
@@ -502,9 +506,9 @@ export function toggleClass(node, className, state) {
  */
 export function width(node, value) {
 	if (utils.isUndefined(value)) {
-		var cs = getComputedStyle(node);
-		var padding = toFloat(cs.paddingLeft) + toFloat(cs.paddingRight);
-		var border = toFloat(cs.borderLeftWidth) + toFloat(cs.borderRightWidth);
+		const cs = getComputedStyle(node);
+		const padding = toFloat(cs.paddingLeft) + toFloat(cs.paddingRight);
+		const border = toFloat(cs.borderLeftWidth) + toFloat(cs.borderRightWidth);
 
 		return node.offsetWidth - padding - border;
 	}
@@ -521,9 +525,9 @@ export function width(node, value) {
  */
 export function height(node, value) {
 	if (utils.isUndefined(value)) {
-		var cs = getComputedStyle(node);
-		var padding = toFloat(cs.paddingTop) + toFloat(cs.paddingBottom);
-		var border = toFloat(cs.borderTopWidth) + toFloat(cs.borderBottomWidth);
+		const cs = getComputedStyle(node);
+		const padding = toFloat(cs.paddingTop) + toFloat(cs.paddingBottom);
+		const border = toFloat(cs.borderTopWidth) + toFloat(cs.borderBottomWidth);
 
 		return node.offsetHeight - padding - border;
 	}
@@ -600,7 +604,7 @@ export function traverse(node, func, innermostFirst, siblingsOnly, reverse) {
 	node = reverse ? node.lastChild : node.firstChild;
 
 	while (node) {
-		var next = reverse ? node.previousSibling : node.nextSibling;
+		const next = reverse ? node.previousSibling : node.nextSibling;
 
 		if (
 			(!innermostFirst && func(node) === false) ||
@@ -635,8 +639,8 @@ export function rTraverse(node, func, innermostFirst, siblingsOnly) {
 export function parseHTML(html, context) {
 	context = context || document;
 
-	var	ret = context.createDocumentFragment();
-	var tmp = createElement('div', {}, context);
+	const ret = context.createDocumentFragment();
+	const tmp = createElement('div', {}, context);
 
 	tmp.innerHTML = html;
 
@@ -723,7 +727,7 @@ export function canHaveChildren(node) {
 	// Source: http://www.w3.org/TR/html5/syntax.html#void-elements
 	return ('|iframe|area|base|basefont|br|col|frame|hr|img|input|wbr' +
 		'|isindex|link|meta|param|command|embed|keygen|source|track|' +
-		'object|').indexOf('|' + node.nodeName.toLowerCase() + '|') < 0;
+		'object|').indexOf(`|${node.nodeName.toLowerCase()}|`) < 0;
 }
 
 /**
@@ -734,8 +738,8 @@ export function canHaveChildren(node) {
  * @return {boolean}
  */
 export function isInline(elm, includeCodeAsBlock) {
-	var tagName,
-		nodeType = (elm || {}).nodeType || TEXT_NODE;
+	var tagName;
+	const nodeType = (elm || {}).nodeType || TEXT_NODE;
 
 	if (nodeType !== ELEMENT_NODE) {
 		return nodeType === TEXT_NODE;
@@ -747,7 +751,7 @@ export function isInline(elm, includeCodeAsBlock) {
 		return !includeCodeAsBlock;
 	}
 
-	return blockLevelList.indexOf('|' + tagName + '|') < 0;
+	return blockLevelList.indexOf(`|${tagName}|`) < 0;
 }
 
 /**
@@ -790,27 +794,27 @@ export function isEmpty(node) {
  */
 export function fixNesting(node) {
 	traverse(node, function (node) {
-		var list = 'ul,ol',
-			isBlock = !isInline(node, true) && node.nodeType !== COMMENT_NODE,
-			parent = node.parentNode;
+		const list = 'ul,ol';
+		const isBlock = !isInline(node, true) && node.nodeType !== COMMENT_NODE;
+		var parent = node.parentNode;
 
 		// Any blocklevel element inside an inline element needs fixing.
 		// Also <p> tags that contain blocks should be fixed
 		if (isBlock && (isInline(parent, true) || parent.tagName === 'P')) {
 			// Find the last inline parent node
-			var	lastInlineParent = node;
+			let lastInlineParent = node;
 			while (isInline(lastInlineParent.parentNode, true) ||
 				lastInlineParent.parentNode.tagName === 'P') {
 				lastInlineParent = lastInlineParent.parentNode;
 			}
 
-			var before = extractContents(lastInlineParent, node);
-			var middle = node;
+			const before = extractContents(lastInlineParent, node);
+			const middle = node;
 
 			// Clone inline styling and apply it to the blocks children
 			while (parent && isInline(parent, true)) {
 				if (parent.nodeType === ELEMENT_NODE) {
-					var clone = parent.cloneNode();
+					const clone = parent.cloneNode();
 					while (middle.firstChild) {
 						appendChild(clone, middle.firstChild);
 					}
@@ -831,7 +835,7 @@ export function fixNesting(node) {
 
 		// Fix invalid nested lists which should be wrapped in an li tag
 		if (isBlock && is(node, list) && is(node.parentNode, list)) {
-			var li = previousElementSibling(node, 'li');
+			let li = previousElementSibling(node, 'li');
 
 			if (!li) {
 				li = createElement('li');
@@ -880,11 +884,12 @@ export function getSibling(node, previous) {
  */
 export function removeWhiteSpace(root) {
 	var	nodeValue, nodeType, next, previous, previousSibling,
-		nextNode, trimStart,
-		cssWhiteSpace = css(root, 'whiteSpace'),
-		// Preserve newlines if is pre-line
-		preserveNewLines = /line$/i.test(cssWhiteSpace),
-		node = root.firstChild;
+		nextNode, trimStart
+        // Preserve newlines if is pre-line
+        ;
+	const cssWhiteSpace = css(root, 'whiteSpace');
+	const preserveNewLines = /line$/i.test(cssWhiteSpace);
+	var node = root.firstChild;
 
 	// Skip pre & pre-wrap with any vendor prefix
 	if (/pre(\-wrap)?$/i.test(cssWhiteSpace)) {
@@ -970,7 +975,7 @@ export function removeWhiteSpace(root) {
  * @return {DocumentFragment}
  */
 export function extractContents(startNode, endNode) {
-	var range = startNode.ownerDocument.createRange();
+	const range = startNode.ownerDocument.createRange();
 
 	range.setStartBefore(startNode);
 	range.setEndAfter(endNode);
@@ -1008,8 +1013,8 @@ export function getOffset(node) {
  * @return {string}
  */
 export function getStyle(elm, property) {
-	var	styleValue,
-		elmStyle = elm.style;
+	var	styleValue;
+	const elmStyle = elm.style;
 
 	if (!cssPropertyNameCache[property]) {
 		cssPropertyNameCache[property] = camelCase(property);
@@ -1043,7 +1048,7 @@ export function getStyle(elm, property) {
  * @return {boolean}
  */
 export function hasStyle(elm, property, values) {
-	var styleValue = getStyle(elm, property);
+	const styleValue = getStyle(elm, property);
 
 	if (!styleValue) {
 		return false;
@@ -1068,7 +1073,7 @@ function stylesMatch(nodeA, nodeB) {
 	}
 
 	while (i--) {
-		var prop = nodeA.style[i];
+		const prop = nodeA.style[i];
 		if (nodeA.style[prop] !== nodeB.style[prop]) {
 			return false;
 		}
@@ -1092,8 +1097,8 @@ function attributesMatch(nodeA, nodeB) {
 	}
 
 	while (i--) {
-		var prop = nodeA.attributes[i];
-		var notMatches = prop.name === 'style' ?
+		const prop = nodeA.attributes[i];
+		const notMatches = prop.name === 'style' ?
 			!stylesMatch(nodeA, nodeB) :
 			prop.value !== attr(nodeB, prop.name);
 
@@ -1182,13 +1187,14 @@ export function merge(node) {
 			var isBold = /B|STRONG/.test(tagName);
 			var isItalic = tagName === 'EM';
 
-			while (parent && isInline(parent) &&
+			while (parent &&
+				isInline(parent) &&
 				(!isBold || /bold|700/i.test(css(parent, 'fontWeight'))) &&
 				(!isItalic || css(parent, 'fontStyle') === 'italic')) {
 
 				// Remove if parent match
 				if ((parent.tagName === tagName ||
-					(isBold && /B|STRONG/.test(parent.tagName))) &&
+						(isBold && /B|STRONG/.test(parent.tagName))) &&
 					attributesMatch(parent, node)) {
 					removeKeepChildren(node);
 					break;

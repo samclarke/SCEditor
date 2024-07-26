@@ -3,6 +3,7 @@
 const libCoverage = require('istanbul-lib-coverage');
 const libReport = require('istanbul-lib-report');
 const reports = require('istanbul-reports');
+const sass = require('sass');
 const nodeResolve = require('@rollup/plugin-node-resolve').default;
 const fs = require('fs');
 const path = require('path');
@@ -88,12 +89,6 @@ module.exports = (grunt) => {
 					},
 					{
 						expand: true,
-						cwd: 'src/',
-						src: 'jquery.sceditor.default.css',
-						dest: 'dist/development/'
-					},
-					{
-						expand: true,
 						cwd: 'src/themes/icons/',
 						src: '*.png',
 						dest: 'dist/development/themes/'
@@ -120,11 +115,6 @@ module.exports = (grunt) => {
 						src: 'example.html',
 						dest: 'dist/'
 					},
-					{
-						expand: true,
-						src: 'emoticons/**',
-						dest: 'dist/'
-					}
 				]
 			},
 			build: {
@@ -166,9 +156,6 @@ module.exports = (grunt) => {
 			},
 			build: {
 				files: {
-					'./minified/jquery.sceditor.min.js': [
-						'./src/jquery.sceditor.js'
-					],
 					'./minified/sceditor.min.js': [
 						'./src/sceditor.js'
 					]
@@ -176,30 +163,8 @@ module.exports = (grunt) => {
 			},
 			dist: {
 				files: {
-					'./dist/development/jquery.sceditor.js': [
-						'./src/jquery.sceditor.js'
-					],
 					'./dist/development/sceditor.js': [
 						'./src/sceditor.js'
-					]
-				}
-			}
-		},
-
-		// Create the XHTML and BBCode bundled JS files
-		concat: {
-			dist: {
-				options: {
-					separator: ';'
-				},
-				files: {
-					'dist/development/jquery.sceditor.bbcode.js': [
-						'dist/development/jquery.sceditor.js',
-						'src/formats/bbcode.js'
-					],
-					'dist/development/jquery.sceditor.xhtml.js': [
-						'dist/development/jquery.sceditor.js',
-						'src/formats/xhtml.js'
 					]
 				}
 			}
@@ -221,24 +186,6 @@ module.exports = (grunt) => {
 						dest: 'minified/sceditor.min.js'
 					},
 					{
-						src: 'minified/jquery.sceditor.min.js',
-						dest: 'minified/jquery.sceditor.min.js'
-					},
-					{
-						src: [
-							'minified/jquery.sceditor.min.js',
-							'src/formats/bbcode.js'
-						],
-						dest: 'minified/jquery.sceditor.bbcode.min.js'
-					},
-					{
-						src: [
-							'minified/jquery.sceditor.min.js',
-							'src/formats/xhtml.js'
-						],
-						dest: 'minified/jquery.sceditor.xhtml.min.js'
-					},
-					{
 						expand: true,
 						filter: 'isFile',
 						cwd: 'src/',
@@ -248,42 +195,18 @@ module.exports = (grunt) => {
 				]
 			}
 		},
-
-		// Convert the less CSS theme files into CSS
-		less: {
-			build: {
-				options: {
-					paths: ['src/themes/', 'src/themes/icons'],
-					cleancss: true
-				},
-				files: [
-					{
-						expand: true,
-						filter: 'isFile',
-						cwd: 'src/themes/',
-						src: ['*.less'],
-						dest: 'minified/themes/',
-						ext: '.min.css'
-					}
-				]
-			},
-			dist: {
-				options: {
-					paths: ['src/themes/', 'src/themes/icons'],
-					cleancss: true
-				},
-				files: [
-					{
-						expand: true,
-						filter: 'isFile',
-						cwd: 'src/themes/',
-						src: ['*.less'],
-						dest: 'dist/development/themes/',
-						ext: '.css'
-					}
-				]
-			}
-		},
+		
+		sass: {
+	options: {
+		implementation: sass,
+		sourceMap: false
+	},
+	build: {
+		files: {
+			"minified/themes/sceditor.min.css": 'src/themes/sceditor.scss'
+		}
+	}
+},
 
 		// Manage CSS vendor prefixes
 		postcss: {
@@ -338,11 +261,11 @@ module.exports = (grunt) => {
 	grunt.loadNpmTasks('grunt-contrib-compress');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-copy');
-	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-contrib-qunit');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-rollup');
 	grunt.loadNpmTasks('grunt-eslint');
+	grunt.loadNpmTasks('grunt-sass');
 
 	grunt.registerTask('default', ['test']);
 
@@ -352,10 +275,10 @@ module.exports = (grunt) => {
 	// Minifies the source
 	grunt.registerTask('build', [
 		'clean:build',
+		'sass', 
 		'copy:build',
 		'rollup:build',
 		'uglify:build',
-		'less:build',
 		'postcss:build'
 	]);
 
@@ -368,7 +291,6 @@ module.exports = (grunt) => {
 		'rollup:dist',
 		'concat:dist',
 		'copy:dist',
-		'less:dist'
 	]);
 
 	// Creates the simplified distributable ZIP

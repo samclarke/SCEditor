@@ -442,40 +442,7 @@ QUnit.test('updateOriginal()', function (assert) {
 	sceditor.getRangeHelper().clear();
 	sceditor.updateOriginal();
 
-	assert.htmlEqual(textarea.value, '<div>text 1234...</div>');
-});
-
-
-QUnit.test('emoticons()', function (assert) {
-	var $body = $(sceditor.getBody());
-
-	sceditor.emoticons(true);
-	sceditor.val('<p>Testing :) :( 123...</p>');
-
-	assert.equal($body.find('img[data-sceditor-emoticon]').length, 2);
-
-	sceditor.emoticons(false);
-
-	assert.equal($body.find('img[data-sceditor-emoticon]').length, 0);
-});
-
-QUnit.test('emoticons() - Longest first', function (assert) {
-	reloadEditor({
-		emoticons: {
-			dropdown: {
-				'>:(': 'emoticons/angry.png',
-				':(': 'emoticons/sad.png'
-			}
-		}
-	});
-
-	var $body = $(sceditor.getBody());
-
-	sceditor.emoticons(true);
-	sceditor.val('<p>Testing :( >:( </p>');
-
-	assert.equal($body.find('img[data-sceditor-emoticon=">:("]').length, 1);
-	assert.equal($body.find('img[data-sceditor-emoticon=":("]').length, 1);
+	assert.htmlEqual(textarea.value, 'text 1234...');
 });
 
 QUnit.test('Insert image XSS', function (assert) {
@@ -535,10 +502,10 @@ QUnit.test('Code tags should ignore block styling', function (assert) {
 		format: 'bbcode'
 	});
 	sceditor.css('code {text-align: left}');
-	sceditor.val('[code]test[/code]');
+	sceditor.val('[code=markup]test[/code]');
 
 	setTimeout(() => {
-		assert.equal(sceditor.val(), '[code]test[/code]\n');
+		assert.equal(sceditor.val(), '[code=markup]test[/code]\n');
 		done();
 	}, 100);
 });

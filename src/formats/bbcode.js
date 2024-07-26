@@ -10,22 +10,22 @@
  * @fileoverview SCEditor BBCode Format
  * @author Sam Clarke
  */
-(function (sceditor) {
+(function(sceditor) {
 	/*eslint max-depth: off*/
-	'use strict';
 
-	var escapeEntities  = sceditor.escapeEntities;
+
+	var escapeEntities = sceditor.escapeEntities;
 	var escapeUriScheme = sceditor.escapeUriScheme;
-	var dom             = sceditor.dom;
-	var utils           = sceditor.utils;
+	var dom = sceditor.dom;
+	var utils = sceditor.utils;
 
-	var css    = dom.css;
-	var attr   = dom.attr;
-	var is     = dom.is;
+	var css = dom.css;
+	var attr = dom.attr;
+	var is = dom.is;
 	var extend = utils.extend;
-	var each   = utils.each;
+	var each = utils.each;
 
-	var EMOTICON_DATA_ATTR = 'data-sceditor-emoticon';
+	var editorOptions;
 
 	var getEditorCommand = sceditor.command.get;
 
@@ -63,11 +63,8 @@
 		strike: {
 			txtExec: ['[s]', '[/s]']
 		},
-		subscript: {
-			txtExec: ['[sub]', '[/sub]']
-		},
-		superscript: {
-			txtExec: ['[sup]', '[/sup]']
+		mark: {
+			txtExec: ['[h]', '[/h]']
 		},
 		left: {
 			txtExec: ['[left]', '[/left]']
@@ -82,15 +79,15 @@
 			txtExec: ['[justify]', '[/justify]']
 		},
 		font: {
-			txtExec: function (caller) {
+			txtExec: function(caller) {
 				var editor = this;
 
 				getEditorCommand('font')._dropDown(
 					editor,
 					caller,
-					function (fontName) {
+					function(fontName) {
 						editor.insertText(
-							'[font=' + fontName + ']',
+							`[font=${fontName}]`,
 							'[/font]'
 						);
 					}
@@ -98,15 +95,15 @@
 			}
 		},
 		size: {
-			txtExec: function (caller) {
+			txtExec: function(caller) {
 				var editor = this;
 
 				getEditorCommand('size')._dropDown(
 					editor,
 					caller,
-					function (fontSize) {
+					function(fontSize) {
 						editor.insertText(
-							'[size=' + fontSize + ']',
+							`[size=${fontSize}]`,
 							'[/size]'
 						);
 					}
@@ -114,15 +111,15 @@
 			}
 		},
 		color: {
-			txtExec: function (caller) {
+			txtExec: function(caller) {
 				var editor = this;
 
 				getEditorCommand('color')._dropDown(
 					editor,
 					caller,
-					function (color) {
+					function(color) {
 						editor.insertText(
-							'[color=' + color + ']',
+							`[color=${color}]`,
 							'[/color]'
 						);
 					}
@@ -130,88 +127,104 @@
 			}
 		},
 		bulletlist: {
-			txtExec: function (caller, selected) {
+			txtExec: function(caller, selected) {
 				this.insertText(
-					'[ul]\n[li]' +
-					selected.split(/\r?\n/).join('[/li]\n[li]') +
-					'[/li]\n[/ul]'
+					`[list]\n[list]${selected.split(/\r?\n/).join('[/li]\n[li]')}[/li]\n[/ul]`
 				);
 			}
 		},
 		orderedlist: {
-			txtExec: function (caller, selected) {
+			txtExec: function(caller, selected) {
 				this.insertText(
-					'[ol]\n[li]' +
-					selected.split(/\r?\n/).join('[/li]\n[li]') +
-					'[/li]\n[/ol]'
+					`[list=I]\n[li]${selected.split(/\r?\n/).join('[/li]\n[li]')}[/li]\n[/list]`
 				);
 			}
 		},
 		table: {
 			txtExec: ['[table][tr][td]', '[/td][/tr][/table]']
 		},
-		horizontalrule: {
-			txtExec: ['[hr]']
-		},
 		code: {
-			txtExec: ['[code]', '[/code]']
-		},
-		image: {
-			txtExec: function (caller, selected) {
-				var	editor  = this;
+			txtExec: function(caller) {
+				var editor = this;
 
-				getEditorCommand('image')._dropDown(
+				getEditorCommand('code')._dropDown(
 					editor,
 					caller,
-					selected,
-					function (url, width, height) {
-						var attrs  = '';
-
-						if (width) {
-							attrs += ' width=' + width;
-						}
-
-						if (height) {
-							attrs += ' height=' + height;
-						}
-
+					function(language) {
 						editor.insertText(
-							'[img' + attrs + ']' + url + '[/img]'
+							`[code=${language}]`,
+							'[/code]'
 						);
 					}
 				);
 			}
 		},
+		extensions: {
+			txtExec: function(caller) {
+				var editor = this;
+
+				getEditorCommand('extensions')._dropDown(
+					editor,
+					caller,
+					function(extension) {
+						editor.insertText(
+							`[${extension}]`,
+							`[/${extension}]`
+						);
+					}
+				);
+			}
+		},
+		image: {
+			txtExec: function(caller, selected) {
+				var editor = this;
+
+				getEditorCommand('image')._dropDown(
+					editor,
+					caller,
+					function(url, text) {
+						if (text || selected) {
+							editor.insertText(
+								`[img=${url}]${text || selected || url}[/img]`
+							);
+						} else {
+							editor.insertText(`[img]${url}[/img]`);
+						}
+					}
+				);
+			}
+		},
 		email: {
-			txtExec: function (caller, selected) {
-				var	editor  = this;
+			txtExec: function(caller, selected) {
+				var editor = this;
 
 				getEditorCommand('email')._dropDown(
 					editor,
 					caller,
-					function (url, text) {
+					function(url, text) {
 						editor.insertText(
-							'[email=' + url + ']' +
-								(text || selected || url) +
-							'[/email]'
+							`[email=${url}]${text || selected || url}[/email]`
 						);
 					}
 				);
 			}
 		},
 		link: {
-			txtExec: function (caller, selected) {
-				var	editor  = this;
+			txtExec: function(caller, selected) {
+				var editor = this;
 
 				getEditorCommand('link')._dropDown(
 					editor,
 					caller,
-					function (url, text) {
-						editor.insertText(
-							'[url=' + url + ']' +
-								(text || selected || url) +
-							'[/url]'
-						);
+					function(url, text) {
+						if (selected || text) {
+							editor.insertText(
+								`[url=${url}]${text || selected || url}[/url]`
+							);
+						} else {
+							editor.insertText(`[url]${url}[/url]`);
+						}
+
 					}
 				);
 			}
@@ -219,24 +232,100 @@
 		quote: {
 			txtExec: ['[quote]', '[/quote]']
 		},
+
+		userlink: {
+			txtExec: ['[userlink]', '[/userlink]']
+		},
+		albums: {
+			txtExec: function(caller) {
+				var editor = this;
+
+				getEditorCommand('albums')._dropDown(
+					editor,
+					caller,
+					function(url) {
+						editor.insertText(`[albumid]${url}[/albumid]`);
+					}
+				);
+			}
+		},
+		attachments: {
+			txtExec: function(caller) {
+				var editor = this;
+
+				getEditorCommand('attachments')._dropDown(
+					editor,
+					caller,
+					function(url) {
+						editor.insertText(`[attach]${url}[/attach]`);
+					}
+				);
+			}
+		},
+		media: {
+			txtExec: function(caller) {
+				var editor = this;
+
+				getEditorCommand('media')._dropDown(
+					editor,
+					caller,
+					function(url) {
+						editor.insertText(`[media]${url}[/media]`);
+					}
+				);
+			}
+		},
+		vimeo: {
+			txtExec: function(caller) {
+				var editor = this;
+
+				getEditorCommand('vimeo')._dropDown(
+					editor,
+					caller,
+					function(url) {
+						editor.insertText(`[vimeo]${url}[/vimeo]`);
+					}
+				);
+			}
+		},
+		instagram: {
+			txtExec: function(caller) {
+				var editor = this;
+
+				getEditorCommand('instagram')._dropDown(
+					editor,
+					caller,
+					function(url) {
+						editor.insertText(`[instagram]${url}[/instagram]`);
+					}
+				);
+			}
+		},
+		facebook: {
+			txtExec: function(caller) {
+				var editor = this;
+
+				getEditorCommand('facebook')._dropDown(
+					editor,
+					caller,
+					function(url) {
+						editor.insertText(`[facebook]${url}[/facebook]`);
+					}
+				);
+			}
+		},
 		youtube: {
-			txtExec: function (caller) {
+			txtExec: function(caller) {
 				var editor = this;
 
 				getEditorCommand('youtube')._dropDown(
 					editor,
 					caller,
-					function (id) {
-						editor.insertText('[youtube]' + id + '[/youtube]');
+					function(url) {
+						editor.insertText(`[youtube]${url}[/youtube]`);
 					}
 				);
 			}
-		},
-		rtl: {
-			txtExec: ['[rtl]', '[/rtl]']
-		},
-		ltr: {
-			txtExec: ['[ltr]', '[/ltr]']
 		}
 	};
 
@@ -317,6 +406,18 @@
 		},
 		// END_COMMAND
 
+		// START_COMMAND: mark
+		h: {
+			tags: {
+				h: null,
+				mark: null
+			},
+			format: '[h]{0}[/h]',
+			html: '<mark>{0}</mark>'
+		},
+		// END_COMMAND
+
+
 		// START_COMMAND: Font
 		font: {
 			tags: {
@@ -328,15 +429,14 @@
 				'font-family': null
 			},
 			quoteType: QuoteType.never,
-			format: function (element, content) {
+			format: function(element, content) {
 				var font;
 
 				if (!is(element, 'font') || !(font = attr(element, 'face'))) {
 					font = css(element, 'font-family');
 				}
 
-				return '[font=' + _stripQuotes(font) + ']' +
-					content + '[/font]';
+				return `[font=${_stripQuotes(font)}]${content}[/font]`;
 			},
 			html: '<font face="{defaultattr}">{0}</font>'
 		},
@@ -352,9 +452,9 @@
 			styles: {
 				'font-size': null
 			},
-			format: function (element, content) {
-				var	fontSize = attr(element, 'size'),
-					size     = 2;
+			format: function(element, content) {
+				var fontSize = attr(element, 'size'),
+					size = 2;
 
 				if (!fontSize) {
 					fontSize = css(element, 'fontSize');
@@ -387,7 +487,7 @@
 					size = fontSize;
 				}
 
-				return '[size=' + size + ']' + content + '[/size]';
+				return `[size=${size}]${content}[/size]`;
 			},
 			html: '<font size="{defaultattr}">{!0}</font>'
 		},
@@ -404,20 +504,17 @@
 				color: null
 			},
 			quoteType: QuoteType.never,
-			format: function (elm, content) {
-				var	color;
+			format: function(elm, content) {
+				var color;
 
 				if (!is(elm, 'font') || !(color = attr(elm, 'color'))) {
 					color = elm.style.color || css(elm, 'color');
 				}
 
-				return '[color=' + _normaliseColour(color) + ']' +
-					content + '[/color]';
+				return `[color=${_normaliseColour(color)}]${content}[/color]`;
 			},
-			html: function (token, attrs, content) {
-				return '<font color="' +
-					escapeEntities(_normaliseColour(attrs.defaultattr), true) +
-					'">' + content + '</font>';
+			html: function(token, attrs, content) {
+				return `<font color="${escapeEntities(_normaliseColour(attrs.defaultattr), true)}">${content}</font>`;
 			}
 		},
 		// END_COMMAND
@@ -430,13 +527,14 @@
 			breakStart: true,
 			isInline: false,
 			skipLastLineBreak: true,
-			format: '[ul]{0}[/ul]',
+			format: '[list]{0}[/list]',
 			html: '<ul>{0}</ul>'
 		},
 		list: {
 			breakStart: true,
 			isInline: false,
 			skipLastLineBreak: true,
+			format: '[list]{0}[/list]',
 			html: '<ul>{0}</ul>'
 		},
 		ol: {
@@ -446,7 +544,7 @@
 			breakStart: true,
 			isInline: false,
 			skipLastLineBreak: true,
-			format: '[ol]{0}[/ol]',
+			format: '[list=I]{0}[/list]',
 			html: '<ol>{0}</ol>'
 		},
 		li: {
@@ -474,7 +572,7 @@
 			isHtmlInline: true,
 			skipLastLineBreak: true,
 			format: '[table]{0}[/table]',
-			html: '<table>{0}</table>'
+			html: '<table class="table">{0}</table>'
 		},
 		tr: {
 			tags: {
@@ -501,23 +599,7 @@
 			allowsEmpty: true,
 			isInline: false,
 			format: '[td]{0}[/td]',
-			html: '<td>{0}</td>'
-		},
-		// END_COMMAND
-
-		// START_COMMAND: Emoticons
-		emoticon: {
-			allowsEmpty: true,
-			tags: {
-				img: {
-					src: null,
-					'data-sceditor-emoticon': null
-				}
-			},
-			format: function (element, content) {
-				return attr(element, EMOTICON_DATA_ATTR) + content;
-			},
-			html: '{0}'
+			html: '<td class="border">{0}</td>'
 		},
 		// END_COMMAND
 
@@ -539,62 +621,73 @@
 			allowsEmpty: true,
 			tags: {
 				img: {
-					src: null
+					src: null,
+					class: 'img-user-posted img-thumbnail'
 				}
 			},
 			allowedChildren: ['#'],
 			quoteType: QuoteType.never,
-			format: function (element, content) {
-				var	width, height,
-					attribs   = '',
-					style     = function (name) {
-						return element.style ? element.style[name] : null;
-					};
+			format: function(element) {
+				var desc;
 
-				// check if this is an emoticon image
-				if (attr(element, EMOTICON_DATA_ATTR)) {
-					return content;
+				desc = attr(element, 'alt');
+
+				if (desc) {
+					return `[img=${attr(element, 'src')}]${desc}[/img]`;
 				}
 
-				width = attr(element, 'width') || style('width');
-				height = attr(element, 'height') || style('height');
-
-				// only add width and height if one is specified
-				if ((element.complete && (width || height)) ||
-					(width && height)) {
-
-					attribs = '=' + dom.width(element) + 'x' +
-						dom.height(element);
-				}
-
-				return '[img' + attribs + ']' + attr(element, 'src') + '[/img]';
+				return `[img]${attr(element, 'src')}[/img]`;
 			},
-			html: function (token, attrs, content) {
-				var	undef, width, height, match,
-					attribs = '';
+			html: function(token, attrs, content) {
+				attrs.defaultattr =
+					escapeEntities(attrs.defaultattr, true) || content;
 
-				// handle [img width=340 height=240]url[/img]
-				width  = attrs.width;
-				height = attrs.height;
+				return `<img src="${escapeUriScheme(attrs.defaultattr)}" alt="${content
+				}" class="img-user-posted img-thumbnail" />`;
+			}
+		},
+		// END_COMMAND
 
-				// handle [img=340x240]url[/img]
-				if (attrs.defaultattr) {
-					match = attrs.defaultattr.split(/x/i);
-
-					width  = match[0];
-					height = (match.length === 2 ? match[1] : match[0]);
+		// START_COMMAND: userlink
+		userlink: {
+			allowsEmpty: true,
+			tags: {
+				span: {
+					class: 'badge rounded-pill text-bg-secondary fs-6'
 				}
+			},
+			format: function(element) {
+				return `[userlink]${attr(element, 'data-user')}[/userlink]`;
+			},
+			html: function(token, attrs, content) {
 
-				if (width !== undef) {
-					attribs += ' width="' + escapeEntities(width, true) + '"';
+				return `<span class="badge rounded-pill text-bg-secondary fs-6" data-user="${escapeEntities(content)
+				}">${escapeEntities(content)}</span>`;
+			}
+		},
+		// END_COMMAND
+
+		// START_COMMAND: albumimg
+		albumimg: {
+			allowsEmpty: true,
+			tags: {
+				div: {
+					src: null,
+					class: 'card text-bg-dark'
 				}
+			},
+			allowedChildren: ['#'],
+			quoteType: QuoteType.never,
+			format: function(element) {
+				return `[albumimg]${attr(element, 'alt')}[/albumimg]`;
+			},
+			html: function(token, attrs, content) {
+				attrs.defaultattr =
+					escapeEntities(attrs.defaultattr, true) || content;
 
-				if (height !== undef) {
-					attribs += ' height="' + escapeEntities(height, true) + '"';
-				}
-
-				return '<img' + attribs +
-					' src="' + escapeUriScheme(content) + '" />';
+				return `<div class="card text-bg-dark" style="max-width:200px" alt="${content}"><img src="${
+					editorOptions.albumsPreviewUrl}${escapeUriScheme(attrs.defaultattr)
+				}" class="img-user-posted card-img-top" style="max-height:200px;max-width:200px;object-fit:contain""></div>`;
 			}
 		},
 		// END_COMMAND
@@ -608,24 +701,22 @@
 				}
 			},
 			quoteType: QuoteType.never,
-			format: function (element, content) {
-				var url = attr(element, 'href');
+			format: function(element, content) {
+				const url = attr(element, 'href');
 
 				// make sure this link is not an e-mail,
 				// if it is return e-mail BBCode
 				if (url.substr(0, 7) === 'mailto:') {
-					return '[email="' + url.substr(7) + '"]' +
-						content + '[/email]';
+					return `[email="${url.substr(7)}"]${content}[/email]`;
 				}
 
-				return '[url=' + url + ']' + content + '[/url]';
+				return `[url=${url}]${content}[/url]`;
 			},
-			html: function (token, attrs, content) {
+			html: function(token, attrs, content) {
 				attrs.defaultattr =
 					escapeEntities(attrs.defaultattr, true) || content;
 
-				return '<a href="' + escapeUriScheme(attrs.defaultattr) + '">' +
-					content + '</a>';
+				return `<a href="${escapeUriScheme(attrs.defaultattr)}" class="link">${content}</a>`;
 			}
 		},
 		// END_COMMAND
@@ -633,10 +724,8 @@
 		// START_COMMAND: E-mail
 		email: {
 			quoteType: QuoteType.never,
-			html: function (token, attrs, content) {
-				return '<a href="mailto:' +
-					(escapeEntities(attrs.defaultattr, true) || content) +
-					'">' + content + '</a>';
+			html: function(token, attrs, content) {
+				return `<a href="mailto:${escapeEntities(attrs.defaultattr, true) || content}">${content}</a>`;
 			}
 		},
 		// END_COMMAND
@@ -644,49 +733,51 @@
 		// START_COMMAND: Quote
 		quote: {
 			tags: {
-				blockquote: null
+				div: {
+					class: 'border rounded mx-3 mb-3 p-3 border-secondary shadow-sm'
+				}
 			},
 			isInline: false,
 			quoteType: QuoteType.never,
-			format: function (element, content) {
-				var authorAttr = 'data-author';
-				var	author = '';
+			format: function(element, content) {
+				var author = '';
 				var cite;
-				var children = element.children;
+				const children = element.children;
 
-				for (var i = 0; !cite && i < children.length; i++) {
+				for (let i = 0; !cite && i < children.length; i++) {
 					if (is(children[i], 'cite')) {
 						cite = children[i];
 					}
 				}
 
-				if (cite || attr(element, authorAttr)) {
-					author = cite && cite.textContent ||
-						attr(element, authorAttr);
-
-					attr(element, authorAttr, author);
+				if (cite) {
+					author = cite && cite.textContent;
 
 					if (cite) {
 						element.removeChild(cite);
 					}
 
-					content	= this.elementToBbcode(element);
-					author  = '=' + author.replace(/(^\s+|\s+$)/g, '');
+					content = this.elementToBbcode(element);
+
+					author = `=${author.replace(/(^\s+|\s+$)/g, '')}`;
 
 					if (cite) {
 						element.insertBefore(cite, element.firstChild);
 					}
 				}
 
-				return '[quote' + author + ']' + content + '[/quote]';
+				return `[quote${author}]${content}[/quote]`;
 			},
-			html: function (token, attrs, content) {
+			html: function(token, attrs, content) {
 				if (attrs.defaultattr) {
-					content = '<cite>' + escapeEntities(attrs.defaultattr) +
-						'</cite>' + content;
+					content = content +
+						'<cite class="card-text text-end d-block text-body-secondary small">' +
+						escapeEntities(attrs.defaultattr) +
+						'</cite>';
 				}
 
-				return '<blockquote>' + content + '</blockquote>';
+				return `<div class="border rounded mx-3 mb-3 p-3 border-secondary shadow-sm"><span contenteditable="false"><i class="fa fa-quote-left text-primary fs-4 me-2"></i></span>${
+					content}</div>`;
 			}
 		},
 		// END_COMMAND
@@ -694,13 +785,25 @@
 		// START_COMMAND: Code
 		code: {
 			tags: {
-				code: null
+				code: {
+					class: null
+				}
 			},
 			isInline: false,
 			allowedChildren: ['#', '#newline'],
-			format: '[code]{0}[/code]',
-			html: '<code>{0}</code>'
+			format: function(element, content) {
+				var codeLanguage;
+
+				if (!is(element, 'code') || !(codeLanguage = attr(element, 'class'))) {
+					codeLanguage = element.className.replace('language-', '');
+				}
+
+				return `[code=${codeLanguage.replace('language-', '')}]${content}[/code]`;
+			},
+			html:
+				'<pre class="border border-danger rounded m-2 p-2"><code class="language-{defaultattr}">{0}</code></pre>'
 		},
+
 		// END_COMMAND
 
 
@@ -772,22 +875,103 @@
 		},
 		// END_COMMAND
 
+		// START_COMMAND: Facebook
+		facebook: {
+			allowsEmpty: true,
+			tags: {
+				div: {
+					'data-facebook-url': null
+				}
+			},
+			format: function(element, content) {
+				element = attr(element, 'data-facebook-url');
+
+				return element ? `[facebook]${element}[/facebook]` : content;
+			},
+			html: function(token, attrs, content) {
+				const url = content;
+
+				return `<div class="ratio ratio-1x1" data-oembed-url="${url}" data-facebook-url="${url
+				}"><iframe src="https://www.facebook.com/plugins/post.php?href=${url}"></iframe></div>`;
+			}
+		},
+		// END_COMMAND
+
+		// START_COMMAND: Instagram
+		instagram: {
+			allowsEmpty: true,
+			tags: {
+				div: {
+					'data-instagram-url': null
+				}
+			},
+			format: function(element, content) {
+				element = attr(element, 'data-instagram-url');
+
+				return element ? `[instagram]${element}[/instagram]` : content;
+			},
+			html: function(token, attrs, content) {
+				var id = content;
+
+				const url = content;
+
+				var id = url.match(/\/(p|tv|reel)\/(.*?)\//)[2];
+
+				return `<div class="ratio ratio-1x1" data-oembed-url="https://www.instagram.com/p/${id
+				}" data-instagram-url="${url}"><iframe src="https://www.instagram.com/p/${id
+				}/embed/captioned/"></iframe></div>`;
+			}
+		},
+		// END_COMMAND
+
+		// START_COMMAND: Vimeo
+		vimeo: {
+			allowsEmpty: true,
+			tags: {
+				div: {
+					'data-vimeo-url': null
+				}
+			},
+			format: function(element, content) {
+				element = attr(element, 'data-vimeo-url');
+
+				return element ? `[vimeo]${element}[/vimeo]` : content;
+			},
+			html: function(token, attrs, content) {
+				const url = content;
+
+				const id = url.match(/vimeo\..*\/(\d+)(?:$|\/)/)[1];
+
+				return `<div data-oembed-url="https://vimeo.com/${id}" data-vimeo-url="${url
+				}" class="ratio ratio-16x9 border"><iframe src="https://player.vimeo.com/video/${id
+				}?show_title=1&show_byline=1&show_portrait=1&fullscreen=1"></iframe></div>`;
+			}
+		},
+		// END_COMMAND
+
+
 		// START_COMMAND: YouTube
 		youtube: {
 			allowsEmpty: true,
 			tags: {
-				iframe: {
-					'data-youtube-id': null
+				div: {
+					'data-youtube-url': null
 				}
 			},
-			format: function (element, content) {
-				element = attr(element, 'data-youtube-id');
+			format: function(element, content) {
+				element = attr(element, 'data-youtube-url');
 
-				return element ? '[youtube]' + element + '[/youtube]' : content;
+				return element ? `[youtube]${element}[/youtube]` : content;
 			},
-			html: '<iframe width="560" height="315" frameborder="0" ' +
-				'src="https://www.youtube-nocookie.com/embed/{0}?wmode=opaque" ' +
-				'data-youtube-id="{0}" allowfullscreen></iframe>'
+			html: function(token, attrs, content) {
+				const url = content;
+
+				const id = content.match(/(?:v=|v\/|embed\/|youtu.be\/)?([a-zA-Z0-9_-]{11})/)[1];
+
+				return `<div data-oembed-url="https://youtube.com/embed/${id}" data-youtube-url="${url
+				}" class="ratio ratio-16x9 border"><iframe src="https://youtube.com/embed/${id
+				}?hd=1"></iframe></div>`;
+			}
 		},
 		// END_COMMAND
 
@@ -833,25 +1017,26 @@
 	 * @since 2.0.0
 	 */
 	function formatBBCodeString(str, obj) {
-		return str.replace(/\{([^}]+)\}/g, function (match, group) {
-			var	undef,
-				escape = true;
+		return str.replace(/\{([^}]+)\}/g,
+			function(match, group) {
+				var undef,
+					escape = true;
 
-			if (group.charAt(0) === '!') {
-				escape = false;
-				group = group.substring(1);
-			}
+				if (group.charAt(0) === '!') {
+					escape = false;
+					group = group.substring(1);
+				}
 
-			if (group === '0') {
-				escape = false;
-			}
+				if (group === '0') {
+					escape = false;
+				}
 
-			if (obj[group] === undef) {
-				return match;
-			}
+				if (obj[group] === undef) {
+					return match;
+				}
 
-			return escape ? escapeEntities(obj[group], true) : obj[group];
-		});
+				return escape ? escapeEntities(obj[group], true) : obj[group];
+			});
 	}
 
 	function isFunction(fn) {
@@ -865,8 +1050,7 @@
 	 * @since v1.4.0
 	 */
 	function _stripQuotes(str) {
-		return str ?
-			str.replace(/\\(.)/g, '$1').replace(/^(["'])(.*?)\1$/, '$2') : str;
+		return str ? str.replace(/\\(.)/g, '$1').replace(/^(["'])(.*?)\1$/, '$2') : str;
 	}
 
 	/**
@@ -879,14 +1063,13 @@
 	 * @since v1.4.0
 	 */
 	function _formatString(str) {
-		var	undef;
+		var undef;
 		var args = arguments;
 
-		return str.replace(/\{(\d+)\}/g, function (_, matchNum) {
-			return args[matchNum - 0 + 1] !== undef ?
-				args[matchNum - 0 + 1] :
-				'{' + matchNum + '}';
-		});
+		return str.replace(/\{(\d+)\}/g,
+			function(_, matchNum) {
+				return args[matchNum - 0 + 1] !== undef ? args[matchNum - 0 + 1] : `{${matchNum}}`;
+			});
 	}
 
 	var TOKEN_OPEN = 'open';
@@ -923,14 +1106,14 @@
 	 */
 	// eslint-disable-next-line max-params
 	function TokenizeToken(type, name, val, attrs, children, closing) {
-		var base      = this;
+		const base = this;
 
-		base.type     = type;
-		base.name     = name;
-		base.val      = val;
-		base.attrs    = attrs || {};
+		base.type = type;
+		base.name = name;
+		base.val = val;
+		base.attrs = attrs || {};
 		base.children = children || [];
-		base.closing  = closing || null;
+		base.closing = closing || null;
 	};
 
 	TokenizeToken.prototype = {
@@ -940,8 +1123,8 @@
 		 *
 		 * @return {TokenizeToken}
 		 */
-		clone: function () {
-			var base = this;
+		clone: function() {
+			const base = this;
 
 			return new TokenizeToken(
 				base.type,
@@ -959,16 +1142,16 @@
 		 * @return {TokenizeToken} The right half of the split token or
 		 *                         empty clone if invalid splitAt lcoation
 		 */
-		splitAt: function (splitAt) {
+		splitAt: function(splitAt) {
 			var offsetLength;
-			var base         = this;
-			var	clone        = base.clone();
-			var offset       = base.children.indexOf(splitAt);
+			const base = this;
+			const clone = base.clone();
+			const offset = base.children.indexOf(splitAt);
 
 			if (offset > -1) {
 				// Work out how many items are on the right side of the split
 				// to pass to splice()
-				offsetLength   = base.children.length - offset;
+				offsetLength = base.children.length - offset;
 				clone.children = base.children.splice(offset, offsetLength);
 			}
 
@@ -1003,12 +1186,12 @@
 		 * @return {array}
 		 * @memberOf BBCodeParser.prototype
 		 */
-		base.tokenize = function (str) {
-			var	matches, type, i;
-			var tokens = [];
+		base.tokenize = function(str) {
+			var matches, type, i;
+			const tokens = [];
 			// The token types in reverse order of precedence
 			// (they're looped in reverse)
-			var tokenTypes = [
+			const tokenTypes = [
 				{
 					type: TOKEN_CONTENT,
 					regex: /^([^\[\r\n]+|\[)/
@@ -1037,7 +1220,7 @@
 
 					// Check if the string matches any of the tokens
 					if (!(matches = str.match(tokenTypes[i].regex)) ||
-						!matches[0]) {
+							!matches[0]) {
 						continue;
 					}
 
@@ -1072,9 +1255,9 @@
 		 * @private
 		 */
 		function tokenizeTag(type, val) {
-			var matches, attrs, name,
-				openRegex  = /\[([^\]\s=]+)(?:([^\]]+))?\]/,
-				closeRegex = /\[\/([^\[\]]+)\]/;
+			var matches, attrs, name;
+			const openRegex = /\[([^\]\s=]+)(?:([^\]]+))?\]/;
+			const closeRegex = /\[\/([^\[\]]+)\]/;
 
 			// Extract the name and attributes from opening tags and
 			// just the name from closing tags.
@@ -1097,7 +1280,8 @@
 
 			// Treat all tokens without a name and
 			// all unknown BBCodes as content
-			if (!name || ((type === TOKEN_OPEN || type === TOKEN_CLOSE) &&
+			if (!name ||
+			((type === TOKEN_OPEN || type === TOKEN_CLOSE) &&
 				!bbcodeHandlers[name])) {
 
 				type = TOKEN_CONTENT;
@@ -1116,7 +1300,7 @@
 		 * @private
 		 */
 		function tokenizeAttrs(attrs) {
-			var	matches,
+			var matches
 				/*
 				([^\s=]+)				Anything that's not a space or equals
 				=						Equals sign =
@@ -1137,9 +1321,9 @@
 												would be a new attribute
 					)
 				)
-				*/
-				attrRegex = /([^\s=]+)=(?:(?:(["'])((?:\\\2|[^\2])*?)\2)|((?:.(?!\s\S+=))*.))/g,
-				ret       = {};
+				*/;
+			const attrRegex = /([^\s=]+)=(?:(?:(["'])((?:\\\2|[^\2])*?)\2)|((?:.(?!\s\S+=))*.))/g;
+			const ret = {};
 
 			// if only one attribute then remove the = from the start and
 			// strip any quotes
@@ -1147,7 +1331,7 @@
 				ret.defaultattr = _stripQuotes(attrs.substr(1));
 			} else {
 				if (attrs.charAt(0) === '=') {
-					attrs = 'defaultattr' + attrs;
+					attrs = `defaultattr${attrs}`;
 				}
 
 				// No need to strip quotes here, the regex will do that.
@@ -1170,9 +1354,9 @@
 		 * @return {array}                    Array of BBCode objects
 		 * @memberOf BBCodeParser.prototype
 		 */
-		base.parse = function (str, preserveNewLines) {
-			var ret  = parseTokens(base.tokenize(str));
-			var opts = base.opts;
+		base.parse = function(str, preserveNewLines) {
+			const ret = parseTokens(base.tokenize(str));
+			const opts = base.opts;
 
 			if (opts.fixInvalidNesting) {
 				fixNesting(ret);
@@ -1222,8 +1406,8 @@
 		 * @private
 		 */
 		function isChildAllowed(parent, child) {
-			var	parentBBCode    = parent ? bbcodeHandlers[parent.name] : {},
-				allowedChildren = parentBBCode.allowedChildren;
+			const parentBBCode = parent ? bbcodeHandlers[parent.name] : {};
+			const allowedChildren = parentBBCode.allowedChildren;
 
 			if (base.opts.fixInvalidChildren && allowedChildren) {
 				return allowedChildren.indexOf(child.name || '#') > -1;
@@ -1242,15 +1426,20 @@
 		 * @private
 		 */
 		function parseTokens(toks) {
-			var	token, bbcode, curTok, clone, i, next,
-				cloned     = [],
-				output     = [],
-				openTags   = [],
+			var token,
+				bbcode,
+				curTok,
+				clone,
+				i,
+				next,
+				cloned = [],
+				output = [],
+				openTags = [],
 				/**
 				 * Returns the currently open tag or undefined
 				 * @return {TokenizeToken}
 				 */
-				currentTag = function () {
+				currentTag = function() {
 					return last(openTags);
 				},
 				/**
@@ -1259,7 +1448,7 @@
 				 * @param {TokenizeToken} token
 				 * @private
 				 */
-				addTag = function (token) {
+				addTag = function(token) {
 					if (currentTag()) {
 						currentTag().children.push(token);
 					} else {
@@ -1271,7 +1460,7 @@
 				 * @param  {string} name
 				 * @return {Void}
 				 */
-				closesCurrentTag = function (name) {
+				closesCurrentTag = function(name) {
 					return currentTag() &&
 						(bbcode = bbcodeHandlers[currentTag().name]) &&
 						bbcode.closedBy &&
@@ -1297,8 +1486,9 @@
 				if (!isChildAllowed(currentTag(), token)) {
 
 					// exclude closing tags of current tag
-					if (token.type !== TOKEN_CLOSE || !currentTag() ||
-							token.name !== currentTag().name) {
+					if (token.type !== TOKEN_CLOSE ||
+						!currentTag() ||
+						token.name !== currentTag().name) {
 						token.name = '#';
 						token.type = TOKEN_CONTENT;
 					}
@@ -1306,8 +1496,8 @@
 
 				switch (token.type) {
 					case TOKEN_OPEN:
-						// Check it this closes a parent,
-						// e.g. for lists [*]one [*]two
+					// Check it this closes a parent,
+					// e.g. for lists [*]one [*]two
 						if (closesCurrentTag(token.name)) {
 							openTags.pop();
 						}
@@ -1320,9 +1510,10 @@
 						// list of open tags. If has the closedBy property then
 						// it is closed by other tags so include everything as
 						// it's children until one of those tags is reached.
-						if (bbcode && !bbcode.isSelfClosing &&
-							(bbcode.closedBy ||
-								hasTag(token.name, TOKEN_CLOSE, toks))) {
+						if (bbcode &&
+						!bbcode.isSelfClosing &&
+						(bbcode.closedBy ||
+							hasTag(token.name, TOKEN_CLOSE, toks))) {
 							openTags.push(token);
 						} else if (!bbcode || !bbcode.isSelfClosing) {
 							token.type = TOKEN_CONTENT;
@@ -1330,10 +1521,11 @@
 						break;
 
 					case TOKEN_CLOSE:
-						// check if this closes the current tag,
-						// e.g. [/list] would close an open [*]
-						if (currentTag() && token.name !== currentTag().name &&
-							closesCurrentTag('/' + token.name)) {
+					// check if this closes the current tag,
+					// e.g. [/list] would close an open [*]
+						if (currentTag() &&
+						token.name !== currentTag().name &&
+						closesCurrentTag(`/${token.name}`)) {
 
 							openTags.pop();
 						}
@@ -1401,28 +1593,30 @@
 						break;
 
 					case TOKEN_NEWLINE:
-						// handle things like
-						//     [*]list\nitem\n[*]list1
-						// where it should come out as
-						//     [*]list\nitem[/*]\n[*]list1[/*]
-						// instead of
-						//     [*]list\nitem\n[/*][*]list1[/*]
-						if (currentTag() && next && closesCurrentTag(
+					// handle things like
+					//     [*]list\nitem\n[*]list1
+					// where it should come out as
+					//     [*]list\nitem[/*]\n[*]list1[/*]
+					// instead of
+					//     [*]list\nitem\n[/*][*]list1[/*]
+						if (currentTag() &&
+						next &&
+						closesCurrentTag(
 							(next.type === TOKEN_CLOSE ? '/' : '') +
 							next.name
 						)) {
-							// skip if the next tag is the closing tag for
-							// the option tag, i.e. [/*]
+						// skip if the next tag is the closing tag for
+						// the option tag, i.e. [/*]
 							if (!(next.type === TOKEN_CLOSE &&
-								next.name === currentTag().name)) {
+							next.name === currentTag().name)) {
 								bbcode = bbcodeHandlers[currentTag().name];
 
 								if (bbcode && bbcode.breakAfter) {
 									openTags.pop();
 								} else if (bbcode &&
-									bbcode.isInline === false &&
-									base.opts.breakAfterBlock &&
-									bbcode.breakAfter !== false) {
+								bbcode.isInline === false &&
+								base.opts.breakAfterBlock &&
+								bbcode.breakAfter !== false) {
 									openTags.pop();
 								}
 							}
@@ -1467,8 +1661,14 @@
 		 * @return {void}
 		 */
 		function normaliseNewLines(children, parent, onlyRemoveBreakAfter) {
-			var	token, left, right, parentBBCode, bbcode,
-				removedBreakEnd, removedBreakBefore, remove;
+			var token,
+				left,
+				right,
+				parentBBCode,
+				bbcode,
+				removedBreakEnd,
+				removedBreakBefore,
+				remove;
 			var childrenLength = children.length;
 			// TODO: this function really needs tidying up
 			if (parent) {
@@ -1482,13 +1682,14 @@
 				}
 
 				if (token.type === TOKEN_NEWLINE) {
-					left   = i > 0 ? children[i - 1] : null;
-					right  = i < childrenLength - 1 ? children[i + 1] : null;
+					left = i > 0 ? children[i - 1] : null;
+					right = i < childrenLength - 1 ? children[i + 1] : null;
 					remove = false;
 
 					// Handle the start and end new lines
 					// e.g. [tag]\n and \n[/tag]
-					if (!onlyRemoveBreakAfter && parentBBCode &&
+					if (!onlyRemoveBreakAfter &&
+						parentBBCode &&
 						parentBBCode.isSelfClosing !== true) {
 						// First child of parent so must be opening line break
 						// (breakStartBlock, breakStart) e.g. [tag]\n
@@ -1502,10 +1703,10 @@
 							if (parentBBCode.breakStart) {
 								remove = true;
 							}
-						// Last child of parent so must be end line break
-						// (breakEndBlock, breakEnd)
-						// e.g. \n[/tag]
-						// remove last line break (breakEndBlock, breakEnd)
+							// Last child of parent so must be end line break
+							// (breakEndBlock, breakEnd)
+							// e.g. \n[/tag]
+							// remove last line break (breakEndBlock, breakEnd)
 						} else if (!removedBreakEnd && !right) {
 							if (parentBBCode.isInline === false &&
 								base.opts.breakEndBlock &&
@@ -1539,8 +1740,10 @@
 						}
 					}
 
-					if (!onlyRemoveBreakAfter && !removedBreakBefore &&
-						right && right.type === TOKEN_OPEN) {
+					if (!onlyRemoveBreakAfter &&
+						!removedBreakBefore &&
+						right &&
+						right.type === TOKEN_OPEN) {
 
 						if ((bbcode = bbcodeHandlers[right.name])) {
 							if (bbcode.isInline === false &&
@@ -1572,7 +1775,8 @@
 					// would be.
 					removedBreakBefore = false;
 				} else if (token.type === TOKEN_OPEN) {
-					normaliseNewLines(token.children, token,
+					normaliseNewLines(token.children,
+						token,
 						onlyRemoveBreakAfter);
 				}
 			}
@@ -1597,10 +1801,10 @@
 		 * @private
 		 */
 		function fixNesting(children, parents, insideInline, rootArr) {
-			var	token, i, parent, parentIndex, parentParentChildren, right;
+			var token, i, parent, parentIndex, parentParentChildren, right;
 
-			var isInline = function (token) {
-				var bbcode = bbcodeHandlers[token.name];
+			const isInline = function(token) {
+				const bbcode = bbcodeHandlers[token.name];
 
 				return !bbcode || bbcode.isInline !== false;
 			};
@@ -1619,15 +1823,14 @@
 					// if this is a blocklevel element inside an inline one then
 					// split the parent at the block level element
 					parent = last(parents);
-					right  = parent.splitAt(token);
+					right = parent.splitAt(token);
 
-					parentParentChildren = parents.length > 1 ?
-						parents[parents.length - 2].children : rootArr;
+					parentParentChildren = parents.length > 1 ? parents[parents.length - 2].children : rootArr;
 
 					// If parent inline is allowed inside this tag, clone it and
 					// wrap this tags children in it.
 					if (isChildAllowed(token, parent)) {
-						var clone = parent.clone();
+						const clone = parent.clone();
 						clone.children = token.children;
 						token.children = [clone];
 					}
@@ -1641,17 +1844,22 @@
 						// insert the block level token and the right side after
 						// the left side of the inline token
 						parentParentChildren.splice(
-							parentIndex + 1, 0, token, right
+							parentIndex + 1,
+							0,
+							token,
+							right
 						);
 
 						// If token is a block and is followed by a newline,
 						// then move the newline along with it to the new parent
-						var next = right.children[0];
+						const next = right.children[0];
 						if (next && next.type === TOKEN_NEWLINE) {
 							if (!isInline(token)) {
 								right.children.splice(0, 1);
 								parentParentChildren.splice(
-									parentIndex + 2, 0, next
+									parentIndex + 2,
+									0,
+									next
 								);
 							}
 						}
@@ -1683,17 +1891,17 @@
 		 * @private
 		 */
 		function removeEmpty(tokens) {
-			var	token, bbcode;
+			var token, bbcode;
 
 			/**
 			 * Checks if all children are whitespace or not
 			 * @private
 			 */
-			var isTokenWhiteSpace = function (children) {
+			const isTokenWhiteSpace = function(children) {
 				var j = children.length;
 
 				while (j--) {
-					var type = children[j].type;
+					const type = children[j].type;
 
 					if (type === TOKEN_OPEN || type === TOKEN_CLOSE) {
 						return false;
@@ -1722,8 +1930,10 @@
 				// are all removed this one doesn't think it's not empty.
 				removeEmpty(token.children);
 
-				if (isTokenWhiteSpace(token.children) && bbcode &&
-					!bbcode.isSelfClosing && !bbcode.allowsEmpty) {
+				if (isTokenWhiteSpace(token.children) &&
+					bbcode &&
+					!bbcode.isSelfClosing &&
+					!bbcode.allowsEmpty) {
 					tokens.splice.apply(tokens, [i, 1].concat(token.children));
 				}
 			}
@@ -1739,11 +1949,11 @@
 		 * @return {string}
 		 * @memberOf BBCodeParser.prototype
 		 */
-		base.toHTML = function (str, preserveNewLines) {
+		base.toHTML = function(str, preserveNewLines) {
 			return convertToHTML(base.parse(str, preserveNewLines), true);
 		};
 
-		base.toHTMLFragment = function (str, preserveNewLines) {
+		base.toHTMLFragment = function(str, preserveNewLines) {
 			return convertToHTML(base.parse(str, preserveNewLines), false);
 		};
 
@@ -1751,13 +1961,19 @@
 		 * @private
 		 */
 		function convertToHTML(tokens, isRoot) {
-			var	undef, token, bbcode, content, html, needsBlockWrap,
-				blockWrapOpen, isInline, lastChild,
+			var undef,
+				token,
+				bbcode,
+				content,
+				html,
+				needsBlockWrap,
+				blockWrapOpen,
+				isInline,
+				lastChild,
 				ret = '';
 
-			isInline = function (bbcode) {
-				return (!bbcode || (bbcode.isHtmlInline !== undef ?
-					bbcode.isHtmlInline : bbcode.isInline)) !== false;
+			isInline = function(bbcode) {
+				return (!bbcode || (bbcode.isHtmlInline !== undef ? bbcode.isHtmlInline : bbcode.isInline)) !== false;
 			};
 
 			while (tokens.length > 0) {
@@ -1780,7 +1996,7 @@
 							!bbcode.skipLastLineBreak) {
 							// Add placeholder br to end of block level
 							// elements
-							content += '<br />';
+							//content += '<br />';
 						}
 
 						if (!isFunction(bbcode.html)) {
@@ -1798,7 +2014,8 @@
 							);
 						}
 					} else {
-						html = token.val + content +
+						html = token.val +
+							content +
 							(token.closing ? token.closing.val : '');
 					}
 				} else if (token.type === TOKEN_NEWLINE) {
@@ -1825,10 +2042,10 @@
 					ret += '</div>\n';
 					blockWrapOpen = false;
 					continue;
-				// content
+					// content
 				} else {
 					needsBlockWrap = isRoot;
-					html           = escapeEntities(token.val, true);
+					html = escapeEntities(token.val, true);
 				}
 
 				if (needsBlockWrap && !blockWrapOpen) {
@@ -1862,7 +2079,7 @@
 		 * @return {string}
 		 * @memberOf BBCodeParser.prototype
 		 */
-		base.toBBCode = function (str, preserveNewLines) {
+		base.toBBCode = function(str, preserveNewLines) {
 			return convertToBBCode(base.parse(str, preserveNewLines));
 		};
 
@@ -1876,8 +2093,16 @@
 		 * @private
 		 */
 		function convertToBBCode(toks) {
-			var	token, attr, bbcode, isBlock, isSelfClosing, quoteType,
-				breakBefore, breakStart, breakEnd, breakAfter,
+			var token,
+				attr,
+				bbcode,
+				isBlock,
+				isSelfClosing,
+				quoteType,
+				breakBefore,
+				breakStart,
+				breakEnd,
+				breakAfter,
 				ret = '';
 
 			while (toks.length > 0) {
@@ -1885,29 +2110,34 @@
 					continue;
 				}
 				// TODO: tidy this
-				bbcode        = bbcodeHandlers[token.name];
-				isBlock       = !(!bbcode || bbcode.isInline !== false);
+				bbcode = bbcodeHandlers[token.name];
+				isBlock = !(!bbcode || bbcode.isInline !== false);
 				isSelfClosing = bbcode && bbcode.isSelfClosing;
 
-				breakBefore = (isBlock && base.opts.breakBeforeBlock &&
+				breakBefore = (isBlock &&
+						base.opts.breakBeforeBlock &&
 						bbcode.breakBefore !== false) ||
 					(bbcode && bbcode.breakBefore);
 
-				breakStart = (isBlock && !isSelfClosing &&
+				breakStart = (isBlock &&
+						!isSelfClosing &&
 						base.opts.breakStartBlock &&
 						bbcode.breakStart !== false) ||
 					(bbcode && bbcode.breakStart);
 
-				breakEnd = (isBlock && base.opts.breakEndBlock &&
+				breakEnd = (isBlock &&
+						base.opts.breakEndBlock &&
 						bbcode.breakEnd !== false) ||
 					(bbcode && bbcode.breakEnd);
 
-				breakAfter = (isBlock && base.opts.breakAfterBlock &&
+				breakAfter = (isBlock &&
+						base.opts.breakAfterBlock &&
 						bbcode.breakAfter !== false) ||
 					(bbcode && bbcode.breakAfter);
 
 				quoteType = (bbcode ? bbcode.quoteType : null) ||
-					base.opts.quoteType || QuoteType.auto;
+					base.opts.quoteType ||
+					QuoteType.auto;
 
 				if (!bbcode && token.type === TOKEN_OPEN) {
 					ret += token.val;
@@ -1925,22 +2155,21 @@
 					}
 
 					// Convert the tag and it's attributes to BBCode
-					ret += '[' + token.name;
+					ret += `[${token.name}`;
 					if (token.attrs) {
 						if (token.attrs.defaultattr) {
-							ret += '=' + quote(
+							ret += `=${quote(
 								token.attrs.defaultattr,
 								quoteType,
 								'defaultattr'
-							);
+							)}`;
 
 							delete token.attrs.defaultattr;
 						}
 
 						for (attr in token.attrs) {
 							if (token.attrs.hasOwnProperty(attr)) {
-								ret += ' ' + attr + '=' +
-									quote(token.attrs[attr], quoteType, attr);
+								ret += ` ${attr}=${quote(token.attrs[attr], quoteType, attr)}`;
 							}
 						}
 					}
@@ -1961,7 +2190,7 @@
 							ret += '\n';
 						}
 
-						ret += '[/' + token.name + ']';
+						ret += `[/${token.name}]`;
 					}
 
 					if (breakAfter) {
@@ -1991,7 +2220,7 @@
 		 * @private
 		 */
 		function quote(str, quoteType, name) {
-			var	needsQuotes = /\s|=/.test(str);
+			const needsQuotes = /\s|=/.test(str);
 
 			if (isFunction(quoteType)) {
 				return quoteType(str, name);
@@ -2002,7 +2231,7 @@
 				return str;
 			}
 
-			return '"' + str.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
+			return `"${str.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
 		}
 
 		/**
@@ -2139,7 +2368,7 @@
 
 		number = Math.max(0, Math.min(number, 255)).toString(16);
 
-		return number.length < 2 ? '0' + number : number;
+		return number.length < 2 ? `0${number}` : number;
 	}
 
 	/**
@@ -2166,9 +2395,12 @@
 		// expand shorthand
 		if ((match = colorStr.match(/#([0-9a-f])([0-9a-f])([0-9a-f])\s*?$/i))) {
 			return '#' +
-				match[1] + match[1] +
-				match[2] + match[2] +
-				match[3] + match[3];
+				match[1] +
+				match[1] +
+				match[2] +
+				match[2] +
+				match[3] +
+				match[3];
 		}
 
 		return colorStr;
@@ -2209,35 +2441,37 @@
 		 * @private
 		 */
 		function buildBbcodeCache() {
-			each(bbcodeHandlers, function (bbcode, handler) {
-				var
-					isBlock = handler.isInline === false,
-					tags   = bbcodeHandlers[bbcode].tags,
-					styles = bbcodeHandlers[bbcode].styles;
+			each(bbcodeHandlers,
+				function(bbcode, handler) {
+					var
+						isBlock = handler.isInline === false;
+					const tags = bbcodeHandlers[bbcode].tags;
+					const styles = bbcodeHandlers[bbcode].styles;
 
-				if (styles) {
-					tagsToBBCodes['*'] = tagsToBBCodes['*'] || {};
-					tagsToBBCodes['*'][isBlock] =
-						tagsToBBCodes['*'][isBlock] || {};
-					tagsToBBCodes['*'][isBlock][bbcode] = [
-						['style', Object.entries(styles)]
-					];
-				}
+					if (styles) {
+						tagsToBBCodes['*'] = tagsToBBCodes['*'] || {};
+						tagsToBBCodes['*'][isBlock] =
+							tagsToBBCodes['*'][isBlock] || {};
+						tagsToBBCodes['*'][isBlock][bbcode] = [
+							['style', Object.entries(styles)]
+						];
+					}
 
-				if (tags) {
-					each(tags, function (tag, values) {
-						if (values && values.style) {
-							values.style = Object.entries(values.style);
-						}
+					if (tags) {
+						each(tags,
+							function(tag, values) {
+								if (values && values.style) {
+									values.style = Object.entries(values.style);
+								}
 
-						tagsToBBCodes[tag] = tagsToBBCodes[tag] || {};
-						tagsToBBCodes[tag][isBlock] =
-							tagsToBBCodes[tag][isBlock] || {};
-						tagsToBBCodes[tag][isBlock][bbcode] =
-							values && Object.entries(values);
-					});
-				}
-			});
+								tagsToBBCodes[tag] = tagsToBBCodes[tag] || {};
+								tagsToBBCodes[tag][isBlock] =
+									tagsToBBCodes[tag][isBlock] || {};
+								tagsToBBCodes[tag][isBlock][bbcode] =
+									values && Object.entries(values);
+							});
+					}
+				});
 		};
 
 		/**
@@ -2249,19 +2483,21 @@
 		 * @private
 		 */
 		function handleBlockNewlines(element, content) {
-			var	tag = element.nodeName.toLowerCase();
-			var isInline = dom.isInline;
+			const tag = element.nodeName.toLowerCase();
+			const isInline = dom.isInline;
 			if (!isInline(element, true) || tag === 'br') {
-				var	isLastBlockChild, parent, parentLastChild,
-					previousSibling = element.previousSibling;
+				let isLastBlockChild;
+				let parent;
+				let parentLastChild;
+				let previousSibling = element.previousSibling;
 
 				// Skips selection makers and ignored elements
 				// Skip empty inline elements
 				while (previousSibling &&
-						previousSibling.nodeType === 1 &&
-						!is(previousSibling, 'br') &&
-						isInline(previousSibling, true) &&
-						!previousSibling.firstChild) {
+					previousSibling.nodeType === 1 &&
+					!is(previousSibling, 'br') &&
+					isInline(previousSibling, true) &&
+					!previousSibling.firstChild) {
 					previousSibling = previousSibling.previousSibling;
 				}
 
@@ -2269,7 +2505,7 @@
 				// child of a block then it shouldn't cause a line break
 				// <block><inline><br></inline></block>
 				do {
-					parent          = element.parentNode;
+					parent = element.parentNode;
 					parentLastChild = parent && parent.lastChild;
 
 					isLastBlockChild = parentLastChild === element;
@@ -2288,10 +2524,11 @@
 				//
 				// The second opening <block> opening tag should cause a
 				// line break because the previous sibing is inline.
-				if (tag !== 'br' && previousSibling &&
+				if (tag !== 'br' &&
+					previousSibling &&
 					!is(previousSibling, 'br') &&
 					isInline(previousSibling, true)) {
-					content = '\n' + content;
+					content = `\n${content}`;
 				}
 			}
 
@@ -2310,10 +2547,10 @@
 		 */
 		function handleTags(element, content, blockLevel) {
 			function isStyleMatch(style) {
-				var property = style[0];
-				var values = style[1];
-				var val = dom.getStyle(element, property);
-				var parent = element.parentNode;
+				const property = style[0];
+				const values = style[1];
+				const val = dom.getStyle(element, property);
+				const parent = element.parentNode;
 
 				// if the parent has the same style use that instead of this one
 				// so you don't end up with [i]parent[i]child[/i][/i]
@@ -2325,9 +2562,9 @@
 			}
 
 			function createAttributeMatch(isStrict) {
-				return function (attribute) {
-					var name = attribute[0];
-					var value = attribute[1];
+				return function(attribute) {
+					const name = attribute[0];
+					const value = attribute[1];
 
 					// code tags should skip most styles
 					if (name === 'style' && element.nodeName === 'CODE') {
@@ -2337,7 +2574,7 @@
 					if (name === 'style' && value) {
 						return value[isStrict ? 'every' : 'some'](isStyleMatch);
 					} else {
-						var val = attr(element, name);
+						const val = attr(element, name);
 
 						return val && (!value || value.includes(val));
 					}
@@ -2350,29 +2587,31 @@
 				}
 
 				// loop all bbcodes for this tag
-				each(tagsToBBCodes[tag][blockLevel], function (bbcode, attrs) {
-					var fn, format,
-						isStrict = bbcodeHandlers[bbcode].strictMatch;
+				each(tagsToBBCodes[tag][blockLevel],
+					function(bbcode, attrs) {
+						var fn,
+							format,
+							isStrict = bbcodeHandlers[bbcode].strictMatch;
 
-					if (typeof isStrict === 'undefined') {
-						isStrict = base.opts.strictMatch;
-					}
+						if (typeof isStrict === 'undefined') {
+							isStrict = base.opts.strictMatch;
+						}
 
-					// Skip if the element doesn't have the attribute or the
-					// attribute doesn't match one of the required values
-					fn = isStrict ? 'every' : 'some';
-					if (attrs && !attrs[fn](createAttributeMatch(isStrict))) {
-						return;
-					}
+						// Skip if the element doesn't have the attribute or the
+						// attribute doesn't match one of the required values
+						fn = isStrict ? 'every' : 'some';
+						if (attrs && !attrs[fn](createAttributeMatch(isStrict))) {
+							return;
+						}
 
-					format = bbcodeHandlers[bbcode].format;
-					if (isFunction(format)) {
-						content = format.call(base, element, content);
-					} else {
-						content = _formatString(format, content);
-					}
-					return false;
-				});
+						format = bbcodeHandlers[bbcode].format;
+						if (isFunction(format)) {
+							content = format.call(base, element, content);
+						} else {
+							content = _formatString(format, content);
+						}
+						return false;
+					});
 			}
 
 			handleTag('*');
@@ -2391,74 +2630,71 @@
 		 * @memberOf SCEditor.plugins.bbcode.prototype
 		 */
 		function elementToBbcode(element, hasCodeParent) {
-			var toBBCode = function (node, hasCodeParent, vChildren) {
+			var toBBCode = function(node, hasCodeParent, vChildren) {
 				var ret = '';
 
-				dom.traverse(node, function (node) {
-					var	content      = '',
-						nodeType     = node.nodeType,
-						tag          = node.nodeName.toLowerCase(),
-						isCodeTag    = tag === 'code',
-						isEmoticon   = tag === 'img' &&
-							!!attr(node, EMOTICON_DATA_ATTR),
-						vChild       = validChildren[tag],
-						firstChild   = node.firstChild,
-						isValidChild = true;
+				dom.traverse(node,
+					function(node) {
+						var content = '';
+						const nodeType = node.nodeType;
+						const tag = node.nodeName.toLowerCase();
+						const isCodeTag = tag === 'code';
+						var vChild = validChildren[tag];
+						const firstChild = node.firstChild;
+						var isValidChild = true;
 
-					if (vChildren) {
-						isValidChild = vChildren.indexOf(tag) > -1;
+						if (vChildren) {
+							isValidChild = vChildren.indexOf(tag) > -1;
 
-						// Emoticons should always be converted
-						if (isEmoticon) {
-							isValidChild = true;
-						}
-
-						// if this tag is one of the parents allowed children
-						// then set this tags allowed children to whatever it
-						// allows, otherwise set to what the parent allows
-						if (!isValidChild) {
-							vChild = vChildren;
-						}
-					}
-
-					// 1 = element
-					if (nodeType === 1) {
-						// skip empty nlf elements (new lines automatically
-						// added after block level elements like quotes)
-						if (is(node, '.sceditor-nlf') && !firstChild) {
-							return;
-						}
-
-						// don't convert iframe contents
-						if (tag !== 'iframe') {
-							content = toBBCode(node, hasCodeParent || isCodeTag,
-								vChild);
-						}
-
-						// TODO: isValidChild is no longer needed. Should use
-						// valid children bbcodes instead by creating BBCode
-						// tokens like the parser.
-						if (isValidChild) {
-							// Emoticons should be converted if they have found
-							// their way into a code tag
-							if (!hasCodeParent || isEmoticon) {
-								if (!isCodeTag) {
-									// Parse inline codes first so they don't
-									// contain block level codes
-									content = handleTags(node, content, false);
-								}
-
-								content = handleTags(node, content, true);
+							// if this tag is one of the parents allowed children
+							// then set this tags allowed children to whatever it
+							// allows, otherwise set to what the parent allows
+							if (!isValidChild) {
+								vChild = vChildren;
 							}
-							ret += handleBlockNewlines(node, content);
-						} else {
-							ret += content;
 						}
-					// 3 = text
-					} else if (nodeType === 3) {
-						ret += node.nodeValue;
-					}
-				}, false, true);
+
+						// 1 = element
+						if (nodeType === 1) {
+							// skip empty nlf elements (new lines automatically
+							// added after block level elements like quotes)
+							if (is(node, '.sceditor-nlf') && !firstChild) {
+								return;
+							}
+
+							// don't convert iframe contents
+							if (tag !== 'iframe') {
+								content = toBBCode(node,
+									hasCodeParent || isCodeTag,
+									vChild);
+							}
+
+							// TODO: isValidChild is no longer needed. Should use
+							// valid children bbcodes instead by creating BBCode
+							// tokens like the parser.
+							if (isValidChild) {
+								// Emoticons should be converted if they have found
+								// their way into a code tag
+								if (!hasCodeParent) {
+									if (!isCodeTag) {
+										// Parse inline codes first so they don't
+										// contain block level codes
+										content = handleTags(node, content, false);
+									}
+
+									content = handleTags(node, content, true);
+								}
+								ret += handleBlockNewlines(node, content);
+							} else {
+								ret += content;
+							}
+							// 3 = text
+						} else if (nodeType === 3) {
+							ret += node.nodeValue;
+						}
+					},
+					false,
+					true);
 
 				return ret;
 			};
@@ -2470,7 +2706,7 @@
 		 * Initializer
 		 * @private
 		 */
-		base.init = function () {
+		base.init = function() {
 			base.opts = this.opts;
 			base.elementToBbcode = elementToBbcode;
 
@@ -2478,11 +2714,14 @@
 			buildBbcodeCache();
 
 			this.commands = extend(
-				true, {}, defaultCommandsOverrides, this.commands
+				true,
+				{},
+				defaultCommandsOverrides,
+				this.commands
 			);
 
 			// Add BBCode helper methods
-			this.toBBCode   = base.toSource;
+			this.toBBCode = base.toSource;
 			this.fromBBCode = base.toHtml;
 		};
 
@@ -2494,10 +2733,10 @@
 		 * @param {boolean} [legacyAsFragment] Used by fromBBCode() method
 		 */
 		function toHtml(asFragment, source, legacyAsFragment) {
-			var	parser = new BBCodeParser(base.opts.parserOptions);
-			var toHTML = (asFragment || legacyAsFragment) ?
-				parser.toHTMLFragment :
-				parser.toHTML;
+			const parser = new BBCodeParser(base.opts.parserOptions);
+			const toHTML = (asFragment || legacyAsFragment) ? parser.toHTMLFragment : parser.toHTML;
+
+			editorOptions = base.opts;
 
 			return toHTML(base.opts.bbcodeTrim ? source.trim() : source);
 		}
@@ -2515,11 +2754,11 @@
 		function toSource(asFragment, html, context, parent) {
 			context = context || document;
 
-			var	bbcode, elements;
-			var hasCodeParent = !!dom.closest(parent, 'code');
-			var containerParent = context.createElement('div');
-			var container = context.createElement('div');
-			var parser = new BBCodeParser(base.opts.parserOptions);
+			var bbcode, elements;
+			const hasCodeParent = !!dom.closest(parent, 'code');
+			const containerParent = context.createElement('div');
+			const container = context.createElement('div');
+			const parser = new BBCodeParser(base.opts.parserOptions);
 
 			container.innerHTML = html;
 			css(containerParent, 'visibility', 'hidden');
@@ -2575,7 +2814,7 @@
 	 * @return {Object|null}
 	 * @since 2.0.0
 	 */
-	bbcodeFormat.get = function (name) {
+	bbcodeFormat.get = function(name) {
 		return bbcodeHandlers[name] || null;
 	};
 
@@ -2588,12 +2827,12 @@
 	 * @return {this}
 	 * @since 2.0.0
 	 */
-	bbcodeFormat.set = function (name, bbcode) {
+	bbcodeFormat.set = function(name, bbcode) {
 		if (name && bbcode) {
 			// merge any existing command properties
 			bbcode = extend(bbcodeHandlers[name] || {}, bbcode);
 
-			bbcode.remove = function () {
+			bbcode.remove = function() {
 				delete bbcodeHandlers[name];
 			};
 
@@ -2614,7 +2853,7 @@
 	 * @return {this|false}
 	 * @since 2.0.0
 	 */
-	bbcodeFormat.rename = function (name, newName) {
+	bbcodeFormat.rename = function(name, newName) {
 		if (name in bbcodeHandlers) {
 			bbcodeHandlers[newName] = bbcodeHandlers[name];
 
@@ -2631,7 +2870,7 @@
 	 * @return {this}
 	 * @since 2.0.0
 	 */
-	bbcodeFormat.remove = function (name) {
+	bbcodeFormat.remove = function(name) {
 		if (name in bbcodeHandlers) {
 			delete bbcodeHandlers[name];
 		}

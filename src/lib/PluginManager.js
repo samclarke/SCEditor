@@ -31,7 +31,7 @@ export default function PluginManager(thisObj) {
 	 * @private
 	 */
 	var formatSignalName = function (signal) {
-		return 'signal' + signal.charAt(0).toUpperCase() + signal.slice(1);
+		return `signal${signal.charAt(0).toUpperCase()}${signal.slice(1)}`;
 	};
 
 	/**
@@ -47,8 +47,8 @@ export default function PluginManager(thisObj) {
 	var callHandlers = function (args, returnAtFirst) {
 		args = [].slice.call(args);
 
-		var	idx, ret,
-			signal = formatSignalName(args.shift());
+		var	idx, ret;
+		const signal = formatSignalName(args.shift());
 
 		for (idx = 0; idx < registeredPlugins.length; idx++) {
 			if (signal in registeredPlugins[idx]) {
@@ -141,7 +141,7 @@ export default function PluginManager(thisObj) {
 	 */
 	base.isRegistered = function (plugin) {
 		if (base.exists(plugin)) {
-			var idx = registeredPlugins.length;
+			let idx = registeredPlugins.length;
 
 			while (idx--) {
 				if (registeredPlugins[idx] instanceof plugins[plugin]) {

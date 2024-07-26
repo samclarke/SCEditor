@@ -95,8 +95,7 @@ export default function RangeHelper(win, d, sanitize) {
 	 * @memberOf RangeHelper.prototype
 	 */
 	base.insertHTML = function (html, endHTML) {
-		var	node, div,
-			range = base.selectedRange();
+		const range = base.selectedRange();
 
 		if (!range) {
 			return false;
@@ -106,8 +105,8 @@ export default function RangeHelper(win, d, sanitize) {
 			html += base.selectedHtml() + endHTML;
 		}
 
-		div           = dom.createElement('p', {}, doc);
-		node          = doc.createDocumentFragment();
+		const div = dom.createElement('p', {}, doc);
+		const node = doc.createDocumentFragment();
 		div.innerHTML = sanitize(html);
 
 		while (div.firstChild) {
@@ -173,7 +172,7 @@ export default function RangeHelper(win, d, sanitize) {
 		dom.appendChild(lastChild, _createMarker(endMarker));
 
 		if (returnHtml) {
-			var div = dom.createElement('div');
+			const div = dom.createElement('div');
 			dom.appendChild(div, frag);
 
 			return div.innerHTML;
@@ -199,11 +198,11 @@ export default function RangeHelper(win, d, sanitize) {
 	 * @memberOf RangeHelper.prototype
 	 */
 	base.insertNode = function (node, endNode) {
-		var	first, last,
-			input  = _prepareInput(node, endNode),
-			range  = base.selectedRange(),
-			parent = range.commonAncestorContainer,
-			emptyNodes = [];
+		var	first, last;
+		const input = _prepareInput(node, endNode);
+		const range = base.selectedRange();
+		const parent = range.commonAncestorContainer;
+		var emptyNodes = [];
 
 		if (!input) {
 			return false;
@@ -260,7 +259,7 @@ export default function RangeHelper(win, d, sanitize) {
 	 * @memberOf RangeHelper.prototype
 	 */
 	base.cloneSelected = function () {
-		var range = base.selectedRange();
+		const range = base.selectedRange();
 
 		if (range) {
 			return range.cloneRange();
@@ -276,8 +275,8 @@ export default function RangeHelper(win, d, sanitize) {
 	 * @memberOf RangeHelper.prototype
 	 */
 	base.selectedRange = function () {
-		var	range, firstChild,
-			sel = win.getSelection();
+		var	range, firstChild;
+		const sel = win.getSelection();
 
 		if (!sel) {
 			return;
@@ -316,7 +315,7 @@ export default function RangeHelper(win, d, sanitize) {
 	 * @memberOf RangeHelper.prototype
 	 */
 	base.hasSelection = function () {
-		var	sel = win.getSelection();
+		const sel = win.getSelection();
 
 		return sel && sel.rangeCount > 0;
 	};
@@ -330,8 +329,8 @@ export default function RangeHelper(win, d, sanitize) {
 	 * @memberOf RangeHelper.prototype
 	 */
 	base.selectedHtml = function () {
-		var	div,
-			range = base.selectedRange();
+		var	div;
+		const range = base.selectedRange();
 
 		if (range) {
 			div = dom.createElement('p', {}, doc);
@@ -352,7 +351,7 @@ export default function RangeHelper(win, d, sanitize) {
 	 * @memberOf RangeHelper.prototype
 	 */
 	base.parentNode = function () {
-		var range = base.selectedRange();
+		const range = base.selectedRange();
 
 		if (range) {
 			return range.commonAncestorContainer;
@@ -403,8 +402,8 @@ export default function RangeHelper(win, d, sanitize) {
 	 * @memberOf RangeHelper.prototype
 	 */
 	base.insertNodeAt = function (start, node) {
-		var	currentRange = base.selectedRange(),
-			range        = base.cloneSelected();
+		const currentRange = base.selectedRange();
+		const range = base.cloneSelected();
 
 		if (!range) {
 			return false;
@@ -428,7 +427,7 @@ export default function RangeHelper(win, d, sanitize) {
 	_createMarker = function (id) {
 		base.removeMarker(id);
 
-		var marker  = dom.createElement('span', {
+		const marker = dom.createElement('span', {
 			id: id,
 			className: 'sceditor-selection sceditor-ignore',
 			style: 'display:none;line-height:0'
@@ -449,8 +448,8 @@ export default function RangeHelper(win, d, sanitize) {
 	 * @name insertMarkers
 	 */
 	base.insertMarkers = function () {
-		var	currentRange = base.selectedRange();
-		var startNode = _createMarker(startMarker);
+		const currentRange = base.selectedRange();
+		const startNode = _createMarker(startMarker);
 
 		base.removeMarkers();
 		base.insertNodeAt(true, startNode);
@@ -487,7 +486,7 @@ export default function RangeHelper(win, d, sanitize) {
 	 * @memberOf RangeHelper.prototype
 	 */
 	base.removeMarker = function (id) {
-		var marker = base.getMarker(id);
+		const marker = base.getMarker(id);
 
 		if (marker) {
 			dom.remove(marker);
@@ -527,8 +526,8 @@ export default function RangeHelper(win, d, sanitize) {
 	 */
 	base.selectRange = function (range) {
 		var lastChild;
-		var sel = win.getSelection();
-		var container = range.endContainer;
+		const sel = win.getSelection();
+		const container = range.endContainer;
 
 		// Check if cursor is set after a BR when the BR is the only
 		// child of the parent. In Firefox this causes a line break
@@ -542,7 +541,7 @@ export default function RangeHelper(win, d, sanitize) {
 			}
 
 			if (dom.is(lastChild, 'br')) {
-				var rng = doc.createRange();
+				const rng = doc.createRange();
 				rng.setEndAfter(lastChild);
 				rng.collapse(false);
 
@@ -568,9 +567,9 @@ export default function RangeHelper(win, d, sanitize) {
 	 */
 	base.restoreRange = function () {
 		var	isCollapsed,
-			range = base.selectedRange(),
-			start = base.getMarker(startMarker),
-			end   = base.getMarker(endMarker);
+			range = base.selectedRange();
+		const start = base.getMarker(startMarker);
+		const end = base.getMarker(endMarker);
 
 		if (!start || !end || !range) {
 			return false;
@@ -601,8 +600,8 @@ export default function RangeHelper(win, d, sanitize) {
 	 * @memberOf RangeHelper.prototype
 	 */
 	base.selectOuterText = function (left, right) {
-		var start, end,
-			range = base.cloneSelected();
+		var start, end;
+		const range = base.cloneSelected();
 
 		if (!range) {
 			return false;
@@ -631,7 +630,7 @@ export default function RangeHelper(win, d, sanitize) {
 	 * @memberOf RangeHelper.prototype
 	 */
 	base.getOuterText = function (before, length) {
-		var	range = base.cloneSelected();
+		const range = base.cloneSelected();
 
 		if (!range) {
 			return '';
@@ -678,12 +677,12 @@ export default function RangeHelper(win, d, sanitize) {
 		}
 
 		var outerText, match, matchPos, startIndex,
-			leftLen, charsLeft, keyword, keywordLen,
-			whitespaceRegex = '(^|[\\s\xA0\u2002\u2003\u2009])',
-			keywordIdx      = keywords.length,
-			whitespaceLen   = requireWhitespace ? 1 : 0,
-			maxKeyLen       = longestKeyword ||
-				keywords[keywordIdx - 1][0].length;
+			leftLen, charsLeft, keyword, keywordLen;
+		const whitespaceRegex = '(^|[\\s\xA0\u2002\u2003\u2009])';
+		var keywordIdx      = keywords.length;
+		const whitespaceLen = requireWhitespace ? 1 : 0;
+		var maxKeyLen       = longestKeyword ||
+            keywords[keywordIdx - 1][0].length;
 
 		if (requireWhitespace) {
 			maxKeyLen++;
@@ -779,7 +778,7 @@ export default function RangeHelper(win, d, sanitize) {
 	 * @memberOf RangeHelper.prototype
 	 */
 	base.clear = function () {
-		var sel = win.getSelection();
+		const sel = win.getSelection();
 
 		if (sel) {
 			if (sel.removeAllRanges) {

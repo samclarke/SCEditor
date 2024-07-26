@@ -9,8 +9,6 @@
 		'Italic': 'Italique',
 		'Underline': 'Souligné',
 		'Strikethrough': 'Barré',
-		'Subscript': 'Indice',
-		'Superscript': 'Exposant',
 		'Align left': 'Aligner à gauche',
 		'Center': 'Centrer',
 		'Align right': 'Aligner à droite',
@@ -37,8 +35,6 @@
 		'Insert a horizontal rule': 'Insérer une ligne horizontale',
 		'Code': 'Code',
 		'Insert a Quote': 'Insérer une citation',
-		'Width (optional):': 'Largeur (Optionnelle)',
-		'Height (optional):': 'Hauteur (Optionnelle)',
 		'Insert an image': 'Insérer une image',
 		'E-mail:': 'Courriel',
 		'Insert an email': 'Insérer un courriel',
@@ -50,9 +46,6 @@
 		'Video URL:': 'URL Vidéo',
 		'Insert': 'Insérer',
 		'Insert a YouTube video': 'Insérer une vidéo YouTube',
-		'Insert current date': 'Insérer la date actuelle',
-		'Insert current time': 'Insérer l\'heure actuelle',
-		'Print': 'Imprimer',
 		'View source': 'Afficher le texte brut',
 		'Description (optional):': 'Description (Optionnelle)',
 		'Enter the image URL:': 'Entrez l\'URL de l\'image:',
@@ -61,8 +54,6 @@
 		'Enter URL:': 'Entrez une URL:',
 		'Enter the YouTube video URL or ID:': 'Entrez l\'URL ou l\'ID de la vidéo YouTube:',
 		'Invalid YouTube video': 'Vidéo YouTube invalide',
-		'Right-to-Left': 'De droite à gauche',
-		'Left-to-Right': 'De gauche à droite',
 
 		dateFormat: 'day/month/year'
 	};
