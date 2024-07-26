@@ -12,13 +12,11 @@ export default {
 	 *
 	 * @type {string}
 	 */
-	toolbar: 'bold,italic,underline,strike|' +
-		'font,size,color|mark|' +
-		'email,link,unlink,quote,code|image|' +
-		'bulletlist,orderedlist|left,center,right|indent,outdent|' +
-		'cut,copy,pastetext,removeformat|' +
-		'undo,redo|' +
-		'youtube,vimeo,instagram,facebook,media,extensions|source|reply',
+	toolbar: 'bold,italic,underline,strike,subscript,superscript|' +
+		'left,center,right,justify|font,size,color,removeformat|' +
+		'cut,copy,pastetext|bulletlist,orderedlist,indent,outdent|' +
+		'table|code,quote|horizontalrule,image,email,link,unlink|' +
+		'emoticon,youtube,date,time|ltr,rtl|print,maximize,source',
 
 	/**
 	 * Comma separated list of commands to excludes from the toolbar
@@ -28,26 +26,12 @@ export default {
 	toolbarExclude: null,
 
 	/**
-	 * Maximum Number of allowed Characters
-	 *
-	 * @type {?number}
-	*/
-	maxLength: null,
-
-	/**
 	 * Stylesheet to include in the WYSIWYG editor. This is what will style
 	 * the WYSIWYG elements
 	 *
-	 * @type {Array}
-	 */
-	styles: [],
-
-	/**
-	 * The bootstrap theme mode. This will be applied to the editor WYSIWYG mode (iframe)
-	 *
 	 * @type {string}
-	*/
-	themeMode: attr(document.documentElement, 'data-bs-theme') || 'light',
+	 */
+	style: 'jquery.sceditor.default.css',
 
 	/**
 	 * Comma separated list of fonts for the font selector
@@ -58,44 +42,6 @@ export default {
 		'Sans-serif,Serif,Times New Roman,Trebuchet MS,Verdana',
 
 	/**
-	 * Default format
-	 *
-	 * @type {string}
-	*/
-	format: 'bbcode',
-
-	/**
- * Default icon set
- *
- * @type {string}
- */
-	icons: 'fontawesome',
-
-	/**
-	 * Comma separated list of code languages for the code block selector
-	 *
-	 * @type {Array}
-	 */
-	codeLanguages: [
-		{ Value: 'markup', Text: 'Plain Text' },
-		{ Value: 'bash', Text: 'Bash(shell)' },
-		{ Value: 'c', Text: 'C' },
-		{ Value: 'cpp', Text: 'C++' },
-		{ Value: 'csharp', Text: 'C#' },
-		{ Value: 'css', Text: 'CSS' },
-		{ Value: 'scss', Text: 'SCSS' },
-		{ Value: 'git', Text: 'Git' },
-		{ Value: 'markup', Text: 'HTML' },
-		{ Value: 'java', Text: 'Java' },
-		{ Value: 'javascript', Text: 'JavaScript' },
-		{ Value: 'json', Text: 'JSON' },
-		{ Value: 'python', Text: 'Python' },
-		{ Value: 'sql', Text: 'SQL' },
-		{ Value: 'markup', Text: 'XML' },
-		{ Value: 'vb', Text: 'Visual Basic' }
-	],
-
-	/**
 	 * Colors should be comma separated and have a bar | to signal a new
 	 * column.
 	 *
@@ -104,13 +50,13 @@ export default {
 	 * @type {string}
 	 */
 	colors: '#000000,#44B8FF,#1E92F7,#0074D9,#005DC2,#00369B,#b3d5f4|' +
-		'#444444,#C3FFFF,#9DF9FF,#7FDBFF,#68C4E8,#419DC1,#d9f4ff|' +
-		'#666666,#72FF84,#4CEA5E,#2ECC40,#17B529,#008E02,#c0f0c6|' +
-		'#888888,#FFFF44,#FFFA1E,#FFDC00,#E8C500,#C19E00,#fff5b3|' +
-		'#aaaaaa,#FFC95F,#FFA339,#FF851B,#E86E04,#C14700,#ffdbbb|' +
-		'#cccccc,#FF857A,#FF5F54,#FF4136,#E82A1F,#C10300,#ffc6c3|' +
-		'#eeeeee,#FF56FF,#FF30DC,#F012BE,#D900A7,#B20080,#fbb8ec|' +
-		'#ffffff,#F551FF,#CF2BE7,#B10DC9,#9A00B2,#9A00B2,#e8b6ef',
+			'#444444,#C3FFFF,#9DF9FF,#7FDBFF,#68C4E8,#419DC1,#d9f4ff|' +
+			'#666666,#72FF84,#4CEA5E,#2ECC40,#17B529,#008E02,#c0f0c6|' +
+			'#888888,#FFFF44,#FFFA1E,#FFDC00,#E8C500,#C19E00,#fff5b3|' +
+			'#aaaaaa,#FFC95F,#FFA339,#FF851B,#E86E04,#C14700,#ffdbbb|' +
+			'#cccccc,#FF857A,#FF5F54,#FF4136,#E82A1F,#C10300,#ffc6c3|' +
+			'#eeeeee,#FF56FF,#FF30DC,#F012BE,#D900A7,#B20080,#fbb8ec|' +
+			'#ffffff,#F551FF,#CF2BE7,#B10DC9,#9A00B2,#9A00B2,#e8b6ef',
 
 	/**
 	 * The locale to use.
@@ -125,11 +71,84 @@ export default {
 	charset: 'utf-8',
 
 	/**
+	 * Compatibility mode for emoticons.
+	 *
+	 * Helps if you have emoticons such as :/ which would put an emoticon
+	 * inside http://
+	 *
+	 * This mode requires emoticons to be surrounded by whitespace or end of
+	 * line chars. This mode has limited As You Type emoticon conversion
+	 * support. It will not replace AYT for end of line chars, only
+	 * emoticons surrounded by whitespace. They will still be replaced
+	 * correctly when loaded just not AYT.
+	 *
+	 * @type {boolean}
+	 */
+	emoticonsCompat: false,
+
+	/**
+	 * If to enable emoticons. Can be changes at runtime using the
+	 * emoticons() method.
+	 *
+	 * @type {boolean}
+	 * @since 1.4.2
+	 */
+	emoticonsEnabled: true,
+
+	/**
+	 * Emoticon root URL
+	 *
+	 * @type {string}
+	 */
+	emoticonsRoot: '',
+	emoticons: {
+		dropdown: {
+			':)': 'emoticons/smile.png',
+			':angel:': 'emoticons/angel.png',
+			':angry:': 'emoticons/angry.png',
+			'8-)': 'emoticons/cool.png',
+			':\'(': 'emoticons/cwy.png',
+			':ermm:': 'emoticons/ermm.png',
+			':D': 'emoticons/grin.png',
+			'<3': 'emoticons/heart.png',
+			':(': 'emoticons/sad.png',
+			':O': 'emoticons/shocked.png',
+			':P': 'emoticons/tongue.png',
+			';)': 'emoticons/wink.png'
+		},
+		more: {
+			':alien:': 'emoticons/alien.png',
+			':blink:': 'emoticons/blink.png',
+			':blush:': 'emoticons/blush.png',
+			':cheerful:': 'emoticons/cheerful.png',
+			':devil:': 'emoticons/devil.png',
+			':dizzy:': 'emoticons/dizzy.png',
+			':getlost:': 'emoticons/getlost.png',
+			':happy:': 'emoticons/happy.png',
+			':kissing:': 'emoticons/kissing.png',
+			':ninja:': 'emoticons/ninja.png',
+			':pinch:': 'emoticons/pinch.png',
+			':pouty:': 'emoticons/pouty.png',
+			':sick:': 'emoticons/sick.png',
+			':sideways:': 'emoticons/sideways.png',
+			':silly:': 'emoticons/silly.png',
+			':sleeping:': 'emoticons/sleeping.png',
+			':unsure:': 'emoticons/unsure.png',
+			':woot:': 'emoticons/w00t.png',
+			':wassat:': 'emoticons/wassat.png'
+		},
+		hidden: {
+			':whistling:': 'emoticons/whistling.png',
+			':love:': 'emoticons/wub.png'
+		}
+	},
+
+	/**
 	 * Width of the editor. Set to null for automatic with
 	 *
 	 * @type {?number}
 	 */
-	width: '100%',
+	width: null,
 
 	/**
 	 * Height of the editor including toolbar. Set to null for automatic
@@ -298,7 +317,7 @@ export default {
 	 *
 	 * @type {string}
 	 */
-	plugins: 'undo,dragdrop',
+	plugins: '',
 
 	/**
 	 * z-index to set the editor container to. Needed for jQuery UI dialog.
@@ -321,7 +340,7 @@ export default {
 	 *
 	 * @type {boolean}
 	 */
-	disableBlockRemove: true,
+	disableBlockRemove: false,
 
 	/**
 	 * Array of allowed URL (should be either strings or regex) for iframes.
@@ -344,14 +363,14 @@ export default {
 	 *
 	 * @type {Object}
 	 */
-	parserOptions: {},
+	parserOptions: { },
 
 	/**
 	 * CSS that will be added to the to dropdown menu (eg. z-index)
 	 *
 	 * @type {Object}
 	 */
-	dropDownCss: {},
+	dropDownCss: { },
 
 	/**
 	 * An array of tags that are allowed in the editor content.
@@ -376,35 +395,18 @@ export default {
 	 *
 	 * @type {Array}
 	 */
-	allowedAttributes: ['contenteditable'],
+	allowedAttributes: [],
 
 	/**
-	 * Url for the BBCode Extensions json
-	 *
-	 * @type {string}
-	*/
-	extensionsUrl: '',
-
+    * Default path for the script files
+    *
+    * @type {string}
+    */
+	basePath: 'minified',
 	/**
-	 * Application root url
-	 *
-	 * @type {string}
-	*/
-	root: '',
-
-	/**
-	 * Attachments preview url
-	 *
-	 * @type {string}
-	*/
-	attachmentsPreviewUrl: '',
-
-	/**
-	 * Albums preview url
-	 *
-	 * @type {string}
-	*/
-	albumsPreviewUrl: '',
-
-	onToggleMode: undefined
+    * The input format
+    *
+    * @type {string}
+    */
+	format: 'bbcode'
 };

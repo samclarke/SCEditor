@@ -1,0 +1,74 @@
+/**
+ * Copyright (C) 2012, Sam Clarke (samclarke.com)
+ *
+ * SCEditor is licensed under the MIT license:
+ *	http://www.opensource.org/licenses/mit-license.php
+ *
+ * Icons by Mark James (http://www.famfamfam.com/lab/icons/silk/)
+ * Licensed under the Creative Commons CC-BY license (http://creativecommons.org/licenses/by/3.0/)
+ */
+
+@import "default.less";
+
+.sceditor-container {
+	border: 1px solid #8db2e3;
+}
+
+.sceditor-container textarea {
+	font-family: Consolas, "Bitstream Vera Sans Mono", "Andale Mono", Monaco, "DejaVu Sans Mono", "Lucida Console", monospace;
+}
+
+div.sceditor-toolbar {
+	border-bottom: 1px solid #95a9c3;
+	background: #dee8f5;
+	background: linear-gradient(to bottom, #dee8f5 0%,#c7d8ed 29%,#ccdcee 61%,#c0d8ef 100%);
+}
+
+	div.sceditor-group {
+		border: 1px solid #7596bf;
+		background: transparent;
+		padding: 0;
+		background: #cadcf0;
+		background: linear-gradient(to bottom, #cadcf0 24%,#bcd0e9 38%,#d0e1f7 99%);
+	}
+		.sceditor-button {
+			height: 16px;
+			padding: 3px 4px;
+			.rounded(0);
+			box-shadow:	inset 0 1px #d5e3f1,
+						inset 0 -1px #e3edfb,
+						inset 1px 0 #cddcef,
+						inset -1px 0 #b8ceea;
+		}
+		.sceditor-button:first-child { .rounded(4px 0 0 4px); }
+		.sceditor-button:last-child { .rounded(0 4px 4px 0); }
+		.sceditor-button div,
+		.sceditor-button svg {
+			margin: 0;
+		}
+		.sceditor-button.active {
+			background: rgb(251,219,181);
+			background: linear-gradient(to bottom, rgba(251,219,181,1) 11%,rgba(254,180,86,1) 29%,rgba(253,235,159,1) 99%);
+			box-shadow:	inset 0 1px #ebd1b4,
+						inset 0 -1px #ffe47f,
+						inset -1px 0 #b8ceea;
+		}
+		.sceditor-button:hover {
+			background: #fef7d5;
+			background: linear-gradient(to bottom,  #fef7d5 0%,#fae5a9 42%,#ffd048 42%,#ffe59f 100%);
+			box-shadow:	inset 0 1px #fffbe8,
+						inset -1px 0 #ffefc4,
+						inset 0 -1px #fff9cc;
+		}
+		.sceditor-button:active {
+			background: #e7a66d;
+			background: linear-gradient(to bottom, #e7a66d 0%,#fcb16d 1%,#ff8d05 42%,#ffc450 100%);
+			box-shadow:	inset 0 1px 1px #7b6645,
+						inset 0 -1px #d19c33;
+		}
+		.sceditor-button.active:hover {
+			background: #dba368;
+			background: linear-gradient(to bottom, #dba368 0%,#ffbd79 4%,#fea335 34%,#ffc64c 66%,#fee069 100%);
+			box-shadow:	inset 0 1px 1px #9e8255,
+						inset 0 -1px #fcce6b;
+		}

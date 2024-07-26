@@ -46,15 +46,14 @@ export function entities(str, noQuotes) {
 	};
 
 	if (noQuotes !== false) {
-		replacements['"'] = '&#34;';
+		replacements['"']  = '&#34;';
 		replacements['\''] = '&#39;';
-		replacements['`'] = '&#96;';
+		replacements['`']  = '&#96;';
 	}
 
-	str = str.replace(/ {2}|\r\n|[&<>\r\n'"`]/g,
-		function(match) {
-			return replacements[match] || match;
-		});
+	str = str.replace(/ {2}|\r\n|[&<>\r\n'"`]/g, function (match) {
+		return replacements[match] || match;
+	});
 
 	return str;
 };
@@ -85,21 +84,21 @@ export function entities(str, noQuotes) {
  * @since 1.4.5
  */
 export function uriScheme(url) {
-	const hasScheme = /^[^\/]*:/i;
-	const location = window.location;
+	var	path,
+		// If there is a : before a / then it has a scheme
+		hasScheme = /^[^\/]*:/i,
+		location = window.location;
 
 	// Has no scheme or a valid scheme
 	if ((!url || !hasScheme.test(url)) || VALID_SCHEME_REGEX.test(url)) {
 		return url;
 	}
 
-	const path = location.pathname.split('/');
+	path = location.pathname.split('/');
 	path.pop();
 
-	return location.protocol +
-		'//' +
+	return location.protocol + '//' +
 		location.host +
-		path.join('/') +
-		'/' +
+		path.join('/') + '/' +
 		url;
 };

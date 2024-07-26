@@ -1,0 +1,448 @@
+/**
+ * SCEditor
+ * http://www.sceditor.com/
+ *
+ * Copyright (C) 2017, Sam Clarke (samclarke.com)
+ *
+ * SCEditor is licensed under the MIT license:
+ *	http://www.opensource.org/licenses/mit-license.php
+ */
+
+@import "elements.less";
+
+.sceditor-container {
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-direction: column;
+	flex-direction: column;
+	position: relative;
+	background: #fff;
+	border: 1px solid #d9d9d9;
+	font-size: 13px;
+	font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+	color: #333;
+	line-height: 1;
+	font-weight: bold;
+	height: 250px;
+
+	.rounded(4px);
+
+	*, *:before, *:after {
+		-webkit-box-sizing: content-box;
+		-moz-box-sizing: content-box;
+		box-sizing: content-box;
+	}
+}
+
+.sceditor-container,
+.sceditor-container div,
+div.sceditor-dropdown,
+div.sceditor-dropdown div {
+	padding: 0;
+	margin: 0;
+	z-index: 3;
+}
+	.sceditor-container iframe,
+	.sceditor-container textarea {
+		display: block;
+		-ms-flex: 1 1 0%;
+		flex: 1 1 0%;
+		line-height: 1.25;
+		border: 0;
+		outline: none;
+		font-family: Verdana, Arial, Helvetica, sans-serif;
+		font-size: 14px;
+		color: #111;
+		padding: 0;
+		margin: 5px;
+		resize: none;
+		background: #fff;
+		height: auto !important;
+		width: auto !important;
+		// Needed for IE
+		width: ~"calc(100% - 10px) !important";
+		// Allow iframes to shrink
+		min-height: 1px;
+	}
+
+	.sceditor-container textarea {
+		margin: 7px 5px;
+	}
+
+	div.sceditor-dnd-cover {
+		position: absolute;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		background: rgba(255,255,255, 0.2);
+		border: 5px dashed #aaa;
+		z-index: 200;
+		font-size: 2em;
+		text-align: center;
+		color: #aaa;
+
+	}
+	div.sceditor-dnd-cover p {
+		position: relative;
+		top: 45%;
+		pointer-events: none;
+	}
+
+
+	div.sceditor-resize-cover {
+		position: absolute;
+		top: 0;
+		left: 0;
+		background: #000;
+		width: 100%;
+		height: 100%;
+		z-index: 10;
+		opacity: 0.3;
+	}
+
+	div.sceditor-grip {
+		overflow: hidden;
+		width: 10px;
+		height: 10px;
+		cursor: pointer;
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		z-index: 3;
+		line-height: 0;
+	}
+
+	div.sceditor-grip.has-icon {
+		background-image: none;
+	}
+
+	.sceditor-maximize {
+		position: fixed;
+		top: 0;
+		left: 0;
+		height: 100% !important;
+		width: 100% !important;
+		.rounded(0);
+		z-index: 2000;
+	}
+
+	// Used to hide scrollbars when maximized
+	html.sceditor-maximize,
+	body.sceditor-maximize {
+		height: 100%;
+		width: 100%;
+		padding: 0;
+		margin: 0;
+		overflow: hidden;
+	}
+
+		.sceditor-maximize div.sceditor-grip {
+			display: none;
+		}
+
+
+		.sceditor-maximize div.sceditor-toolbar {
+			.rounded(0);
+		}
+
+
+	/**
+	 * Dropdown styleing
+	 */
+	div.sceditor-dropdown {
+		position: absolute;
+		border: 1px solid #ccc;
+		background: #fff;
+		z-index: 4000;
+		padding: 10px;
+		font-weight: normal;
+		font-size: 15px;
+
+		*, *:before, *:after {
+			-webkit-box-sizing: border-box;
+			-moz-box-sizing: border-box;
+			box-sizing: border-box;
+		}
+
+		.rounded(2px);
+		.box-shadow(1px 2px 4px rgba(0,0,0,0.2));
+	}
+
+		div.sceditor-dropdown a,
+		div.sceditor-dropdown a:link {
+			color: #333;
+		}
+
+		div.sceditor-dropdown form {
+			margin: 0;
+		}
+
+		div.sceditor-dropdown label {
+			display:block;
+			font-weight: bold;
+			color: #3c3c3c;
+			padding: 4px 0;
+		}
+
+		div.sceditor-dropdown input,
+		div.sceditor-dropdown textarea {
+			font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+			outline: 0;
+			padding: 4px;
+			border: 1px solid #ccc;
+			border-top-color: #888;
+			margin: 0 0 .75em;
+
+			.rounded(1px);
+		}
+
+		div.sceditor-dropdown textarea {
+			padding: 6px;
+		}
+
+		div.sceditor-dropdown input:focus,
+		div.sceditor-dropdown textarea:focus {
+			border-color: #aaa;
+			border-top-color: #666;
+			.box-shadow(inset 0 1px 5px rgba(0,0,0,0.1));
+		}
+
+		div.sceditor-dropdown .button {
+			font-weight: bold;
+			color: #444;
+			padding: 6px 12px;
+			background: #ececec;
+			border: solid 1px #ccc;
+			.rounded(2px);
+			cursor: pointer;
+			margin: .3em 0 0;
+		}
+
+		div.sceditor-dropdown .button:hover {
+			background: #f3f3f3;
+			.box-shadow(0 1px 1px rgba(0,0,0,0.15));
+		}
+
+		div.sceditor-font-picker,
+		div.sceditor-fontsize-picker,
+		div.sceditor-format {
+			padding: 6px 0;
+		}
+
+		div.sceditor-color-picker {
+			padding: 4px;
+		}
+
+		div.sceditor-emoticons,
+		div.sceditor-more-emoticons {
+			padding: 0;
+		}
+
+		.sceditor-pastetext textarea {
+			border: 1px solid #bbb;
+			width: 20em;
+		}
+
+		.sceditor-emoticons img,
+		.sceditor-more-emoticons img {
+			padding: 0;
+			cursor: pointer;
+			margin: 2px;
+		}
+		
+		.sceditor-emojis span {
+			padding: 0;
+			cursor: pointer;
+			margin: 2px;
+		}
+
+		.sceditor-emojis > div > div:not(:last-child) {
+			margin-bottom: 6px;
+		}
+
+		.sceditor-more {
+			border-top: 1px solid #bbb;
+			display: block;
+			text-align: center;
+			cursor: pointer;
+			font-weight: bold;
+			padding: 6px 0;
+		}
+
+		.sceditor-dropdown a:hover {
+			background: #eee;
+		}
+
+		.sceditor-fontsize-option,
+		.sceditor-font-option,
+		.sceditor-format a {
+			display: block;
+			padding: 7px 10px;
+			cursor: pointer;
+			text-decoration: none;
+			color: #222;
+		}
+
+		.sceditor-fontsize-option {
+			padding: 7px 13px;
+		}
+
+		.sceditor-color-column {
+			float: left;
+		}
+
+			.sceditor-color-option {
+				display: block;
+				border: 2px solid #fff;
+				height: 18px;
+				width: 18px;
+				overflow: hidden;
+			}
+
+			.sceditor-color-option:hover {
+				border: 1px solid #aaa;
+			}
+
+
+	/**
+	 * Toolbar styleing
+	 */
+	div.sceditor-toolbar {
+		flex-shrink: 0;
+		overflow: hidden;
+		padding: 3px 5px 2px;
+		background: #f7f7f7;
+		border-bottom: 1px solid #c0c0c0;
+		line-height: 0;
+		text-align: left;
+
+		user-select: none;
+
+		.rounded(3px 3px 0 0);
+	}
+
+		div.sceditor-group {
+			display: inline-block;
+			background: #ddd;
+			margin: 1px 5px 1px 0;
+			padding: 1px;
+			border-bottom: 1px solid #aaa;
+
+			.rounded(3px);
+
+		}
+
+		.sceditor-button {
+			float: left;
+			cursor: pointer;
+			padding: 3px 5px;
+			width: 16px;
+			height: 20px;
+			.rounded(3px);
+		}
+
+			.sceditor-button:hover,
+			.sceditor-button:active,
+			.sceditor-button.active {
+				background: #fff;
+				.box-shadow(~"inset 1px 1px 0 rgba(0,0,0,0.3), inset -1px 0 rgba(0,0,0,0.3), inset 0 -1px 0 rgba(0,0,0,0.2)");
+			}
+
+			.sceditor-button:active {
+				background: #fff;
+				.box-shadow(~"inset 1px 1px 0 rgba(0,0,0,0.3), inset -1px 0 rgba(0,0,0,0.3), inset 0 -1px 0 rgba(0,0,0,0.2), inset 0 0 8px rgba(0,0,0,0.3)");
+			}
+
+			.sceditor-button.disabled:hover {
+				background: inherit;
+				cursor: default;
+				.box-shadow(none);
+			}
+
+			.sceditor-button, .sceditor-button div {
+				display: block;
+			}
+
+			.sceditor-button svg {
+				display: inline-block;
+				height: 16px;
+				width: 16px;
+				margin: 2px 0;
+				fill: #111;
+				text-decoration: none;
+				pointer-events: none;
+				// IE & Edge inherit line height so reset it
+				line-height: 1;
+			}
+
+			.sceditor-button.disabled svg {
+				fill: #888;
+			}
+
+			.sceditor-button div {
+				display: inline-block;
+				margin: 2px 0;
+				padding: 0;
+				overflow: hidden;
+				line-height: 0;
+				font-size: 0;
+				color: transparent;
+			}
+
+			.sceditor-button.has-icon div {
+				display: none;
+			}
+
+			.sceditor-button.disabled div {
+				opacity: 0.3;
+			}
+
+			.text .sceditor-button,
+			.text .sceditor-button div,
+			.sceditor-button.text,
+			.sceditor-button.text div,
+			.text-icon .sceditor-button,
+			.text-icon .sceditor-button div,
+			.sceditor-button.text-icon,
+			.sceditor-button.text-icon div {
+				display: inline-block;
+				width: auto;
+				line-height: 16px;
+				font-size: 1em;
+				color: inherit;
+				text-indent: 0;
+			}
+
+			.text-icon .sceditor-button.has-icon div,
+			.sceditor-button.has-icon div,
+			.text .sceditor-button div,
+			.sceditor-button.text div {
+				padding: 0 2px;
+				background: none;
+			}
+
+			.text .sceditor-button svg,
+			.sceditor-button.text svg {
+				display: none;
+			}
+
+			.text-icon .sceditor-button div,
+			.sceditor-button.text-icon div {
+				padding: 0 2px 0 20px;
+			}
+
+.rtl {
+	div.sceditor-toolbar {
+		text-align: right;
+	}
+
+	.sceditor-button {
+		float: right;
+	}
+
+	div.sceditor-grip {
+		right: auto;
+		left: 0;
+	}
+}

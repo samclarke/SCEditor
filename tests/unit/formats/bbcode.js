@@ -48,7 +48,7 @@ QUnit.test('From BBCode method as fragment', function (assert) {
 			true
 		),
 		'line1<strong>test</strong>' +
-		'<div align="center">line2</div>' +
+		'<div align="center">line2<br /></div>' +
 		'line3<strong>test</strong>',
 		'Should not wrap inlines with a block in between'
 	);
@@ -76,9 +76,9 @@ QUnit.test('From BBCode method as fragment', function (assert) {
 			'[center]line1[/center][center]line2[/center][center]line3[/center]',
 			true
 		),
-		'<div align="center">line1</div>' +
-		'<div align="center">line2</div>' +
-		'<div align="center">line3</div>',
+		'<div align="center">line1<br /></div>' +
+		'<div align="center">line2<br /></div>' +
+		'<div align="center">line3<br /></div>',
 		'Should keep all styled blocks created by a BBCode'
 	);
 
@@ -106,9 +106,7 @@ QUnit.test('BBcode to HTML trim', function (assert) {
 		this.format.toHtml(
 			'\n\n[quote]test[/quote]\n\n'
 		),
-		'<div class="border rounded mx-3 mb-3 p-3 border-secondary shadow-sm">' +
-		'<span contenteditable="false"><i class="fa fa-quote-left text-primary fs-4 me-2"></i></span>' + 'test' +
-		'</div>',
+		'<blockquote>test<br /></blockquote>',
 		'Block level'
 	);
 
@@ -137,8 +135,7 @@ QUnit.test('HTML to BBCode trim', function (assert) {
 
 	assert.equal(
 		this.htmlToBBCode('<div><br /><br /></div>' +
-			'<div class="border rounded mx-3 mb-3 p-3 border-secondary shadow-sm">' +
-			'<span contenteditable="false"><i class="fa fa-quote-left text-primary fs-4 me-2"></i></span>' + 'test</div><div><br /><br /></div>'),
+			'<blockquote>test</blockquote><div><br /><br /></div>'),
 		'[quote]test[/quote]',
 		'Block level'
 	);
@@ -211,10 +208,10 @@ QUnit.test('Remove empty', function (assert) {
 
 QUnit.test('Should not remove whitespace in code tags', function (assert) {
 	var result = this.htmlToBBCode(
-		'<pre class="border border-danger rounded m-2 p-2"><code class="language-markup">Some    White \n   \n   space</code></pre>'
+		'<code><pre>Some    White \n   \n   space</pre></code>'
 	);
 
-	assert.equal(result, '[code=markup]Some    White \n   \n   space[/code]\n', 'Should not remove whitespace in code tags');
+	assert.equal(result, '[code]Some    White \n   \n   space[/code]\n');
 });
 
 QUnit.test('Should remove whitespace in non-code tags', function (assert) {
@@ -301,7 +298,7 @@ QUnit.test('New line handling', function (assert) {
 			'<div><br /></div>' +
 			'<ul><li>text</li></ul>'
 		),
-		'text\n\n[list]\n[li]text[/li]\n[/list]\n',
+		'text\n\n[ul]\n[li]text[/li]\n[/ul]\n',
 		'Div siblings with a list'
 	);
 
@@ -312,7 +309,7 @@ QUnit.test('New line handling', function (assert) {
 			'<div><br /></div>' +
 			'<ul><li>text</li></ul>'
 		),
-		'text\n\n\n[list]\n[li]text[/li]\n[/list]\n',
+		'text\n\n\n[ul]\n[li]text[/li]\n[/ul]\n',
 		'Multiple div siblings with a list'
 	);
 
@@ -332,16 +329,16 @@ QUnit.test('New line handling', function (assert) {
 		this.htmlToBBCode(
 			'<ul><li>newline<br /><br /></li></ul>'
 		),
-		'[list]\n[li]newline\n[/li]\n[/list]\n',
+		'[ul]\n[li]newline\n[/li]\n[/ul]\n',
 		'List item last child block level'
 	);
 
 	assert.equal(
 		this.htmlToBBCode(
-			'<pre class="border border-danger rounded m-2 p-2"><code class="language-markup">newline<br /></code></pre>' +
+			'<div><code>newline<br /></code></div>' +
 			'<div>newline</div>'
 		),
-		'[code=markup]newline[/code]\nnewline',
+		'[code]newline[/code]\nnewline',
 		'Block level last child'
 	);
 });
@@ -628,13 +625,13 @@ QUnit.test('colour', function (assert) {
 QUnit.test('List', function (assert) {
 	assert.equal(
 		this.htmlToBBCode('<ul><li>test<br /></li></ul>'),
-		'[list]\n[li]test[/li]\n[/list]\n',
+		'[ul]\n[li]test[/li]\n[/ul]\n',
 		'UL tag'
 	);
 
 	assert.equal(
 		this.htmlToBBCode('<ol><li>test<br /></li></ol>'),
-		'[list=I]\n[li]test[/li]\n[/list]\n',
+		'[ol]\n[li]test[/li]\n[/ol]\n',
 		'OL tag'
 	);
 
@@ -648,7 +645,7 @@ QUnit.test('List', function (assert) {
 				'</li>' +
 			'</ul>'
 		),
-		'[list]\n[li]test\n[list]\n[li]sub[/li]\n[/list]\n[/li]\n[/list]\n',
+		'[ul]\n[li]test\n[ul]\n[li]sub[/li]\n[/ul]\n[/li]\n[/ul]\n',
 		'Nested UL tag'
 	);
 });
@@ -670,6 +667,15 @@ QUnit.test('Table', function (assert) {
 });
 
 
+QUnit.test('Emoticons', function (assert) {
+	assert.equal(
+		this.htmlToBBCode('<img data-sceditor-emoticon=":)"" />'),
+		':)',
+		'Img tag'
+	);
+});
+
+
 QUnit.test('Horizontal rule', function (assert) {
 	assert.equal(
 		this.htmlToBBCode('<hr />'),
@@ -680,6 +686,14 @@ QUnit.test('Horizontal rule', function (assert) {
 
 
 QUnit.test('Image', function (assert) {
+	assert.equal(
+		this.htmlToBBCode(
+			'<img width=10 height=10 src="http://example.com/test.png" />'
+		),
+		'[img=10x10]http://example.com/test.png[/img]',
+		'Image tag with width and height attributes'
+	);
+
 	assert.equal(
 		this.htmlToBBCode(
 			'<img src="http://www.sceditor.com/emoticons/smile.png" />'
@@ -765,19 +779,14 @@ QUnit.test('Email', function (assert) {
 
 QUnit.test('Quote', function (assert) {
 	assert.equal(
-		this.htmlToBBCode('<div class="border rounded mx-3 mb-3 p-3 border-secondary shadow-sm">' +
-			'<span contenteditable="false"><i class="fa fa-quote-left text-primary fs-4 me-2"></i></span>' + 'Testing 1.2.3....' +
-			'</div>'),
+		this.htmlToBBCode('<blockquote>Testing 1.2.3....</blockquote>'),
 		'[quote]Testing 1.2.3....[/quote]\n',
 		'Simple quote'
 	);
 
 	assert.equal(
 		this.htmlToBBCode(
-			'<div class="border rounded mx-3 mb-3 p-3 border-secondary shadow-sm">' +
-			'<span contenteditable="false"><i class="fa fa-quote-left text-primary fs-4 me-2"></i></span>' +
-			'<cite class="card-text text-end d-block text-body-secondary small">admin</cite>' +
-			'Testing 1.2.3....</div>'
+			'<blockquote><cite>admin</cite>Testing 1.2.3....</blockquote>'
 		),
 		'[quote=admin]Testing 1.2.3....[/quote]\n',
 		'Quote with cite (author)'
@@ -785,14 +794,12 @@ QUnit.test('Quote', function (assert) {
 
 	assert.equal(
 		this.htmlToBBCode(
-			'<div class="border rounded mx-3 mb-3 p-3 border-secondary shadow-sm">' +
-			'<span contenteditable="false"><i class="fa fa-quote-left text-primary fs-4 me-2"></i></span>' +
-				'<cite class="card-text text-end d-block text-body-secondary small">admin</cite>Testing 1.2.3....' +
-				'<div class="border rounded mx-3 mb-3 p-3 border-secondary shadow-sm">' +
-				'<span contenteditable="false"><i class="fa fa-quote-left text-primary fs-4 me-2"></i></span>' +
-					'<cite class="card-text text-end d-block text-body-secondary small">admin</cite>Testing 1.2.3....' +
-				'</div>' +
-			'</div>'
+			'<blockquote>' +
+				'<cite>admin</cite>Testing 1.2.3....' +
+				'<blockquote>' +
+					'<cite>admin</cite>Testing 1.2.3....' +
+				'</blockquote>' +
+			'</blockquote>'
 		),
 		'[quote=admin]Testing 1.2.3....\n[quote=admin]Testing 1.2.3....' +
 			'[/quote]\n[/quote]\n',
@@ -801,11 +808,10 @@ QUnit.test('Quote', function (assert) {
 
 	assert.equal(
 		this.htmlToBBCode(
-			'<div class="border rounded mx-3 mb-3 p-3 border-secondary shadow-sm">' +
-			'<span contenteditable="false"><i class="fa fa-quote-left text-primary fs-4 me-2"></i></span>' +
-				'<cite class="card-text text-end d-block text-body-secondary small">admin</cite>' +
+			'<blockquote>' +
+				'<cite>admin</cite>' +
 				'<cite>this should be ignored</cite> Testing 1.2.3....' +
-			'</div>'
+			'</blockquote>'
 		),
 		'[quote=admin]this should be ignored Testing 1.2.3....[/quote]\n',
 		'Quote with 2 cites (author)'
@@ -815,50 +821,66 @@ QUnit.test('Quote', function (assert) {
 
 QUnit.test('Code', function (assert) {
 	assert.equal(
-		this.htmlToBBCode('<pre class="border border-danger rounded m-2 p-2"><code class="language-markup">Testing 1.2.3....</code></pre>'),
-		'[code=markup]Testing 1.2.3....[/code]\n',
+		this.htmlToBBCode('<code>Testing 1.2.3....</code>'),
+		'[code]Testing 1.2.3....[/code]\n',
 		'Simple code'
 	);
 
 	assert.equal(
 		this.htmlToBBCode(
-			'<pre class="border border-danger rounded m-2 p-2"><code class="language-markup"><b>ignore this</b> Testing 1.2.3....</code></pre>'
+			'<code><b>ignore this</b> Testing 1.2.3....</code>'
 		),
-		'[code=markup]ignore this Testing 1.2.3....[/code]\n',
+		'[code]ignore this Testing 1.2.3....[/code]\n',
 		'Code with styling'
 	);
 
 	assert.equal(
 		this.htmlToBBCode(
-			'<pre class="border border-danger rounded m-2 p-2"><code class="language-markup"><span style="color:#ff0000">test</span></code></pre>'
+			'<code><span style="color:#ff0000">test</span></code>'
 		),
-		'[code=markup]test[/code]\n',
+		'[code]test[/code]\n',
 		'Code with inline styling'
 	);
 
 	assert.equal(
 		this.htmlToBBCode(
-			'<pre class="border border-danger rounded m-2 p-2"><code class="language-markup"><div style="color:#ff0000">test</div></code></pre>'
+			'<code><div style="color:#ff0000">test</div></code>'
 		),
-		'[code=markup]test[/code]\n',
+		'[code]test[/code]\n',
 		'Code with block styling'
 	);
 
 
 	assert.equal(
 		this.htmlToBBCode(
-			'<pre class="border border-danger rounded m-2 p-2"><code class="language-markup"><div><div style="color:#ff0000">test</div></div></code></pre>'
+			'<code><div><div style="color:#ff0000">test</div></div></code>'
 		),
-		'[code=markup]test[/code]\n',
+		'[code]test[/code]\n',
 		'Code with nested block styling'
 	);
 
 	assert.equal(
 		this.htmlToBBCode(
-			'<pre class="border border-danger rounded m-2 p-2"><code class="language-markup"><div>line 1</div><div>line 2</div></code></pre>'
+			'<code><div>line 1</div><div>line 2</div></code>'
 		),
-		'[code=markup]line 1\nline 2[/code]\n',
+		'[code]line 1\nline 2[/code]\n',
 		'Code with block lines'
+	);
+
+	assert.equal(
+		this.htmlToBBCode(
+			'<code style="font-weight:bold">test</code>'
+		),
+		'[code]test[/code]\n',
+		'Code with styling'
+	);
+
+	assert.equal(
+		this.htmlToBBCode(
+			'<code><img data-sceditor-emoticon=":)" /></code>'
+		),
+		'[code]:)[/code]\n',
+		'Code with emoticon'
 	);
 });
 
@@ -921,10 +943,40 @@ QUnit.test('Justify', function (assert) {
 		'Align attribute'
 	);
 });
-/*
+
+
 QUnit.test('YouTube', function (assert) {
 	assert.equal(
 		this.htmlToBBCode('<iframe data-youtube-id="xyz"></iframe>'),
-		'[youtube]https://www.youtube.com/watch?v=xyz[/youtube]'
+		'[youtube]xyz[/youtube]'
 	);
-});*/
+});
+
+
+QUnit.test('Allow changing BBCode properties after creation', function (assert) {
+	// This is for backwards compatibility and will change in the next breaking
+	// release
+
+	this.parser = new $.sceditor.BBCodeParser({
+		quoteType: function (str) {
+			return '\'' +
+				str.replace(/\\/g, '\\\\').replace(/'/g, '\\\'') +
+				'\'';
+		}
+	});
+
+	var oldFormat = sceditor.formats.bbcode.get('quote').format;
+	sceditor.formats.bbcode.set('quote', {
+		format: 'new format'
+	});
+
+	assert.equal(
+		this.htmlToBBCode('<blockquote>Testing 1.2.3....</blockquote>'),
+		'new format'
+	);
+
+	// Reset [quote]'s default format
+	sceditor.formats.bbcode.set('quote', {
+		format: oldFormat
+	});
+});

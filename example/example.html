@@ -1,90 +1,91 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 	<head>
-		<meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 
 		<title>SCEditor Demo</title>
 
-		<link rel="stylesheet" href="../minified/themes/sceditor.min.css" id="theme-style" />
-		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+		<link rel="stylesheet" href="../minified/themes/default.min.css" id="theme-style" />
 		  
 		<script src="../minified/sceditor.min.js"></script>
-		<script src="../minified/icons/fontawesome.js"></script>
+		<script src="../minified/icons/monocons.js"></script>
 		<script src="../minified/formats/bbcode.js"></script>
-		<script src="../minified/plugins/dragdrop.js"></script>
-		<script src="../minified/plugins/undo.js"></script>
-		
-		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
+		<style>
+			html {
+				font-family: Arial, Helvetica, sans-serif;
+				font-size: 13px;
+			}
+			form div {
+				padding: .5em;
+			}
+			code:before {
+				position: absolute;
+				content: 'Code:';
+				top: -1.35em;
+				left: 0;
+			}
+			code {
+				margin-top: 1.5em;
+				position: relative;
+				background: #eee;
+				border: 1px solid #aaa;
+				white-space: pre;
+				padding: .25em;
+				min-height: 1.25em;
+			}
+			code:before, code {
+				display: block;
+				text-align: left;
+			}
+		</style>
 	</head>
 	<body>
-	   
 		<form action="" method="post">
-		 <main class="container">
-  <div class="bg-body-tertiary p-5 rounded">
-    <h1>SCEditor example</h1>
-    <div>
-				<textarea id="example" class="form-control" style="height:300px;width:600px;" title="editor">[center][size=3][b]BBCode SCEditor[/b][/size][/center]
+			<div>
+				<textarea id="example" style="height:300px;width:600px;">[center][size=3][b]BBCode SCEditor[/b][/size][/center]
 
 Give it a try! :)
 
-[quote]CONTENT
-
-https://www.sceditor.com/
-
-PS: I've not used it and don't have any connection to it.[/quote]
-
-@[userlink]tha_watcha[/userlink]
-
-[code=markup]<pre><code class="language-css">p { color: red }</code></pre>[/code]
-
 [color=#ff00]Red text! [/color][color=#3399ff]Blue?[/color]
 
-[list][*]A simple list[*]list item 2[/list]
-Just type [b]:[/b]) and it should be converted into :) as you typed.</textarea>
+[ul][li]A simple list[/li][li]list item 2[/li][/ul]
 
+Just type [b]:[/b]) and it should be converted into :) as you type.</textarea>
 
 			</div>
-  </div>
-</main>
-			
-		</form>
-		
-		<div class="container">
-  <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
-    <p class="col-md-4 mb-0 text-body-secondary">SCEditor is licensed under the <a href="http://www.opensource.org/licenses/mit-license.php">MIT</a></p>
-  </footer>
-</div>
 
- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-		 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/prism.min.js"></script>
+			<div>
+				<label for="theme">Theme:</label>
+				<select id="theme">
+					<option value="default">Default</option>
+					<option value="defaultdark">Default dark</option>
+					<option value="modern">Modern</option>
+					<option value="office-toolbar">Office Toolbar</option>
+					<option value="office">Office</option>
+					<option value="square">Square</option>
+				</select>
+			</div>
+		</form>
+
+
 		<script>
 			var textarea = document.getElementById('example');
-			
-
-			
 			sceditor.create(textarea, {
-			extensionsUrl: 'http://localhost/bbcode.json',
-	        autoExpand: true,
-			maxLength: 32767,
-			plugins: 'emojis',
-
-			//emojis: ['😊', '❤️', '😄', '😄', '😄', '😄', '😄', '😄', '😄', '😄', '😄', '😄'],
-			styles: ['https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css','https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css', 'https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css'],
-			toolbar: 'bold,italic,underline,strike|' +
-        'font,size,color|mark|' +
-        'email,link,unlink,quote,code,|image,albums|attachments|' +
-		'emojis|' +
-        'bulletlist,orderedlist|left,center,right|indent,outdent|' +
-        'cut,copy,pastetext,removeformat|' +
-		'undo,redo|' +
-        'youtube,vimeo,instagram,facebook,media,extensions|source|reply|table'
+				format: 'bbcode',
+				icons: 'monocons',
+				style: '../minified/themes/content/default.min.css'
 			});
-		
-			  
+
+
+			var themeInput = document.getElementById('theme');
+			themeInput.onchange = function() {
+				var theme = '../minified/themes/' + themeInput.value + '.min.css';
+
+				document.getElementById('theme-style').href = theme;
+			};
 		</script>
-		
-		
-	
+
+		<p>SCEditor is licensed under the <a href="http://www.opensource.org/licenses/mit-license.php">MIT</a></p>
 	</body>
 </html>

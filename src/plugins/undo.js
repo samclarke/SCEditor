@@ -41,7 +41,7 @@
 
 				// Caret may not exist for the first state in Firefox
 				if (state.caret) {
-					const range = editor.getRangeHelper().selectedRange();
+					var range = editor.getRangeHelper().selectedRange();
 					setRangePositions(range, state.caret);
 					editor.getRangeHelper().selectRange(range);
 				}
@@ -60,7 +60,7 @@
 			var origFn = obj[fn];
 			obj[fn] = function () {
 				// sourceMode calls other patched methods so need to ignore them
-				const ignore = isInPatchedFn;
+				var ignore = isInPatchedFn;
 
 				// Store caret position before any change is made
 				if (!ignore && !isApplying && lastState &&
@@ -104,30 +104,17 @@
 		 * Updates the last saved state with the editors current state
 		 */
 		function updateLastState() {
-			const sourceMode = editor.sourceMode();
+			var sourceMode = editor.sourceMode();
 			lastState.caret = sourceMode ? editor.sourceEditorCaret() :
 				getRangePositions(editor.getRangeHelper().selectedRange());
 			lastState.sourceMode = sourceMode;
-
-			const value = sourceMode ?
+			lastState.value = sourceMode ?
 				editor.getSourceEditorValue(false) :
 				editor.getBody().innerHTML;
-
-			const countField = document.getElementById('editor-Counter'),
-				maxLimit = editor.opts.maxLength;
-
-			// Update counter
-			if (editor.val().length > maxLimit) {
-				base.undo();
-			} else {
-				countField.textContent = maxLimit - editor.val().length;
-			}
-
-			lastState.value = value;
 		}
 
 		base.init = function () {
-			// this variable will be set to the instance of the editor
+			// The this variable will be set to the instance of the editor
 			// calling it, hence why the plugins "this" is saved to the base
 			// variable.
 			editor = this;
@@ -244,7 +231,7 @@
 			// https://rawgit.com/w3c/input-events/v1/index.html#interface-InputEvent-Attributes
 			// Most should cause a full undo item to be added so only need to
 			// handle a few of them
-			const inputType = e.inputType;
+			var inputType = e.inputType;
 
 			// Should ignore selection changes that occur because of input
 			// events as already handling them
@@ -324,8 +311,8 @@
 		 */
 		function setRangePositions(range, positions) {
 			try {
-				const startPositions = positions.startPositions;
-				const endPositions = positions.endPositions;
+				var startPositions = positions.startPositions;
+				var endPositions = positions.endPositions;
 
 				range.setStart(positionsToNode(body, startPositions),
 					startPositions[0]);
@@ -345,7 +332,7 @@
 		 * @returns {Array<number>}
 		 */
 		function nodeToPositions(container, offset) {
-			const positions = [offset];
+			var positions = [offset];
 			var node = container;
 
 			while (node && node.tagName !== 'BODY') {
@@ -376,7 +363,7 @@
 		 * @returns {Node}
 		 */
 		function positionsToNode(node, positions) {
-			for (let i = positions.length - 1; node && i > 0; i--) {
+			for (var i = positions.length - 1; node && i > 0; i--) {
 				node = node.childNodes[positions[i]];
 			}
 			return node;

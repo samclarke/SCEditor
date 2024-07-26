@@ -19,14 +19,14 @@ export var ios = /iPhone|iPod|iPad| wosbrowser\//i.test(USER_AGENT);
  * @name isWysiwygSupported
  * @return {boolean}
  */
-export var isWysiwygSupported = (function() {
-	var match, isUnsupported;
+export var isWysiwygSupported = (function () {
+	var	match, isUnsupported;
 
 	// IE is the only browser to support documentMode
-	const ie = !!window.document.documentMode;
-	const legacyEdge = '-ms-ime-align' in document.documentElement.style;
+	var ie = !!window.document.documentMode;
+	var legacyEdge = '-ms-ime-align' in document.documentElement.style;
 
-	const div = document.createElement('div');
+	var div = document.createElement('div');
 	div.contentEditable = true;
 
 	// Check if the contentEditable attribute is supported

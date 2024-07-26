@@ -6,6 +6,8 @@
 		'Italic': 'Kaldkiri',
 		'Underline': 'Allajoonitud',
 		'Strikethrough': 'Läbijoonitud',
+		'Subscript': 'Allindeks',
+		'Superscript': 'Ülaindeks',
 		'Align left': 'Joonad vasakule',
 		'Center': 'Joonda keskele',
 		'Align right': 'Joonda paremale',
@@ -32,6 +34,8 @@
 		'Insert a horizontal rule': 'Sisesta horisontaalne joon',
 		'Code': 'Kood',
 		'Insert a Quote': 'Sisesta tsitaat',
+		'Width (optional):': 'Laius (Valikuline)',
+		'Height (optional):': 'Kõrgus (Valikuline)',
 		'Insert an image': 'Sisesta pilt',
 		'E-mail:': 'E-post',
 		'Insert an email': 'Sisesta e-posti aadress',
@@ -43,6 +47,9 @@
 		'Video URL:': 'Video link',
 		'Insert': 'Sisesta',
 		'Insert a YouTube video': 'Sisesta YouTube video',
+		'Insert current date': 'Sisesta praegune kuupäev',
+		'Insert current time': 'Sisesta praegune kellaaeg',
+		'Print': 'Prindi',
 		'View source': 'Vaata lähtekoodi',
 
 		dateFormat: 'day.month.year'
