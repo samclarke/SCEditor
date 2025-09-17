@@ -1,4 +1,4 @@
-﻿import * as dom from './dom.js';
+import * as dom from './dom.js';
 import * as utils from './utils.js';
 import defaultOptions from './defaultOptions.js';
 import defaultCommands from './defaultCommands.js';
@@ -756,8 +756,7 @@ export default function SCEditor(original, userOptions) {
 				if (icons && icons.create) {
 					var icon = icons.create(commandName);
 					if (icon) {
-						dom.insertBefore(icons.create(commandName),
-							button.firstChild);
+						dom.insertBefore(icon, button.firstChild);
 						dom.addClass(button, 'has-icon');
 					}
 				}
@@ -790,16 +789,12 @@ export default function SCEditor(original, userOptions) {
 					base.addShortcut(shortcut, commandName);
 				}
 
-				if (command.state) {
-					btnStateHandlers.push({
-						name: commandName,
-						state: command.state
-					});
 				// exec string commands can be passed to queryCommandState
-				} else if (utils.isString(command.exec)) {
+				if (command.state || utils.isString(command.exec)) {
 					btnStateHandlers.push({
 						name: commandName,
-						state: command.exec
+						button: button,
+						state: command.state || command.exec
 					});
 				}
 
@@ -2486,8 +2481,24 @@ export default function SCEditor(original, userOptions) {
 				state = stateFn.call(base, parent, firstBlock);
 			}
 
-			dom.toggleClass(btn, 'disabled', isDisabled || state < 0);
-			dom.toggleClass(btn, activeClass, state > 0);
+			// Store previous state to minimize DOM writes
+			// lastState: { disabled: bool, active: bool }
+			var prev = btn._sceLastState || {};
+			var shouldBeDisabled = isDisabled || state < 0;
+			var shouldBeActive = state > 0;
+
+			if (prev.disabled !== shouldBeDisabled) {
+				dom.toggleClass(btn, 'disabled', shouldBeDisabled);
+			}
+			if (prev.active !== shouldBeActive) {
+				dom.toggleClass(btn, activeClass, shouldBeActive);
+			}
+
+			// Save new state
+			btn._sceLastState = {
+				disabled: shouldBeDisabled,
+				active: shouldBeActive
+			};
 		}
 
 		if (icons && icons.update) {
