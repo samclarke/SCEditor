@@ -2316,6 +2316,7 @@ export default function SCEditor(original, userOptions) {
 
 		try {
 			executed = wysiwygDocument.execCommand(command, false, param);
+		// eslint-disable-next-line no-unused-vars
 		} catch (ex) { }
 
 		// show error if execution failed and an error message exists
@@ -2480,6 +2481,7 @@ export default function SCEditor(original, userOptions) {
 						if (state > -1) {
 							state = doc.queryCommandState(stateFn) ? 1 : 0;
 						}
+						// eslint-disable-next-line no-unused-vars
 					} catch (ex) {}
 				}
 			} else if (!isDisabled) {

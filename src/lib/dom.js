@@ -681,6 +681,7 @@ export function convertElement(element, toTagName) {
 		// ignore these.
 		try {
 			attr(newElement, attribute.name, attribute.value);
+			// eslint-disable-next-line no-unused-vars
 		} catch (ex) {}
 	});
 
