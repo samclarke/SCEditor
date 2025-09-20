@@ -2033,20 +2033,14 @@ export default function SCEditor(original, userOptions) {
 	 * @memberOf SCEditor.prototype
 	 */
 	base.getWysiwygEditorValue = function (filter) {
-		var	html;
-		// Create a tmp node to store contents so it can be modified
-		// without affecting anything else.
-		var tmp = dom.createElement('div', {}, wysiwygDocument);
-		var childNodes = wysiwygBody.childNodes;
+		let html;
 
-		for (var i = 0; i < childNodes.length; i++) {
-			dom.appendChild(tmp, childNodes[i].cloneNode(true));
+		let tmp = wysiwygBody.cloneNode(false);
+		let childNodes = wysiwygBody.childNodes;
+		for (let i = 0; i < childNodes.length; i++) {
+			tmp.appendChild(childNodes[i].cloneNode(true));
 		}
-
-		dom.appendChild(wysiwygBody, tmp);
 		dom.fixNesting(tmp);
-		dom.remove(tmp);
-
 		html = tmp.innerHTML;
 
 		// filter the HTML and DOM through any plugins

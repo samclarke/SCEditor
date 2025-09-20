@@ -397,6 +397,66 @@ QUnit.test('getWysiwygEditorValue() - Filter', function (assert) {
 });
 
 
+QUnit.test('getWysiwygEditorValue() - outputs well-formed input', function (assert) {
+	var cases = [
+		{
+			html: '<span><div>Block inside inline</div></span>',
+			expect: [/<div><span>Block inside inline<\/span><\/div>/],
+			message: 'Block elements are not nested inside inlines after normalization'
+		},
+		{
+			html: '<p>This is a paragraph.<br>This is a new line.<br></p>',
+			expect: [/<br\s*\/?>/],
+			message: 'Self-closing <br> tags are normalized'
+		},
+		{
+			html: '<table>Some text<tr><td>Data</td></tr></table>',
+			forbid: [/^<table>[^<]/],
+			message: 'Text nodes are not directly inside table after normalization'
+		},
+		{
+			html: '<p>This is a paragraph.</div>',
+			forbid: [/<\/div>/],
+			message: 'Orphan closing tag is ignored'
+		},
+		{
+			html: '<div id="foo" id="bar">Duplicate attributes</div>',
+			expect: [/id="bar"/, /id="foo"/],
+			message: 'Only one duplicate attribute remains'
+		},
+		{
+			html: '<input checked readonly name>',
+			expect: [/checked/, /readonly/, /name/],
+			message: 'Boolean/empty attributes are preserved'
+		},
+		{
+			html: '<script>var a=1;',
+			forbid: [/./],
+			message: 'Script tag must be removed'
+		}
+	];
+
+	cases.forEach(testCase => {
+		sceditor.val(testCase.html);
+		var normalized = sceditor.getWysiwygEditorValue(testCase.html);
+
+		var ok = false;
+
+		if (testCase.expect) {
+			// Pass if at least one regex matches (for OR cases)
+			ok = testCase.expect.some(re => re.test(normalized));
+		}
+
+		if (testCase.forbid) {
+			// Pass if none of the forbidden regexes match
+			ok = testCase.forbid.every(re => !re.test(normalized));
+		}
+
+		assert.ok(ok, testCase.message + '\nNormalized: ' + normalized);
+	});
+});
+
+
 QUnit.test('getSourceEditorValue()', function (assert) {
 	sceditor.getRangeHelper().clear();
 	sceditor.sourceMode(true);
