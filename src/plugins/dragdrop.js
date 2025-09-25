@@ -61,7 +61,8 @@
 
 		try {
 			return new Blob([binary], { type: mime });
-		} catch (e) {
+			// eslint-disable-next-line no-unused-vars
+		} catch (ex) {
 			return null;
 		}
 	}
