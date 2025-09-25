@@ -1556,14 +1556,14 @@
 							removedBreakBefore = remove;
 
 							if (remove) {
-								children.splice(i, 1);
+								children[i] = null;
 								continue;
 							}
 						}
 					}
 
 					if (remove) {
-						children.splice(i, 1);
+						children[i] = null;
 					}
 
 					// reset double removedBreakBefore removal protection.
@@ -1576,6 +1576,15 @@
 						onlyRemoveBreakAfter);
 				}
 			}
+
+			// Remove all nulls (removed tokens)
+			var write = 0;
+			for (var read = 0; read < children.length; read++) {
+				if (children[read] !== null) {
+					children[write++] = children[read];
+				}
+			}
+			children.length = write;
 		}
 
 		/**
