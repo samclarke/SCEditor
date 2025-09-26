@@ -68,7 +68,7 @@ var _templates = {
 		'<div><label for="link">{url}</label> ' +
 			'<input type="text" id="link" dir="ltr" placeholder="https://" /></div>' +
 		'<div><label for="des">{desc}</label> ' +
-			'<input type="text" id="des" /></div>' +
+			'<input type="text" id="des" value="{content}"/></div>' +
 		'<div><input type="button" class="button" value="{ins}" /></div>',
 
 	youtubeMenu:
