@@ -1018,6 +1018,7 @@ export function cachedCss(node, rule, value) {
 	var sig = [
 		node.tagName,
 		node.getAttribute('id') || '',
+		node.getAttribute('align') || '',
 		node.getAttribute('class') || '',
 		node.getAttribute('style') || ''
 	].join('|');
