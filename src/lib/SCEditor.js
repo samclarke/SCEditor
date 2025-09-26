@@ -334,6 +334,7 @@ export default function SCEditor(original, userOptions) {
 		handleComposition,
 		handleEvent,
 		handleDocumentClick,
+		loadScripts,
 		updateToolBar,
 		updateActiveButtons,
 		sourceEditorSelectedText,
@@ -432,6 +433,51 @@ export default function SCEditor(original, userOptions) {
 			ADD_TAGS: allowedTags,
 			ADD_ATTR: allowedAttrs
 		});
+	};
+
+	/**
+    * Loads a JavaScript file and returns a Promise for when it is loaded
+    */
+	const loadScript = src => {
+		return new Promise((resolve, reject) => {
+			const script = document.createElement('script');
+			script.type = 'text/javascript';
+			script.onload = resolve;
+			script.onerror = reject;
+			script.src = src;
+			document.head.append(script);
+		});
+	};
+
+	/**
+	 * Loads all scripts
+	 * @private
+	 */
+	loadScripts = function () {
+		var promises = [];
+
+		// Load format script
+		promises.push(
+			loadScript(`../${options.basePath}/formats/${options.format}.js`));
+
+		// load plugins scripts
+		if (options.plugins) {
+			(options.plugins || '').split(',').forEach(function (plugin) {
+				var src = `../${options.basePath}/plugins/${plugin.trim()}.js`;
+				promises.push(
+					loadScript(src));
+			});
+		}
+
+		// load icons script
+		if (options.icons) {
+			promises.push(
+				loadScript(`../${options.basePath}/icons/${options.icons}.js`));
+		}
+
+		Promise.all(promises).then(() => {
+			init();
+		}).catch(() => console.error('Something went wrong.'));
 	};
 
 	/**
@@ -721,7 +767,7 @@ export default function SCEditor(original, userOptions) {
 		var	group,
 			commands = base.commands,
 			exclude  = (options.toolbarExclude || '').split(','),
-			groups   = options.toolbar.split('|');
+			groups = options.toolbar.split('|');
 
 		toolbar = dom.createElement('div', {
 			className: 'sceditor-toolbar',
@@ -739,7 +785,7 @@ export default function SCEditor(original, userOptions) {
 
 			utils.each(menuItems.split(','), function (_, commandName) {
 				var	button, shortcut,
-					command  = commands[commandName];
+					command = commands[commandName];
 
 				// The commandName must be a valid command and not excluded
 				if (!command || exclude.indexOf(commandName) > -1) {
@@ -3515,7 +3561,7 @@ export default function SCEditor(original, userOptions) {
 	};
 
 	// run the initializer
-	init();
+	loadScripts();
 };
 
 

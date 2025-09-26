@@ -395,5 +395,18 @@ export default {
 	 *
 	 * @type {Array}
 	 */
-	allowedAttributes: []
+	allowedAttributes: [],
+
+	/**
+    * Default path for the script files
+    *
+    * @type {string}
+    */
+	basePath: 'minified',
+	/**
+    * The input format
+    *
+    * @type {string}
+    */
+	format: 'bbcode'
 };
