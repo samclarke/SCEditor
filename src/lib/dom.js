@@ -1001,6 +1001,58 @@ export function getOffset(node) {
 	};
 }
 
+// Global cache keyed by attribute+name signature
+var styleCache = new Map();
+
+/**
+ * Gets a computed CSS value or sets an inline
+ * CSS value, with signature-based caching.
+ *
+ * @param {!HTMLElement} node
+ * @param {!Object|string} rule
+ * @param {string|number} [value]
+ * @return {string|number|undefined}
+ */
+export function cachedCss(node, rule, value) {
+	// Build a unique signature for caching styles based on node attributes.
+	var sig = [
+		node.tagName,
+		node.getAttribute('id') || '',
+		node.getAttribute('class') || '',
+		node.getAttribute('style') || ''
+	].join('|');
+
+	if (arguments.length < 3) {
+		if (node.nodeType !== 1) {
+			return;
+		}
+
+		// If cached, reuse
+		var cached = styleCache.get(sig);
+		if (!cached) {
+			cached = getComputedStyle(node);
+			styleCache.set(sig, cached);
+		}
+
+		if (utils.isString(rule)) {
+			return cached[rule];
+		}
+
+		// Multiple rules as object
+		var out = {};
+		for (var k of rule) {
+			out[k] = cached[k];
+		}
+		return out;
+	} else {
+		var isNumeric = (value || value === 0) && !isNaN(value);
+		node.style[rule] = isNumeric ? value + 'px' : value;
+
+		// Invalidate this node’s signature cache
+		styleCache.delete(sig);
+	}
+}
+
 /**
  * Gets the value of a CSS property from the elements style attribute
  *
@@ -1021,10 +1073,10 @@ export function getStyle(elm, property) {
 
 	// Add an exception for text-align
 	if ('textAlign' === property) {
-		styleValue = styleValue || css(elm, property);
+		styleValue = styleValue || cachedCss(elm, property);
 
-		if (css(elm.parentNode, property) === styleValue ||
-			css(elm, 'display') !== 'block' || is(elm, 'hr,th')) {
+		if (cachedCss(elm.parentNode, property) === styleValue ||
+			cachedCss(elm, 'display') !== 'block' || is(elm, 'hr,th')) {
 			return '';
 		}
 	}
