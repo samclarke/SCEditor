@@ -2257,20 +2257,36 @@
 
 				// Skips selection makers and ignored elements
 				// Skip empty inline elements
-				while (previousSibling &&
-						previousSibling.nodeType === 1 &&
+				while (
+					previousSibling && (
+						(previousSibling.nodeType === Node.ELEMENT_NODE &&
 						!is(previousSibling, 'br') &&
 						isInline(previousSibling, true) &&
-						!previousSibling.firstChild) {
+						!previousSibling.firstChild &&
+						// Also skip whitespace text nodes
+						(previousSibling.nodeType === Node.TEXT_NODE &&
+						/^[\t\n\r ]*$/.test(previousSibling.nodeValue))
+						)
+					)
+				) {
 					previousSibling = previousSibling.previousSibling;
+				}
+
+				function getLastNonWhitespaceChild(parent) {
+					let node = parent.lastChild;
+					while (node && node.nodeType === 3 && /^\s*$/.test(node.nodeValue)) {
+						node = node.previousSibling;
+					}
+					return node;
 				}
 
 				// If it's the last block of an inline that is the last
 				// child of a block then it shouldn't cause a line break
 				// <block><inline><br></inline></block>
 				do {
-					parent          = element.parentNode;
-					parentLastChild = parent && parent.lastChild;
+					parent = element.parentNode;
+					parentLastChild = parent &&
+						getLastNonWhitespaceChild(parent);
 
 					isLastBlockChild = parentLastChild === element;
 					element = parent;
@@ -2390,7 +2406,12 @@
 		 * @return {string} BBCode
 		 * @memberOf SCEditor.plugins.bbcode.prototype
 		 */
-		function elementToBbcode(element, hasCodeParent) {
+		function elementToBbcode(
+			element,
+			hasCodeParent,
+			nodesToRemove,
+			nodeValues
+		) {
 			var toBBCode = function (node, hasCodeParent, vChildren) {
 				var ret = '';
 
@@ -2456,7 +2477,10 @@
 						}
 					// 3 = text
 					} else if (nodeType === 3) {
-						ret += node.nodeValue;
+						if (!nodesToRemove || !nodesToRemove.has(node)) {
+							ret += (nodeValues && nodeValues.get(node))
+								|| node.nodeValue;
+						}
 					}
 				}, false, true);
 
@@ -2547,9 +2571,16 @@
 				elements[0].parentNode.removeChild(elements[0]);
 			}
 
-			dom.removeWhiteSpace(containerParent);
+			var nodesToRemove = new WeakSet();
+			var nodeValues = new WeakMap();
+			dom.removeWhiteSpace(containerParent, nodesToRemove, nodeValues);
 
-			bbcode = elementToBbcode(container, hasCodeParent);
+			bbcode = elementToBbcode(
+				container,
+				hasCodeParent,
+				nodesToRemove,
+				nodeValues
+			);
 
 			context.body.removeChild(containerParent);
 
