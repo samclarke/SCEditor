@@ -2250,11 +2250,11 @@
 		 * @private
 		 */
 		function handleBlockNewlines(element, content) {
-			var tag = element.nodeName.toLowerCase();
+			var nodeName = element.nodeName;
 			var isInline = dom.isInline;
 
 			// Only apply to block-level elements or <br>
-			if (!isInline(element, true) || tag === 'br') {
+			if (!isInline(element, true) || nodeName === 'BR') {
 				var isLastBlockChild, parent, parentLastChild,
 					previousSibling = element.previousSibling;
 
@@ -2266,7 +2266,7 @@
 					previousSibling &&
 					(
 						(previousSibling.nodeType === Node.ELEMENT_NODE &&
-						!is(previousSibling, 'br') &&
+						previousSibling.nodeName !== 'BR' &&
 						isInline(previousSibling, true) &&
 						!previousSibling.firstChild) ||
 						(previousSibling.nodeType === Node.TEXT_NODE &&
@@ -2300,7 +2300,7 @@
 				// Add a trailing newline if:
 				//   - This block is NOT the last child of its parent block
 				//   - OR this block is an <li> (list items always break lines)
-				if (!isLastBlockChild || tag === 'li') {
+				if (!isLastBlockChild || nodeName === 'LI') {
 					content += '\n';
 				}
 
@@ -2311,9 +2311,9 @@
 				//   <block>text<block>text</block></block>
 				// where the second <block> should start on a new line
 				if (
-					tag !== 'br' &&
+					nodeName !== 'BR' &&
 					previousSibling &&
-					!is(previousSibling, 'br') &&
+					previousSibling.nodeName !== 'BR' &&
 					isInline(previousSibling, true)
 				) {
 					content = '\n' + content;
