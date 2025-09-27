@@ -348,7 +348,8 @@ export default function SCEditor(original, userOptions) {
 		valueChangedBlur,
 		valueChangedKeyUp,
 		autoUpdate,
-		autoExpand;
+		autoExpand,
+		toggling;
 
 	/**
 	 * All the commands supported by the editor
@@ -2228,6 +2229,9 @@ export default function SCEditor(original, userOptions) {
 			return;
 		}
 
+		// How hard can changing the modus operandi be?
+		toggling = true;
+
 		if (!isInSourceMode) {
 			rangeHelper.saveRange();
 			rangeHelper.clear();
@@ -2250,6 +2254,9 @@ export default function SCEditor(original, userOptions) {
 
 		updateToolBar();
 		updateActiveButtons();
+
+		// And finally, we are done here.
+		toggling = false;
 	};
 
 	/**
@@ -3511,7 +3518,9 @@ export default function SCEditor(original, userOptions) {
 	};
 
 	autoUpdate = function () {
-		base.updateOriginal();
+		if (!toggling) {
+			base.updateOriginal();
+		}
 	};
 
 	// run the initializer
