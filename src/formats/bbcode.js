@@ -2258,7 +2258,7 @@
 				// Skips selection makers and ignored elements
 				// Skip empty inline elements
 				while (
-					previousSibling && (
+					previousSibling &&
 						(previousSibling.nodeType === Node.ELEMENT_NODE &&
 						!is(previousSibling, 'br') &&
 						isInline(previousSibling, true) &&
@@ -2266,7 +2266,6 @@
 						// Also skip whitespace text nodes
 						(previousSibling.nodeType === Node.TEXT_NODE &&
 						/^[\t\n\r ]*$/.test(previousSibling.nodeValue))
-						)
 					)
 				) {
 					previousSibling = previousSibling.previousSibling;
