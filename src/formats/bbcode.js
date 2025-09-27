@@ -2241,29 +2241,34 @@
 		};
 
 		/**
-		 * Handles adding newlines after block level elements
+		 * Ensures block-level elements produce the correct newlines
+		 * in BBCode/text output.
 		 *
 		 * @param {HTMLElement} element The element to convert
-		 * @param {string} content  The tags text content
+		 * @param {string} content  The element’s text content
 		 * @return {string}
 		 * @private
 		 */
 		function handleBlockNewlines(element, content) {
-			var	tag = element.nodeName.toLowerCase();
+			var tag = element.nodeName.toLowerCase();
 			var isInline = dom.isInline;
+
+			// Only apply to block-level elements or <br>
 			if (!isInline(element, true) || tag === 'br') {
-				var	isLastBlockChild, parent, parentLastChild,
+				var isLastBlockChild, parent, parentLastChild,
 					previousSibling = element.previousSibling;
 
-				// Skips selection makers and ignored elements
-				// Skip empty inline elements
+				// Walk backwards to find a meaningful previous sibling:
+				//   - Skip empty inline elements (<span></span>)
+				//   - Skip <br> placeholders
+				//   - Skip text nodes containing only whitespace
 				while (
 					previousSibling &&
+					(
 						(previousSibling.nodeType === Node.ELEMENT_NODE &&
 						!is(previousSibling, 'br') &&
 						isInline(previousSibling, true) &&
-						!previousSibling.firstChild &&
-						// Also skip whitespace text nodes
+						!previousSibling.firstChild) ||
 						(previousSibling.nodeType === Node.TEXT_NODE &&
 						/^[\t\n\r ]*$/.test(previousSibling.nodeValue))
 					)
@@ -2271,47 +2276,53 @@
 					previousSibling = previousSibling.previousSibling;
 				}
 
-				function getLastNonWhitespaceChild(parent) {
-					let node = parent.lastChild;
+				// Helper to ignore trailing whitespace-only text nodes
+				function getLastNonWs(parent) {
+					var node = parent.lastChild;
 					while (node && node.nodeType === 3 && /^\s*$/.test(node.nodeValue)) {
 						node = node.previousSibling;
 					}
 					return node;
 				}
 
-				// If it's the last block of an inline that is the last
-				// child of a block then it shouldn't cause a line break
-				// <block><inline><br></inline></block>
+				// Climb up the DOM tree to see if this element is
+				// the last child inside a chain of inline parents.
+				// If so, it shouldn’t force a line break:
+				//   <block><inline><br></inline></block>
 				do {
 					parent = element.parentNode;
-					parentLastChild = parent &&
-						getLastNonWhitespaceChild(parent);
+					parentLastChild = parent && getLastNonWs(parent);
 
 					isLastBlockChild = parentLastChild === element;
 					element = parent;
 				} while (parent && isLastBlockChild && isInline(parent, true));
 
-				// If this block is:
-				//	* Not the last child of a block level element
-				//	* Is a <li> tag (lists are blocks)
+				// Add a trailing newline if:
+				//   - This block is NOT the last child of its parent block
+				//   - OR this block is an <li> (list items always break lines)
 				if (!isLastBlockChild || tag === 'li') {
 					content += '\n';
 				}
 
-				// Check for:
-				// <block>text<block>text</block></block>
-				//
-				// The second opening <block> opening tag should cause a
-				// line break because the previous sibing is inline.
-				if (tag !== 'br' && previousSibling &&
+				// Add a leading newline if:
+				//   - The previous sibling exists
+				//   - It’s inline and not a <br>
+				// This handles cases like:
+				//   <block>text<block>text</block></block>
+				// where the second <block> should start on a new line
+				if (
+					tag !== 'br' &&
+					previousSibling &&
 					!is(previousSibling, 'br') &&
-					isInline(previousSibling, true)) {
+					isInline(previousSibling, true)
+				) {
 					content = '\n' + content;
 				}
 			}
 
 			return content;
 		}
+
 
 		/**
 		 * Handles a HTML tag and finds any matching BBCodes
