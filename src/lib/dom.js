@@ -1024,6 +1024,10 @@ export function cachedCss(node, rule, value, context) {
 		}
 	}
 
+	if (node.nodeType !== 1) {
+		return;
+	}
+
 	// Ensure context map exists
 	var ctxMap = styleCache.get(context);
 	if (!ctxMap) {
@@ -1040,11 +1044,7 @@ export function cachedCss(node, rule, value, context) {
 		node.getAttribute('style') || ''
 	].join('|');
 
-	if (!value) {
-		if (node.nodeType !== 1) {
-			return;
-		}
-
+	if (!utils.isString(value)) {
 		// If cached, reuse
 		var cached = ctxMap.get(sig);
 		if (!cached) {
@@ -1063,13 +1063,13 @@ export function cachedCss(node, rule, value, context) {
 			out[k] = cached[k];
 		}
 		return out;
-	} else {
-		var isNumeric = (value || value === 0) && !isNaN(value);
-		node.style[rule] = isNumeric ? value + 'px' : value;
-
-		// Invalidate this node’s signature cache
-		ctxMap.delete(sig);
 	}
+
+	var isNumeric = value === 0 && !isNaN(value);
+	node.style[rule] = isNumeric ? value + 'px' : value;
+
+	// Invalidate this node’s signature cache
+	ctxMap.delete(sig);
 }
 
 /**
