@@ -685,7 +685,7 @@ export default function SCEditor(original, userOptions) {
 		}
 
 		dom.on(wysiwygBody, 'blur', function () {
-			if (!base.val()) {
+				if (!base.val(null, false)) {
 				dom.addClass(wysiwygBody, 'placeholder');
 			}
 		});
