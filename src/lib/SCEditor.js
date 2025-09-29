@@ -2251,6 +2251,7 @@ export default function SCEditor(original, userOptions) {
 
 		dom.toggleClass(editorContainer, 'wysiwygMode', isInSourceMode);
 		dom.toggleClass(editorContainer, 'sourceMode', !isInSourceMode);
+		base.focus();
 
 		updateToolBar();
 		updateActiveButtons();
