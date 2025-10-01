@@ -490,10 +490,6 @@ export default function SCEditor(original, userOptions) {
 		var loaded = function () {
 			dom.off(globalWin, 'load', loaded);
 
-			if (options.autofocus) {
-				autofocus(!!options.autofocusEnd);
-			}
-
 			autoExpand();
 			appendNewLine();
 			// TODO: use editor doc and window?
@@ -2589,8 +2585,12 @@ export default function SCEditor(original, userOptions) {
 	 * Handles form reset event
 	 * @private
 	 */
-	handleFormReset = function () {
+	handleFormReset = function (e) {
 		base.val(original.value);
+
+		if (e.type === 'pageshow' && options.autofocus) {
+			autofocus(!!options.autofocusEnd);
+		}
 	};
 
 	/**
