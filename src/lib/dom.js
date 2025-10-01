@@ -1044,7 +1044,7 @@ export function cachedCss(node, rule, value, context) {
 		node.getAttribute('style') || ''
 	].join('|');
 
-	if (!utils.isString(value)) {
+	if (!value) {
 		// If cached, reuse
 		var cached = ctxMap.get(sig);
 		if (!cached) {
@@ -1065,7 +1065,7 @@ export function cachedCss(node, rule, value, context) {
 		return out;
 	}
 
-	var isNumeric = value === 0 && !isNaN(value);
+	var isNumeric = !isNaN(value);
 	node.style[rule] = isNumeric ? value + 'px' : value;
 
 	// Invalidate this node’s signature cache
