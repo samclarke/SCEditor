@@ -1,4 +1,4 @@
-﻿import * as dom from './dom.js';
+import * as dom from './dom.js';
 import * as utils from './utils.js';
 import defaultOptions from './defaultOptions.js';
 import defaultCommands from './defaultCommands.js';
@@ -157,14 +157,6 @@ export default function SCEditor(original, userOptions) {
 	 * @private
 	 */
 	var locale;
-
-	/**
-	 * Stores a cache of preloaded images
-	 *
-	 * @private
-	 * @type {Array.<HTMLImageElement>}
-	 */
-	var preLoadCache = [];
 
 	/**
 	 * The editors rangeHelper instance
@@ -949,29 +941,33 @@ export default function SCEditor(original, userOptions) {
 	 * @private
 	 */
 	initEmoticons = function () {
-		var	emoticons = options.emoticons;
+		var emoticons = options.emoticons;
 		var root      = options.emoticonsRoot || '';
 
-		if (emoticons) {
-			allEmoticons = utils.extend(
-				{}, emoticons.more, emoticons.dropdown, emoticons.hidden
-			);
+		if (!emoticons) {
+			return;
 		}
 
-		utils.each(allEmoticons, function (key, url) {
-			allEmoticons[key] = _tmpl('emoticon', {
-				key: key,
-				// Prefix emoticon root to emoticon urls
-				url: root + (url.url || url),
-				tooltip: url.tooltip || key
-			});
-
-			// Preload the emoticon
-			if (options.emoticonsEnabled) {
-				preLoadCache.push(dom.createElement('img', {
-					src: root + (url.url || url)
-				}));
+		['more', 'dropdown', 'hidden'].forEach(group => {
+			const set = emoticons[group];
+			if (!set) {
+				return;
 			}
+
+			utils.each(set, function (key, url) {
+				allEmoticons[key] = _tmpl('emoticon', {
+					key: key,
+					// Prefix emoticon root to emoticon urls
+					url: root + (url.url || url),
+					tooltip: url.tooltip || key
+				});
+
+				// Preload the emoticon
+				if (options.emoticonsEnabled) {
+					const img = new Image();
+					img.src = root + (url.url || url);
+				}
+			});
 		});
 	};
 
