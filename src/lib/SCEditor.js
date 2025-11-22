@@ -1,4 +1,4 @@
-﻿import * as dom from './dom.js';
+import * as dom from './dom.js';
 import * as utils from './utils.js';
 import defaultOptions from './defaultOptions.js';
 import defaultCommands from './defaultCommands.js';
@@ -333,6 +333,7 @@ export default function SCEditor(original, userOptions) {
 		handleMouseDown,
 		handleComposition,
 		handleEvent,
+		handleManualEvent,
 		handleDocumentClick,
 		updateToolBar,
 		updateActiveButtons,
@@ -498,6 +499,7 @@ export default function SCEditor(original, userOptions) {
 			appendNewLine();
 			// TODO: use editor doc and window?
 			pluginManager.call('ready');
+			handleManualEvent('ready');
 			if ('onReady' in format) {
 				format.onReady.call(base);
 			}
@@ -705,12 +707,6 @@ export default function SCEditor(original, userOptions) {
 
 		dom.on(editorContainer, 'selectionchanged', checkNodeChanged);
 		dom.on(editorContainer, 'selectionchanged', updateActiveButtons);
-		// Custom events to forward
-		dom.on(
-			editorContainer,
-			'selectionchanged valuechanged nodechanged pasteraw paste',
-			handleEvent
-		);
 	};
 
 	/**
@@ -1632,7 +1628,7 @@ export default function SCEditor(original, userOptions) {
 		var pasteArea = dom.createElement('div', {}, wysiwygDocument);
 
 		pluginManager.call('pasteRaw', data);
-		dom.trigger(editorContainer, 'pasteraw', data);
+		handleManualEvent('pasteraw', data);
 
 		if (data.html) {
 			// Sanitize again in case plugins modified the HTML
@@ -1654,7 +1650,7 @@ export default function SCEditor(original, userOptions) {
 		}
 
 		pluginManager.call('paste', paste);
-		dom.trigger(editorContainer, 'paste', paste);
+		handleManualEvent('paste', paste);
 
 		if ('fragmentToHtml' in format) {
 			paste.val = format
@@ -1662,6 +1658,7 @@ export default function SCEditor(original, userOptions) {
 		}
 
 		pluginManager.call('pasteHtml', paste);
+		handleManualEvent('pastehtml', paste);
 
 		var parent = rangeHelper.getFirstBlockParent();
 		base.wysiwygEditorInsertHtml(paste.val, null, true);
@@ -2370,7 +2367,8 @@ export default function SCEditor(original, userOptions) {
 					}
 				}
 
-				dom.trigger(editorContainer, 'selectionchanged');
+				pluginManager.call('selectionchanged');
+				handleManualEvent('selectionchanged');
 			}
 
 			isSelectionCheckPending = false;
@@ -2405,7 +2403,11 @@ export default function SCEditor(original, userOptions) {
 			currentNode      = node;
 			currentBlockNode = rangeHelper.getFirstBlockParent(node);
 
-			dom.trigger(editorContainer, 'nodechanged', {
+			pluginManager.call('nodechanged', {
+				oldNode: oldNode,
+				newNode: currentNode
+			});
+			handleManualEvent('nodechanged', {
 				oldNode: oldNode,
 				newNode: currentNode
 			});
@@ -2641,7 +2643,15 @@ export default function SCEditor(original, userOptions) {
 
 		// convert the event into a custom event to send
 		var name = (e.target === sourceEditor ? 'scesrc' : 'scewys') + e.type;
+		handleManualEvent(name, e);
+	};
 
+	/**
+	 * Passes events on to any handlers
+	 * @private
+	 * @return void
+	 */
+	handleManualEvent = function(name, e) {
 		if (eventHandlers[name]) {
 			eventHandlers[name].forEach(function (fn) {
 				fn.call(base, e);
@@ -3433,7 +3443,10 @@ export default function SCEditor(original, userOptions) {
 		if (currentHtml !== triggerValueChanged.lastVal) {
 			triggerValueChanged.lastVal = currentHtml;
 
-			dom.trigger(editorContainer, 'valuechanged', {
+			pluginManager.call('valuechanged', {
+				rawValue: sourceMode ? base.val() : currentHtml
+			});
+			handleManualEvent('valuechanged', {
 				rawValue: sourceMode ? base.val() : currentHtml
 			});
 		}
