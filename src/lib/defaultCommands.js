@@ -548,11 +548,15 @@ var defaultCmds = {
 						editor.wysiwygEditorInsertHtml(
 							'<a href="' +
 							'mailto:' + escape.entities(email) + '">' +
-								escape.entities((text || email)) +
-							'</a>'
+								escape.entities(text || email) +
+							'</a>&#8203;'
 						);
 					} else {
-						editor.execCommand('createlink', 'mailto:' + email);
+						editor.wysiwygEditorInsertHtml(
+							'<a href="' +
+							'mailto:' + escape.entities(email) + '">',
+							'</a>&#8203;'
+						);
 					}
 				}
 			);
@@ -601,10 +605,13 @@ var defaultCmds = {
 					editor.wysiwygEditorInsertHtml(
 						'<a href="' + escape.entities(url) + '">' +
 							escape.entities(text || url) +
-						'</a>'
+						'</a>&#8203;'
 					);
 				} else {
-					editor.execCommand('createlink', url);
+					editor.wysiwygEditorInsertHtml(
+						'<a href="' + escape.entities(url) + '">',
+						'</a>&#8203;'
+					);
 				}
 			});
 		},
