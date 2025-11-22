@@ -2844,6 +2844,13 @@ export default function SCEditor(original, userOptions) {
 				}
 			}
 
+			// Scroll editor into view of caret
+			rangeHelper.insertMarkers();
+			var marker = rangeHelper.getMarker('sceditor-start-marker');
+			marker.style.display = 'inline-block';
+			wysiwygDocument.documentElement.scrollTop = marker.offsetTop;
+			rangeHelper.removeMarkers();
+
 			wysiwygWindow.focus();
 			wysiwygBody.focus();
 		} else {
