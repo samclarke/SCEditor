@@ -360,7 +360,7 @@ QUnit.test('sourceEditorInsertText() - Start and end', function (assert) {
 
 	assert.htmlEqual(
 		sceditor.val(),
-		'<p>The quick "brown|" fox jumps over the lazy dog.<br /></p>'
+		'<p>The quick "|brown" fox jumps over the lazy dog.<br /></p>'
 	);
 });
 

@@ -1,4 +1,4 @@
-﻿import * as dom from './dom.js';
+import * as dom from './dom.js';
 import * as utils from './utils.js';
 import defaultOptions from './defaultOptions.js';
 import defaultCommands from './defaultCommands.js';
@@ -1802,7 +1802,7 @@ export default function SCEditor(original, userOptions) {
 	 *
 	 * If endText is specified any selected text will be placed between
 	 * text and endText. If no text is selected text and endText will
-	 * just be concatenate together.
+	 * just be concatenated together.
 	 *
 	 * The cursor will be placed after the text param. If endText is
 	 * specified the cursor will be placed before endText, so passing:<br />
@@ -1821,27 +1821,22 @@ export default function SCEditor(original, userOptions) {
 	 * @memberOf SCEditor.prototype
 	 */
 	base.sourceEditorInsertText = function (text, endText) {
-		var scrollTop, currentValue,
-			startPos = sourceEditor.selectionStart,
-			endPos   = sourceEditor.selectionEnd;
+		var startPos  = sourceEditor.selectionStart;
+		var endPos    = sourceEditor.selectionEnd;
+		var scrollPos = sourceEditor.scrollTop;
+		var selection = sourceEditor.value.slice(startPos, endPos);
+		var insertText = text + selection + (endText || '');
 
-		scrollTop = sourceEditor.scrollTop;
-		sourceEditor.focus();
-		currentValue = sourceEditor.value;
+		sourceEditor.setRangeText(insertText, startPos, endPos, 'end');
 
-		if (endText) {
-			text += currentValue.substring(startPos, endPos) + endText;
+		// If there was a selection, reselect only that inner part
+		if (selection.length && sourceEditor.setSelectionRange) {
+			var newStart = startPos + text.length;
+			var newEnd   = newStart + selection.length;
+			sourceEditor.setSelectionRange(newStart, newEnd);
 		}
 
-		sourceEditor.value = currentValue.substring(0, startPos) +
-			text +
-			currentValue.substring(endPos, currentValue.length);
-
-		sourceEditor.selectionStart = (startPos + text.length) -
-			(endText ? endText.length : 0);
-		sourceEditor.selectionEnd = sourceEditor.selectionStart;
-
-		sourceEditor.scrollTop = scrollTop;
+		sourceEditor.scrollTop = scrollPos;
 		sourceEditor.focus();
 
 		triggerValueChanged();
