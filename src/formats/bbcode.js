@@ -2241,62 +2241,88 @@
 		};
 
 		/**
-		 * Handles adding newlines after block level elements
+		 * Ensures block-level elements produce the correct newlines
+		 * in BBCode/text output.
 		 *
 		 * @param {HTMLElement} element The element to convert
-		 * @param {string} content  The tags text content
+		 * @param {string} content  The element’s text content
 		 * @return {string}
 		 * @private
 		 */
 		function handleBlockNewlines(element, content) {
-			var	tag = element.nodeName.toLowerCase();
+			var nodeName = element.nodeName;
 			var isInline = dom.isInline;
-			if (!isInline(element, true) || tag === 'br') {
-				var	isLastBlockChild, parent, parentLastChild,
+
+			// Only apply to block-level elements or <br>
+			if (!isInline(element, true) || nodeName === 'BR') {
+				var isLastBlockChild, parent, parentLastChild,
 					previousSibling = element.previousSibling;
 
-				// Skips selection makers and ignored elements
-				// Skip empty inline elements
-				while (previousSibling &&
-						previousSibling.nodeType === 1 &&
-						!is(previousSibling, 'br') &&
+				// Walk backwards to find a meaningful previous sibling:
+				//   - Skip empty inline elements (<span></span>)
+				//   - Skip <br> placeholders
+				//   - Skip text nodes containing only whitespace
+				while (
+					previousSibling &&
+					(
+						(previousSibling.nodeType === Node.ELEMENT_NODE &&
+						previousSibling.nodeName !== 'BR' &&
 						isInline(previousSibling, true) &&
-						!previousSibling.firstChild) {
+						!previousSibling.firstChild) ||
+						(previousSibling.nodeType === Node.TEXT_NODE &&
+						/^[\t\n\r ]*$/.test(previousSibling.nodeValue))
+					)
+				) {
 					previousSibling = previousSibling.previousSibling;
 				}
 
-				// If it's the last block of an inline that is the last
-				// child of a block then it shouldn't cause a line break
-				// <block><inline><br></inline></block>
+				// Helper to ignore trailing whitespace-only text nodes
+				function getLastNonWs(parent) {
+					var node = parent.lastChild;
+					while (node && node.nodeType === 3 && /^\s*$/.test(node.nodeValue)) {
+						node = node.previousSibling;
+					}
+					return node;
+				}
+
+				// Climb up the DOM tree to see if this element is
+				// the last child inside a chain of inline parents.
+				// If so, it shouldn’t force a line break:
+				//   <block><inline><br></inline></block>
 				do {
-					parent          = element.parentNode;
-					parentLastChild = parent && parent.lastChild;
+					parent = element.parentNode;
+					parentLastChild = parent && getLastNonWs(parent);
 
 					isLastBlockChild = parentLastChild === element;
 					element = parent;
 				} while (parent && isLastBlockChild && isInline(parent, true));
 
-				// If this block is:
-				//	* Not the last child of a block level element
-				//	* Is a <li> tag (lists are blocks)
-				if (!isLastBlockChild || tag === 'li') {
+				// Add a trailing newline if:
+				//   - This block is NOT the last child of its parent block
+				//   - OR this block is an <li> (list items always break lines)
+				if (!isLastBlockChild || nodeName === 'LI') {
 					content += '\n';
 				}
 
-				// Check for:
-				// <block>text<block>text</block></block>
-				//
-				// The second opening <block> opening tag should cause a
-				// line break because the previous sibing is inline.
-				if (tag !== 'br' && previousSibling &&
-					!is(previousSibling, 'br') &&
-					isInline(previousSibling, true)) {
+				// Add a leading newline if:
+				//   - The previous sibling exists
+				//   - It’s inline and not a <br>
+				// This handles cases like:
+				//   <block>text<block>text</block></block>
+				// where the second <block> should start on a new line
+				if (
+					nodeName !== 'BR' &&
+					previousSibling &&
+					previousSibling.nodeName !== 'BR' &&
+					isInline(previousSibling, true)
+				) {
 					content = '\n' + content;
 				}
 			}
 
 			return content;
 		}
+
 
 		/**
 		 * Handles a HTML tag and finds any matching BBCodes
@@ -2390,7 +2416,12 @@
 		 * @return {string} BBCode
 		 * @memberOf SCEditor.plugins.bbcode.prototype
 		 */
-		function elementToBbcode(element, hasCodeParent) {
+		function elementToBbcode(
+			element,
+			hasCodeParent,
+			nodesToRemove,
+			nodeValues
+		) {
 			var toBBCode = function (node, hasCodeParent, vChildren) {
 				var ret = '';
 
@@ -2456,7 +2487,10 @@
 						}
 					// 3 = text
 					} else if (nodeType === 3) {
-						ret += node.nodeValue;
+						if (!nodesToRemove || !nodesToRemove.has(node)) {
+							ret += (nodeValues && nodeValues.get(node))
+								|| node.nodeValue;
+						}
 					}
 				}, false, true);
 
@@ -2547,9 +2581,16 @@
 				elements[0].parentNode.removeChild(elements[0]);
 			}
 
-			dom.removeWhiteSpace(containerParent);
+			var nodesToRemove = new WeakSet();
+			var nodeValues = new WeakMap();
+			dom.removeWhiteSpace(containerParent, nodesToRemove, nodeValues);
 
-			bbcode = elementToBbcode(container, hasCodeParent);
+			bbcode = elementToBbcode(
+				container,
+				hasCodeParent,
+				nodesToRemove,
+				nodeValues
+			);
 
 			context.body.removeChild(containerParent);
 
