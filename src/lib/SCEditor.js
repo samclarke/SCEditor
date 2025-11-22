@@ -1,4 +1,4 @@
-﻿import * as dom from './dom.js';
+import * as dom from './dom.js';
 import * as utils from './utils.js';
 import defaultOptions from './defaultOptions.js';
 import defaultCommands from './defaultCommands.js';
@@ -2235,11 +2235,15 @@ export default function SCEditor(original, userOptions) {
 
 		currentSelection = null;
 		base.blur();
+		dom.hide(sourceEditor);
+		dom.hide(wysiwygEditor);
 
 		if (isInSourceMode) {
 			base.setWysiwygEditorValue(base.getSourceEditorValue());
+			dom.show(wysiwygEditor);
 		} else {
 			base.setSourceEditorValue(base.getWysiwygEditorValue());
+			dom.show(sourceEditor);
 		}
 
 		dom.toggle(sourceEditor);
