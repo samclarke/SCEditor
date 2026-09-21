@@ -86,3 +86,5 @@ window.sceditor = {
 		return textarea._sceditor;
 	}
 };
+
+export default window.sceditor;

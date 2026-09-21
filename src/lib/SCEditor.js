@@ -8,7 +8,8 @@ import _tmpl from './templates.js';
 import * as escape from './escape.js';
 import * as browser from './browser.js';
 import * as emoticons from './emoticons.js';
-import DOMPurify from 'dompurify';
+import _DOMPurify from 'dompurify';
+const DOMPurify = _DOMPurify && _DOMPurify.default ? _DOMPurify.default : _DOMPurify;
 
 var globalWin  = window;
 var globalDoc  = document;
@@ -3609,3 +3610,4 @@ SCEditor.command =
 		return this;
 	}
 };
+

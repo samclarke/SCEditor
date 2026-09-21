@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>SCEditor Smoke Test</title>
+
+  <!-- Load the newly compiled theme -->
+  <link rel="stylesheet" href="minified/themes/default.min.css" />
+
+  <style>
+    body { font-family: sans-serif; padding: 2rem; max-width: 800px; margin: auto; }
+    textarea { width: 100%; height: 200px; }
+  </style>
+</head>
+<body>
+  <h2>SCEditor Native CSS & esbuild Verification</h2>
+
+  <textarea id="example">[b]Bold text[/b], [i]italic[/i], and a [url=https://github.com]link[/url]!</textarea>
+
+  <!-- Load core IIFE bundle -->
+  <script src="minified/sceditor.min.js"></script>
+
+  <!-- Load BBCode format plugin -->
+  <script src="minified/formats/bbcode.min.js"></script>
+
+  <script>
+    const textarea = document.getElementById('example');
+    sceditor.create(textarea, {
+      format: 'bbcode',
+      style: 'minified/themes/content/default.min.css',
+      toolbar: 'bold,italic,underline|color,size|bulletlist,orderedlist|link,image|source'
+    });
+  </script>
+</body>
+</html>

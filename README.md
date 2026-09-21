@@ -6,8 +6,8 @@
 
 A lightweight WYSIWYG BBCode and XHTML editor.
 
-[![SCEditor preview](https://cdn.rawgit.com/samclarke/SCEditor/49c696b8/preview.svg)](https://www.sceditor.com/)
-
+This is a modernized version of SCEditor to remove the broken dependencies of the old grunt build system. I have rewritten the theme system to use modern CSS instead of less and updated to esbuild vs grunt to remove many issues with deprecated modules.
+ 
 For more information visit [sceditor.com](http://www.sceditor.com/)
 
 
@@ -59,42 +59,18 @@ For a full list of options, see the [options documentation](http://www.sceditor.
 
 
 
-## Building and testing
+## Building from source
 
-You will need [Grunt](http://gruntjs.com/) installed to run the build/tests. To install Grunt run:
+SCEditor uses a minimal build system powered by Node.js, esbuild.
 
-```bash
-npm install -g grunt-cli
-```
-
-Next, to install the SCEditor dev dependencies run:
+Install dependencies:
 
 ```bash
 npm install
+npm run build
 ```
 
 That's it! You can now build and test SCEditor with the following commands:
-
-```bash
-# Minify the JS and convert the LESS to CSS
-grunt build
-
-# Run the linter, unit tests and coverage
-grunt test
-
-# Creates the final distributable ZIP file
-grunt release
-```
-
-You can also run the dev server to test changes without having to do a full
-build by running:
-
-```bash
-npm run dev
-```
-
-and then going to http://localhost:9000/tests/
-
 
 ## Contribute
 

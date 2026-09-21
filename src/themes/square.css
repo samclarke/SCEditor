@@ -13,11 +13,11 @@
  * Licensed under the Creative Commons CC-BY license (http://creativecommons.org/licenses/by/3.0/)
  */
 
-@import "default.less";
+@import "default.css";
 
 .sceditor-container {
 	border: 1px solid #d6d6d6;
-	.rounded(0);
+	border-radius: 0;
 }
 
 	.sceditor-container textarea {
@@ -44,7 +44,7 @@
 			border: 0;
 			border-right: 1px solid #ccc;
 			border-left: 1px solid #eaeaea;
-			.rounded(0);
+			border-radius: 0;
 		}
 		div.sceditor-group:last-child { border-right: 0; }
 		div.sceditor-group:first-child { border-left: 0; }
@@ -53,7 +53,7 @@
 			padding: 5px;
 			margin: 1px;
 
-			.rounded(0);
+			border-radius: 0;
 		}
 		.sceditor-button div,
 		.sceditor-button svg {

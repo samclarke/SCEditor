@@ -8,7 +8,6 @@
  *	http://www.opensource.org/licenses/mit-license.php
  */
 
-@import "elements.less";
 
 .sceditor-container {
 	display: -ms-flexbox;
@@ -25,7 +24,7 @@
 	font-weight: bold;
 	height: 250px;
 
-	.rounded(4px);
+	border-radius: 4px;
 
 	*, *:before, *:after {
 		-webkit-box-sizing: content-box;
@@ -59,9 +58,9 @@ div.sceditor-dropdown div {
 		background: #fff;
 		height: auto !important;
 		width: auto !important;
-		// Needed for IE
+		/* Needed for IE */
 		width: ~"calc(100% - 10px) !important";
-		// Allow iframes to shrink
+		/* Allow iframes to shrink */
 		min-height: 1px;
 	}
 
@@ -123,11 +122,11 @@ div.sceditor-dropdown div {
 		left: 0;
 		height: 100% !important;
 		width: 100% !important;
-		.rounded(0);
+		border-radius: 0;
 		z-index: 2000;
 	}
 
-	// Used to hide scrollbars when maximized
+	/* Used to hide scrollbars when maximized */
 	html.sceditor-maximize,
 	body.sceditor-maximize {
 		height: 100%;
@@ -143,7 +142,7 @@ div.sceditor-dropdown div {
 
 
 		.sceditor-maximize div.sceditor-toolbar {
-			.rounded(0);
+			border-radius: 0;
 		}
 
 
@@ -165,8 +164,8 @@ div.sceditor-dropdown div {
 			box-sizing: border-box;
 		}
 
-		.rounded(2px);
-		.box-shadow(1px 2px 4px rgba(0,0,0,0.2));
+		border-radius: 2px;
+		box-shadow: 1px 2px 4px rgba(0,0,0,0.2);
 	}
 
 		div.sceditor-dropdown a,
@@ -194,7 +193,7 @@ div.sceditor-dropdown div {
 			border-top-color: #888;
 			margin: 0 0 .75em;
 
-			.rounded(1px);
+			border-radius: 1px;
 		}
 
 		div.sceditor-dropdown textarea {
@@ -205,7 +204,7 @@ div.sceditor-dropdown div {
 		div.sceditor-dropdown textarea:focus {
 			border-color: #aaa;
 			border-top-color: #666;
-			.box-shadow(inset 0 1px 5px rgba(0,0,0,0.1));
+			box-shadow: inset 0 1px 5px rgba(0,0,0,0.1);
 		}
 
 		div.sceditor-dropdown .button {
@@ -214,14 +213,14 @@ div.sceditor-dropdown div {
 			padding: 6px 12px;
 			background: #ececec;
 			border: solid 1px #ccc;
-			.rounded(2px);
+			border-radius: 2px;
 			cursor: pointer;
 			margin: .3em 0 0;
 		}
 
 		div.sceditor-dropdown .button:hover {
 			background: #f3f3f3;
-			.box-shadow(0 1px 1px rgba(0,0,0,0.15));
+			box-shadow: 0 1px 1px rgba(0,0,0,0.15);
 		}
 
 		div.sceditor-font-picker,
@@ -319,7 +318,7 @@ div.sceditor-dropdown div {
 
 		user-select: none;
 
-		.rounded(3px 3px 0 0);
+		border-radius: 3px 3px 0 0;
 	}
 
 		div.sceditor-group {
@@ -329,7 +328,7 @@ div.sceditor-dropdown div {
 			padding: 1px;
 			border-bottom: 1px solid #aaa;
 
-			.rounded(3px);
+			border-radius: 3px;
 
 		}
 
@@ -339,25 +338,25 @@ div.sceditor-dropdown div {
 			padding: 3px 5px;
 			width: 16px;
 			height: 20px;
-			.rounded(3px);
+			border-radius: 3px;
 		}
 
 			.sceditor-button:hover,
 			.sceditor-button:active,
 			.sceditor-button.active {
 				background: #fff;
-				.box-shadow(~"inset 1px 1px 0 rgba(0,0,0,0.3), inset -1px 0 rgba(0,0,0,0.3), inset 0 -1px 0 rgba(0,0,0,0.2)");
+				box-shadow: inset 1px 1px 0 rgba(0,0,0,0.3), inset -1px 0 rgba(0,0,0,0.3), inset 0 -1px 0 rgba(0,0,0,0.2);
 			}
 
 			.sceditor-button:active {
 				background: #fff;
-				.box-shadow(~"inset 1px 1px 0 rgba(0,0,0,0.3), inset -1px 0 rgba(0,0,0,0.3), inset 0 -1px 0 rgba(0,0,0,0.2), inset 0 0 8px rgba(0,0,0,0.3)");
+				box-shadow: inset 1px 1px 0 rgba(0,0,0,0.3), inset -1px 0 rgba(0,0,0,0.3), inset 0 -1px 0 rgba(0,0,0,0.2), inset 0 0 8px rgba(0,0,0,0.3);
 			}
 
 			.sceditor-button.disabled:hover {
 				background: inherit;
 				cursor: default;
-				.box-shadow(none);
+				box-shadow: none;
 			}
 
 			.sceditor-button, .sceditor-button div {
@@ -372,7 +371,7 @@ div.sceditor-dropdown div {
 				fill: #111;
 				text-decoration: none;
 				pointer-events: none;
-				// IE & Edge inherit line height so reset it
+				/* IE & Edge inherit line height so reset it */
 				line-height: 1;
 			}
 

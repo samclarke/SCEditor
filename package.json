@@ -1,14 +1,15 @@
 {
   "name": "sceditor",
-  "version": "3.2.1",
+  "version": "4.0.0",
   "description": "A lightweight HTML and BBCode WYSIWYG editor.",
-  "homepage": "http://www.sceditor.com/",
-  "bugs": "https://github.com/samclarke/SCEditor/issues",
-  "license": "MIT",
+  "type": "module",
   "author": "Sam Clarke <sam@samclarke.com>",
   "contributors": [
     {
       "name": "brunoais"
+    },
+    {
+      "name": "UnusNemo"
     }
   ],
   "files": [
@@ -23,7 +24,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/samclarke/SCEditor.git"
+    "url": "https://github.com/UnusNemo/SCEditor"
   },
   "keywords": [
     "jquery-plugin",
@@ -36,49 +37,19 @@
     "ecosystem:jquery"
   ],
   "engines": {
-    "node": ">= 0.10.0"
+    "node": ">= 18.0.0"
   },
-  "browserslist": [
-    "last 4 versions",
-    "ie 10"
-  ],
   "scripts": {
-    "test": "grunt test",
-    "build": "grunt build",
-    "release": "grunt release",
-    "dev": "node ./tests/dev-server.js"
-  },
-  "devDependencies": {
-    "@lodder/grunt-postcss": "^3.1.1",
-    "@rollup/plugin-node-resolve": "^16.0.1",
-    "autoprefixer": "^10.4.21",
-    "cssnano": "^7.1.1",
-    "globals": "^16.4.0",
-    "grunt": "~1.6.1",
-    "grunt-contrib-clean": "^2.0.1",
-    "grunt-contrib-compress": "^2.0.0",
-    "grunt-contrib-concat": "~2.1.0",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-less": "^3.0.0",
-    "grunt-contrib-qunit": "^10.1.1",
-    "grunt-contrib-uglify": "^5.2.2",
-    "grunt-eslint": "^26.0.0",
-    "grunt-rollup": "^12.0.0",
-    "istanbul-lib-coverage": "^3.2.2",
-    "istanbul-lib-instrument": "^6.0.3",
-    "istanbul-lib-report": "^3.0.1",
-    "istanbul-reports": "^3.2.0",
-    "jquery": "^3.7.1",
-    "less": "^4.4.1",
-    "loader-utils": "^3.3.1",
-    "qunit": "^2.24.1",
-    "rangy": "^1.3.2",
-    "sinon": "^21.0.0",
-    "time-grunt": "^2.0.0",
-    "webpack": "^5.101.3",
-    "webpack-dev-server": "^5.2.2"
+    "build": "node build.js",
+    "watch": "node build.js --watch"
   },
   "dependencies": {
     "dompurify": "^3.2.7"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
   }
 }

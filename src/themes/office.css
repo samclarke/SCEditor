@@ -8,7 +8,7 @@
  * Licensed under the Creative Commons CC-BY license (http://creativecommons.org/licenses/by/3.0/)
  */
 
-@import "office-toolbar.less";
+@import "office-toolbar.css";
 
 .sceditor-container {
 	background: rgb(163,194,234);

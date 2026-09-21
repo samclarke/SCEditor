@@ -8,8 +8,8 @@
  * SCEditor is licensed under the MIT license:
  *	http://www.opensource.org/licenses/mit-license.php
  */
- @import "icons/famfamfam.less";
- @import "inc/defaultbase.less";
+ @import "icons/famfamfam.css";
+ @import "inc/defaultbase.css";
  
  div.sceditor-toolbar {
 	background: #5d5d5d;
