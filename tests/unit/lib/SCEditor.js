@@ -259,6 +259,18 @@ QUnit.test('wysiwygEditorInsertHtml()', function (assert) {
 });
 
 QUnit.test('wysiwygEditorInsertHtml() - Start and end', function (assert) {
+	var done = assert.async();
+	var valueChangedFired = false;
+	var nodeChangedFired = false;
+
+	sceditor.bind('valuechanged', function () {
+		valueChangedFired = true;
+	});
+
+	sceditor.bind('nodechanged', function () {
+		nodeChangedFired = true;
+	});
+
 	sceditor.focus();
 	var iframe = sceditor.getContentAreaContainer();
 	var body   = sceditor.getBody();
@@ -279,6 +291,61 @@ QUnit.test('wysiwygEditorInsertHtml() - Start and end', function (assert) {
 		'<p>The quick <b>brown|</b> fox ' +
 			'jumps over the lazy dog.<br /></p>'
 	));
+
+	// Use setTimeout to allow event handlers to fire
+	setTimeout(function () {
+		assert.ok(valueChangedFired, 'valuechanged event should fire after bold formatting');
+		assert.ok(nodeChangedFired, 'nodechanged event should fire after bold formatting');
+		done();
+	}, 50);
+});
+
+QUnit.test('Bold formatting via toolbar triggers valuechanged', function (assert) {
+	var done = assert.async();
+	var valueChangedFired = false;
+	var nodeChangedFired = false;
+
+	sceditor.bind('valuechanged', function () {
+		valueChangedFired = true;
+	});
+
+	sceditor.bind('nodechanged', function () {
+		nodeChangedFired = true;
+	});
+
+	sceditor.focus();
+	var iframe = sceditor.getContentAreaContainer();
+	var body   = sceditor.getBody();
+	var range  = rangy.createRange(body.ownerDocument);
+	var sel    = rangy.getIframeSelection(iframe);
+
+	range.setStart(body.firstChild.firstChild, 10);
+	range.setEnd(body.firstChild.firstChild, 15);
+	sel.setSingleRange(range);
+
+	sceditor.execCommand('bold');
+
+	assert.nodesEqual(body.firstChild, utils.htmlToNode(
+		'<p>The quick <b>brown</b> fox ' +
+			'jumps over the lazy dog.<br /></p>'
+	));
+
+	// This is the easiest way to make sure the cursor is still in the
+	// correct position.
+	sceditor.wysiwygEditorInsertHtml('|');
+
+	// Did it overwrite the selection?
+	assert.nodesEqual(body.firstChild, utils.htmlToNode(
+		'<p>The quick <b>|</b> fox ' +
+			'jumps over the lazy dog.<br /></p>'
+	));
+
+	// Use setTimeout to allow event handlers to fire
+	setTimeout(function () {
+		assert.ok(valueChangedFired, 'valuechanged event should fire after bold formatting');
+		assert.ok(nodeChangedFired, 'nodechanged event should fire after bold formatting');
+		done();
+	}, 50);
 });
 
 
