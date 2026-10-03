@@ -76,7 +76,7 @@
     "sinon": "^21.0.0",
     "time-grunt": "^2.0.0",
     "webpack": "^5.101.3",
-    "webpack-dev-server": "^5.2.2"
+    "webpack-dev-server": "^6.0.0"
   },
   "dependencies": {
     "dompurify": "^3.2.7"
