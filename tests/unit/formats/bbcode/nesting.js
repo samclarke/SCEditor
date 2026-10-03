@@ -7,7 +7,7 @@ QUnit.test('inline bbcodes must be inside block ones', assert => {
 	sceditor.formats.bbcode.set(
 		'thisblockstyle', {
 			styles: {
-				border: null
+				borderStyle: null
 			},
 			isInline: false,
 			format: '[block]{0}[/block]',
@@ -54,7 +54,7 @@ QUnit.test('inline bbcodes must be inside block ones', assert => {
 	format.init.call(mockEditor);
 
 	assert.equal(
-		mockEditor.toBBCode('<theme style=opacity:1;border:none;"></theme>'),
+		mockEditor.toBBCode('<theme style="opacity:1;border-style:none;"></theme>'),
 		'[block][inline][/inline][/block]'
 	);
 	assert.equal(
