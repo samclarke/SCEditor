@@ -206,6 +206,7 @@
 				getEditorCommand('link')._dropDown(
 					editor,
 					caller,
+					selected,
 					function (url, text) {
 						editor.insertText(
 							'[url=' + url + ']' +
