@@ -744,7 +744,7 @@ export function isInline(elm, includeCodeAsBlock) {
 
 	tagName = elm.tagName.toLowerCase();
 
-	if (tagName === 'code') {
+	if (tagName === 'code' && !is(elm, '.inline')) {
 		return !includeCodeAsBlock;
 	}
 
