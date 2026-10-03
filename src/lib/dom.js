@@ -879,10 +879,10 @@ export function getSibling(node, previous) {
  * @param {!HTMLElement} root
  * @since 1.4.3
  */
-export function removeWhiteSpace(root) {
+export function removeWhiteSpace(root, context) {
 	var	nodeValue, nodeType, next, previous, previousSibling,
 		nextNode, trimStart,
-		cssWhiteSpace = css(root, 'whiteSpace'),
+		cssWhiteSpace = cachedCss(root, 'whiteSpace', null, context),
 		// Preserve newlines if is pre-line
 		preserveNewLines = /line$/i.test(cssWhiteSpace),
 		node = root.firstChild;
@@ -898,7 +898,7 @@ export function removeWhiteSpace(root) {
 		nodeType  = node.nodeType;
 
 		if (nodeType === ELEMENT_NODE && node.firstChild) {
-			removeWhiteSpace(node);
+			removeWhiteSpace(node, context);
 		}
 
 		if (nodeType === TEXT_NODE) {
@@ -1001,6 +1001,77 @@ export function getOffset(node) {
 	};
 }
 
+// Global cache keyed by context -> Map(sig -> computedStyle)
+var styleCache = new WeakMap();
+
+/**
+ * Gets a computed CSS value or sets an inline
+ * CSS value, with signature-based caching.
+ *
+ * @param {!HTMLElement} node
+ * @param {!Object|string} rule
+ * @param {string|number} [value]
+ * @param {Object} context - context object (e.g., editor/window)
+ * @return {string|number|Object|undefined}
+ */
+export function cachedCss(node, rule, value, context) {
+	if (!context) {
+		context = node && node.ownerDocument
+			? node.ownerDocument.defaultView
+			: null;
+		if (!context) {
+			throw new Error('cachedCss: could not resolve context.');
+		}
+	}
+
+	if (node.nodeType !== 1) {
+		return;
+	}
+
+	// Ensure context map exists
+	var ctxMap = styleCache.get(context);
+	if (!ctxMap) {
+		ctxMap = new Map();
+		styleCache.set(context, ctxMap);
+	}
+
+	// Build a unique signature for caching styles based on node attributes.
+	var sig = [
+		node.tagName,
+		node.id || '',
+		node.align || '',
+		node.className || '',
+		node.getAttribute('style') || ''
+	].join('|');
+
+	if (!value) {
+		// If cached, reuse
+		var cached = ctxMap.get(sig);
+		if (!cached) {
+			cached = getComputedStyle(node);
+			ctxMap.set(sig, cached);
+		}
+
+		if (utils.isString(rule)) {
+			return cached[rule];
+		}
+
+		// Multiple rules as object
+		var out = {};
+		for (var i = 0; i < rule.length; i++) {
+			var k = rule[i];
+			out[k] = cached[k];
+		}
+		return out;
+	}
+
+	var isNumeric = !isNaN(value);
+	node.style[rule] = isNumeric ? value + 'px' : value;
+
+	// Invalidate this node’s signature cache
+	ctxMap.delete(sig);
+}
+
 /**
  * Gets the value of a CSS property from the elements style attribute
  *
@@ -1021,10 +1092,10 @@ export function getStyle(elm, property) {
 
 	// Add an exception for text-align
 	if ('textAlign' === property) {
-		styleValue = styleValue || css(elm, property);
+		styleValue = styleValue || cachedCss(elm, property);
 
-		if (css(elm.parentNode, property) === styleValue ||
-			css(elm, 'display') !== 'block' || is(elm, 'hr,th')) {
+		if (cachedCss(elm.parentNode, property) === styleValue ||
+			cachedCss(elm, 'display') !== 'block' || is(elm, 'hr,th')) {
 			return '';
 		}
 	}

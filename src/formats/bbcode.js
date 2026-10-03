@@ -2547,7 +2547,7 @@
 				elements[0].parentNode.removeChild(elements[0]);
 			}
 
-			dom.removeWhiteSpace(containerParent);
+			dom.removeWhiteSpace(containerParent, container);
 
 			bbcode = elementToBbcode(container, hasCodeParent);
 
