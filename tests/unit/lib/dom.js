@@ -599,7 +599,7 @@ QUnit.test('convertElement() - Invalid attribute name', function (assert) {
 	assert.nodesEqual(
 		newNode,
 		utils.htmlToNode(
-			'<em good="attr">test</em>'
+			'<em size"2"="" good="attr">test</em>'
 		)
 	);
 });
