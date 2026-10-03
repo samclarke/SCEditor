@@ -197,10 +197,10 @@
 			}
 		},
 		rtl: {
-			txtExec: ['<div stlye="direction:rtl;">', '</div>']
+			txtExec: ['<div style="direction:rtl;">', '</div>']
 		},
 		ltr: {
-			txtExec: ['<div stlye="direction:ltr;">', '</div>']
+			txtExec: ['<div style="direction:ltr;">', '</div>']
 		}
 	};
 
