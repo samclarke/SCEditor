@@ -879,7 +879,7 @@ export function getSibling(node, previous) {
  * @param {!HTMLElement} root
  * @since 1.4.3
  */
-export function removeWhiteSpace(root) {
+export function removeWhiteSpace(root, nodesToRemove, nodeValues) {
 	var	nodeValue, nodeType, next, previous, previousSibling,
 		nextNode, trimStart,
 		cssWhiteSpace = css(root, 'whiteSpace'),
@@ -898,7 +898,7 @@ export function removeWhiteSpace(root) {
 		nodeType  = node.nodeType;
 
 		if (nodeType === ELEMENT_NODE && node.firstChild) {
-			removeWhiteSpace(node);
+			removeWhiteSpace(node, nodesToRemove, nodeValues);
 		}
 
 		if (nodeType === TEXT_NODE) {
@@ -950,12 +950,21 @@ export function removeWhiteSpace(root) {
 
 			// Remove empty text nodes
 			if (!nodeValue.length) {
-				remove(node);
+				if (nodesToRemove) {
+					nodesToRemove.add(node);
+				} else {
+					remove(node);
+				}
 			} else {
-				node.nodeValue = nodeValue.replace(
+				nodeValue = nodeValue.replace(
 					preserveNewLines ? /[\t ]+/g : /[\t\n\r ]+/g,
 					' '
 				);
+				if (nodeValues) {
+					nodeValues.set(node, nodeValue);
+				} else {
+					node.nodeValue = nodeValue;
+				}
 			}
 		}
 
