@@ -348,7 +348,8 @@ export default function SCEditor(original, userOptions) {
 		valueChangedBlur,
 		valueChangedKeyUp,
 		autoUpdate,
-		autoExpand;
+		autoExpand,
+		toggling;
 
 	/**
 	 * All the commands supported by the editor
@@ -690,7 +691,7 @@ export default function SCEditor(original, userOptions) {
 		}
 
 		dom.on(wysiwygBody, 'blur', function () {
-			if (!base.val()) {
+			if (!base.val(null, false)) {
 				dom.addClass(wysiwygBody, 'placeholder');
 			}
 		});
@@ -2234,6 +2235,9 @@ export default function SCEditor(original, userOptions) {
 			return;
 		}
 
+		// How hard can changing the modus operandi be?
+		toggling = true;
+
 		if (!isInSourceMode) {
 			rangeHelper.saveRange();
 			rangeHelper.clear();
@@ -2253,9 +2257,13 @@ export default function SCEditor(original, userOptions) {
 
 		dom.toggleClass(editorContainer, 'wysiwygMode', isInSourceMode);
 		dom.toggleClass(editorContainer, 'sourceMode', !isInSourceMode);
+		base.focus();
 
 		updateToolBar();
 		updateActiveButtons();
+
+		// And finally, we are done here.
+		toggling = false;
 	};
 
 	/**
@@ -3517,7 +3525,9 @@ export default function SCEditor(original, userOptions) {
 	};
 
 	autoUpdate = function () {
-		base.updateOriginal();
+		if (!toggling) {
+			base.updateOriginal();
+		}
 	};
 
 	// run the initializer
