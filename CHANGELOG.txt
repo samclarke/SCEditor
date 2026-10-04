@@ -1,3 +1,10 @@
+Version 3.2.2:
+	Fixed bug with XHTML plugin style attribute being misspelled for RTL / LTR.
+		- Thanks to @arcalys for fixing.
+	Updated DOMPurify to latest version to fix security issue if prototype
+		pollution exploit is available.
+		- Thanks to David Vieira Kurz (hisolutions.com) for reporting.
+
 Version 3.2.1:
 	Fixed bug with checkWhitespace() giving error when no previous node.
 	Added Emoji toolbox plugin.
