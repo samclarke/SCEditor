@@ -658,3 +658,45 @@ QUnit.test('Do not wrap whitespace text nodes', function (assert) {
 
 	assert.htmlEqual(body.innerHTML, testHtml);
 });
+
+
+QUnit.test('toBBCode() strips XSS', function (assert) {
+	var done = assert.async();
+
+	reloadEditor({
+		format: 'bbcode'
+	});
+
+	document.body.xss = function () {};
+
+	var observer = new MutationObserver(function (mutations) {
+		var hasImage = false;
+
+		mutations.forEach(function (mutation) {
+			Array.prototype.forEach.call(mutation.addedNodes, function (node) {
+				if (node.nodeType !== 1 || !node.querySelector) {
+					return;
+				}
+
+				var img = node.querySelector('img');
+				if (img) {
+					hasImage = true;
+					assert.notOk(img.hasAttribute('onerror'), 'onerror not stripped');
+				}
+			});
+		});
+
+		observer.disconnect();
+		delete document.body.xss;
+
+		assert.ok(hasImage);
+		done();
+	});
+
+	observer.observe(document.body, {
+		childList: true,
+		subtree: true
+	});
+
+	sceditor.toBBCode('<img src="/x.png" onerror="document.body.xss()">');
+});

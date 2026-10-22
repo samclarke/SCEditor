@@ -434,6 +434,9 @@ export default function SCEditor(original, userOptions) {
 		});
 	};
 
+	// eslint-disable-next-line camelcase
+	base.__UNSTABLE__sanitize = sanitize;
+
 	/**
 	 * Creates the editor iframe and textarea
 	 * @private

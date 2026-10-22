@@ -16,7 +16,9 @@ QUnit.test('Should match only if all attributes match when strict matching', fun
 	});
 
 	var mockEditor = {
-		opts: defaultOptions
+		opts: defaultOptions,
+		// eslint-disable-next-line camelcase
+		__UNSTABLE__sanitize: x => x
 	};
 	(new sceditor.formats.bbcode()).init.call(mockEditor);
 
@@ -58,7 +60,9 @@ QUnit.test('Should match if any attributes match when not strict matching', func
 	});
 
 	var mockEditor = {
-		opts: defaultOptions
+		opts: defaultOptions,
+		// eslint-disable-next-line camelcase
+		__UNSTABLE__sanitize: x => x
 	};
 	(new sceditor.formats.bbcode()).init.call(mockEditor);
 
@@ -100,7 +104,9 @@ QUnit.test('Should default to matching if any attributes match', function (asser
 	});
 
 	var mockEditor = {
-		opts: defaultOptions
+		opts: defaultOptions,
+		// eslint-disable-next-line camelcase
+		__UNSTABLE__sanitize: x => x
 	};
 	(new sceditor.formats.bbcode()).init.call(mockEditor);
 
@@ -144,7 +150,9 @@ QUnit.test('Should match twice if tag and styles match', function (assert) {
 	});
 
 	var mockEditor = {
-		opts: defaultOptions
+		opts: defaultOptions,
+		// eslint-disable-next-line camelcase
+		__UNSTABLE__sanitize: x => x
 	};
 	(new sceditor.formats.bbcode()).init.call(mockEditor);
 
@@ -169,7 +177,9 @@ QUnit.test('Should only match if all styles match when strict matching', functio
 	});
 
 	var mockEditor = {
-		opts: defaultOptions
+		opts: defaultOptions,
+		// eslint-disable-next-line camelcase
+		__UNSTABLE__sanitize: x => x
 	};
 	(new sceditor.formats.bbcode()).init.call(mockEditor);
 
@@ -197,7 +207,9 @@ QUnit.test('Should match if any styles match when not strict matching', function
 	});
 
 	var mockEditor = {
-		opts: defaultOptions
+		opts: defaultOptions,
+		// eslint-disable-next-line camelcase
+		__UNSTABLE__sanitize: x => x
 	};
 	(new sceditor.formats.bbcode()).init.call(mockEditor);
 
@@ -230,7 +242,9 @@ QUnit.test('Should default to matching if any styles match', function (assert) {
 	});
 
 	var mockEditor = {
-		opts: defaultOptions
+		opts: defaultOptions,
+		// eslint-disable-next-line camelcase
+		__UNSTABLE__sanitize: x => x
 	};
 	(new sceditor.formats.bbcode()).init.call(mockEditor);
 
@@ -262,7 +276,9 @@ QUnit.test('Should support matching wildcard tags', function (assert) {
 	});
 
 	var mockEditor = {
-		opts: defaultOptions
+		opts: defaultOptions,
+		// eslint-disable-next-line camelcase
+		__UNSTABLE__sanitize: x => x
 	};
 	(new sceditor.formats.bbcode()).init.call(mockEditor);
 
@@ -289,7 +305,9 @@ QUnit.test('Should wildcard matching styles or attributes', function (assert) {
 	});
 
 	var mockEditor = {
-		opts: defaultOptions
+		opts: defaultOptions,
+		// eslint-disable-next-line camelcase
+		__UNSTABLE__sanitize: x => x
 	};
 	(new sceditor.formats.bbcode()).init.call(mockEditor);
 
@@ -318,7 +336,9 @@ QUnit.test('Should only match when styles and attributes match if strict matchin
 	});
 
 	var mockEditor = {
-		opts: defaultOptions
+		opts: defaultOptions,
+		// eslint-disable-next-line camelcase
+		__UNSTABLE__sanitize: x => x
 	};
 	(new sceditor.formats.bbcode()).init.call(mockEditor);
 
@@ -355,7 +375,9 @@ QUnit.test('Should match when any style or attribute matches if not strict match
 	});
 
 	var mockEditor = {
-		opts: defaultOptions
+		opts: defaultOptions,
+		// eslint-disable-next-line camelcase
+		__UNSTABLE__sanitize: x => x
 	};
 	(new sceditor.formats.bbcode()).init.call(mockEditor);
 
@@ -390,7 +412,9 @@ QUnit.test('Should support style attribute', function (assert) {
 	});
 
 	var mockEditor = {
-		opts: defaultOptions
+		opts: defaultOptions,
+		// eslint-disable-next-line camelcase
+		__UNSTABLE__sanitize: x => x
 	};
 	(new sceditor.formats.bbcode()).init.call(mockEditor);
 
@@ -414,7 +438,9 @@ QUnit.test('Should match null style only if style attribute is specified', funct
 	});
 
 	var mockEditor = {
-		opts: defaultOptions
+		opts: defaultOptions,
+		// eslint-disable-next-line camelcase
+		__UNSTABLE__sanitize: x => x
 	};
 	(new sceditor.formats.bbcode()).init.call(mockEditor);
 
@@ -449,7 +475,9 @@ QUnit.test('Should match styles first', function (assert) {
 	});
 
 	var mockEditor = {
-		opts: defaultOptions
+		opts: defaultOptions,
+		// eslint-disable-next-line camelcase
+		__UNSTABLE__sanitize: x => x
 	};
 	(new sceditor.formats.bbcode()).init.call(mockEditor);
 
