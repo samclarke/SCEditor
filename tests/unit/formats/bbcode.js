@@ -6,7 +6,9 @@ import 'src/formats/bbcode.js';
 QUnit.module('formats/bbcode', {
 	beforeEach: function () {
 		this.mockEditor = {
-			opts: $.extend({}, defaultOptions)
+			opts: $.extend({}, defaultOptions),
+			// eslint-disable-next-line camelcase
+			__UNSTABLE__sanitize: x => x
 		};
 
 		this.format = new sceditor.formats.bbcode();
@@ -95,7 +97,9 @@ QUnit.test('From BBCode method as fragment', function (assert) {
 
 QUnit.test('BBcode to HTML trim', function (assert) {
 	this.mockEditor = {
-		opts: $.extend({}, defaultOptions, { bbcodeTrim: true })
+		opts: $.extend({}, defaultOptions, { bbcodeTrim: true }),
+		// eslint-disable-next-line camelcase
+		__UNSTABLE__sanitize: x => x
 	};
 
 	this.format = new sceditor.formats.bbcode();
@@ -122,7 +126,9 @@ QUnit.test('BBcode to HTML trim', function (assert) {
 
 QUnit.test('HTML to BBCode trim', function (assert) {
 	this.mockEditor = {
-		opts: $.extend({}, defaultOptions, { bbcodeTrim: true })
+		opts: $.extend({}, defaultOptions, { bbcodeTrim: true }),
+		// eslint-disable-next-line camelcase
+		__UNSTABLE__sanitize: x => x
 	};
 
 	this.format = new sceditor.formats.bbcode();
@@ -152,7 +158,9 @@ QUnit.test('HTML to BBCode trim', function (assert) {
 QUnit.module('formats/bbcode - HTML to BBCode', {
 	beforeEach: function () {
 		this.mockEditor = {
-			opts: $.extend({}, defaultOptions)
+			opts: $.extend({}, defaultOptions),
+			// eslint-disable-next-line camelcase
+			__UNSTABLE__sanitize: x => x
 		};
 
 		this.format = new sceditor.formats.bbcode();

@@ -48,7 +48,9 @@ QUnit.test('inline bbcodes must be inside block ones', assert => {
 	);
 
 	var mockEditor = {
-		opts: defaultOptions
+		opts: defaultOptions,
+		// eslint-disable-next-line camelcase
+		__UNSTABLE__sanitize: x => x
 	};
 	var format = new sceditor.formats.bbcode;
 	format.init.call(mockEditor);

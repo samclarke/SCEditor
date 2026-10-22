@@ -575,7 +575,7 @@
 
 		base.toSource = toSource.bind(null, false);
 
-		base.fragmentToSource = toSource.bind(null, true);;
+		base.fragmentToSource = toSource.bind(null, true);
 
 		/**
 		 * Runs all converters for the specified tagName
