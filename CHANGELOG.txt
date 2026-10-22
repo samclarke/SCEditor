@@ -1,3 +1,10 @@
+Version 3.2.3:
+	Fixed XSS bug with toBBCode() if passed malicious HTML.
+		- Thanks to David Vieira Kurz (hisolutions.com) for reporting.
+	Fixed bug with shortcuts not matching colons.
+	Fixed bug with readOnly() not making source editor read only.
+	Fixed XSS bug with drag drop plugin if malicious HTML passed to insert().
+
 Version 3.2.2:
 	Fixed bug with XHTML plugin style attribute being misspelled for RTL / LTR.
 		- Thanks to @arcalys for fixing.
