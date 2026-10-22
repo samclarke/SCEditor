@@ -117,6 +117,7 @@
 
 				if (node) {
 					if (typeof html === 'string') {
+						html = editor.__UNSTABLE__sanitize(html);
 						node.insertAdjacentHTML('afterend', html);
 					}
 
