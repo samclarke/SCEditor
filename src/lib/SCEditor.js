@@ -3149,7 +3149,7 @@ export default function SCEditor(original, userOptions) {
 				'0': ')',
 				'-': '_',
 				'=': '+',
-				';': ': ',
+				';': ':',
 				'\'': '"',
 				',': '<',
 				'.': '>',
