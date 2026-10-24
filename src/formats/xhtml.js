@@ -806,7 +806,7 @@
 		 */
 		function wrapInlines(root) {
 			// Strip empty text nodes so they don't get wrapped.
-			dom.removeWhiteSpace(root);
+			dom.removeWhiteSpace(root, root);
 
 			var wrapper;
 			var node = root.firstChild;

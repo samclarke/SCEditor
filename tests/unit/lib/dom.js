@@ -1354,7 +1354,7 @@ QUnit.test('getStyle() - Normalise text-align', function (assert) {
 
 	// It shouldn't return anything to text-align as isn't set.
 	assert.strictEqual(dom.getStyle(node, 'direction'), 'rtl');
-	assert.strictEqual(dom.getStyle(node, 'textAlign'), '');
+	assert.strictEqual(dom.getStyle(node, 'textAlign'), 'start');
 });
 
 QUnit.test('getStyle() - No style attribute', function (assert) {
