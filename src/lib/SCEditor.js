@@ -1,4 +1,4 @@
-﻿import * as dom from './dom.js';
+import * as dom from './dom.js';
 import * as utils from './utils.js';
 import defaultOptions from './defaultOptions.js';
 import defaultCommands from './defaultCommands.js';
@@ -251,7 +251,7 @@ export default function SCEditor(original, userOptions) {
 	var shortcutHandlers = {};
 
 	/**
-	 * The min and max heights that autoExpand should stay within
+	 * The min and max heights that base.expandToContent should stay within
 	 *
 	 * @type {Object}
 	 * @private
@@ -259,7 +259,7 @@ export default function SCEditor(original, userOptions) {
 	var autoExpandBounds;
 
 	/**
-	 * Timeout for the autoExpand function to throttle calls
+	 * Timeout for the scheduleAutoExpand function to throttle calls
 	 *
 	 * @private
 	 */
@@ -348,7 +348,7 @@ export default function SCEditor(original, userOptions) {
 		valueChangedBlur,
 		valueChangedKeyUp,
 		autoUpdate,
-		autoExpand;
+		scheduleAutoExpand;
 
 	/**
 	 * All the commands supported by the editor
@@ -497,7 +497,7 @@ export default function SCEditor(original, userOptions) {
 				autofocus(!!options.autofocusEnd);
 			}
 
-			autoExpand();
+			scheduleAutoExpand();
 			appendNewLine();
 			// TODO: use editor doc and window?
 			pluginManager.call('ready');
@@ -642,8 +642,8 @@ export default function SCEditor(original, userOptions) {
 
 		if (options.autoExpand) {
 			// Need to update when images (or anything else) loads
-			dom.on(wysiwygBody, 'load', autoExpand, dom.EVENT_CAPTURE);
-			dom.on(wysiwygBody, 'input keyup', autoExpand);
+			dom.on(wysiwygBody, 'load', scheduleAutoExpand, dom.EVENT_CAPTURE);
+			dom.on(wysiwygBody, 'input keyup', scheduleAutoExpand);
 		}
 
 		if (options.resizeEnabled) {
@@ -1329,14 +1329,21 @@ export default function SCEditor(original, userOptions) {
 			globalWin.scrollTo(0, maximizeScrollPosition);
 		}
 
-		autoExpand();
+		scheduleAutoExpand();
 
 		return base;
 	};
 
-	autoExpand = function () {
+	scheduleAutoExpand = function () {
 		if (options.autoExpand && !autoExpandThrottle) {
-			autoExpandThrottle = setTimeout(base.expandToContent, 200);
+			// Cancel any pending frame
+			if (autoExpandThrottle !== null) {
+				cancelAnimationFrame(autoExpandThrottle);
+			}
+			autoExpandThrottle = requestAnimationFrame(() => {
+				autoExpandThrottle = null;
+				base.expandToContent();
+			});
 		}
 	};
 
@@ -1357,9 +1364,6 @@ export default function SCEditor(original, userOptions) {
 		if (base.maximize()) {
 			return;
 		}
-
-		clearTimeout(autoExpandThrottle);
-		autoExpandThrottle = false;
 
 		if (!autoExpandBounds) {
 			var height = options.resizeMinHeight || options.height ||
@@ -1406,6 +1410,11 @@ export default function SCEditor(original, userOptions) {
 
 		rangeHelper   = null;
 		pluginManager = null;
+
+		if (autoExpandThrottle !== null) {
+			cancelAnimationFrame(autoExpandThrottle);
+			autoExpandThrottle = null;
+		}
 
 		if (dropdown) {
 			dom.remove(dropdown);
@@ -2136,7 +2145,7 @@ export default function SCEditor(original, userOptions) {
 
 		appendNewLine();
 		triggerValueChanged();
-		autoExpand();
+		scheduleAutoExpand();
 	};
 
 	/**
