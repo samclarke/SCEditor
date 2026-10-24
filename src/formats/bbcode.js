@@ -2321,25 +2321,31 @@
 					return false;
 				}
 
-				return !values || values.includes(val);
+				return !values
+					|| (values.includes && values.includes(val))
+					|| (values.test && values.test(val));
 			}
 
 			function createAttributeMatch(isStrict) {
 				return function (attribute) {
 					var name = attribute[0];
-					var value = attribute[1];
+					var values = attribute[1];
 
 					// code tags should skip most styles
 					if (name === 'style' && element.nodeName === 'CODE') {
 						return false;
 					}
 
-					if (name === 'style' && value) {
-						return value[isStrict ? 'every' : 'some'](isStyleMatch);
+					if (name === 'style' && values) {
+						return values
+							[isStrict ? 'every' : 'some'](isStyleMatch);
 					} else {
 						var val = attr(element, name);
 
-						return val && (!value || value.includes(val));
+						return val && (!values
+							|| (values.includes && values.includes(val))
+							|| (values.test && values.test(val))
+						);
 					}
 				};
 			}
