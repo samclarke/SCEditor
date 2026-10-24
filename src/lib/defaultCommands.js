@@ -952,11 +952,9 @@ var defaultCmds = {
 		},
 		exec: function () {
 			this.toggleSourceMode();
-			this.focus();
 		},
 		txtExec: function () {
 			this.toggleSourceMode();
-			this.focus();
 		},
 		tooltip: 'View source',
 		shortcut: 'Ctrl+Shift+S'
