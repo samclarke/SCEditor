@@ -1445,7 +1445,9 @@ export default function SCEditor(original, userOptions) {
 	 */
 	base.createDropDown = function (menuItem, name, content) {
 		// first click for create second click for close
-		var	dropDownCss,
+		var	dropDownCss, itemRect, containerRect,
+			top = menuItem.offsetTop,
+			left = menuItem.offsetLeft,
 			dropDownClass = 'sceditor-' + name;
 
 		base.closeDropDown();
@@ -1455,9 +1457,21 @@ export default function SCEditor(original, userOptions) {
 			return;
 		}
 
+		// A custom toolbarContainer can be outside of the editor container
+		// the dropdown is appended to, so offsetTop/offsetLeft are relative
+		// to a different element. Position it relative to the container.
+		if (!editorContainer.contains(menuItem)) {
+			itemRect = menuItem.getBoundingClientRect();
+			containerRect = editorContainer.getBoundingClientRect();
+
+			top = itemRect.top - containerRect.top - editorContainer.clientTop;
+			left = itemRect.left - containerRect.left -
+				editorContainer.clientLeft;
+		}
+
 		dropDownCss = utils.extend({
-			top: menuItem.offsetTop,
-			left: menuItem.offsetLeft,
+			top: top,
+			left: left,
 			marginTop: menuItem.clientHeight
 		}, options.dropDownCss);
 
