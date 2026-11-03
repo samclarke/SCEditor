@@ -573,6 +573,34 @@ QUnit.test('Insert image XSS', function (assert) {
 	}, true);
 });
 
+QUnit.test('createDropDown() - Custom toolbarContainer', function (assert) {
+	var toolbarContainer = document.createElement('div');
+
+	reloadEditor({
+		toolbarContainer: toolbarContainer
+	});
+
+	// Place the toolbar outside of and well above the editor container
+	toolbarContainer.style.marginBottom = '200px';
+	$fixture.prepend(toolbarContainer);
+
+	var container = $fixture.find('.sceditor-container').get(0);
+	var button = $(toolbarContainer).find('.sceditor-button-font').get(0);
+
+	defaultCommands.font.exec.call(sceditor, button);
+
+	var dropdown = $(container).find('.sceditor-font-picker').get(0);
+	var buttonRect = button.getBoundingClientRect();
+	var dropdownRect = dropdown.getBoundingClientRect();
+
+	// Should open directly under the button
+	var expectedTop = buttonRect.top + button.clientHeight;
+	assert.ok(Math.abs(dropdownRect.top - expectedTop) < 2,
+		'dropdown top ' + dropdownRect.top + ' expected ' + expectedTop);
+	assert.ok(Math.abs(dropdownRect.left - buttonRect.left) < 2,
+		'dropdown left ' + dropdownRect.left + ' expected ' + buttonRect.left);
+});
+
 QUnit.test('Insert HTML filter JS', function (assert) {
 	var done = assert.async();
 
